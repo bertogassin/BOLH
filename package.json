@@ -1,0 +1,32 @@
+{
+  "name": "guardio-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Guardio - Security Guard Platform",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "dev:web": "pnpm --filter @guardio/web dev",
+    "dev:mobile": "pnpm --filter @guardio/mobile dev",
+    "build:web": "pnpm --filter @guardio/web build",
+    "build:mobile": "pnpm --filter @guardio/mobile build",
+    "android": "pnpm --filter @guardio/mobile tauri android dev",
+    "ios": "pnpm --filter @guardio/mobile tauri ios dev"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@8.14.1",
+  "dependencies": {
+    "@types/leaflet": "^1.9.21",
+    "leaflet": "^1.9.4"
+  }
+}
