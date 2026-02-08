@@ -1,0 +1,14 @@
+C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\deps\serde-9a9a9f97fd204c42.d: C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\build\serde-43687c9eb5f87d8f\out/private.rs
+
+C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\deps\libserde-9a9a9f97fd204c42.rlib: C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\build\serde-43687c9eb5f87d8f\out/private.rs
+
+C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\deps\libserde-9a9a9f97fd204c42.rmeta: C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\build\serde-43687c9eb5f87d8f\out/private.rs
+
+C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\lib.rs:
+C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\integer128.rs:
+C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\mod.rs:
+C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\de.rs:
+C:\Users\Amir\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.228\src\private\ser.rs:
+C:\Users\Amir\Desktop\Guardio\crates\bolh-core\target\release\build\serde-43687c9eb5f87d8f\out/private.rs:
+
+# env-dep:OUT_DIR=C:\\Users\\Amir\\Desktop\\Guardio\\crates\\bolh-core\\target\\release\\build\\serde-43687c9eb5f87d8f\\out

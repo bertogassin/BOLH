@@ -1,0 +1,21 @@
+[package]
+name = "bolh-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+libc = "0.2"
+base64 = "0.21"
+sled = "0.34"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+pqcrypto_dilithium = { package = "pqcrypto-dilithium", version = "0.5", optional = true }
+pqcrypto_kyber = { package = "pqcrypto-kyber", version = "0.5", optional = true }
+
+[features]
+default = []
+pqc = ["pqcrypto_dilithium", "pqcrypto_kyber"]
+# libp2p and async runtime removed in this environment fallback
