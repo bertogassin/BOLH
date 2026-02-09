@@ -22,6 +22,14 @@ export default function LiveTrackingPage() {
   const [status, setStatus] = createSignal<'arriving' | 'arrived' | 'in_progress'>('arriving');
 
   let wsConnection: WebSocket | null = null;
+  let movementInterval: ReturnType<typeof setInterval> | null = null;
+
+  const closeConnection = () => {
+    if (wsConnection) {
+      wsConnection.close();
+      wsConnection = null;
+    }
+  };
 
   onMount(() => {
     // Get user's current location
@@ -31,7 +39,7 @@ export default function LiveTrackingPage() {
     connectWebSocket();
     
     // Simulate guard movement
-    const interval = setInterval(() => {
+    movementInterval = setInterval(() => {
       setGuardLocation(prev => ({
         lat: prev.lat + (Math.random() - 0.5) * 0.001,
         lng: prev.lng + (Math.random() - 0.5) * 0.001,
@@ -41,11 +49,11 @@ export default function LiveTrackingPage() {
       const minutes = Math.floor(Math.random() * 5) + 1;
       setEta(`${minutes} min`);
     }, 3000);
+  });
 
-    onCleanup(() => {
-      clearInterval(interval);
-      wsConnection?.close();
-    });
+  onCleanup(() => {
+    if (movementInterval) clearInterval(movementInterval);
+    closeConnection();
   });
 
   const connectWebSocket = () => {

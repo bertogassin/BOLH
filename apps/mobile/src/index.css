@@ -5,22 +5,25 @@
 @tailwind utilities;
 
 :root {
-  /* Brand colors */
+  /* Brand colors - Dark theme */
   --primary: #6366f1;
   --primary-dark: #4f46e5;
-  --accent: #22d3ee;
+  --primary-light: #818cf8;
   --success: #10b981;
+  --success-light: #6ee7b7;
   --warning: #f59e0b;
   --danger: #ef4444;
+  --info: #3b82f6;
   
-  /* Light theme (default) */
-  --bg-primary: #f0f4ff;
-  --bg-secondary: #ffffff;
-  --bg-card: rgba(255, 255, 255, 0.8);
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
+  /* Dark theme */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
-  --border-color: rgba(0, 0, 0, 0.05);
+  --border: #475569;
+  --glow: rgba(99, 102, 241, 0.3);
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.35);
   --input-bg: rgba(241, 245, 249, 0.8);

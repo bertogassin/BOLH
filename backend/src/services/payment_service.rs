@@ -1,7 +1,8 @@
 //! Payment service
 
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
 use uuid::Uuid;
+use rust_decimal::Decimal;
 
 pub struct PaymentService {
     pool: PgPool,
@@ -21,20 +22,19 @@ impl PaymentService {
     ) -> Result<Payment, PaymentServiceError> {
         let id = Uuid::new_v4();
 
-        let payment = sqlx::query_as!(
-            Payment,
+        let payment = sqlx::query_as::<_, Payment>(
             r#"
             INSERT INTO payments (id, user_id, order_id, amount, method, status)
             VALUES ($1, $2, $3, $4, $5, 'pending')
             RETURNING id, user_id, order_id, amount, currency, method, status, 
                       transaction_id, card_last_four, error_message, created_at
             "#,
-            id,
-            user_id,
-            order_id,
-            amount,
-            method,
         )
+        .bind(id)
+        .bind(user_id)
+        .bind(order_id)
+        .bind(amount)
+        .bind(method)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
@@ -46,8 +46,7 @@ impl PaymentService {
         // TODO: Integrate with payment provider (Stripe, CloudPayments, etc.)
         
         // Mark as processing
-        let payment = sqlx::query_as!(
-            Payment,
+        let payment = sqlx::query_as::<_, Payment>(
             r#"
             UPDATE payments
             SET status = 'processing', transaction_id = $1, updated_at = NOW()
@@ -55,9 +54,9 @@ impl PaymentService {
             RETURNING id, user_id, order_id, amount, currency, method, status,
                       transaction_id, card_last_four, error_message, created_at
             "#,
-            Uuid::new_v4().to_string(),
-            payment_id,
         )
+        .bind(Uuid::new_v4().to_string())
+        .bind(payment_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
@@ -66,8 +65,7 @@ impl PaymentService {
     }
 
     pub async fn complete_payment(&self, payment_id: Uuid) -> Result<Payment, PaymentServiceError> {
-        let payment = sqlx::query_as!(
-            Payment,
+        let payment = sqlx::query_as::<_, Payment>(
             r#"
             UPDATE payments
             SET status = 'completed', updated_at = NOW()
@@ -75,22 +73,21 @@ impl PaymentService {
             RETURNING id, user_id, order_id, amount, currency, method, status,
                       transaction_id, card_last_four, error_message, created_at
             "#,
-            payment_id,
         )
+        .bind(payment_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
 
-        let percent = sqlx::query!(
+        let percent: Option<(Option<i32>,)> = sqlx::query_as(
             "SELECT revenue_percent FROM loyalty_economy WHERE id = 1"
         )
         .fetch_one(&self.pool)
         .await
-        .ok()
-        .and_then(|r| r.revenue_percent)
-        .unwrap_or(10);
-        let inject = (payment.amount as i128) * (percent as i128) / 100;
-        let dec = sqlx::types::Decimal::from_i128_with_scale(inject, 2);
+        .ok();
+        let percent_val = percent.and_then(|p| p.0).unwrap_or(10);
+        let inject = (payment.amount as i128) * (percent_val as i128) / 100;
+        let dec = Decimal::from_i128_with_scale(inject, 2);
         let loyalty = crate::services::LoyaltyService::new(self.pool.clone());
         let _ = loyalty.inject_revenue(dec).await;
 
@@ -98,8 +95,7 @@ impl PaymentService {
     }
 
     pub async fn fail_payment(&self, payment_id: Uuid, error: &str) -> Result<Payment, PaymentServiceError> {
-        let payment = sqlx::query_as!(
-            Payment,
+        let payment = sqlx::query_as::<_, Payment>(
             r#"
             UPDATE payments
             SET status = 'failed', error_message = $1, updated_at = NOW()
@@ -107,9 +103,9 @@ impl PaymentService {
             RETURNING id, user_id, order_id, amount, currency, method, status,
                       transaction_id, card_last_four, error_message, created_at
             "#,
-            error,
-            payment_id,
         )
+        .bind(error)
+        .bind(payment_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
@@ -118,16 +114,15 @@ impl PaymentService {
     }
 
     pub async fn get_by_id(&self, id: Uuid) -> Result<Option<Payment>, PaymentServiceError> {
-        let payment = sqlx::query_as!(
-            Payment,
+        let payment = sqlx::query_as::<_, Payment>(
             r#"
             SELECT id, user_id, order_id, amount, currency, method, status,
                    transaction_id, card_last_four, error_message, created_at
             FROM payments
             WHERE id = $1
             "#,
-            id,
         )
+        .bind(id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
@@ -136,8 +131,7 @@ impl PaymentService {
     }
 
     pub async fn list_by_user(&self, user_id: i64, limit: i32) -> Result<Vec<Payment>, PaymentServiceError> {
-        let payments = sqlx::query_as!(
-            Payment,
+        let payments = sqlx::query_as::<_, Payment>(
             r#"
             SELECT id, user_id, order_id, amount, currency, method, status,
                    transaction_id, card_last_four, error_message, created_at
@@ -146,9 +140,9 @@ impl PaymentService {
             ORDER BY created_at DESC
             LIMIT $2
             "#,
-            user_id,
-            limit as i64,
         )
+        .bind(user_id)
+        .bind(limit as i64)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| PaymentServiceError::DatabaseError(e.to_string()))?;
@@ -157,7 +151,7 @@ impl PaymentService {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, sqlx::FromRow)]
 pub struct Payment {
     pub id: Uuid,
     pub user_id: i64,

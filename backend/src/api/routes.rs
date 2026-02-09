@@ -7,9 +7,14 @@ use axum::{
 
 use super::handlers;
 use crate::api::handlers::loyalty::LoyaltyState;
-use sqlx::PgPool;
+use crate::api::handlers::blockchain::BlockchainState;
+use crate::api::handlers::notifications::NotificationState;
+use crate::ws::blockchain::BlockchainWsManager;
+use crate::ws::notifications::NotificationWsManager;
+use sqlx::postgres::PgPool;
+use std::sync::Arc;
 
-pub fn api_routes() -> Router {
+pub fn api_routes(pool: PgPool, blockchain_ws: Arc<BlockchainWsManager>, notification_ws: Arc<NotificationWsManager>) -> Router {
     Router::new()
         .nest("/auth", auth_routes())
         .nest("/users", user_routes())
@@ -17,7 +22,8 @@ pub fn api_routes() -> Router {
         .nest("/orders", order_routes())
         .nest("/payments", payment_routes())
         .nest("/chat", chat_routes())
-        .nest("/notifications", notification_routes())
+        .nest("/notifications", notification_routes(pool.clone(), notification_ws.clone()))
+        .nest("/blockchain", blockchain_routes(pool.clone(), blockchain_ws))
 }
 
 fn auth_routes() -> Router {
@@ -79,10 +85,36 @@ fn chat_routes() -> Router {
         .route("/conversations/:id/messages", post(handlers::chat::send_message))
 }
 
-fn notification_routes() -> Router {
+fn notification_routes(pool: PgPool, ws: Arc<NotificationWsManager>) -> Router {
+    let state = NotificationState { pool, ws };
+    
     Router::new()
         .route("/", get(handlers::notifications::list_notifications))
         .route("/read", post(handlers::notifications::mark_read))
         .route("/settings", get(handlers::notifications::get_settings))
         .route("/settings", put(handlers::notifications::update_settings))
+        .route("/ws", get(handlers::notifications::notification_ws))
+        .with_state(state)
+}
+
+fn blockchain_routes(pool: PgPool, ws: Arc<BlockchainWsManager>) -> Router {
+    let state = BlockchainState { pool, ws };
+    
+    Router::new()
+        .route("/init", post(handlers::blockchain::init_blockchain))
+        .route("/ws", get(handlers::blockchain::blockchain_ws))
+        .route("/wallets", get(handlers::blockchain::list_wallets))
+        .route("/wallets", post(handlers::blockchain::create_wallet))
+        .route("/wallets/:name", get(handlers::blockchain::get_wallet))
+        .route("/wallets/:name/balance", get(handlers::blockchain::get_wallet_balance))
+        .route("/wallets/:name", delete(handlers::blockchain::delete_wallet))
+        .route("/wallets/import", post(handlers::blockchain::import_wallet))
+        .route("/balance/:address", get(handlers::blockchain::get_balance))
+        .route("/transactions", post(handlers::blockchain::submit_transaction))
+        .route("/transactions/validate", post(handlers::blockchain::validate_transaction))
+        .route("/consensus", get(handlers::blockchain::get_consensus_state))
+        .route("/utxos/:address", get(handlers::blockchain::get_utxos))
+        .route("/genesis", post(handlers::blockchain::init_genesis))
+        .route("/fees/estimate", post(handlers::blockchain::estimate_fees))
+        .with_state(state)
 }

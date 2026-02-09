@@ -5,7 +5,7 @@ import { authStore } from '@guardio/ui/stores/auth';
 import { themeStore } from '@guardio/ui/stores/theme';
 
 type AppProps = {
-  children: JSX.Element;
+  children?: JSX.Element;
 };
 
 const navItems: NavItem[] = [
@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
   { id: 'profile', label: 'Profile', icon: 'user' },
 ];
 
-export default function App(props: AppProps) {
+export default function App(props: AppProps = {}) {
   const [isLoading, setIsLoading] = createSignal(true);
   const [activeNav, setActiveNav] = createSignal('home');
   const navigate = useNavigate();

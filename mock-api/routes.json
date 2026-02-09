@@ -1,0 +1,10 @@
+{
+  "/api/v1/blockchain/wallets": "/wallets",
+  "/api/v1/blockchain/wallets/:name": "/wallets/:name",
+  "/api/v1/blockchain/transactions": "/transactions",
+  "/api/v1/blockchain/consensus": "/consensus",
+  "/api/v1/blockchain/balance/:address": "/balance",
+  "/api/v1/notifications": "/notifications",
+  "/api/v1/notifications/settings": "/notification_settings",
+  "/health": "/consensus"
+}

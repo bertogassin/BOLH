@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { t, setLanguage, getLanguages, getCurrentLanguage, isRTL, currentLang } from './i18n';
 import { theme, setTheme, isDark, activeTheme } from './theme';
 import { departments, getDepartment, getDepartmentSkills, type Department } from './departments';
+import { BlockchainScreen } from './components';
 
 // Global department state
 const [activeDepartment, setActiveDepartment] = createSignal<string | null>(null);
@@ -2841,8 +2842,8 @@ function ContractsPage(props: { onNavigate: (page: string) => void }) {
             stroke-width="6"
             fill="none"
             stroke-linecap="round"
-            stroke-dasharray={circumference}
-            stroke-dashoffset={strokeDashoffset()}
+            stroke-dasharray={circumference.toString()}
+            stroke-dashoffset={strokeDashoffset().toString()}
             class="transition-all duration-1000 ease-out"
             style={props.status === 'active' ? 'filter: drop-shadow(0 0 6px ' + colors().stroke + ')' : ''}
           />
@@ -3499,7 +3500,7 @@ function NewContractPage(props: { onBack: () => void }) {
                     <span class="text-2xl">{selectedPayment().icon}</span>
                     <div class="flex-1">
                       <p class="text-xs text-gray-400">{t('payment.method')}</p>
-                      <p class="font-medium text-gray-800">{selectedPayment().name ?? (selectedPayment().nameKey ? t(selectedPayment().nameKey) : '')}</p>
+                      <p class="font-medium text-gray-800">{selectedPayment().name ?? (selectedPayment().nameKey ? t(selectedPayment().nameKey || '') : '')}</p>
                     </div>
                   </div>
                 </div>
@@ -3519,7 +3520,7 @@ function NewContractPage(props: { onBack: () => void }) {
                 </div>
                 <Show when={paymentFee() > 0}>
                   <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">{t('payment.fee')} {selectedPayment().name ?? (selectedPayment().nameKey ? t(selectedPayment().nameKey) : '')}</span>
+                    <span class="text-gray-500">{t('payment.fee')} {selectedPayment().name ?? (selectedPayment().nameKey ? t(selectedPayment().nameKey || '') : '')}</span>
                     <span class="text-gray-800">{paymentFee().toLocaleString()} ₸</span>
                   </div>
                 </Show>
@@ -5498,8 +5499,9 @@ function RatingPage(props: { onBack: () => void }) {
   const [submitted, setSubmitted] = createSignal(false);
   const [tapping, setTapping] = createSignal(false);
 
-  const worker = { name: 'Алексей К.', rating: 4.8, avatar: '👨‍✈️', profession: getDepartment('plumbing') };
-  const workerTitle = () => (getCurrentLanguage().code === 'en' ? worker.profession.workerTitleEn : worker.profession.workerTitle);
+  const profession = getDepartment('plumbing');
+  const worker = { name: 'Алексей К.', rating: 4.8, avatar: '👨‍✈️', profession };
+  const workerTitle = () => profession ? (getCurrentLanguage().code === 'en' ? profession.workerTitleEn : profession.workerTitle) : 'Professional';
 
   const ratingLabels: Record<number, string> = {
     1: t('rating.terrible'),
@@ -5661,7 +5663,7 @@ function RatingPage(props: { onBack: () => void }) {
             </button>
           </div>
         </div>
-      </Show>
+        </Show>
     </div>
   );
 }
@@ -5928,18 +5930,19 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
   };
   
   const menuItems = () => [
-    { icon: 'book' as const, label: t('profile.academy'), desc: t('profile.academyDesc'), action: 'academy', highlight: true },
-    { icon: 'folder' as const, label: t('profile.documents'), desc: t('profile.documentsDesc'), action: 'documents', highlight: true },
-    { icon: 'userCheck' as const, label: t('profile.verification'), desc: '33% • ' + t('profile.verificationDesc'), action: 'verification', highlight: true },
-    { icon: 'globe' as const, label: t('profile.language'), desc: getCurrentLanguage().name + ' ' + getCurrentLanguage().flag, action: 'language' },
-    { icon: (isDark() ? 'moon' : 'sun') as const, label: t('profile.theme'), desc: themeLabel(), action: 'theme' },
-    { icon: 'wallet' as const, label: t('nav.wallet'), desc: 'BOLH Coin', action: 'wallet', highlight: true },
-    { icon: 'creditCard' as const, label: t('payments.title'), desc: t('payments.subtitle'), action: 'payments' },
-    { icon: 'award' as const, label: t('achievements.title'), desc: t('achievements.subtitle'), action: 'achievements' },
-    { icon: 'activity' as const, label: t('analytics.title'), desc: t('analytics.subtitle'), action: 'analytics' },
-    { icon: 'target' as const, label: t('marketplace.title'), desc: t('marketplace.subtitle'), action: 'marketplace' },
-    { icon: 'shield' as const, label: t('profile.security'), desc: t('profile.securityDesc'), action: 'security', highlight: true },
-    { icon: 'settings' as const, label: t('settings.title'), desc: t('settings.subtitle'), action: 'settings' },
+    { icon: 'book', label: t('profile.academy'), desc: t('profile.academyDesc'), action: 'academy', highlight: true },
+    { icon: 'folder', label: t('profile.documents'), desc: t('profile.documentsDesc'), action: 'documents', highlight: true },
+    { icon: 'userCheck', label: t('profile.verification'), desc: '33% • ' + t('profile.verificationDesc'), action: 'verification', highlight: true },
+    { icon: 'globe', label: t('profile.language'), desc: getCurrentLanguage().name + ' ' + getCurrentLanguage().flag, action: 'language' },
+    { icon: isDark() ? 'moon' : 'sun', label: t('profile.theme'), desc: themeLabel(), action: 'theme' },
+    { icon: 'wallet', label: t('nav.wallet'), desc: 'BOLH Coin', action: 'wallet', highlight: true },
+    { icon: 'shield', label: 'Blockchain', desc: 'BOLH Chain', action: 'blockchain', highlight: true },
+    { icon: 'creditCard', label: t('payments.title'), desc: t('payments.subtitle'), action: 'payments' },
+    { icon: 'award', label: t('achievements.title'), desc: t('achievements.subtitle'), action: 'achievements' },
+    { icon: 'activity', label: t('analytics.title'), desc: t('analytics.subtitle'), action: 'analytics' },
+    { icon: 'target', label: t('marketplace.title'), desc: t('marketplace.subtitle'), action: 'marketplace' },
+    { icon: 'shield', label: t('profile.security'), desc: t('profile.securityDesc'), action: 'security', highlight: true },
+    { icon: 'settings', label: t('settings.title'), desc: t('settings.subtitle'), action: 'settings' },
   ];
 
   return (
@@ -6107,7 +6110,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
                 onClick={() => item.action && props.onNavigate(item.action)}
               >
                 <div class={`w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br ${style.bg} ${isSpecial ? 'animate-pulse' : ''}`}>
-                  <Icon name={item.icon} class={style.text} />
+                  <Icon name={item.icon as any} class={style.text} />
                 </div>
                 <div class="flex-1 text-left">
                   <div class="flex items-center gap-2">
@@ -6312,11 +6315,11 @@ function SecurityCenterPage(props: { onBack: () => void }) {
                     <button
                       type="button"
                       role="switch"
-                      aria-checked={item.value()}
-                      onClick={() => item.set(!item.value())}
-                      class={`relative w-12 h-7 rounded-full transition-colors ${item.value() ? 'bg-emerald-500' : 'bg-gray-300'}`}
+                      aria-checked={item.value}
+                      onClick={() => item.set(!item.value)}
+                      class={`relative w-12 h-7 rounded-full transition-colors ${item.value ? 'bg-emerald-500' : 'bg-gray-300'}`}
                     >
-                      <span class={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${item.value() ? 'left-6' : 'left-1'}`} />
+                      <span class={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform duration-200 ${item.value ? 'left-6' : 'left-1'}`} />
                     </button>
                   </div>
                 )}
@@ -6480,7 +6483,7 @@ function SecurityCenterPage(props: { onBack: () => void }) {
               <div class="flex gap-3 mb-10">
                 <For each={[0, 1, 2, 3]}>
                   {(i) => (
-                    <div class={`w-4 h-4 rounded-full border-2 transition-colors ${pinDigits().length > i() ? 'bg-white border-white' : 'border-white/60'}`} />
+                    <div class={`w-4 h-4 rounded-full border-2 transition-colors ${pinDigits().length > i ? 'bg-white border-white' : 'border-white/60'}`} />
                   )}
                 </For>
               </div>
@@ -6908,7 +6911,7 @@ function SettingsPage(props: { onBack: () => void }) {
       items: [
         {
           id: 'theme',
-          icon: (isDark() ? 'moon' : 'sun') as const,
+          icon: isDark() ? 'moon' : 'sun',
           label: t('settings.themeMode'),
           desc: isDark() ? t('settings.dark') : t('settings.light'),
           type: 'action' as const,
@@ -7058,7 +7061,7 @@ function SettingsPage(props: { onBack: () => void }) {
                     }}
                   >
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                      <Icon name={item.icon} class="text-gray-600" size="sm" />
+                      <Icon name={item.icon as any} class="text-gray-600" size="sm" />
                     </div>
                     <div class="flex-1 text-left">
                       <p class="text-sm font-medium text-gray-800">{item.label}</p>
@@ -7078,10 +7081,10 @@ function SettingsPage(props: { onBack: () => void }) {
                         <input
                           type="range"
                           min="0" max="1" step="0.05"
-                          value={item.value as number}
+                          value={(item as any).value as number}
                           onInput={(e) => {
                             const v = parseFloat(e.currentTarget.value);
-                            (item.onChange as (v: number) => void)(v);
+                            ((item as any).onChange as (v: number) => void)(v);
                           }}
                           class="w-full accent-indigo-500 h-1.5"
                         />
@@ -7158,7 +7161,7 @@ const navItems: { id: string; icon: keyof typeof Icons; labelKey: string }[] = [
 export default function App() {
   const [currentPage, setCurrentPage] = createSignal('home');
 
-  const showNav = () => !['urgent', 'language', 'theme', 'newcontract', 'documents', 'verification', 'academy', 'department', 'chat', 'notifications', 'rating', 'auth', 'security', 'settings', 'skilldetail', 'wallet', 'payments', 'achievements', 'analytics', 'marketplace', 'incident', 'createorder', 'workerdetail'].includes(currentPage());
+  const showNav = () => !['urgent', 'language', 'theme', 'newcontract', 'documents', 'verification', 'academy', 'department', 'chat', 'notifications', 'rating', 'auth', 'security', 'settings', 'skilldetail', 'wallet', 'payments', 'achievements', 'analytics', 'marketplace', 'incident', 'createorder', 'workerdetail', 'blockchain'].includes(currentPage());
   
   // Set initial RTL direction
   onMount(() => {
@@ -7197,6 +7200,11 @@ export default function App() {
           <Match when={currentPage() === 'wallet'}>
             <SwipeBack onBack={() => setCurrentPage('profile')}>
               <WalletPage onBack={() => setCurrentPage('profile')} />
+            </SwipeBack>
+          </Match>
+          <Match when={currentPage() === 'blockchain'}>
+            <SwipeBack onBack={() => setCurrentPage('profile')}>
+              <BlockchainScreen onBack={() => setCurrentPage('profile')} />
             </SwipeBack>
           </Match>
           <Match when={currentPage() === 'profile'}>
@@ -7304,9 +7312,9 @@ export default function App() {
             </SwipeBack>
           </Match>
         </Switch>
-      </main>
+        </main>
 
-      <Show when={showNav()}>
+        <Show when={showNav()}>
         <nav class="fixed bottom-0 left-0 right-0 glass safe-area-bottom" style="z-index: 100">
           <div class="flex items-center justify-around h-20">
             <For each={navItems}>
@@ -7338,7 +7346,7 @@ export default function App() {
             </For>
           </div>
         </nav>
-      </Show>
+        </Show>
     </div>
   );
 }
@@ -7401,7 +7409,7 @@ function WalletPage(props: { onBack: () => void }) {
             <div class="mt-2 text-sm text-gray-500">Supply: {stats()!.supply_circulating} / {stats()!.supply_total}</div>
             <div class="mt-1 text-sm text-gray-500">Balance ≈ ${(Number(stats()!.rate_usd) * (balance()?.balance ?? 0)).toFixed(2)}</div>
           </div>
-        </Show>
+      </Show>
         <div class="flex gap-3 mb-6">
           <button class="px-4 py-3 rounded-2xl bg-indigo-500 text-white font-medium touch-scale" onClick={() => earn(10)}>{t('payment.balance')} +10</button>
           <button class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-800 font-medium touch-scale" onClick={() => redeem(5)}>{t('payment.balance')} -5</button>

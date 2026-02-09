@@ -8,3 +8,4 @@ pub mod payments;
 pub mod chat;
 pub mod notifications;
 pub mod loyalty;
+pub mod blockchain;

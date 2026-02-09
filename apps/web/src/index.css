@@ -5,8 +5,29 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #2196F3;
-  --color-primary-dark: #1976D2;
+  /* Brand colors - Dark theme */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
+  --success: #10b981;
+  --success-light: #6ee7b7;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  
+  /* Dark theme */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border: #475569;
+  --glow: rgba(99, 102, 241, 0.3);
+  
+  /* Alternate names for compatibility */
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
 }
 
 * {

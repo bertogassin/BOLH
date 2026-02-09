@@ -1,6 +1,6 @@
-use sqlx::{PgPool};
+use sqlx::postgres::PgPool;
 use uuid::Uuid;
-use sqlx::types::Decimal;
+use rust_decimal::Decimal;
 
 #[derive(Debug, Clone)]
 pub struct LoyaltyService {

@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_users_phone ON users(phone);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_location ON users(latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_location ON users(latitude, longitude);
 
 -- Guards table (extended user info for guards)
 CREATE TABLE IF NOT EXISTS guards (
@@ -46,10 +46,10 @@ CREATE TABLE IF NOT EXISTS guards (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_guards_user_id ON guards(user_id);
-CREATE INDEX idx_guards_location ON guards(latitude, longitude);
-CREATE INDEX idx_guards_available ON guards(is_available, is_online);
-CREATE INDEX idx_guards_rating ON guards(rating DESC);
+CREATE INDEX IF NOT EXISTS idx_guards_user_id ON guards(user_id);
+CREATE INDEX IF NOT EXISTS idx_guards_location ON guards(latitude, longitude);
+CREATE INDEX IF NOT EXISTS idx_guards_available ON guards(is_available, is_online);
+CREATE INDEX IF NOT EXISTS idx_guards_rating ON guards(rating DESC);
 
 -- Orders table
 CREATE TABLE IF NOT EXISTS orders (
@@ -74,10 +74,10 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_orders_client ON orders(client_id);
-CREATE INDEX idx_orders_guard ON orders(guard_id);
-CREATE INDEX idx_orders_status ON orders(status);
-CREATE INDEX idx_orders_created ON orders(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_client ON orders(client_id);
+CREATE INDEX IF NOT EXISTS idx_orders_guard ON orders(guard_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
 
 -- Payments table
 CREATE TABLE IF NOT EXISTS payments (
@@ -96,9 +96,9 @@ CREATE TABLE IF NOT EXISTS payments (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_payments_user ON payments(user_id);
-CREATE INDEX idx_payments_order ON payments(order_id);
-CREATE INDEX idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_order ON payments(order_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 
 -- Saved cards table
 CREATE TABLE IF NOT EXISTS saved_cards (
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS saved_cards (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_saved_cards_user ON saved_cards(user_id);
+CREATE INDEX IF NOT EXISTS idx_saved_cards_user ON saved_cards(user_id);
 
 -- Subscriptions table
 CREATE TABLE IF NOT EXISTS subscriptions (
@@ -129,8 +129,8 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_subscriptions_user ON subscriptions(user_id);
-CREATE INDEX idx_subscriptions_status ON subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_user ON subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
 
 -- Reviews table
 CREATE TABLE IF NOT EXISTS reviews (
@@ -143,8 +143,8 @@ CREATE TABLE IF NOT EXISTS reviews (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_reviews_reviewed ON reviews(reviewed_id);
-CREATE INDEX idx_reviews_reviewer ON reviews(reviewer_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_reviewed ON reviews(reviewed_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_reviewer ON reviews(reviewer_id);
 
 -- Messages table
 CREATE TABLE IF NOT EXISTS messages (
@@ -157,9 +157,9 @@ CREATE TABLE IF NOT EXISTS messages (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_messages_conversation ON messages(conversation_id);
-CREATE INDEX idx_messages_sender ON messages(sender_id);
-CREATE INDEX idx_messages_created ON messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_conversation ON messages(conversation_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
 
 -- Conversations table
 CREATE TABLE IF NOT EXISTS conversations (
@@ -171,8 +171,8 @@ CREATE TABLE IF NOT EXISTS conversations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_conversations_participants ON conversations(participant_1, participant_2);
-CREATE INDEX idx_conversations_order ON conversations(order_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_participants ON conversations(participant_1, participant_2);
+CREATE INDEX IF NOT EXISTS idx_conversations_order ON conversations(order_id);
 
 -- Notifications table
 CREATE TABLE IF NOT EXISTS notifications (
@@ -186,8 +186,8 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_notifications_user ON notifications(user_id);
-CREATE INDEX idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = false;
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(user_id, is_read) WHERE is_read = false;
 
 -- Guard availability schedule
 CREATE TABLE IF NOT EXISTS guard_schedules (
@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS guard_schedules (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_guard_schedules_guard ON guard_schedules(guard_id);
+CREATE INDEX IF NOT EXISTS idx_guard_schedules_guard ON guard_schedules(guard_id);
 
 -- Guard zones (geofencing)
 CREATE TABLE IF NOT EXISTS guard_zones (
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS guard_zones (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_guard_zones_guard ON guard_zones(guard_id);
+CREATE INDEX IF NOT EXISTS idx_guard_zones_guard ON guard_zones(guard_id);
 
 -- Audit log
 CREATE TABLE IF NOT EXISTS audit_logs (
@@ -229,9 +229,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_type ON audit_logs(event_type);
-CREATE INDEX idx_audit_logs_created ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_type ON audit_logs(event_type);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON audit_logs(created_at DESC);
 
 -- Refresh tokens for JWT rotation
 CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -243,5 +243,5 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_family ON refresh_tokens(family);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_family ON refresh_tokens(family);

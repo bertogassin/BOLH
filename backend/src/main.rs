@@ -6,7 +6,7 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -20,8 +20,11 @@ mod services;
 mod ws;
 
 use api::routes;
+use api::handlers;
 use db::Database;
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
+use ws::blockchain::BlockchainWsManager;
+use ws::notifications::NotificationWsManager;
 
 #[tokio::main]
 async fn main() {
@@ -46,6 +49,8 @@ async fn main() {
     let db = Database::from_env().await.expect("DATABASE_URL not set or connection failed");
     db.migrate().await.expect("Database migrations failed");
     let pool: PgPool = db.pool.clone();
+    let blockchain_ws = Arc::new(BlockchainWsManager::new());
+    let notification_ws = Arc::new(NotificationWsManager::new());
 
     let loyalty = Router::new()
         .route("/balance", get(handlers::loyalty::get_balance))
@@ -58,7 +63,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/health", get(health_check))
-        .nest("/api/v1", routes::api_routes())
+        .nest("/api/v1", routes::api_routes(pool.clone(), blockchain_ws, notification_ws))
         .nest("/api/v1/loyalty", loyalty)
         .layer(cors)
         .layer(TraceLayer::new_for_http());

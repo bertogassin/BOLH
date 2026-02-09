@@ -1,6 +1,6 @@
 //! User service
 
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
 use guardio_core::{auth::UserRole, CryptoService};
 
 pub struct UserService {
@@ -22,18 +22,17 @@ impl UserService {
         let password_hash = CryptoService::hash_password(password)
             .map_err(|_| UserServiceError::HashingFailed)?;
 
-        let user = sqlx::query_as!(
-            User,
+        let user = sqlx::query_as::<_, User>(
             r#"
             INSERT INTO users (phone, password_hash, name, role)
             VALUES ($1, $2, $3, $4)
-            RETURNING id, phone, name, role as "role: _", rating, verified_level, created_at
+            RETURNING id, phone, name, role, rating, verified_level, created_at
             "#,
-            phone,
-            password_hash,
-            name,
-            role.to_string(),
         )
+        .bind(phone)
+        .bind(password_hash)
+        .bind(name)
+        .bind(role.to_string())
         .fetch_one(&self.pool)
         .await
         .map_err(|e| UserServiceError::DatabaseError(e.to_string()))?;
@@ -42,15 +41,14 @@ impl UserService {
     }
 
     pub async fn find_by_phone(&self, phone: &str) -> Result<Option<User>, UserServiceError> {
-        let user = sqlx::query_as!(
-            User,
+        let user = sqlx::query_as::<_, User>(
             r#"
-            SELECT id, phone, name, role as "role: _", rating, verified_level, created_at
+            SELECT id, phone, name, role, rating, verified_level, created_at
             FROM users
             WHERE phone = $1
             "#,
-            phone,
         )
+        .bind(phone)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| UserServiceError::DatabaseError(e.to_string()))?;
@@ -59,15 +57,14 @@ impl UserService {
     }
 
     pub async fn find_by_id(&self, id: i64) -> Result<Option<User>, UserServiceError> {
-        let user = sqlx::query_as!(
-            User,
+        let user = sqlx::query_as::<_, User>(
             r#"
-            SELECT id, phone, name, role as "role: _", rating, verified_level, created_at
+            SELECT id, phone, name, role, rating, verified_level, created_at
             FROM users
             WHERE id = $1
             "#,
-            id,
         )
+        .bind(id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| UserServiceError::DatabaseError(e.to_string()))?;
@@ -76,16 +73,16 @@ impl UserService {
     }
 
     pub async fn verify_password(&self, phone: &str, password: &str) -> Result<bool, UserServiceError> {
-        let result = sqlx::query!(
+        let result: Option<(String,)> = sqlx::query_as(
             "SELECT password_hash FROM users WHERE phone = $1",
-            phone,
         )
+        .bind(phone)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| UserServiceError::DatabaseError(e.to_string()))?;
 
         match result {
-            Some(row) => Ok(CryptoService::verify_password(password, &row.password_hash)),
+            Some(row) => Ok(CryptoService::verify_password(password, &row.0)),
             None => Ok(false),
         }
     }
@@ -96,16 +93,16 @@ impl UserService {
         latitude: f64,
         longitude: f64,
     ) -> Result<(), UserServiceError> {
-        sqlx::query!(
+        sqlx::query(
             r#"
             UPDATE users
             SET latitude = $1, longitude = $2, last_active = NOW()
             WHERE id = $3
             "#,
-            latitude,
-            longitude,
-            user_id,
         )
+        .bind(latitude)
+        .bind(longitude)
+        .bind(user_id)
         .execute(&self.pool)
         .await
         .map_err(|e| UserServiceError::DatabaseError(e.to_string()))?;
@@ -114,7 +111,7 @@ impl UserService {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, sqlx::FromRow)]
 pub struct User {
     pub id: i64,
     pub phone: String,

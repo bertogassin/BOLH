@@ -37,13 +37,20 @@ export default function ChatPage() {
   let messagesEndRef: HTMLDivElement | undefined;
   let wsConnection: WebSocket | null = null;
 
+  const closeConnection = () => {
+    if (wsConnection) {
+      wsConnection.close();
+      wsConnection = null;
+    }
+  };
+
   onMount(() => {
     scrollToBottom();
     connectWebSocket();
+  });
 
-    onCleanup(() => {
-      wsConnection?.close();
-    });
+  onCleanup(() => {
+    closeConnection();
   });
 
   const connectWebSocket = () => {

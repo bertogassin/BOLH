@@ -3,6 +3,7 @@ import solidPlugin from 'vite-plugin-solid';
 import path from 'path';
 
 const host = process.env.TAURI_DEV_HOST;
+const port = process.env.VITE_PORT ? Number(process.env.VITE_PORT) : 3000;
 
 export default defineConfig({
   plugins: [solidPlugin()],
@@ -14,7 +15,7 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
-    port: 3000,
+    port,
     strictPort: true,
     host: host || false,
     hmr: host
@@ -24,6 +25,12 @@ export default defineConfig({
           port: 1421,
         }
       : undefined,
+    proxy: {
+      '/api/v1': {
+        target: process.env.VITE_API_URL || 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
   },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {

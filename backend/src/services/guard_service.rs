@@ -1,6 +1,6 @@
 //! Guard service
 
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
 use guardio_core::geo::GeoService;
 
 pub struct GuardService {
@@ -22,8 +22,7 @@ impl GuardService {
         // Get bounding box for efficient query
         let bbox = GeoService::get_bounding_box(latitude, longitude, radius_km);
 
-        let guards = sqlx::query_as!(
-            GuardRow,
+        let guards = sqlx::query_as::<_, GuardRow>(
             r#"
             SELECT 
                 g.id, g.user_id, u.name, u.phone, g.avatar_url,
@@ -37,12 +36,12 @@ impl GuardService {
               AND g.is_active = true
             LIMIT $5
             "#,
-            bbox.min_lat,
-            bbox.max_lat,
-            bbox.min_lng,
-            bbox.max_lng,
-            limit as i64,
         )
+        .bind(bbox.min_lat)
+        .bind(bbox.max_lat)
+        .bind(bbox.min_lng)
+        .bind(bbox.max_lng)
+        .bind(limit as i64)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| GuardServiceError::DatabaseError(e.to_string()))?;
@@ -83,8 +82,7 @@ impl GuardService {
     }
 
     pub async fn get_by_id(&self, id: i64) -> Result<Option<Guard>, GuardServiceError> {
-        let guard = sqlx::query_as!(
-            GuardRow,
+        let guard = sqlx::query_as::<_, GuardRow>(
             r#"
             SELECT 
                 g.id, g.user_id, u.name, u.phone, g.avatar_url,
@@ -95,8 +93,8 @@ impl GuardService {
             JOIN users u ON g.user_id = u.id
             WHERE g.id = $1
             "#,
-            id,
         )
+        .bind(id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| GuardServiceError::DatabaseError(e.to_string()))?;
@@ -124,11 +122,11 @@ impl GuardService {
         guard_id: i64,
         is_available: bool,
     ) -> Result<(), GuardServiceError> {
-        sqlx::query!(
+        sqlx::query(
             "UPDATE guards SET is_available = $1 WHERE id = $2",
-            is_available,
-            guard_id,
         )
+        .bind(is_available)
+        .bind(guard_id)
         .execute(&self.pool)
         .await
         .map_err(|e| GuardServiceError::DatabaseError(e.to_string()))?;
@@ -137,7 +135,7 @@ impl GuardService {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, sqlx::FromRow)]
 struct GuardRow {
     id: i64,
     user_id: i64,

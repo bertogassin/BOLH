@@ -1,6 +1,6 @@
 //! Order service
 
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
 use uuid::Uuid;
 use guardio_core::orders::{OrderStatus, ServiceType, PricingConfig};
 
@@ -30,25 +30,24 @@ impl OrderService {
         let base_rate = service_type.base_rate();
         let price = (base_rate as f64 * duration_hours.max(1.0)) as i64;
 
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             INSERT INTO orders (id, client_id, service_type, status, address, latitude, longitude, duration_hours, price, description)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id, client_id, guard_id, service_type, status, address, latitude, longitude, 
                       duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             "#,
-            id,
-            client_id,
-            service_type_to_string(service_type),
-            "new",
-            address,
-            latitude,
-            longitude,
-            duration_hours,
-            price,
-            description,
         )
+        .bind(id)
+        .bind(client_id)
+        .bind(service_type_to_string(service_type))
+        .bind("new")
+        .bind(address)
+        .bind(latitude)
+        .bind(longitude)
+        .bind(duration_hours)
+        .bind(price)
+        .bind(description)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -57,16 +56,15 @@ impl OrderService {
     }
 
     pub async fn get_by_id(&self, id: Uuid) -> Result<Option<Order>, OrderServiceError> {
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             SELECT id, client_id, guard_id, service_type, status, address, latitude, longitude,
                    duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             FROM orders
             WHERE id = $1
             "#,
-            id,
         )
+        .bind(id)
         .fetch_optional(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -75,8 +73,7 @@ impl OrderService {
     }
 
     pub async fn list_by_client(&self, client_id: i64, limit: i32, offset: i32) -> Result<Vec<Order>, OrderServiceError> {
-        let orders = sqlx::query_as!(
-            Order,
+        let orders = sqlx::query_as::<_, Order>(
             r#"
             SELECT id, client_id, guard_id, service_type, status, address, latitude, longitude,
                    duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
@@ -85,10 +82,10 @@ impl OrderService {
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
             "#,
-            client_id,
-            limit as i64,
-            offset as i64,
         )
+        .bind(client_id)
+        .bind(limit as i64)
+        .bind(offset as i64)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -97,8 +94,7 @@ impl OrderService {
     }
 
     pub async fn list_by_guard(&self, guard_id: i64, limit: i32, offset: i32) -> Result<Vec<Order>, OrderServiceError> {
-        let orders = sqlx::query_as!(
-            Order,
+        let orders = sqlx::query_as::<_, Order>(
             r#"
             SELECT id, client_id, guard_id, service_type, status, address, latitude, longitude,
                    duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
@@ -107,10 +103,10 @@ impl OrderService {
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
             "#,
-            guard_id,
-            limit as i64,
-            offset as i64,
         )
+        .bind(guard_id)
+        .bind(limit as i64)
+        .bind(offset as i64)
         .fetch_all(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -119,8 +115,7 @@ impl OrderService {
     }
 
     pub async fn accept(&self, order_id: Uuid, guard_id: i64) -> Result<Order, OrderServiceError> {
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             UPDATE orders
             SET guard_id = $1, status = 'accepted', updated_at = NOW()
@@ -128,9 +123,9 @@ impl OrderService {
             RETURNING id, client_id, guard_id, service_type, status, address, latitude, longitude,
                       duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             "#,
-            guard_id,
-            order_id,
         )
+        .bind(guard_id)
+        .bind(order_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -139,8 +134,7 @@ impl OrderService {
     }
 
     pub async fn start(&self, order_id: Uuid) -> Result<Order, OrderServiceError> {
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             UPDATE orders
             SET status = 'in_progress', started_at = NOW(), updated_at = NOW()
@@ -148,8 +142,8 @@ impl OrderService {
             RETURNING id, client_id, guard_id, service_type, status, address, latitude, longitude,
                       duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             "#,
-            order_id,
         )
+        .bind(order_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -158,8 +152,7 @@ impl OrderService {
     }
 
     pub async fn complete(&self, order_id: Uuid) -> Result<Order, OrderServiceError> {
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             UPDATE orders
             SET status = 'completed', completed_at = NOW(), updated_at = NOW()
@@ -167,8 +160,8 @@ impl OrderService {
             RETURNING id, client_id, guard_id, service_type, status, address, latitude, longitude,
                       duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             "#,
-            order_id,
         )
+        .bind(order_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -177,8 +170,7 @@ impl OrderService {
     }
 
     pub async fn cancel(&self, order_id: Uuid) -> Result<Order, OrderServiceError> {
-        let order = sqlx::query_as!(
-            Order,
+        let order = sqlx::query_as::<_, Order>(
             r#"
             UPDATE orders
             SET status = 'cancelled', updated_at = NOW()
@@ -186,8 +178,8 @@ impl OrderService {
             RETURNING id, client_id, guard_id, service_type, status, address, latitude, longitude,
                       duration_hours, price, currency, description, scheduled_at, started_at, completed_at, created_at
             "#,
-            order_id,
         )
+        .bind(order_id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| OrderServiceError::DatabaseError(e.to_string()))?;
@@ -209,7 +201,7 @@ fn service_type_to_string(st: ServiceType) -> String {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, sqlx::FromRow)]
 pub struct Order {
     pub id: Uuid,
     pub client_id: i64,

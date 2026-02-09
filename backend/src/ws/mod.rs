@@ -1,5 +1,8 @@
 //! WebSocket module
 
+pub mod blockchain;
+pub mod notifications;
+
 use axum::{
     extract::ws::{Message, WebSocket, WebSocketUpgrade},
     response::Response,

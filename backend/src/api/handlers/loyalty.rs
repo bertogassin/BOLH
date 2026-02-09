@@ -5,7 +5,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use crate::services::LoyaltyService;
-use sqlx::PgPool;
+use sqlx::postgres::PgPool;
 
 #[derive(Clone)]
 pub struct LoyaltyState {
@@ -20,8 +20,27 @@ pub struct BalanceResponse {
 }
 
 #[derive(Debug, Serialize)]
+pub struct ErrorResponse {
+    pub error: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum BalanceOrError {
+    Balance(BalanceResponse),
+    Error(ErrorResponse),
+}
+
+#[derive(Debug, Serialize)]
 pub struct LedgerResponse {
     pub items: Vec<crate::services::loyalty_service::LedgerEntry>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum LedgerOrError {
+    Ledger(LedgerResponse),
+    Error(ErrorResponse),
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,12 +73,19 @@ pub struct StatsResponse {
     pub revenue_percent: i32,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum StatsOrError {
+    Stats(StatsResponse),
+    Error(ErrorResponse),
+}
+
 pub async fn get_balance(State(state): State<LoyaltyState>, Query(q): Query<LedgerQuery>) -> impl IntoResponse {
     let user_id = q.user_id.unwrap_or(1);
     let service = LoyaltyService::new(state.pool);
     match service.get_balance(user_id).await {
-        Ok(bal) => (StatusCode::OK, Json(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at })),
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))),
+        Ok(bal) => (StatusCode::OK, Json(BalanceOrError::Balance(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at }))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(BalanceOrError::Error(ErrorResponse { error: e.to_string() }))),
     }
 }
 
@@ -68,8 +94,8 @@ pub async fn get_ledger(State(state): State<LoyaltyState>, Query(q): Query<Ledge
     let limit = q.limit.unwrap_or(50);
     let service = LoyaltyService::new(state.pool);
     match service.list_ledger(user_id, limit).await {
-        Ok(items) => (StatusCode::OK, Json(LedgerResponse { items })),
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))),
+        Ok(items) => (StatusCode::OK, Json(LedgerOrError::Ledger(LedgerResponse { items }))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(LedgerOrError::Error(ErrorResponse { error: e.to_string() }))),
     }
 }
 
@@ -77,8 +103,8 @@ pub async fn post_earn(State(state): State<LoyaltyState>, Json(req): Json<EarnRe
     let user_id = req.user_id.unwrap_or(1);
     let service = LoyaltyService::new(state.pool);
     match service.earn(user_id, req.amount, &req.source, req.reference.as_deref()).await {
-        Ok(bal) => (StatusCode::OK, Json(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at })),
-        Err(e) => (StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": e.to_string() }))),
+        Ok(bal) => (StatusCode::OK, Json(BalanceOrError::Balance(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at }))),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(BalanceOrError::Error(ErrorResponse { error: e.to_string() }))),
     }
 }
 
@@ -86,14 +112,14 @@ pub async fn post_redeem(State(state): State<LoyaltyState>, Json(req): Json<Rede
     let user_id = req.user_id.unwrap_or(1);
     let service = LoyaltyService::new(state.pool);
     match service.redeem(user_id, req.amount, &req.kind).await {
-        Ok(bal) => (StatusCode::OK, Json(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at })),
+        Ok(bal) => (StatusCode::OK, Json(BalanceOrError::Balance(BalanceResponse { balance: bal.balance, locked: bal.locked, updated_at: bal.updated_at }))),
         Err(e) => {
             let code = if matches!(e, crate::services::loyalty_service::LoyaltyError::InsufficientBalance) {
                 StatusCode::UNPROCESSABLE_ENTITY
             } else {
                 StatusCode::BAD_REQUEST
             };
-            (code, Json(serde_json::json!({ "error": e.to_string() })))
+            (code, Json(BalanceOrError::Error(ErrorResponse { error: e.to_string() })))
         },
     }
 }
@@ -103,15 +129,15 @@ pub async fn get_stats(State(state): State<LoyaltyState>) -> impl IntoResponse {
     match service.get_stats().await {
         Ok((total, circ, reserve, rate, percent)) => (
             StatusCode::OK,
-            Json(StatsResponse {
+            Json(StatsOrError::Stats(StatsResponse {
                 supply_total: total,
                 supply_circulating: circ,
                 reserve_usd: reserve.to_string(),
                 rate_usd: rate.to_string(),
                 revenue_percent: percent,
-            })
+            }))
         ),
-        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({ "error": e.to_string() }))),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, Json(StatsOrError::Error(ErrorResponse { error: e.to_string() }))),
     }
 }
 
@@ -126,10 +152,17 @@ pub struct ReferralResponse {
     pub reward_each: i64,
 }
 
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+pub enum ReferralOrError {
+    Referral(ReferralResponse),
+    Error(ErrorResponse),
+}
+
 pub async fn post_referral(State(state): State<LoyaltyState>, Json(req): Json<ReferralRequest>) -> impl IntoResponse {
     let service = LoyaltyService::new(state.pool);
     match service.process_referral(req.referrer_id, req.referee_id).await {
-        Ok(reward) => (StatusCode::OK, Json(ReferralResponse { reward_each: reward })),
-        Err(e) => (StatusCode::BAD_REQUEST, Json(serde_json::json!({ "error": e.to_string() }))),
+        Ok(reward) => (StatusCode::OK, Json(ReferralOrError::Referral(ReferralResponse { reward_each: reward }))),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(ReferralOrError::Error(ErrorResponse { error: e.to_string() }))),
     }
 }
