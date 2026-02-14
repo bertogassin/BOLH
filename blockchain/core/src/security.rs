@@ -277,6 +277,11 @@ impl SecurityEngine {
         }
     }
 
+    /// Check if transaction hash has been seen before (replay pre-check).
+    pub fn is_known_tx_hash(&self, tx_hash: &str) -> bool {
+        self.known_tx_hashes.read().contains(tx_hash)
+    }
+
     /// Add address to blacklist
     pub fn blacklist_address(&self, address: &Address, reason: &str) {
         self.blacklist.write().insert(address.clone());

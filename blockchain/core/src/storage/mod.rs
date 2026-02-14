@@ -1,5 +1,6 @@
 pub mod block_store;
 pub mod state_store;
+pub mod append_log;
 
 pub use block_store::BlockStore;
 pub use state_store::StateStore;

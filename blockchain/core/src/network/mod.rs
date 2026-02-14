@@ -1,10 +1,22 @@
-//! P2P Networking layer using libp2p
-//! Handles peer discovery, gossip protocol, block/tx propagation
+//! BOLH P2P Networking layer
+//!
+//! Pure TCP-based peer-to-peer protocol (no external P2P libraries).
+//! Handles peer discovery, block sync, and transaction gossip.
+//!
+//! Architecture:
+//! - protocol.rs — wire protocol (message framing and types)
+//! - node.rs — P2P node (connection management, sync, broadcast)
+//! - peer.rs — peer information
+//! - gossip.rs — gossip topics
 
+pub mod protocol;
 pub mod peer;
 pub mod gossip;
+pub mod node;
 
 use crate::types::{Block, Transaction};
+pub use node::{BolhNode, NodeConfig, NetworkStats};
+pub use protocol::{Message, HandshakeData, PeerAddress};
 
 /// Network events
 #[derive(Debug)]
@@ -17,6 +29,8 @@ pub enum NetworkEvent {
     PeerConnected(String),
     /// Peer disconnected
     PeerDisconnected(String),
+    /// Chain sync completed
+    SyncCompleted { peer_id: String, blocks_synced: u64 },
 }
 
 /// Network configuration

@@ -9,6 +9,7 @@ use ed25519_dalek::{SigningKey, VerifyingKey, Signer, Verifier, Signature};
 use rand::rngs::OsRng;
 use serde::{Deserialize, Serialize};
 use crate::types::Address;
+use crate::wallet_vault::EncryptedWallet;
 
 /// A BOLH wallet with real Ed25519 keys
 #[derive(Clone)]
@@ -40,7 +41,12 @@ pub struct WalletExport {
     pub name: String,
     pub address: String,
     pub pubkey: String,
-    pub seckey: String,
+    /// Raw secret key hex (legacy / insecure). Prefer `encrypted_seckey`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub seckey: Option<String>,
+    /// Encrypted secret key (V1). When present, raw `seckey` MUST be omitted.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub encrypted_seckey: Option<EncryptedWallet>,
     pub created_at: u64,
 }
 
@@ -138,7 +144,8 @@ impl Wallet {
             name: self.name.clone(),
             address: self.address.to_bech32(),
             pubkey: self.public_key_hex(),
-            seckey: self.secret_key_hex(),
+            seckey: Some(self.secret_key_hex()),
+            encrypted_seckey: None,
             created_at: self.created_at,
         }
     }
@@ -198,8 +205,9 @@ mod tests {
     fn test_wallet_import_export() {
         let wallet1 = Wallet::new("original");
         let export = wallet1.export();
+        let seckey = export.seckey.clone().expect("export must include seckey by default");
         
-        let wallet2 = Wallet::from_secret_hex("imported", &export.seckey).unwrap();
+        let wallet2 = Wallet::from_secret_hex("imported", &seckey).unwrap();
         
         assert_eq!(wallet1.address, wallet2.address);
         assert_eq!(wallet1.public_key_hex(), wallet2.public_key_hex());

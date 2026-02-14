@@ -20,9 +20,10 @@ impl StateStore {
     pub fn get_account(&self, address: &Address) -> Option<Account> {
         let db = self.accounts.read().unwrap();
         let key = address.0.to_vec();
-        db.get(&key).and_then(|bytes| {
-            bincode::deserialize(bytes).ok()
-        })
+        match db.get(&key) {
+            Some(bytes) => bincode::deserialize(bytes).ok(),
+            None => Some(Account::new()),
+        }
     }
 
     pub fn put_account(&self, address: &Address, account: &Account) -> Result<(), StorageError> {

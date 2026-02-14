@@ -23,9 +23,21 @@ pub mod rpc;
 pub mod metrics;
 pub mod wallet;
 pub mod chain;
+pub mod persistence;
 pub mod security;
+pub mod wallet_vault;
+pub mod security_pipeline;
+pub mod block_validator;
+pub mod state_transition;
+pub mod consensus_runtime;
 pub mod contract;
 pub mod referral;
+pub mod system_rules;
+pub mod delivery;
+pub mod rental;
+pub mod notifications;
+pub mod proxy_expert;
+pub mod internship;
 pub mod ffi;
 
 /// BOLH Chain version

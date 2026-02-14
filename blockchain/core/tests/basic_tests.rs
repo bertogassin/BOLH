@@ -1,9 +1,9 @@
-use bolh_chain::types::*;
-use bolh_chain::storage::{BlockStore, StateStore};
-use bolh_chain::mempool::Mempool;
-use bolh_chain::consensus;
-use bolh_chain::metrics::Metrics;
-use bolh_chain::*;
+use bolh_core::types::*;
+use bolh_core::storage::{BlockStore, StateStore};
+use bolh_core::mempool::Mempool;
+use bolh_core::consensus;
+use bolh_core::metrics::Metrics;
+use bolh_core::*;
 use std::time::Duration;
 
 #[test]
@@ -118,20 +118,22 @@ fn test_block_creation() {
 #[test]
 fn test_block_store() {
     let dir = tempfile::tempdir().unwrap();
-    let store = BlockStore::open(dir.path().join("blocks")).unwrap();
+    let p = dir.path().join("blocks");
+    let store = BlockStore::new(p.to_str().unwrap()).unwrap();
 
     let genesis = Block::genesis([0u8; 32]);
     store.put_block(&genesis).unwrap();
 
     let loaded = store.get_block(0).unwrap();
     assert_eq!(loaded.header.height, 0);
-    assert_eq!(store.latest_height().unwrap(), 0);
+    assert_eq!(store.get_height(), 0);
 }
 
 #[test]
 fn test_state_store() {
     let dir = tempfile::tempdir().unwrap();
-    let store = StateStore::open(dir.path().join("state")).unwrap();
+    let p = dir.path().join("state");
+    let store = StateStore::new(p.to_str().unwrap()).unwrap();
 
     let addr = Address::from_public_key(&[42u8; 32]);
 
@@ -179,7 +181,7 @@ fn test_mempool() {
 
 #[test]
 fn test_distribution_constants() {
-    use bolh_chain::distribution::*;
+    use bolh_core::distribution::*;
 
     // Sum should equal total supply
     assert_eq!(

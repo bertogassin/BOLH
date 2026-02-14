@@ -7,11 +7,11 @@ authors.workspace = true
 
 [lib]
 crate-type = ["cdylib"]
-name = "bolh_core"
+name = "bolh_ffi"
 
 [dependencies]
+bolh-chain = { path = "../core" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-rand = "0.8"
 hex = "0.4"
 chrono = { version = "0.4", features = ["serde"] }

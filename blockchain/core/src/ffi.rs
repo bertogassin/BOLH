@@ -55,7 +55,7 @@ pub extern "C" fn bolh_create_key() -> *const c_char {
     let export = wallet.export();
     json_to_ptr(json!({
         "pubkey": export.pubkey,
-        "seckey": export.seckey,
+        "seckey": export.seckey.unwrap_or_default(),
         "address": export.address
     }))
 }
@@ -114,11 +114,17 @@ pub extern "C" fn bolh_submit_tx(signed_ptr: *const c_char) -> *const c_char {
     match chain.create_transfer(wallet_name, to, amount) {
         Ok(tx) => {
             let result = chain.submit_transaction(tx);
+            if result.success {
+                // Single-node convenience: finalize immediately by producing a block
+                let _ = chain.produce_block(wallet_name);
+                // Auto-save after successful transaction
+                let _ = crate::chain::save_global_chain();
+            }
             json_to_ptr(json!({
                 "success": result.success,
                 "txid": result.txid,
                 "error": result.error,
-                "status": if result.success { "confirmed" } else { "rejected" }
+                "status": if result.success { "accepted" } else { "rejected" }
             }))
         }
         Err(e) => json_to_ptr(json!({"error": e, "success": false})),
@@ -143,13 +149,17 @@ pub extern "C" fn bolh_create_wallet(name_ptr: *const c_char) -> *const c_char {
     };
 
     match global_chain().create_wallet(&name) {
-        Ok(info) => json_to_ptr(json!({
-            "name": info.name,
-            "address": info.address,
-            "pubkey": info.pubkey,
-            "created_at": info.created_at,
-            "status": "active"
-        })),
+        Ok(info) => {
+            // Auto-save after wallet creation
+            let _ = crate::chain::save_global_chain();
+            json_to_ptr(json!({
+                "name": info.name,
+                "address": info.address,
+                "pubkey": info.pubkey,
+                "created_at": info.created_at,
+                "status": "active"
+            }))
+        }
         Err(e) => json_to_ptr(json!({"error": e})),
     }
 }
@@ -287,14 +297,25 @@ pub extern "C" fn bolh_validate_and_process_tx(tx_ptr: *const c_char) -> *const 
     bolh_submit_tx(tx_ptr)
 }
 
-/// Persist state (no-op for in-memory, placeholder for future RocksDB)
+/// Persist chain state to disk (real file persistence)
 #[no_mangle]
 pub extern "C" fn bolh_utxo_persist() -> *const c_char {
-    json_to_ptr(json!({
-        "status": "persisted",
-        "note": "in-memory chain — persistence planned for v0.2",
-        "timestamp": chrono::Utc::now().to_rfc3339()
-    }))
+    match crate::chain::save_global_chain() {
+        Ok(()) => {
+            let stats = global_chain().stats();
+            json_to_ptr(json!({
+                "status": "persisted",
+                "height": stats.height,
+                "accounts": stats.total_accounts,
+                "timestamp": chrono::Utc::now().to_rfc3339()
+            }))
+        }
+        Err(e) => json_to_ptr(json!({
+            "status": "error",
+            "error": e,
+            "timestamp": chrono::Utc::now().to_rfc3339()
+        })),
+    }
 }
 
 // ============= CONSENSUS API =============
@@ -309,52 +330,74 @@ pub extern "C" fn bolh_propose_block(
         return json_to_ptr(json!({"error": "null pointer"}));
     };
 
-    match global_chain().produce_block(&proposer) {
-        Ok(block) => json_to_ptr(json!({
-            "block_hash": hex::encode(block.hash),
-            "height": block.header.height,
-            "tx_count": block.header.tx_count,
-            "total_fees": block.header.total_fees,
-            "status": "finalized"
-        })),
-        Err(e) => json_to_ptr(json!({"error": e})),
+    match global_chain().propose_block(&proposer) {
+        Ok(block_id) => {
+            json_to_ptr(json!({
+                "block_id": block_id,
+                "height": global_chain().height() + 1,
+                "status": "proposed"
+            }))
+        }
+        Err(e) => json_to_ptr(json!({"error": e, "status": "failed"})),
     }
 }
 
 /// Vote on a block (simplified — auto-approve for single-node)
 #[no_mangle]
 pub extern "C" fn bolh_vote_on_block(
-    _voter_ptr: *const c_char,
-    _block_id_ptr: *const c_char,
+    voter_ptr: *const c_char,
+    block_id_ptr: *const c_char,
     approved: bool,
 ) -> *const c_char {
-    json_to_ptr(json!({
-        "vote": if approved { "yes" } else { "no" },
-        "status": "recorded"
-    }))
+    let Some(voter) = read_cstr(voter_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+    let Some(block_id) = read_cstr(block_id_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    match global_chain().vote_on_block(&voter, &block_id, approved) {
+        Ok(()) => json_to_ptr(json!({
+            "vote": if approved { "yes" } else { "no" },
+            "status": "recorded"
+        })),
+        Err(e) => json_to_ptr(json!({"error": e, "status": "failed"})),
+    }
 }
 
 /// Check if block can be finalized
 #[no_mangle]
-pub extern "C" fn bolh_can_finalize(_block_id_ptr: *const c_char) -> bool {
-    true // Single-node mode: always finalizable
+pub extern "C" fn bolh_can_finalize(block_id_ptr: *const c_char) -> bool {
+    let Some(block_id) = read_cstr(block_id_ptr) else { return false; };
+    global_chain().can_finalize(&block_id).unwrap_or(false)
 }
 
 /// Finalize a block
 #[no_mangle]
-pub extern "C" fn bolh_finalize_block(_block_id_ptr: *const c_char) -> *const c_char {
-    let stats = global_chain().stats();
-    json_to_ptr(json!({
-        "status": "finalized",
-        "height": stats.height,
-        "timestamp": chrono::Utc::now().to_rfc3339()
-    }))
+pub extern "C" fn bolh_finalize_block(block_id_ptr: *const c_char) -> *const c_char {
+    let Some(block_id) = read_cstr(block_id_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+    match global_chain().finalize_block(&block_id) {
+        Ok(height) => {
+            let _ = crate::chain::save_global_chain();
+            json_to_ptr(json!({
+                "status": "finalized",
+                "height": height,
+                "timestamp": chrono::Utc::now().to_rfc3339()
+            }))
+        }
+        Err(e) => json_to_ptr(json!({"error": e, "status": "failed"})),
+    }
 }
 
 /// Get consensus state
 #[no_mangle]
 pub extern "C" fn bolh_consensus_state() -> *const c_char {
-    let stats = global_chain().stats();
+    let chain = global_chain();
+    let stats = chain.stats();
+    let vals = chain.active_validators();
+    let proposer = chain.current_proposer().map(|a| a.to_bech32()).unwrap_or_default();
     json_to_ptr(json!({
         "height": stats.height,
         "total_supply": stats.total_supply,
@@ -364,17 +407,193 @@ pub extern "C" fn bolh_consensus_state() -> *const c_char {
         "genesis_hash": stats.genesis_hash,
         "timestamp": chrono::Utc::now().to_rfc3339(),
         "consensus": "PoS-BFT",
+        "epoch": chain.epoch(),
+        "current_proposer": proposer,
+        "validators": vals.iter().map(|v| json!({
+            "address": v.address.to_bech32(),
+            "voting_power": v.stake,
+            "active": v.is_active,
+            "jailed_until": v.jailed_until
+        })).collect::<Vec<_>>(),
         "status": "active"
     }))
 }
 
 /// Get voting status for a block
 #[no_mangle]
-pub extern "C" fn bolh_voting_status(_block_id_ptr: *const c_char) -> *const c_char {
+pub extern "C" fn bolh_voting_status(block_id_ptr: *const c_char) -> *const c_char {
+    let Some(block_id) = read_cstr(block_id_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    let chain = global_chain();
+    let rt = chain.consensus.read();
+    let Some(prop) = rt.proposals.get(&block_id) else {
+        return json_to_ptr(json!({"error": "proposal not found"}));
+    };
+    let yes_count = prop.yes.len() as i64;
+    let no_count = prop.no.len() as i64;
+    drop(rt);
+
+    let vals = chain.active_validators();
+    let total_active = vals.iter().filter(|v| v.is_active).count() as i64;
+    let pending = (total_active - yes_count - no_count).max(0);
+    let passed = chain.can_finalize(&block_id).unwrap_or(false);
+
     json_to_ptr(json!({
-        "yes_votes": 1,
-        "no_votes": 0,
-        "pending": 0,
-        "status": "passed"
+        "yes_votes": yes_count,
+        "no_votes": no_count,
+        "pending": pending,
+        "status": if passed { "passed" } else { "pending" }
+    }))
+}
+
+// ============= P2P NETWORK API =============
+
+use std::sync::OnceLock as FfiOnceLock;
+static GLOBAL_NODE: FfiOnceLock<crate::network::BolhNode> = FfiOnceLock::new();
+
+/// Get or initialize the global P2P node
+fn global_node() -> &'static crate::network::BolhNode {
+    GLOBAL_NODE.get_or_init(|| {
+        let chain = global_chain();
+        let stats = chain.stats();
+        // Use genesis hash as a simple node ID seed
+        let node_id = stats.genesis_hash[..16].to_string();
+        crate::network::BolhNode::new(
+            node_id,
+            crate::network::NodeConfig::default(),
+        )
+    })
+}
+
+/// Get P2P network status
+#[no_mangle]
+pub extern "C" fn bolh_network_status() -> *const c_char {
+    let node = global_node();
+    let stats = node.network_stats();
+    json_to_ptr(json!({
+        "node_id": stats.node_id,
+        "total_peers": stats.total_peers,
+        "inbound_peers": stats.inbound_peers,
+        "outbound_peers": stats.outbound_peers,
+        "known_peers": stats.known_peers,
+        "is_running": stats.is_running,
+        "listen_addr": stats.listen_addr,
+        "protocol_version": crate::network::protocol::PROTOCOL_VERSION,
+        "status": if stats.total_peers > 0 { "connected" } else { "waiting_for_peers" }
+    }))
+}
+
+/// Connect to a P2P peer
+#[no_mangle]
+pub extern "C" fn bolh_connect_peer(addr_ptr: *const c_char) -> *const c_char {
+    let Some(addr) = read_cstr(addr_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    let node = global_node();
+    let chain = global_chain();
+
+    match node.connect_to_peer(&addr, chain) {
+        Ok(peer_id) => json_to_ptr(json!({
+            "peer_id": peer_id,
+            "status": "connected",
+            "total_peers": node.peer_count()
+        })),
+        Err(e) => json_to_ptr(json!({
+            "error": e,
+            "status": "failed"
+        })),
+    }
+}
+
+/// Get connected peers list
+#[no_mangle]
+pub extern "C" fn bolh_get_peers() -> *const c_char {
+    let node = global_node();
+    let peers: Vec<serde_json::Value> = node.connected_peers().iter().map(|p| {
+        json!({
+            "id": p.id,
+            "addr": p.addr,
+            "version": p.version,
+            "best_height": p.best_height
+        })
+    }).collect();
+
+    json_to_ptr(json!({
+        "peers": peers,
+        "count": peers.len()
+    }))
+}
+
+/// Sync blockchain with a specific peer
+#[no_mangle]
+pub extern "C" fn bolh_sync_with_peer(peer_id_ptr: *const c_char) -> *const c_char {
+    let Some(peer_id) = read_cstr(peer_id_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    let node = global_node();
+    let chain = global_chain();
+
+    match node.sync_with_peer(&peer_id, chain) {
+        Ok(synced) => json_to_ptr(json!({
+            "blocks_synced": synced,
+            "new_height": chain.height(),
+            "status": if synced > 0 { "synced" } else { "up_to_date" }
+        })),
+        Err(e) => json_to_ptr(json!({
+            "error": e,
+            "status": "failed"
+        })),
+    }
+}
+
+/// Disconnect a peer
+#[no_mangle]
+pub extern "C" fn bolh_disconnect_peer(peer_id_ptr: *const c_char) -> *const c_char {
+    let Some(peer_id) = read_cstr(peer_id_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    let node = global_node();
+    node.disconnect_peer(&peer_id);
+
+    json_to_ptr(json!({
+        "peer_id": peer_id,
+        "status": "disconnected",
+        "total_peers": node.peer_count()
+    }))
+}
+
+/// Get transaction history for a wallet
+#[no_mangle]
+pub extern "C" fn bolh_get_tx_history(addr_ptr: *const c_char) -> *const c_char {
+    let Some(addr_str) = read_cstr(addr_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer", "transactions": []}));
+    };
+    let Ok(address) = Address::from_bech32(&addr_str) else {
+        return json_to_ptr(json!({"error": "invalid address", "transactions": []}));
+    };
+
+    let chain = global_chain();
+    let history = chain.get_tx_history(&address);
+    let txs: Vec<serde_json::Value> = history.iter().map(|r| {
+        json!({
+            "txid": r.txid,
+            "from": r.from,
+            "to": r.to,
+            "amount": r.amount,
+            "fee": r.fee,
+            "type": r.tx_type,
+            "timestamp": r.timestamp,
+            "block_height": r.block_height
+        })
+    }).collect();
+
+    json_to_ptr(json!({
+        "transactions": txs,
+        "count": txs.len()
     }))
 }
