@@ -46,3 +46,12 @@ coverage/
 # Cache
 .cache/
 .parcel-cache/
+
+# Android build artifacts
+*.apk
+*.apk.idsig
+*.keystore
+*.jks
+
+# Release builds (keep in CI/CD, not in repo)
+apps/mobile/src-tauri/gen/android/app/build/
