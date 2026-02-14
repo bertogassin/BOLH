@@ -174,11 +174,13 @@ impl Transaction {
         true
     }
 
-    /// Verify cryptographic signature (stub for now, requires Dilithium library)
+    /// Verify Ed25519 cryptographic signature
     pub fn verify_signature(&self) -> bool {
-        // TODO: Implement Dilithium signature verification via FFI to SPARK/Ada
-        // For now, just check structural validity
-        !self.signature.is_empty() && !self.public_key.is_empty()
+        if self.signature.is_empty() || self.public_key.is_empty() {
+            return false;
+        }
+        let signing_bytes = self.signing_bytes();
+        crate::wallet::verify_ed25519(&self.public_key, &signing_bytes, &self.signature)
     }
 
     /// Check if transaction is executable given current timestamp

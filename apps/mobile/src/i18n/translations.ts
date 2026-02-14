@@ -678,6 +678,7 @@ export const translations: Record<LangCode, Record<string, string>> = {
     'nav.search': 'Search',
     'nav.map': 'Map',
     'nav.orders': 'Orders',
+    'nav.wallet': 'Wallet',
     'nav.profile': 'Profile',
     'nav.tracking': 'Tracking',
     'map.searchHere': 'Search this area',

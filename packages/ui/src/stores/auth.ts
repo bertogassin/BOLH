@@ -64,6 +64,7 @@ export const authStore = {
   login(user: User, accessToken: string, refreshToken: string) {
     this.setUser(user);
     this.setTokens(accessToken, refreshToken);
+    localStorage.setItem('user', JSON.stringify(user));
   },
 
   logout() {
@@ -83,10 +84,16 @@ export const authStore = {
         setState('accessToken', accessToken);
         setState('refreshToken', refreshToken);
         
-        // TODO: Validate token and fetch user
-        // For now, just mark as authenticated if token exists
-        // const user = await api.getMe();
-        // this.setUser(user);
+        // Restore user from localStorage
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          try {
+            const user = JSON.parse(savedUser);
+            this.setUser(user);
+          } catch (e) {
+            console.error('Failed to parse saved user:', e);
+          }
+        }
       }
     } catch (error) {
       console.error('Auth init error:', error);

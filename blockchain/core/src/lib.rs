@@ -21,6 +21,11 @@ pub mod mempool;
 pub mod executor;
 pub mod rpc;
 pub mod metrics;
+pub mod wallet;
+pub mod chain;
+pub mod security;
+pub mod contract;
+pub mod referral;
 pub mod ffi;
 
 /// BOLH Chain version

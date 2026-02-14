@@ -14,6 +14,14 @@ const [workerStatus, setWorkerStatus] = createSignal<'online' | 'busy' | 'offlin
 const [busyUntil, setBusyUntil] = createSignal<string | null>(null); // ISO time when auto-online
 const [autoOnlineTime, setAutoOnlineTime] = createSignal<string>(''); // HH:MM for auto-online
 
+// Profile mode: 'worker' = I offer my skills, 'client' = I need services
+const [profileMode, setProfileMode] = createSignal<'worker' | 'client'>('worker');
+const [clientNeeds, setClientNeeds] = createSignal<string[]>([]);
+
+// Home screen mode: 'search' = find a pro, 'order' = quick order
+const [homeMode, setHomeMode] = createSignal<'search' | 'order'>('search');
+const [homeExpandedDept, setHomeExpandedDept] = createSignal<string | null>(null);
+
 const getActiveDept = () => activeDepartment() ? getDepartment(activeDepartment()!) : null;
 
 // ============== SWIPE BACK WRAPPER ==============
@@ -647,6 +655,563 @@ function Icon(props: { name: keyof typeof Icons; class?: string; size?: string }
   );
 }
 
+// ============== Elina v3 Component (Mobile) ==============
+// Two twisted octagons = 16 points, looks like a circle but organic
+// Real fire, gas ignition sound, deep pomegranate colors
+
+const ELINA_COLORS: Record<string, { base: string; mid: string; light: string; deep: string; glow: string }> = {
+  pomegranate: { base: '#6B1520', mid: '#9B1B30', light: '#D4374B', deep: '#3D0A12', glow: 'rgba(155,27,48,0.5)' },
+  ocean:      { base: '#0C3547', mid: '#1A6B8A', light: '#2FA4D4', deep: '#061E2B', glow: 'rgba(26,107,138,0.5)' },
+  forest:     { base: '#0B3D1F', mid: '#1B7A3E', light: '#2EC465', deep: '#062210', glow: 'rgba(27,122,62,0.5)' },
+  sunset:     { base: '#7A3D08', mid: '#C4620D', light: '#F0A030', deep: '#4A2504', glow: 'rgba(196,98,13,0.5)' },
+  midnight:   { base: '#2D1248', mid: '#5B2496', light: '#8B4CD0', deep: '#1A0A2B', glow: 'rgba(91,36,150,0.5)' },
+};
+
+// Clean graphic octagon — 8-sided, bold, vector-art look
+const OCTAGON_SHAPE = 'polygon(29.3% 0%, 70.7% 0%, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0% 70.7%, 0% 29.3%)';
+
+// WebAudio: gas hiss → ignition → fire roar
+function elinaSound(type: 'tap' | 'secret' | 'drag' | 'return') {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+    if (type === 'tap') {
+      // Soft organic pop
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(660, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.06);
+      osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.12);
+      g.gain.setValueAtTime(0.12, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.15);
+    }
+
+    if (type === 'secret') {
+      // Layer 1: Gas hiss (white noise)
+      const bufLen = ctx.sampleRate * 0.4;
+      const noiseBuf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      for (let i = 0; i < bufLen; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+      const noiseSrc = ctx.createBufferSource();
+      noiseSrc.buffer = noiseBuf;
+      const noiseGain = ctx.createGain();
+      const noiseFilter = ctx.createBiquadFilter();
+      noiseFilter.type = 'highpass';
+      noiseFilter.frequency.value = 3000;
+      noiseSrc.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      noiseGain.gain.setValueAtTime(0.15, ctx.currentTime);
+      noiseGain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.15);
+      noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      noiseSrc.start(ctx.currentTime);
+      noiseSrc.stop(ctx.currentTime + 0.4);
+
+      // Layer 2: Ignition thump (low)
+      const thump = ctx.createOscillator();
+      const tg = ctx.createGain();
+      thump.connect(tg); tg.connect(ctx.destination);
+      thump.type = 'sine';
+      thump.frequency.setValueAtTime(80, ctx.currentTime + 0.15);
+      thump.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.5);
+      tg.gain.setValueAtTime(0, ctx.currentTime);
+      tg.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.18);
+      tg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      thump.start(ctx.currentTime + 0.15);
+      thump.stop(ctx.currentTime + 0.6);
+
+      // Layer 3: Fire whoosh (rising filtered noise)
+      const fireBuf = ctx.createBuffer(1, ctx.sampleRate * 0.8, ctx.sampleRate);
+      const fData = fireBuf.getChannelData(0);
+      for (let i = 0; i < fData.length; i++) fData[i] = (Math.random() * 2 - 1);
+      const fireSrc = ctx.createBufferSource();
+      fireSrc.buffer = fireBuf;
+      const fireFilter = ctx.createBiquadFilter();
+      fireFilter.type = 'bandpass';
+      fireFilter.frequency.setValueAtTime(400, ctx.currentTime + 0.2);
+      fireFilter.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.5);
+      fireFilter.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 1.0);
+      fireFilter.Q.value = 2;
+      const fireGain = ctx.createGain();
+      fireSrc.connect(fireFilter);
+      fireFilter.connect(fireGain);
+      fireGain.connect(ctx.destination);
+      fireGain.gain.setValueAtTime(0, ctx.currentTime);
+      fireGain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.25);
+      fireGain.gain.setValueAtTime(0.2, ctx.currentTime + 0.5);
+      fireGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+      fireSrc.start(ctx.currentTime + 0.2);
+      fireSrc.stop(ctx.currentTime + 1.0);
+
+      // Layer 4: Sparkle overtone
+      const spark = ctx.createOscillator();
+      const sg = ctx.createGain();
+      spark.connect(sg); sg.connect(ctx.destination);
+      spark.type = 'sine';
+      spark.frequency.setValueAtTime(2200, ctx.currentTime + 0.2);
+      spark.frequency.exponentialRampToValueAtTime(4400, ctx.currentTime + 0.6);
+      sg.gain.setValueAtTime(0.04, ctx.currentTime + 0.2);
+      sg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
+      spark.start(ctx.currentTime + 0.2);
+      spark.stop(ctx.currentTime + 0.7);
+    }
+
+    if (type === 'drag') {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = 500;
+      g.gain.setValueAtTime(0.05, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.08);
+    }
+
+    if (type === 'return') {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.setValueAtTime(1000, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.35);
+      g.gain.setValueAtTime(0.08, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.4);
+    }
+  } catch (_) { /* AudioContext not available */ }
+}
+
+function MobileElina(props: { size?: number }) {
+  const sz = () => props.size || 48;
+  const [eState, setEState] = createSignal<string>('idle');
+  const [tapCnt, setTapCnt] = createSignal(0);
+  const [lastTapMs, setLastTapMs] = createSignal(0);
+  const [colorKey, setColorKey] = createSignal('pomegranate');
+  const [showColors, setShowColors] = createSignal(false);
+  const [particles, setParticles] = createSignal<{ id: number; x: number; y: number; size: number; color: string; type: string; delay: number }[]>([]);
+  const [screenFlash, setScreenFlash] = createSignal(false);
+  const [flames, setFlames] = createSignal(false);
+
+  // Drag state
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [dragPos, setDragPos] = createSignal<{ x: number; y: number } | null>(null);
+  const [isReturning, setIsReturning] = createSignal(false);
+  let dragStartX = 0, dragStartY = 0, dragOffsetX = 0, dragOffsetY = 0;
+  let returnTimer: any = null;
+  let longPressTimer: any = null;
+  let pid = 0;
+
+  const c = () => ELINA_COLORS[colorKey()] || ELINA_COLORS.pomegranate;
+
+  // Fire particles — realistic upward movement
+  const spawnFire = (n: number) => {
+    const fireColors = ['#FF0800', '#FF2400', '#FF4500', '#FF6600', '#FF8C00', '#FFA500', '#FFD700', '#FFFF00', '#FFF8DC'];
+    const np = Array.from({ length: n }, () => {
+      const angle = (Math.random() - 0.5) * 1.2; // Mostly upward
+      const dist = Math.random() * sz() * 1.5;
+      const delay = Math.random() * 300;
+      return {
+        id: ++pid,
+        x: Math.sin(angle) * dist * 0.6,
+        y: -Math.abs(Math.cos(angle) * dist) - sz() * 0.3,
+        size: 3 + Math.random() * 8,
+        color: fireColors[Math.floor(Math.random() * fireColors.length)],
+        type: 'fire',
+        delay,
+      };
+    });
+    setParticles(p => [...p, ...np]);
+    setTimeout(() => setParticles(p => p.filter(pp => !np.find(x => x.id === pp.id))), 1800);
+  };
+
+  const spawnSparks = (n: number) => {
+    const np = Array.from({ length: n }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = (Math.random() * 0.5 + 0.5) * sz();
+      return {
+        id: ++pid,
+        x: Math.cos(angle) * dist,
+        y: Math.sin(angle) * dist,
+        size: 2 + Math.random() * 3,
+        color: c().light,
+        type: 'spark',
+        delay: 0,
+      };
+    });
+    setParticles(p => [...p, ...np]);
+    setTimeout(() => setParticles(p => p.filter(pp => !np.find(x => x.id === pp.id))), 800);
+  };
+
+  const onTap = (e: MouseEvent | TouchEvent) => {
+    if (isDragging()) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const now = Date.now();
+    if (now - lastTapMs() <= 500) { setTapCnt(x => x + 1); } else { setTapCnt(1); }
+    setLastTapMs(now);
+
+    if (tapCnt() >= 15) {
+      // === SECRET: GAS IGNITION ===
+      setEState('secret');
+      setTapCnt(0);
+      elinaSound('secret');
+      haptic('heavy');
+      // Multiple fire waves
+      setFlames(true);
+      spawnFire(30);
+      setTimeout(() => spawnFire(20), 150);
+      setTimeout(() => spawnFire(15), 300);
+      setTimeout(() => spawnFire(10), 500);
+      // Screen flash
+      setScreenFlash(true);
+      setTimeout(() => setScreenFlash(false), 800);
+      setTimeout(() => { setFlames(false); setEState('idle'); }, 4500);
+      return;
+    }
+
+    // Normal tap
+    setEState('happy');
+    elinaSound('tap');
+    spawnSparks(6);
+    haptic('light');
+    setTimeout(() => setEState('idle'), 1000);
+  };
+
+  // === DRAG & DROP ===
+  const onTouchStart = (e: TouchEvent) => {
+    const touch = e.touches[0];
+    dragStartX = touch.clientX;
+    dragStartY = touch.clientY;
+    longPressTimer = setTimeout(() => {
+      setIsDragging(true);
+      elinaSound('drag');
+      haptic('medium');
+      dragOffsetX = 0; dragOffsetY = 0;
+    }, 300);
+  };
+
+  const onTouchMove = (e: TouchEvent) => {
+    const touch = e.touches[0];
+    const dx = touch.clientX - dragStartX;
+    const dy = touch.clientY - dragStartY;
+    if (!isDragging() && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      if (longPressTimer) clearTimeout(longPressTimer);
+    }
+    if (isDragging()) {
+      e.preventDefault();
+      dragOffsetX = dx; dragOffsetY = dy;
+      setDragPos({ x: dx, y: dy });
+      if (returnTimer) { clearTimeout(returnTimer); returnTimer = null; }
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (longPressTimer) clearTimeout(longPressTimer);
+    if (isDragging()) {
+      setIsDragging(false);
+      if (Math.abs(dragOffsetX) > 10 || Math.abs(dragOffsetY) > 10) {
+        returnTimer = setTimeout(() => {
+          setIsReturning(true);
+          elinaSound('return');
+          haptic('light');
+          setTimeout(() => { setDragPos(null); setIsReturning(false); }, 50);
+        }, 30000);
+      } else { setDragPos(null); }
+    }
+  };
+
+  const onShapeLongPress = () => { setShowColors(s => !s); haptic('light'); };
+
+  const animCls = () => {
+    if (isReturning()) return '';
+    switch (eState()) {
+      case 'happy': return 'el3-bounce';
+      case 'secret': return 'el3-secret';
+      default: return 'el3-breathe';
+    }
+  };
+
+  const glowShadow = () => {
+    const g = c().glow;
+    if (eState() === 'secret') return `0 0 ${sz()}px ${g}, 0 0 ${sz() * 2}px rgba(255,69,0,0.4), 0 0 ${sz() * 3}px rgba(255,140,0,0.2)`;
+    if (eState() === 'happy') return `0 0 ${sz() * 0.4}px ${g}`;
+    if (isDragging()) return `0 0 ${sz() * 0.5}px ${g}, 0 4px 15px rgba(0,0,0,0.25)`;
+    return `0 0 ${sz() * 0.15}px ${g}`;
+  };
+
+  const scaleVal = () => {
+    if (isDragging()) return 1.2;
+    if (eState() === 'secret') return 1.35;
+    if (eState() === 'happy') return 1.12;
+    return 1;
+  };
+
+  const posStyle = () => {
+    const dp = dragPos();
+    if (!dp) return {};
+    return {
+      transform: `translate(${dp.x}px, ${dp.y}px)`,
+      transition: isReturning() ? 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
+      'z-index': '999',
+    };
+  };
+
+  onCleanup(() => {
+    if (returnTimer) clearTimeout(returnTimer);
+    if (longPressTimer) clearTimeout(longPressTimer);
+  });
+
+  return (
+    <div
+      class="relative inline-flex items-center justify-center"
+      style={{ width: `${sz() * 1.2}px`, height: `${sz() * 1.2}px`, 'touch-action': 'none', ...posStyle() }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Screen flash — fire glow */}
+      <Show when={screenFlash()}>
+        <div class="fixed inset-0 pointer-events-none z-[9999] el3-flash" style={{
+          background: 'radial-gradient(circle at 50% 40%, rgba(255,100,0,0.5) 0%, rgba(255,50,0,0.2) 40%, transparent 70%)',
+        }} />
+      </Show>
+
+      {/* CSS Flame effect on secret */}
+      <Show when={flames()}>
+        <div class="absolute pointer-events-none el3-flame-container" style={{
+          width: `${sz() * 1.2}px`, height: `${sz() * 2}px`,
+          bottom: `${sz() * 0.3}px`, left: '50%', transform: 'translateX(-50%)',
+        }}>
+          <div class="el3-flame el3-flame-1" style={{ background: 'linear-gradient(to top, #FF4500, #FF8C00, #FFD700, transparent)', width: `${sz() * 0.5}px`, height: `${sz() * 1.5}px` }} />
+          <div class="el3-flame el3-flame-2" style={{ background: 'linear-gradient(to top, #FF0000, #FF4500, #FFA500, transparent)', width: `${sz() * 0.35}px`, height: `${sz() * 1.2}px` }} />
+          <div class="el3-flame el3-flame-3" style={{ background: 'linear-gradient(to top, #FF6600, #FFD700, #FFFF00, transparent)', width: `${sz() * 0.25}px`, height: `${sz() * 1.0}px` }} />
+        </div>
+      </Show>
+
+      {/* Particles */}
+      {particles().map(p => (
+        <div
+          class={`absolute pointer-events-none ${p.type === 'fire' ? 'el3-fire-p' : 'el3-spark-p'}`}
+          style={{
+            width: `${p.size}px`, height: `${p.size}px`,
+            background: p.color,
+            left: `calc(50% + ${p.x}px)`, top: `calc(50% + ${p.y}px)`,
+            'border-radius': p.type === 'fire' ? '50% 50% 50% 20%' : '50%',
+            filter: p.type === 'fire' ? `blur(${p.size * 0.3}px)` : 'none',
+            'animation-delay': `${p.delay}ms`,
+          }}
+        />
+      ))}
+
+      {/* === 2D ILLUSTRATED OCTAGON — cartoon/vector-art style === */}
+      <div class={`cursor-pointer relative ${animCls()}`} style={{
+        width: `${sz()}px`, height: `${sz()}px`,
+        transform: `scale(${scaleVal()})`,
+        transition: 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+        filter: `drop-shadow(${glowShadow()})`,
+      }} onClick={onTap} onDblClick={onShapeLongPress}>
+
+        {/* Thick cartoon outline */}
+        <div class="absolute" style={{
+          inset: `-${Math.max(sz() * 0.04, 2)}px`,
+          'clip-path': OCTAGON_SHAPE,
+          background: c().deep,
+        }} />
+
+        {/* Main body — flat 2D fill with subtle gradient */}
+        <div class="absolute inset-0" style={{
+          'clip-path': OCTAGON_SHAPE,
+          background: `linear-gradient(160deg, ${c().light} 0%, ${c().mid} 45%, ${c().base} 100%)`,
+        }}>
+          {/* 2D cell-shading — hard light/shadow split */}
+          <div class="absolute inset-0" style={{
+            background: `linear-gradient(145deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.08) 40%, transparent 50%, rgba(0,0,0,0.15) 70%, rgba(0,0,0,0.3) 100%)`,
+            'clip-path': OCTAGON_SHAPE,
+          }} />
+
+          {/* Specular highlight — cartoon shine spot */}
+          <div class="absolute" style={{
+            top: `${sz() * 0.12}px`, left: `${sz() * 0.15}px`,
+            width: `${sz() * 0.25}px`, height: `${sz() * 0.18}px`,
+            background: 'rgba(255,255,255,0.45)',
+            'border-radius': '50%',
+            transform: 'rotate(-25deg)',
+            filter: `blur(${sz() * 0.02}px)`,
+          }} />
+
+          {/* Small secondary shine */}
+          <div class="absolute" style={{
+            top: `${sz() * 0.22}px`, left: `${sz() * 0.55}px`,
+            width: `${sz() * 0.08}px`, height: `${sz() * 0.06}px`,
+            background: 'rgba(255,255,255,0.3)',
+            'border-radius': '50%',
+          }} />
+        </div>
+
+        {/* Face — 2D illustrated style */}
+        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ 'z-index': '5' }}>
+          {eState() === 'secret'
+            ? <span style={{ 'font-size': `${sz() * 0.4}px`, filter: 'drop-shadow(0 0 8px rgba(255,80,0,0.9)) drop-shadow(0 0 16px rgba(255,140,0,0.5))' }}>{'\u{1F525}'}</span>
+            : <>
+              {/* Eyes */}
+              <div class="flex items-center" style={{ gap: `${sz() * 0.14}px`, 'margin-top': `-${sz() * 0.04}px` }}>
+                {/* Left eye */}
+                <div style={{
+                  width: `${sz() * 0.15}px`,
+                  height: eState() === 'happy' ? `${sz() * 0.06}px` : `${sz() * 0.15}px`,
+                  background: eState() === 'happy' ? 'transparent' : 'white',
+                  'border-radius': eState() === 'happy' ? '0' : '50%',
+                  'border-bottom': eState() === 'happy' ? `${Math.max(sz() * 0.03, 1.5)}px solid ${c().deep}` : 'none',
+                  border: eState() === 'happy' ? 'none' : `${Math.max(sz() * 0.02, 1)}px solid ${c().deep}`,
+                  transition: 'all 0.2s ease',
+                  position: 'relative' as const,
+                  overflow: 'hidden',
+                }}>
+                  <Show when={eState() !== 'happy'}>
+                    {/* Pupil */}
+                    <div style={{
+                      width: `${sz() * 0.07}px`, height: `${sz() * 0.07}px`,
+                      background: c().deep,
+                      'border-radius': '50%',
+                      position: 'absolute',
+                      top: '50%', left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                    }}>
+                      {/* Pupil highlight */}
+                      <div style={{
+                        width: `${sz() * 0.025}px`, height: `${sz() * 0.025}px`,
+                        background: 'white',
+                        'border-radius': '50%',
+                        position: 'absolute',
+                        top: `${sz() * 0.01}px`, right: `${sz() * 0.01}px`,
+                      }} />
+                    </div>
+                  </Show>
+                </div>
+                {/* Right eye */}
+                <div style={{
+                  width: `${sz() * 0.15}px`,
+                  height: eState() === 'happy' ? `${sz() * 0.06}px` : `${sz() * 0.15}px`,
+                  background: eState() === 'happy' ? 'transparent' : 'white',
+                  'border-radius': eState() === 'happy' ? '0' : '50%',
+                  'border-bottom': eState() === 'happy' ? `${Math.max(sz() * 0.03, 1.5)}px solid ${c().deep}` : 'none',
+                  border: eState() === 'happy' ? 'none' : `${Math.max(sz() * 0.02, 1)}px solid ${c().deep}`,
+                  transition: 'all 0.2s ease',
+                  position: 'relative' as const,
+                  overflow: 'hidden',
+                }}>
+                  <Show when={eState() !== 'happy'}>
+                    <div style={{
+                      width: `${sz() * 0.07}px`, height: `${sz() * 0.07}px`,
+                      background: c().deep,
+                      'border-radius': '50%',
+                      position: 'absolute',
+                      top: '50%', left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                    }}>
+                      <div style={{
+                        width: `${sz() * 0.025}px`, height: `${sz() * 0.025}px`,
+                        background: 'white',
+                        'border-radius': '50%',
+                        position: 'absolute',
+                        top: `${sz() * 0.01}px`, right: `${sz() * 0.01}px`,
+                      }} />
+                    </div>
+                  </Show>
+                </div>
+              </div>
+
+              {/* Blush spots */}
+              <div class="absolute flex" style={{
+                gap: `${sz() * 0.32}px`,
+                top: `${sz() * 0.52}px`,
+              }}>
+                <div style={{
+                  width: `${sz() * 0.09}px`, height: `${sz() * 0.05}px`,
+                  background: `${c().light}55`,
+                  'border-radius': '50%',
+                }} />
+                <div style={{
+                  width: `${sz() * 0.09}px`, height: `${sz() * 0.05}px`,
+                  background: `${c().light}55`,
+                  'border-radius': '50%',
+                }} />
+              </div>
+
+              {/* Mouth */}
+              <div style={{
+                'margin-top': `${sz() * 0.03}px`,
+                width: eState() === 'happy' ? `${sz() * 0.12}px` : `${sz() * 0.06}px`,
+                height: eState() === 'happy' ? `${sz() * 0.06}px` : `${sz() * 0.03}px`,
+                background: 'transparent',
+                'border-bottom': `${Math.max(sz() * 0.025, 1.5)}px solid ${c().deep}`,
+                'border-radius': eState() === 'happy' ? '0 0 50% 50%' : '0 0 50% 50%',
+                transition: 'all 0.2s ease',
+              }} />
+            </>
+          }
+        </div>
+      </div>
+
+      {/* Color picker */}
+      <Show when={showColors()}>
+        <div class="absolute flex gap-1.5 p-2 rounded-2xl bg-black/70 shadow-xl el3-fade z-50"
+          style={{ bottom: `-${sz() * 0.55}px`, left: '50%', transform: 'translateX(-50%)' }}>
+          {Object.entries(ELINA_COLORS).map(([key, val]) => (
+            <button
+              class={`rounded-full transition-all active:scale-90 ${colorKey() === key ? 'ring-2 ring-white scale-110' : ''}`}
+              style={{
+                width: `${Math.max(sz() * 0.38, 22)}px`, height: `${Math.max(sz() * 0.38, 22)}px`,
+                background: `linear-gradient(135deg, ${val.base}, ${val.light})`,
+              }}
+              onClick={(e) => { e.stopPropagation(); setColorKey(key); haptic('light'); }}
+            />
+          ))}
+        </div>
+      </Show>
+
+      <Show when={isDragging()}>
+        <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] text-white/40 whitespace-nowrap">drag me</div>
+      </Show>
+
+      <style>{`
+        @keyframes el3-breathe-kf { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+        @keyframes el3-bounce-kf { 0%{transform:scale(1)} 25%{transform:scale(1.18)} 50%{transform:scale(0.96)} 75%{transform:scale(1.06)} 100%{transform:scale(1)} }
+        @keyframes el3-secret-kf { 0%{transform:scale(1) rotate(0)} 15%{transform:scale(1.5) rotate(60deg)} 30%{transform:scale(1.1) rotate(120deg)} 45%{transform:scale(1.45) rotate(180deg)} 60%{transform:scale(1.05) rotate(240deg)} 75%{transform:scale(1.4) rotate(300deg)} 100%{transform:scale(1) rotate(360deg)} }
+        @keyframes el3-fire-kf { 0%{opacity:1;transform:scale(1) translateY(0)} 40%{opacity:0.9} 100%{opacity:0;transform:scale(0.2) translateY(-40px)} }
+        @keyframes el3-spark-kf { 0%{opacity:1;transform:scale(1)} 100%{opacity:0;transform:scale(0) translateY(-15px)} }
+        @keyframes el3-flash-kf { 0%{opacity:0.7} 100%{opacity:0} }
+        @keyframes el3-fade-kf { from{opacity:0;transform:translateX(-50%) scale(0.9)} to{opacity:1;transform:translateX(-50%) scale(1)} }
+        @keyframes el3-flame-kf {
+          0%{transform:translateX(-50%) scaleY(0.3) scaleX(1);opacity:0}
+          15%{transform:translateX(-50%) scaleY(1.1) scaleX(0.9);opacity:1}
+          30%{transform:translateX(-48%) scaleY(0.95) scaleX(1.1);opacity:0.9}
+          50%{transform:translateX(-52%) scaleY(1.05) scaleX(0.85);opacity:0.85}
+          70%{transform:translateX(-50%) scaleY(0.9) scaleX(1.05);opacity:0.7}
+          100%{transform:translateX(-50%) scaleY(0.3) scaleX(0.5);opacity:0}
+        }
+        .el3-breathe{animation:el3-breathe-kf 3s ease-in-out infinite}
+        .el3-bounce{animation:el3-bounce-kf 0.45s cubic-bezier(0.34,1.56,0.64,1)}
+        .el3-secret{animation:el3-secret-kf 1s cubic-bezier(0.22,1,0.36,1)}
+        .el3-fire-p{animation:el3-fire-kf 1.2s ease-out forwards}
+        .el3-spark-p{animation:el3-spark-kf 0.6s ease-out forwards}
+        .el3-flash{animation:el3-flash-kf 0.8s ease-out forwards}
+        .el3-fade{animation:el3-fade-kf 0.2s ease-out}
+        .el3-flame-container{position:relative;pointer-events:none}
+        .el3-flame{position:absolute;bottom:0;left:50%;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+          animation:el3-flame-kf 1.5s ease-in-out forwards;transform-origin:bottom center;filter:blur(2px)}
+        .el3-flame-1{animation-delay:0.05s}
+        .el3-flame-2{animation-delay:0.15s}
+        .el3-flame-3{animation-delay:0.25s}
+      `}</style>
+    </div>
+  );
+}
+
 // ============== Pages ==============
 
 function HomePage(props: { onNavigate: (page: string) => void }) {
@@ -663,11 +1228,15 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
 
   return (
     <div class="p-4 animate-fade-in">
-      {/* Header */}
+      {/* Header with Elina */}
       <div class="flex items-center justify-between mb-5">
-        <div>
-          <p class="text-white/70 text-sm">{greeting()}</p>
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">BOLH</h1>
+        <div class="flex items-center gap-3">
+          {/* Elina — living mascot */}
+          <MobileElina size={48} />
+          <div>
+            <p class="text-white/70 text-sm">{greeting()}</p>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">BOLH</h1>
+          </div>
         </div>
         <div class="flex items-center gap-2">
           <button
@@ -706,31 +1275,176 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
         </div>
       </button>
 
-      {/* Department Label */}
-      <p class="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">{t('home.departments')}</p>
+      {/* Department Section with Toggle */}
+      <div class="glass rounded-3xl p-4 mb-6 animate-slide-up" style="animation-delay: 0.1s">
+        {/* Toggle: Найти мастера ↔ Я мастер */}
+        <div class="flex bg-white/10 rounded-2xl p-1 mb-4">
+          <button
+            type="button"
+            class={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+              homeMode() === 'search'
+                ? 'bg-white text-indigo-700 shadow-md'
+                : 'text-white/60'
+            }`}
+            onClick={() => { setHomeMode('search'); setHomeExpandedDept(null); }}
+          >
+            {currentLang() === 'en' ? '🔍 Find a Pro' : '🔍 Найти мастера'}
+          </button>
+          <button
+            type="button"
+            class={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+              homeMode() === 'order'
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md'
+                : 'text-white/60'
+            }`}
+            onClick={() => { setHomeMode('order'); setHomeExpandedDept(null); }}
+          >
+            {currentLang() === 'en' ? '🛠 I Work' : '🛠 Я мастер'}
+          </button>
+        </div>
 
-      {/* Department Grid - 3x3 */}
-      <div class="grid grid-cols-3 gap-3 mb-6">
-        <For each={departments}>
-          {(dept, i) => (
-            <button
-              class="glass rounded-2xl p-3 touch-scale animate-slide-up flex flex-col items-center text-center"
-              style={`animation-delay: ${0.1 + i() * 0.04}s`}
-              onClick={() => {
-                setActiveDepartment(dept.id);
-                props.onNavigate('discover');
-              }}
-            >
-              <div 
-                class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center mb-2 shadow-lg`}
-              >
-                <span class="text-2xl">{dept.icon}</span>
-              </div>
-              <p class="font-semibold text-gray-800 text-xs leading-tight">{deptName(dept)}</p>
-              <p class="text-gray-400 text-[10px] mt-0.5 leading-tight line-clamp-1">{deptDesc(dept)}</p>
-            </button>
-          )}
-        </For>
+        {/* Info line */}
+        <p class="text-white/40 text-[10px] mb-3 px-1">
+          {homeMode() === 'search'
+            ? (currentLang() === 'en' ? 'Tap a department → pick ONE service you need' : 'Нажми отдел → выбери ОДНУ услугу')
+            : (currentLang() === 'en' ? 'Tap a department → select all skills you offer' : 'Нажми отдел → выбери все навыки')
+          }
+        </p>
+
+        {/* Department Grid — each dept is a card that expands inline */}
+        <div class="grid grid-cols-3 gap-2.5">
+          <For each={departments}>
+            {(dept, i) => {
+              const isClient = () => homeMode() === 'search';
+              const isWorkerMode = () => homeMode() === 'order';
+              const workerCount = () => dept.skills.filter(s => workerSkills().includes(s.id)).length;
+              const clientSel = () => clientNeeds().filter(id => dept.skills.some(s => s.id === id));
+              const count = () => isClient() ? clientSel().length : workerCount();
+              const isExpanded = () => homeExpandedDept() === dept.id;
+              return (
+                <div
+                  class={`relative rounded-2xl p-2.5 touch-scale animate-slide-up flex flex-col items-center text-center transition-all cursor-pointer ${
+                    isExpanded() ? 'col-span-3 !p-3' : ''
+                  }`}
+                  style={`animation-delay: ${0.1 + i() * 0.03}s; ${
+                    isExpanded()
+                      ? `background: linear-gradient(135deg, ${dept.colorFrom}20, ${dept.colorTo}12); border: 2px solid ${dept.colorFrom}40`
+                      : count() > 0
+                      ? `background: linear-gradient(135deg, ${dept.colorFrom}12, ${dept.colorTo}08); border: 2px solid ${dept.colorFrom}25`
+                      : 'background: rgba(255,255,255,0.08); border: 2px solid transparent'
+                  }`}
+                >
+                  {/* Department header — always shown */}
+                  <div
+                    class={`flex ${isExpanded() ? 'items-center gap-3 w-full' : 'flex-col items-center'}`}
+                    onClick={() => setHomeExpandedDept(isExpanded() ? null : dept.id)}
+                  >
+                    <div class={`${isExpanded() ? 'w-11 h-11' : 'w-14 h-14 mb-2'} rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow-lg shrink-0`}>
+                      <span class={isExpanded() ? 'text-xl' : 'text-2xl'}>{dept.icon}</span>
+                    </div>
+                    <Show when={isExpanded()}>
+                      <div class="flex-1 text-left">
+                        <p class="font-bold text-white text-sm">{deptName(dept)}</p>
+                        <p class="text-white/50 text-[10px]">
+                          {count()} {currentLang() === 'en' ? 'selected' : 'выбрано'} • {dept.skills.length} {currentLang() === 'en' ? 'total' : 'всего'}
+                        </p>
+                      </div>
+                      <Icon name="chevronUp" class="text-white/40" size="sm" />
+                    </Show>
+                    <Show when={!isExpanded()}>
+                      <p class="font-semibold text-white text-xs leading-tight">{deptName(dept)}</p>
+                    </Show>
+                  </div>
+
+                  {/* Badge */}
+                  <Show when={!isExpanded() && count() > 0}>
+                    <span
+                      class="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow"
+                      style={`background: linear-gradient(135deg, ${dept.colorFrom}, ${dept.colorTo})`}
+                    >{count()}</span>
+                  </Show>
+
+                  {/* Inline expanded skills list */}
+                  <Show when={isExpanded()}>
+                    <div class="w-full mt-3 pt-3 border-t border-white/10 space-y-1.5">
+                      <For each={dept.skills}>
+                        {(skill) => {
+                          const sel = () => isClient()
+                            ? clientNeeds().includes(skill.id)
+                            : workerSkills().includes(skill.id);
+
+                          const onSkillClick = () => {
+                            if (isClient()) {
+                              // CLIENT: single select — if already selected, deselect. If not selected, replace.
+                              const cur = clientNeeds();
+                              if (cur.includes(skill.id)) {
+                                // Double-tap to deselect
+                                setClientNeeds(cur.filter(s => s !== skill.id));
+                              } else {
+                                // Replace: remove any other from ALL depts, set only this one
+                                setClientNeeds([skill.id]);
+                              }
+                            } else {
+                              // WORKER: multi select — toggle freely
+                              const cur = workerSkills();
+                              if (cur.includes(skill.id)) {
+                                setWorkerSkills(cur.filter(s => s !== skill.id));
+                              } else {
+                                setWorkerSkills([...cur, skill.id]);
+                              }
+                            }
+                          };
+
+                          return (
+                            <button
+                              type="button"
+                              class="w-full flex items-center gap-3 p-2.5 rounded-xl transition-all text-left touch-scale"
+                              style={sel()
+                                ? `background: linear-gradient(135deg, ${dept.colorFrom}28, ${dept.colorTo}18); border: 1.5px solid ${dept.colorFrom}40`
+                                : 'background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.04)'
+                              }
+                              onClick={onSkillClick}
+                            >
+                              <div class={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                                sel()
+                                  ? 'bg-gradient-to-br ' + dept.color + ' shadow'
+                                  : 'bg-white/8'
+                              }`}>
+                                <span class="text-sm">{skill.icon}</span>
+                              </div>
+                              <div class="flex-1 min-w-0">
+                                <p class={`text-[11px] font-semibold ${sel() ? 'text-white' : 'text-white/50'}`}>
+                                  {currentLang() === 'en' ? skill.nameEn : skill.name}
+                                </p>
+                                <div class="flex gap-1 mt-0.5 flex-wrap">
+                                  <Show when={skill.isExpert}>
+                                    <span class="px-1.5 py-0.5 bg-yellow-400/20 text-yellow-300 text-[7px] font-bold rounded-full">EXP</span>
+                                  </Show>
+                                  <Show when={skill.urgent}>
+                                    <span class="px-1.5 py-0.5 bg-red-400/20 text-red-300 text-[7px] font-bold rounded-full">⚡</span>
+                                  </Show>
+                                </div>
+                              </div>
+                              <div class={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${
+                                sel()
+                                  ? (isClient() ? 'border-amber-400 bg-amber-500' : 'border-green-400 bg-green-500')
+                                  : 'border-white/15'
+                              }`}>
+                                <Show when={sel()}>
+                                  <Icon name="check" class="text-white w-2.5 h-2.5" />
+                                </Show>
+                              </div>
+                            </button>
+                          );
+                        }}
+                      </For>
+                    </div>
+                  </Show>
+                </div>
+              );
+            }}
+          </For>
+        </div>
       </div>
 
       {/* Active Order Card */}
@@ -2921,6 +3635,31 @@ function ContractsPage(props: { onNavigate: (page: string) => void }) {
         </div>
       </div>
 
+      {/* Active tracking banner */}
+      <Show when={contracts.some(c => c.status === 'active')}>
+        <div class="px-4 mb-4">
+          <button
+            class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-4 flex items-center gap-3 shadow-lg shadow-blue-600/20 touch-scale"
+            onClick={() => props.onNavigate('tracking')}
+          >
+            <div class="relative">
+              <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <Icon name="location" size="lg" class="text-white" />
+              </div>
+              <div class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-400 rounded-full border-2 border-blue-600 animate-pulse" />
+            </div>
+            <div class="flex-1 text-left">
+              <p class="text-white font-semibold">{t('tracking.guardOnWay')}</p>
+              <p class="text-blue-200 text-sm">Алексей Козлов • {t('tracking.arrivesIn')} ~5 {t('tracking.minutes')}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-white font-bold text-lg">~5 мин</p>
+              <p class="text-blue-200 text-xs">{t('urgent.trackOnMap')} →</p>
+            </div>
+          </button>
+        </div>
+      </Show>
+
       {/* Active Contracts with Progress */}
       <div class="px-4">
         <p class="text-sm font-medium text-white/70 mb-3">{t('contracts.myContracts')}</p>
@@ -3025,6 +3764,16 @@ function ContractsPage(props: { onNavigate: (page: string) => void }) {
 
                         {/* Action buttons */}
                         <div class="flex gap-2 flex-wrap">
+                          <Show when={contract.status === 'active'}>
+                            <button 
+                              class="w-full py-3 mb-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl text-white font-medium text-sm flex items-center justify-center gap-2 touch-scale shadow-lg shadow-blue-500/30"
+                              onClick={(e) => { e.stopPropagation(); props.onNavigate('tracking'); }}
+                            >
+                              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                              <Icon name="location" size="xs" />
+                              {t('urgent.trackOnMap')}
+                            </button>
+                          </Show>
                           <button class="flex-1 min-w-0 py-2.5 glass rounded-xl text-gray-700 font-medium text-sm flex items-center justify-center gap-2 touch-scale">
                             <Icon name="phone" size="xs" />
                             {t('contracts.call')}
@@ -5935,9 +6684,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
     { icon: 'userCheck', label: t('profile.verification'), desc: '33% • ' + t('profile.verificationDesc'), action: 'verification', highlight: true },
     { icon: 'globe', label: t('profile.language'), desc: getCurrentLanguage().name + ' ' + getCurrentLanguage().flag, action: 'language' },
     { icon: isDark() ? 'moon' : 'sun', label: t('profile.theme'), desc: themeLabel(), action: 'theme' },
-    { icon: 'wallet', label: t('nav.wallet'), desc: 'BOLH Coin', action: 'wallet', highlight: true },
-    { icon: 'shield', label: 'Blockchain', desc: 'BOLH Chain', action: 'blockchain', highlight: true },
-    { icon: 'creditCard', label: t('payments.title'), desc: t('payments.subtitle'), action: 'payments' },
+    { icon: 'wallet', label: t('nav.wallet'), desc: 'BOLH Coin + Blockchain', action: 'wallet', highlight: true },
     { icon: 'award', label: t('achievements.title'), desc: t('achievements.subtitle'), action: 'achievements' },
     { icon: 'activity', label: t('analytics.title'), desc: t('analytics.subtitle'), action: 'analytics' },
     { icon: 'target', label: t('marketplace.title'), desc: t('marketplace.subtitle'), action: 'marketplace' },
@@ -5951,13 +6698,13 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
       <div class="glass rounded-3xl p-6 mb-4 text-center animate-slide-up">
         <div class="relative inline-block mb-4">
           <div class="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-4xl text-white font-bold shadow-xl">
-            А
+            AM
           </div>
           <div class={`absolute bottom-0 right-0 w-8 h-8 ${statusColor()} rounded-full border-4 border-white flex items-center justify-center`}>
             <Icon name="check" class="text-white w-4 h-4" />
           </div>
         </div>
-        <h1 class="text-xl font-bold text-gray-800">Александр Петров</h1>
+        <h1 class="text-xl font-bold text-gray-800">AMIR MURTAZOV</h1>
         <p class="text-gray-500">+7 (777) 123-45-67</p>
 
         {/* Статус кнопка */}
@@ -5989,21 +6736,50 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
         </div>
       </div>
 
-      {/* Мои профессии — единая секция с сеткой и раскрываемыми навыками */}
+      {/* Мои профессии / Мне нужно — с переключателем */}
       <div class="glass rounded-3xl p-4 mb-4 animate-slide-up" style="animation-delay: 0.05s">
-        <div class="mb-3">
-          <p class={`font-semibold text-sm ${isDark() ? 'text-gray-100' : 'text-gray-800'}`}>{t('profile.myProfessions')}</p>
-          <p class={`text-xs mt-0.5 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
-            {totalActiveSkills()} {currentLang() === 'en' ? 'skills' : 'навыков'} • {activeDeptCount()} {currentLang() === 'en' ? 'departments' : 'отделов'}
-          </p>
+        {/* Toggle: Я мастер ↔ Мне нужно */}
+        <div class="flex items-center mb-3 gap-2">
+          <div class="flex-1 flex bg-gray-100 dark:bg-gray-800 rounded-2xl p-1">
+            <button
+              type="button"
+              class={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
+                profileMode() === 'worker'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md'
+                  : isDark() ? 'text-gray-400' : 'text-gray-500'
+              }`}
+              onClick={() => setProfileMode('worker')}
+            >
+              {currentLang() === 'en' ? '🛠 I Work' : '🛠 Я мастер'}
+            </button>
+            <button
+              type="button"
+              class={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
+                profileMode() === 'client'
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
+                  : isDark() ? 'text-gray-400' : 'text-gray-500'
+              }`}
+              onClick={() => setProfileMode('client')}
+            >
+              {currentLang() === 'en' ? '🔍 I Need' : '🔍 Мне нужно'}
+            </button>
+          </div>
         </div>
+        <p class={`text-xs mb-2 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
+          {profileMode() === 'worker'
+            ? (totalActiveSkills() + ' ' + (currentLang() === 'en' ? 'skills' : 'навыков') + ' • ' + activeDeptCount() + ' ' + (currentLang() === 'en' ? 'departments' : 'отделов'))
+            : (clientNeeds().length + ' ' + (currentLang() === 'en' ? 'services selected' : 'услуг выбрано'))
+          }
+        </p>
         <div class="grid grid-cols-3 gap-2.5">
           <For each={departments}>
             {(dept) => {
-              const active = () => isDeptActive(dept.id);
-              const count = () => deptSkillCount(dept.id);
+              // Worker mode: uses workerSkills. Client mode: uses clientNeeds.
+              const isWorkerMode = () => profileMode() === 'worker';
+              const active = () => isWorkerMode() ? isDeptActive(dept.id) : dept.skills.some(s => clientNeeds().includes(s.id));
+              const count = () => isWorkerMode() ? deptSkillCount(dept.id) : dept.skills.filter(s => clientNeeds().includes(s.id)).length;
               const dName = () => currentLang() === 'en' ? dept.nameEn : dept.name;
-              const hasLockedSkills = () => dept.skills.some(s => s.requiresDiploma && !verifiedDiplomas().includes(s.id));
+              const hasLockedSkills = () => isWorkerMode() && dept.skills.some(s => s.requiresDiploma && !verifiedDiplomas().includes(s.id));
               return (
                 <div
                   class={`relative rounded-2xl p-2.5 touch-scale flex flex-col items-center text-center transition-all cursor-pointer ${
@@ -6013,15 +6789,41 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
                     ? `background: linear-gradient(135deg, ${dept.colorFrom}12, ${dept.colorTo}08); border: 2px solid ${dept.colorFrom}30`
                     : isDark() ? 'background: rgba(255,255,255,0.04); border: 2px solid transparent' : 'background: rgba(0,0,0,0.03); border: 2px solid transparent'
                   }
-                  onClick={() => { setActiveDepartment(dept.id); props.onNavigate('skilldetail'); }}
+                  onClick={() => {
+                    if (isWorkerMode()) {
+                      setActiveDepartment(dept.id); props.onNavigate('skilldetail');
+                    } else {
+                      // Client mode: toggle all services in dept
+                      const deptSkillIds = dept.skills.map(s => s.id);
+                      const cur = clientNeeds();
+                      const hasSome = deptSkillIds.some(id => cur.includes(id));
+                      if (hasSome) {
+                        setClientNeeds(cur.filter(id => !deptSkillIds.includes(id)));
+                      } else {
+                        setClientNeeds([...cur, ...deptSkillIds]);
+                      }
+                    }
+                  }}
                 >
-                  {/* Кружок вкл/выкл в правом верхнем углу — переключает весь отдел */}
+                  {/* Кружок вкл/выкл в правом верхнем углу */}
                   <button
                     type="button"
                     class="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center touch-scale z-10 border-2 border-white shadow"
-                    style={active() ? 'background: linear-gradient(135deg, #22c55e, #16a34a)' : (isDark() ? 'background: #4b5563' : 'background: #e5e7eb')}
-                    onClick={(e) => { e.stopPropagation(); toggleDept(dept.id); }}
-                    aria-label={active() ? 'Выключить отдел' : 'Включить отдел'}
+                    style={active()
+                      ? (isWorkerMode() ? 'background: linear-gradient(135deg, #22c55e, #16a34a)' : 'background: linear-gradient(135deg, #f59e0b, #ea580c)')
+                      : (isDark() ? 'background: #4b5563' : 'background: #e5e7eb')
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isWorkerMode()) { toggleDept(dept.id); }
+                      else {
+                        const deptSkillIds = dept.skills.map(s => s.id);
+                        const cur = clientNeeds();
+                        const hasSome = deptSkillIds.some(id => cur.includes(id));
+                        if (hasSome) { setClientNeeds(cur.filter(id => !deptSkillIds.includes(id))); }
+                        else { setClientNeeds([...cur, ...deptSkillIds]); }
+                      }
+                    }}
                   >
                     <Show when={active()}>
                       <Icon name="check" class="text-white w-3 h-3" />
@@ -6031,7 +6833,6 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
                     <span class="text-xl">{dept.icon}</span>
                   </div>
                   <p class={`font-medium text-[10px] leading-tight ${active() ? (isDark() ? 'text-gray-200' : 'text-gray-800') : (isDark() ? 'text-gray-500' : 'text-gray-400')}`}>{dName()}</p>
-                  {/* Счётчик навыков */}
                   <Show when={count() > 0}>
                     <span
                       class="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow"
@@ -6040,7 +6841,6 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
                       {count()}
                     </span>
                   </Show>
-                  {/* Замок если есть неподтверждённые дипломные навыки */}
                   <Show when={hasLockedSkills() && active()}>
                     <span class="absolute bottom-6 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[9px] shadow">🔒</span>
                   </Show>
@@ -7153,15 +7953,15 @@ function SettingsPage(props: { onBack: () => void }) {
 const navItems: { id: string; icon: keyof typeof Icons; labelKey: string }[] = [
   { id: 'home', icon: 'home', labelKey: 'nav.home' },
   { id: 'map', icon: 'map', labelKey: 'nav.map' },
-  { id: 'tracking', icon: 'location', labelKey: 'nav.tracking' },
   { id: 'contracts', icon: 'fileText', labelKey: 'nav.orders' },
+  { id: 'wallet', icon: 'creditCard', labelKey: 'nav.wallet' },
   { id: 'profile', icon: 'user', labelKey: 'nav.profile' },
 ];
 
 export default function App() {
   const [currentPage, setCurrentPage] = createSignal('home');
 
-  const showNav = () => !['urgent', 'language', 'theme', 'newcontract', 'documents', 'verification', 'academy', 'department', 'chat', 'notifications', 'rating', 'auth', 'security', 'settings', 'skilldetail', 'wallet', 'payments', 'achievements', 'analytics', 'marketplace', 'incident', 'createorder', 'workerdetail', 'blockchain'].includes(currentPage());
+  const showNav = () => !['urgent', 'language', 'theme', 'newcontract', 'documents', 'verification', 'academy', 'department', 'chat', 'notifications', 'rating', 'auth', 'security', 'settings', 'skilldetail', 'payments', 'achievements', 'analytics', 'marketplace', 'incident', 'createorder', 'workerdetail', 'blockchain', 'tracking', 'referral'].includes(currentPage());
   
   // Set initial RTL direction
   onMount(() => {
@@ -7170,7 +7970,7 @@ export default function App() {
 
   return (
     <div class="min-h-screen safe-area-top">
-      <main class={['tracking', 'map'].includes(currentPage()) ? 'h-screen' : showNav() ? 'pb-24' : ''}>
+      <main class={['tracking', 'map'].includes(currentPage()) ? 'h-screen' : showNav() ? 'pb-24' : 'pb-4'}>
         <Switch>
           <Match when={currentPage() === 'home'}>
             <HomePage onNavigate={setCurrentPage} />
@@ -7192,19 +7992,24 @@ export default function App() {
             <MapPage />
           </Match>
           <Match when={currentPage() === 'tracking'}>
-            <TrackingPage />
+            <SwipeBack onBack={() => setCurrentPage('contracts')}>
+              <TrackingPage />
+            </SwipeBack>
           </Match>
           <Match when={currentPage() === 'orders'}>
             <OrdersPage />
           </Match>
           <Match when={currentPage() === 'wallet'}>
-            <SwipeBack onBack={() => setCurrentPage('profile')}>
-              <WalletPage onBack={() => setCurrentPage('profile')} />
-            </SwipeBack>
+            <WalletPage onBack={() => setCurrentPage('home')} onNavigate={setCurrentPage} />
           </Match>
           <Match when={currentPage() === 'blockchain'}>
-            <SwipeBack onBack={() => setCurrentPage('profile')}>
-              <BlockchainScreen onBack={() => setCurrentPage('profile')} />
+            <SwipeBack onBack={() => setCurrentPage('wallet')}>
+              <BlockchainScreen onBack={() => setCurrentPage('wallet')} />
+            </SwipeBack>
+          </Match>
+          <Match when={currentPage() === 'referral'}>
+            <SwipeBack onBack={() => setCurrentPage('wallet')}>
+              <ReferralPage onBack={() => setCurrentPage('wallet')} />
             </SwipeBack>
           </Match>
           <Match when={currentPage() === 'profile'}>
@@ -7277,8 +8082,8 @@ export default function App() {
             </SwipeBack>
           </Match>
           <Match when={currentPage() === 'payments'}>
-            <SwipeBack onBack={() => setCurrentPage('profile')}>
-              <PaymentsPage onBack={() => setCurrentPage('profile')} />
+            <SwipeBack onBack={() => setCurrentPage('wallet')}>
+              <PaymentsPage onBack={() => setCurrentPage('wallet')} />
             </SwipeBack>
           </Match>
           <Match when={currentPage() === 'achievements'}>
@@ -7351,7 +8156,7 @@ export default function App() {
   );
 }
 
-function WalletPage(props: { onBack: () => void }) {
+function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => void }) {
   const [balance, setBalance] = createSignal<{ balance: number; locked: number } | null>(null);
   const [ledger, setLedger] = createSignal<any[]>([]);
   const [stats, setStats] = createSignal<{ supply_total: number; supply_circulating: number; rate_usd: string } | null>(null);
@@ -7383,49 +8188,469 @@ function WalletPage(props: { onBack: () => void }) {
     } catch {}
     await load();
   };
+  const [activeTab, setActiveTab] = createSignal<'balance' | 'blockchain'>('balance');
+
   return (
-    <div class="px-4 py-4">
-      <div class="flex items-center mb-4">
-        <button class="mr-3 p-2 rounded-xl bg-gray-100" onClick={props.onBack}>
+    <div class="px-4 py-4 animate-fade-in">
+      {/* Header */}
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">{t('nav.wallet')}</h2>
+        <button class="p-2 rounded-xl bg-gray-100 touch-scale" onClick={() => props.onNavigate?.('payments')}>
+          <Icon name="creditCard" size="sm" />
+        </button>
+      </div>
+
+      {/* Tab switcher */}
+      <div class="flex bg-gray-100 rounded-2xl p-1 mb-5">
+        <button
+          class={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab() === 'balance' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('balance')}
+        >
+          {t('payment.balance')}
+        </button>
+        <button
+          class={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab() === 'blockchain' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`}
+          onClick={() => setActiveTab('blockchain')}
+        >
+          BOLH Chain
+        </button>
+      </div>
+
+      <Show when={!loading()} fallback={<div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>}>
+        {/* Balance Tab */}
+        <Show when={activeTab() === 'balance'}>
+          {/* Main balance card */}
+          <div class="relative rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa)">
+            <div class="absolute inset-0 opacity-10">
+              <div class="absolute -top-8 -right-8 w-32 h-32 rounded-full border-2 border-white" />
+              <div class="absolute -bottom-4 -left-4 w-24 h-24 rounded-full border-2 border-white" />
+            </div>
+            <div class="p-5 relative">
+              <div class="text-white/70 text-sm mb-1">{t('payment.balance')}</div>
+              <div class="text-4xl font-bold text-white mb-3">{(balance()?.balance ?? 0).toLocaleString()} <span class="text-lg font-normal text-white/80">BOLH</span></div>
+              <div class="flex items-center gap-4">
+                <div>
+                  <div class="text-white/60 text-xs">Locked</div>
+                  <div class="text-white font-semibold">{balance()?.locked ?? 0}</div>
+                </div>
+                <Show when={stats()}>
+                  <div>
+                    <div class="text-white/60 text-xs">USD</div>
+                    <div class="text-white font-semibold">${(Number(stats()!.rate_usd) * (balance()?.balance ?? 0)).toFixed(2)}</div>
+                  </div>
+                </Show>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick actions */}
+          <div class="grid grid-cols-3 gap-3 mb-5">
+            <button class="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass touch-scale" onClick={() => earn(10)}>
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <Icon name="plus" size="sm" class="text-green-600" />
+              </div>
+              <span class="text-xs text-gray-600 font-medium">Пополнить</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass touch-scale" onClick={() => redeem(5)}>
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <Icon name="arrowRight" size="sm" class="text-blue-600" />
+              </div>
+              <span class="text-xs text-gray-600 font-medium">Перевод</span>
+            </button>
+            <button class="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass touch-scale" onClick={() => props.onNavigate?.('payments')}>
+              <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <Icon name="creditCard" size="sm" class="text-purple-600" />
+              </div>
+              <span class="text-xs text-gray-600 font-medium">Карты</span>
+            </button>
+          </div>
+
+          {/* Transaction history */}
+          <div class="rounded-2xl glass overflow-hidden">
+            <div class="px-4 py-3 flex items-center justify-between">
+              <span class="text-gray-600 font-semibold text-sm">{t('profile.history')}</span>
+              <span class="text-xs text-indigo-500 font-medium">Все</span>
+            </div>
+            <For each={ledger()}>
+              {(it: any) => (
+                <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class={`w-8 h-8 rounded-full flex items-center justify-center ${it.direction === 'credit' ? 'bg-green-100' : 'bg-red-100'}`}>
+                      <Icon name={it.direction === 'credit' ? 'plus' : 'minus'} size="xs" class={it.direction === 'credit' ? 'text-green-600' : 'text-red-600'} />
+                    </div>
+                    <div>
+                      <div class="text-sm font-medium text-gray-800">{it.source}</div>
+                      <div class="text-xs text-gray-400">{it.created_at ? new Date(it.created_at).toLocaleDateString() : ''}</div>
+                    </div>
+                  </div>
+                  <div class={`font-bold ${it.direction === 'credit' ? 'text-green-600' : 'text-red-600'}`}>
+                    {it.direction === 'credit' ? '+' : '-'}{it.amount} BOLH
+                  </div>
+                </div>
+              )}
+            </For>
+            <Show when={ledger().length === 0}>
+              <div class="px-4 py-8 text-center text-gray-400 text-sm">Нет транзакций</div>
+            </Show>
+          </div>
+        </Show>
+
+        {/* Blockchain Tab */}
+        <Show when={activeTab() === 'blockchain'}>
+          {/* Token info */}
+          <div class="rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #0f172a, #1e293b)">
+            <div class="p-5">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <span class="text-white font-bold text-lg">B</span>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-lg">BOLH Token</div>
+                  <div class="text-gray-400 text-sm">ERC-20 compatible</div>
+                </div>
+              </div>
+              <Show when={stats()}>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="bg-white/5 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs">Курс</div>
+                    <div class="text-white font-bold text-lg">${stats()!.rate_usd}</div>
+                  </div>
+                  <div class="bg-white/5 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs">Баланс</div>
+                    <div class="text-white font-bold text-lg">{balance()?.balance ?? 0} BOLH</div>
+                  </div>
+                  <div class="bg-white/5 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs">Эмиссия</div>
+                    <div class="text-white font-bold">{stats()!.supply_total?.toLocaleString()}</div>
+                  </div>
+                  <div class="bg-white/5 rounded-xl p-3">
+                    <div class="text-gray-400 text-xs">В обороте</div>
+                    <div class="text-white font-bold">{stats()!.supply_circulating?.toLocaleString()}</div>
+                  </div>
+                </div>
+              </Show>
+            </div>
+          </div>
+
+          {/* Blockchain features */}
+          <div class="space-y-3">
+            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('referral')}>
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                <Icon name="users" size="md" class="text-indigo-600" />
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-800">Реферальная программа</div>
+                <div class="text-sm text-gray-500">Пригласи друга — оба получите BOLH</div>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-xs font-bold">NEW</span>
+                <Icon name="chevronRight" size="sm" class="text-gray-400" />
+              </div>
+            </button>
+
+            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
+              <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
+                <Icon name="shield" size="md" class="text-indigo-600" />
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-800">Smart Contracts</div>
+                <div class="text-sm text-gray-500">Escrow, Bounty, Insurance</div>
+              </div>
+              <Icon name="chevronRight" size="sm" class="text-gray-400" />
+            </button>
+
+            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
+              <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
+                <Icon name="lock" size="md" class="text-green-600" />
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-800">Безопасность</div>
+                <div class="text-sm text-gray-500">Антифрод, rate-limit, защита</div>
+              </div>
+              <Icon name="chevronRight" size="sm" class="text-gray-400" />
+            </button>
+
+            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
+              <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
+                <Icon name="globe" size="md" class="text-blue-600" />
+              </div>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-800">Explorer</div>
+                <div class="text-sm text-gray-500">История транзакций в блокчейне</div>
+              </div>
+              <Icon name="chevronRight" size="sm" class="text-gray-400" />
+            </button>
+          </div>
+        </Show>
+      </Show>
+    </div>
+  );
+}
+
+// ============== Referral Page ==============
+function ReferralPage(props: { onBack: () => void }) {
+  const [copied, setCopied] = createSignal(false);
+  const [activeTab, setActiveTab] = createSignal<'overview' | 'friends' | 'tiers'>('overview');
+
+  const mockCode = 'BOLH-A3F8C1D2';
+  const mockStats = { totalInvited: 7, totalEarned: 70000, rank: 142, currentTier: 1 };
+  const mockFriends = [
+    { id: '1', name: 'Иван К.', date: '2026-02-12', reward: 10000, status: 'confirmed' },
+    { id: '2', name: 'Мария С.', date: '2026-02-11', reward: 10000, status: 'confirmed' },
+    { id: '3', name: 'Алексей Р.', date: '2026-02-10', reward: 10000, status: 'confirmed' },
+    { id: '4', name: 'Елена Б.', date: '2026-02-09', reward: 10000, status: 'confirmed' },
+    { id: '5', name: 'Дмитрий В.', date: '2026-02-08', reward: 10000, status: 'confirmed' },
+    { id: '6', name: 'Анна Л.', date: '2026-02-07', reward: 10000, status: 'pending' },
+    { id: '7', name: 'Сергей Т.', date: '2026-02-06', reward: 10000, status: 'pending' },
+  ];
+  const tiersList = [
+    { id: 1, label: 'Tier 1', range: '0 — 1 000', reward: '10 000', color: 'from-yellow-400 to-amber-500', emoji: '\u{1F947}' },
+    { id: 2, label: 'Tier 2', range: '1 001 — 10 000', reward: '2 500', color: 'from-gray-300 to-gray-400', emoji: '\u{1F948}' },
+    { id: 3, label: 'Tier 3', range: '10 001 — 100 000', reward: '1 000', color: 'from-amber-600 to-amber-700', emoji: '\u{1F949}' },
+    { id: 4, label: 'Tier 4', range: '100 001+', reward: '500', color: 'from-indigo-400 to-indigo-500', emoji: '\u{1F3AF}' },
+  ];
+  const poolTotal = 2_000_000_000;
+  const poolUsed = 245_000_000;
+  const poolPercent = ((poolUsed / poolTotal) * 100).toFixed(1);
+  const totalUsers = 847;
+
+  const copyCode = () => {
+    navigator.clipboard?.writeText(mockCode);
+    setCopied(true);
+    haptic('medium');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareLink = () => {
+    const url = `https://bolh.app/join/${mockCode}`;
+    if (navigator.share) {
+      navigator.share({ title: 'BOLH', text: `Регистрируйся и получи 10 000 BOLH!`, url });
+    } else {
+      navigator.clipboard?.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+    haptic('medium');
+  };
+
+  return (
+    <div class="px-4 py-4 animate-fade-in pb-24">
+      {/* Header */}
+      <div class="flex items-center gap-3 mb-5">
+        <button class="p-2 rounded-xl bg-gray-100 touch-scale" onClick={props.onBack}>
           <Icon name="chevronLeft" />
         </button>
-        <h2 class="text-xl font-semibold">{t('nav.wallet')}</h2>
+        <h2 class="text-xl font-bold">Реферальная программа</h2>
       </div>
-      <Show when={!loading()} fallback={<div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>}>
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <div class="p-4 rounded-2xl glass">
-            <div class="text-sm text-gray-500">{t('payment.balance')}</div>
-            <div class="text-3xl font-bold mt-2">{balance()?.balance ?? 0}</div>
+
+      {/* Hero card */}
+      <div class="relative rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #6366f1, #8b5cf6, #c084fc)">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full border-2 border-white/10" />
+          <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full border-2 border-white/10" />
+        </div>
+        <div class="p-5 relative">
+          <div class="text-white/70 text-sm mb-1">Твой реферальный код</div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="text-2xl font-bold text-white tracking-wider font-mono">{mockCode}</div>
+            <button
+              class={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${copied() ? 'bg-green-500 text-white' : 'bg-white/20 text-white'}`}
+              onClick={copyCode}
+            >
+              {copied() ? '\u2713' : 'Copy'}
+            </button>
           </div>
-          <div class="p-4 rounded-2xl glass">
-            <div class="text-sm text-gray-500">Locked</div>
-            <div class="text-3xl font-bold mt-2">{balance()?.locked ?? 0}</div>
+          <div class="text-white/80 text-sm mb-4">
+            Пригласи друга — вы <span class="font-bold text-white">оба</span> получите <span class="font-bold text-white text-lg">10 000 BOLH</span>
+          </div>
+          <button
+            class="w-full py-3 rounded-2xl bg-white text-indigo-600 font-bold text-base active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale"
+            onClick={shareLink}
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+            Поделиться ссылкой
+          </button>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div class="grid grid-cols-3 gap-3 mb-5">
+        <div class="glass rounded-2xl p-3 text-center">
+          <div class="text-xl font-bold text-indigo-600">{mockStats.totalInvited}</div>
+          <div class="text-xs text-gray-500 mt-0.5">Приглашено</div>
+        </div>
+        <div class="glass rounded-2xl p-3 text-center">
+          <div class="text-xl font-bold text-green-600">{mockStats.totalEarned.toLocaleString()}</div>
+          <div class="text-xs text-gray-500 mt-0.5">BOLH</div>
+        </div>
+        <div class="glass rounded-2xl p-3 text-center">
+          <div class="text-xl font-bold text-amber-600">#{mockStats.rank}</div>
+          <div class="text-xs text-gray-500 mt-0.5">Рейтинг</div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div class="flex bg-gray-100 rounded-2xl p-1 mb-5">
+        <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'overview' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('overview')}>Обзор</button>
+        <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'friends' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('friends')}>Друзья ({mockStats.totalInvited})</button>
+        <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'tiers' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('tiers')}>Тиры</button>
+      </div>
+
+      {/* Overview */}
+      <Show when={activeTab() === 'overview'}>
+        {/* How it works */}
+        <div class="glass rounded-2xl p-5 mb-4">
+          <h3 class="font-bold text-gray-900 mb-4">Как это работает</h3>
+          <div class="space-y-4">
+            <div class="flex gap-3">
+              <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0"><span class="text-indigo-600 font-bold text-sm">1</span></div>
+              <div><div class="font-semibold text-gray-800 text-sm">Поделись кодом</div><div class="text-gray-500 text-xs">Отправь код или ссылку другу</div></div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"><span class="text-green-600 font-bold text-sm">2</span></div>
+              <div><div class="font-semibold text-gray-800 text-sm">Друг регистрируется</div><div class="text-gray-500 text-xs">Вводит код при регистрации</div></div>
+            </div>
+            <div class="flex gap-3">
+              <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0"><span class="text-amber-600 font-bold text-sm">3</span></div>
+              <div><div class="font-semibold text-gray-800 text-sm">Оба получают награду</div><div class="text-gray-500 text-xs">Одинаковая сумма — честно!</div></div>
+            </div>
           </div>
         </div>
-        <Show when={stats()}>
-          <div class="rounded-2xl glass p-4 mb-6">
-            <div class="text-sm text-gray-500">Rate (USD)</div>
-            <div class="text-2xl font-semibold">{stats()!.rate_usd}</div>
-            <div class="mt-2 text-sm text-gray-500">Supply: {stats()!.supply_circulating} / {stats()!.supply_total}</div>
-            <div class="mt-1 text-sm text-gray-500">Balance ≈ ${(Number(stats()!.rate_usd) * (balance()?.balance ?? 0)).toFixed(2)}</div>
+
+        {/* Fair badge */}
+        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 mb-4 flex items-center gap-3 border border-green-200/50">
+          <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
           </div>
+          <div>
+            <div class="font-bold text-green-800 text-sm">100% честная программа</div>
+            <div class="text-green-600 text-xs">Без скрытых комиссий. Равная награда.</div>
+          </div>
+        </div>
+
+        {/* Pool */}
+        <div class="glass rounded-2xl p-5 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-gray-900 text-sm">Реферальный пул</h3>
+            <span class="text-xs text-gray-500">{poolPercent}%</span>
+          </div>
+          <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3">
+            <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" style={`width: ${poolPercent}%`} />
+          </div>
+          <div class="grid grid-cols-2 gap-3 text-center">
+            <div>
+              <div class="text-base font-bold text-gray-900">{(poolTotal - poolUsed).toLocaleString()}</div>
+              <div class="text-xs text-gray-500">Осталось BOLH</div>
+            </div>
+            <div>
+              <div class="text-base font-bold text-gray-900">12 540</div>
+              <div class="text-xs text-gray-500">Рефералов</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Current tier */}
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-bold text-gray-900 text-sm">Текущий тир</h3>
+            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">{'\u{1F947}'} Tier 1</span>
+          </div>
+          <div class="text-gray-500 text-xs mb-3">Награда: <span class="font-bold text-indigo-600">10 000 BOLH</span> каждому</div>
+          <div class="flex items-center gap-2">
+            <div class="text-xs text-gray-400">{totalUsers}</div>
+            <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-500" style={`width: ${(totalUsers / 1000 * 100)}%`} />
+            </div>
+            <div class="text-xs text-gray-400">1 000</div>
+          </div>
+          <div class="text-xs text-gray-400 text-center mt-1">Ещё {(1000 - totalUsers).toLocaleString()} до Tier 2</div>
+        </div>
       </Show>
-        <div class="flex gap-3 mb-6">
-          <button class="px-4 py-3 rounded-2xl bg-indigo-500 text-white font-medium touch-scale" onClick={() => earn(10)}>{t('payment.balance')} +10</button>
-          <button class="px-4 py-3 rounded-2xl bg-gray-200 text-gray-800 font-medium touch-scale" onClick={() => redeem(5)}>{t('payment.balance')} -5</button>
-        </div>
-        <div class="rounded-2xl glass">
-          <div class="px-4 py-3 text-gray-600 font-medium">{t('profile.history')}</div>
-          <For each={ledger()}>
-            {(it: any) => (
-              <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-                <div class="text-sm text-gray-600">{it.source}</div>
-                <div class={it.direction === 'credit' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
-                  {it.direction === 'credit' ? '+' : '-'}{it.amount}
+
+      {/* Friends */}
+      <Show when={activeTab() === 'friends'}>
+        <div class="glass rounded-2xl overflow-hidden">
+          <div class="px-4 py-3 flex items-center justify-between border-b border-gray-100">
+            <span class="text-gray-800 font-semibold text-sm">Приглашённые друзья</span>
+            <span class="text-xs text-gray-500">{mockFriends.length}</span>
+          </div>
+          <For each={mockFriends}>
+            {(f) => (
+              <div class="px-4 py-3 border-b border-gray-50 last:border-0 flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-xs">{f.name.split(' ').map((n: string) => n[0]).join('')}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-gray-800 truncate">{f.name}</div>
+                  <div class="text-xs text-gray-400">{new Date(f.date).toLocaleDateString('ru-RU')}</div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <div class="text-sm font-bold text-green-600">+{f.reward.toLocaleString()}</div>
+                  <div class={`text-xs ${f.status === 'confirmed' ? 'text-green-500' : 'text-amber-500'}`}>
+                    {f.status === 'confirmed' ? '\u2713 Начислено' : '\u23F3 Ожидание'}
+                  </div>
                 </div>
               </div>
             )}
           </For>
+        </div>
+        <button class="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale" onClick={shareLink}>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+          Пригласить ещё
+        </button>
+      </Show>
+
+      {/* Tiers */}
+      <Show when={activeTab() === 'tiers'}>
+        <div class="space-y-3">
+          <For each={tiersList}>
+            {(tier) => (
+              <div class={`rounded-2xl overflow-hidden shadow-sm ${tier.id === mockStats.currentTier ? 'ring-2 ring-indigo-500 ring-offset-2' : ''}`}>
+                <div class={`bg-gradient-to-r ${tier.color} p-4`}>
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <span class="text-2xl">{tier.emoji}</span>
+                      <div>
+                        <div class="text-white font-bold text-lg">{tier.label}</div>
+                        <div class="text-white/80 text-xs">{tier.range}</div>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <div class="text-white font-bold text-xl">{tier.reward}</div>
+                      <div class="text-white/70 text-xs">BOLH каждому</div>
+                    </div>
+                  </div>
+                  <Show when={tier.id === mockStats.currentTier}>
+                    <div class="mt-3 bg-white/20 rounded-xl px-3 py-1.5 text-center">
+                      <span class="text-white text-xs font-bold">{'\u{1F4CD}'} Ваш текущий тир</span>
+                    </div>
+                  </Show>
+                </div>
+              </div>
+            )}
+          </For>
+        </div>
+
+        {/* Rules */}
+        <div class="glass rounded-2xl p-5 mt-4">
+          <h3 class="font-bold text-gray-900 mb-3 text-sm">Правила</h3>
+          <div class="space-y-2">
+            {[
+              'Оба получают одинаковую награду',
+              'Без скрытых комиссий',
+              'Один аккаунт = одно приглашение',
+              'Макс. 50 приглашений в день',
+              'Пул: 2 млрд BOLH',
+              'Ранние участники получают больше',
+            ].map((rule) => (
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-2.5 h-2.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <span class="text-xs text-gray-600">{rule}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </Show>
     </div>

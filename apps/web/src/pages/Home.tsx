@@ -1,6 +1,7 @@
 import { createSignal, onMount, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { Card, Button, GuardCard, Icon, SearchBar } from '@guardio/ui';
+import Elina from '../components/Elina';
 
 interface QuickAction {
   id: string;
@@ -59,6 +60,15 @@ export default function HomePage() {
 
   return (
     <div class="px-4 py-6 space-y-6 animate-fade-in">
+      {/* Elina — floating companion */}
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Привет!</h1>
+          <p class="text-sm text-gray-500">Элина рядом — нажми на неё</p>
+        </div>
+        <Elina size={56} showCustomizer={true} />
+      </div>
+
       {/* Search */}
       <SearchBar
         placeholder="Search guards, services..."
@@ -87,19 +97,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Active Order */}
+      {/* Active Order - links to live tracking */}
       <Card
-        title="Active Order"
-        class="border-l-4 border-l-blue-500"
+        title="Активный заказ"
+        class="border-l-4 border-l-blue-500 cursor-pointer hover:shadow-lg transition-shadow"
+        onClick={() => navigate('/tracking/1')}
       >
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-500">Bodyguard Service</p>
-            <p class="text-base font-semibold">In Progress</p>
-            <p class="text-sm text-gray-500">Guard: Александр И.</p>
+            <p class="text-sm text-gray-500">Охрана объекта</p>
+            <p class="text-base font-semibold text-green-600 flex items-center gap-2">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              В пути
+            </p>
+            <p class="text-sm text-gray-500">Охранник: Александр И.</p>
           </div>
-          <Button variant="primary" size="sm" onClick={() => navigate('/orders/1')}>
-            View
+          <Button variant="primary" size="sm" onClick={() => navigate('/tracking/1')}>
+            Отследить
           </Button>
         </div>
       </Card>

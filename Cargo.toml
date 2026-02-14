@@ -5,6 +5,7 @@ members = [
     "backend",
     "apps/mobile/src-tauri",
     "blockchain/core", "blockchain/bolh-ffi", "blockchain-service",
+    "elina/core",
 ]
 
 [workspace.package]

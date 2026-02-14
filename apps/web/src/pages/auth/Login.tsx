@@ -26,7 +26,7 @@ export default function LoginPage() {
         {
           id: 1,
           phone: phone(),
-          name: 'Test User',
+          name: 'AMIR MURTAZOV',
           role: 'client',
         },
         'mock_access_token',

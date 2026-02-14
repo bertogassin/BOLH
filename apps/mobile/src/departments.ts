@@ -187,6 +187,7 @@ export const departments: Department[] = [
       { id: 'clean_window', name: 'Мойка окон', nameEn: 'Window Cleaning', icon: '🪟', requiresDiploma: false, isExpert: false, urgent: false },
       { id: 'clean_after', name: 'Уборка после ремонта', nameEn: 'Post-renovation Cleanup', icon: '🧹', requiresDiploma: false, isExpert: false, urgent: false },
       { id: 'clean_chem', name: 'Химчистка мебели/ковров', nameEn: 'Upholstery/Carpet Cleaning', icon: '🛋️', requiresDiploma: false, isExpert: false, urgent: false },
+      { id: 'clean_expert', name: 'Экспертиза чистоты и дезинфекции', nameEn: 'Cleaning & Sanitation Expert', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false },
     ]
   },
 

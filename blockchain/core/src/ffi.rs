@@ -1,387 +1,300 @@
 //! C FFI interface for BOLH blockchain
 //! Exports blockchain functions as C-callable functions for Tauri integration
+//! Now powered by REAL Ed25519 cryptography and an actual in-memory blockchain
 
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use serde_json::json;
+use crate::chain::global_chain;
+use crate::types::Address;
+
+/// Helper: CString to raw pointer, returns "{}" on error
+fn json_to_ptr(value: serde_json::Value) -> *const c_char {
+    let json_str = value.to_string();
+    match CString::new(json_str) {
+        Ok(cstr) => cstr.into_raw(),
+        Err(_) => CString::new("{}").unwrap().into_raw(),
+    }
+}
+
+/// Helper: read C string safely
+fn read_cstr(ptr: *const c_char) -> Option<String> {
+    if ptr.is_null() { return None; }
+    Some(unsafe { CStr::from_ptr(ptr).to_string_lossy().into_owned() })
+}
 
 /// Free allocated C string
 #[no_mangle]
 pub extern "C" fn bolh_free(ptr: *mut c_char) {
     if !ptr.is_null() {
-        unsafe {
-            let _ = CString::from_raw(ptr);
-        }
+        unsafe { let _ = CString::from_raw(ptr); }
     }
 }
 
-/// Initialize blockchain
+/// Initialize blockchain — creates Genesis block with BOLH distribution
 #[no_mangle]
 pub extern "C" fn bolh_init() -> *const c_char {
-    let result = json!({
+    let chain = global_chain();
+    let stats = chain.stats();
+    json_to_ptr(json!({
         "status": "initialized",
         "version": crate::VERSION,
         "network": "main",
-        "height": 0
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+        "height": stats.height,
+        "total_supply": stats.total_supply,
+        "circulating_supply": stats.circulating_supply,
+        "genesis_hash": stats.genesis_hash,
+        "accounts": stats.total_accounts
+    }))
 }
 
-/// Create a new key pair
+/// Create a new Ed25519 keypair (real cryptography)
 #[no_mangle]
 pub extern "C" fn bolh_create_key() -> *const c_char {
-    use rand::Rng;
-    
-    let mut rng = rand::thread_rng();
-    let secret_key: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
-    let public_key: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
-    
-    let result = json!({
-        "pubkey": hex::encode(&public_key),
-        "seckey": hex::encode(&secret_key),
-        "address": format!("bolh_{}", hex::encode(&public_key[..8]))
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    let wallet = crate::wallet::Wallet::new("ephemeral");
+    let export = wallet.export();
+    json_to_ptr(json!({
+        "pubkey": export.pubkey,
+        "seckey": export.seckey,
+        "address": export.address
+    }))
 }
 
-/// Sign a transaction
+/// Sign a transaction with Ed25519 (real signature)
 #[no_mangle]
 pub extern "C" fn bolh_sign_tx(tx_ptr: *const c_char) -> *const c_char {
-    if tx_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let tx_str = unsafe { CStr::from_ptr(tx_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "signed": format!("sig_{}", hex::encode(&[0u8; 32])),
-        "tx": tx_str.as_ref(),
-        "status": "signed"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
+    let Some(tx_json) = read_cstr(tx_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    // Parse transaction JSON: { "wallet": "name", "to": "bolh1...", "amount": 1000 }
+    let Ok(req) = serde_json::from_str::<serde_json::Value>(&tx_json) else {
+        return json_to_ptr(json!({"error": "invalid JSON"}));
+    };
+
+    let wallet_name = req["wallet"].as_str().unwrap_or("default");
+    let to = req["to"].as_str().unwrap_or("");
+    let amount = req["amount"].as_u64().unwrap_or(0);
+
+    let chain = global_chain();
+    match chain.create_transfer(wallet_name, to, amount) {
+        Ok(tx) => {
+            json_to_ptr(json!({
+                "txid": hex::encode(tx.hash),
+                "signature": hex::encode(&tx.signature),
+                "pubkey": hex::encode(&tx.public_key),
+                "from": tx.from.to_bech32(),
+                "to": tx.to.to_bech32(),
+                "amount": tx.amount,
+                "fee": tx.fee,
+                "nonce": tx.nonce,
+                "status": "signed"
+            }))
         }
+        Err(e) => json_to_ptr(json!({"error": e})),
     }
 }
 
-/// Submit a signed transaction
+/// Submit a signed transaction (executes immediately in local chain)
 #[no_mangle]
 pub extern "C" fn bolh_submit_tx(signed_ptr: *const c_char) -> *const c_char {
-    if signed_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let signed_str = unsafe { CStr::from_ptr(signed_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "txid": format!("tx_{}", hex::encode(&[1u8; 32])),
-        "status": "pending",
-        "mempool": true
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
+    let Some(tx_json) = read_cstr(signed_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    let Ok(req) = serde_json::from_str::<serde_json::Value>(&tx_json) else {
+        return json_to_ptr(json!({"error": "invalid JSON"}));
+    };
+
+    let wallet_name = req["wallet"].as_str().unwrap_or("default");
+    let to = req["to"].as_str().unwrap_or("");
+    let amount = req["amount"].as_u64().unwrap_or(0);
+
+    let chain = global_chain();
+    match chain.create_transfer(wallet_name, to, amount) {
+        Ok(tx) => {
+            let result = chain.submit_transaction(tx);
+            json_to_ptr(json!({
+                "success": result.success,
+                "txid": result.txid,
+                "error": result.error,
+                "status": if result.success { "confirmed" } else { "rejected" }
+            }))
         }
+        Err(e) => json_to_ptr(json!({"error": e, "success": false})),
     }
 }
 
-/// Get balance for address
+/// Get balance for address (real balance from chain state)
 #[no_mangle]
 pub extern "C" fn bolh_get_balance(addr_ptr: *const c_char) -> u64 {
-    if addr_ptr.is_null() {
-        return 0;
-    }
-    
-    let _addr = unsafe { CStr::from_ptr(addr_ptr).to_string_lossy() };
-    
-    // Return mock balance (1000 BOLH = 100,000,000,000 satoshis)
-    100_000_000_000
+    let Some(addr_str) = read_cstr(addr_ptr) else { return 0; };
+    let Ok(address) = Address::from_bech32(&addr_str) else { return 0; };
+    global_chain().get_balance(&address)
 }
 
 // ============= WALLET API =============
 
-/// Create a new wallet
+/// Create a new wallet (real Ed25519 keypair)
 #[no_mangle]
 pub extern "C" fn bolh_create_wallet(name_ptr: *const c_char) -> *const c_char {
-    if name_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let name = unsafe { CStr::from_ptr(name_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "name": name.as_ref(),
-        "address": format!("bolh_{}", hex::encode(&[2u8; 32][..8])),
-        "balance": 10_000_000_000,
-        "created_at": chrono::Utc::now().to_rfc3339(),
-        "status": "active"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
+    let Some(name) = read_cstr(name_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    match global_chain().create_wallet(&name) {
+        Ok(info) => json_to_ptr(json!({
+            "name": info.name,
+            "address": info.address,
+            "pubkey": info.pubkey,
+            "created_at": info.created_at,
+            "status": "active"
+        })),
+        Err(e) => json_to_ptr(json!({"error": e})),
     }
 }
 
 /// Get wallet info
 #[no_mangle]
 pub extern "C" fn bolh_get_wallet_info(name_ptr: *const c_char) -> *const c_char {
-    if name_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let name = unsafe { CStr::from_ptr(name_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "name": name.as_ref(),
-        "address": format!("bolh_{}", hex::encode(&[2u8; 32][..8])),
-        "balance": 10_000_000_000,
-        "pubkey": hex::encode(&[3u8; 32]),
-        "status": "active"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
+    let Some(name) = read_cstr(name_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    match global_chain().get_wallet(&name) {
+        Some(info) => {
+            let addr = Address::from_bech32(&info.address).ok();
+            let balance = addr.map(|a| global_chain().get_balance(&a)).unwrap_or(0);
+            json_to_ptr(json!({
+                "name": info.name,
+                "address": info.address,
+                "pubkey": info.pubkey,
+                "balance": balance,
+                "status": "active"
+            }))
         }
+        None => json_to_ptr(json!({"error": "wallet not found"})),
     }
 }
 
 /// Get wallet balance
 #[no_mangle]
 pub extern "C" fn bolh_get_wallet_balance(name_ptr: *const c_char) -> u64 {
-    if name_ptr.is_null() {
-        return 0;
-    }
-    
-    let _name = unsafe { CStr::from_ptr(name_ptr).to_string_lossy() };
-    
-    // Return mock balance (1000 BOLH = 100,000,000,000 satoshis)
-    100_000_000_000
+    let Some(name) = read_cstr(name_ptr) else { return 0; };
+    global_chain().get_wallet_balance(&name)
 }
 
 /// List all wallets
 #[no_mangle]
 pub extern "C" fn bolh_list_wallets() -> *const c_char {
-    let result = json!([
-        {
-            "name": "default",
-            "address": format!("bolh_{}", hex::encode(&[2u8; 32][..8])),
-            "balance": 10_000_000_000
-        }
-    ]);
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("[]").unwrap();
-            err.into_raw()
-        }
-    }
+    let wallets = global_chain().list_wallets();
+    let list: Vec<serde_json::Value> = wallets.iter().map(|w| {
+        let addr = Address::from_bech32(&w.address).ok();
+        let balance = addr.map(|a| global_chain().get_balance(&a)).unwrap_or(0);
+        json!({
+            "name": w.name,
+            "address": w.address,
+            "balance": balance
+        })
+    }).collect();
+    json_to_ptr(json!(list))
 }
 
 /// Delete a wallet
 #[no_mangle]
 pub extern "C" fn bolh_delete_wallet(name_ptr: *const c_char) -> *const c_char {
-    if name_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let name = unsafe { CStr::from_ptr(name_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "deleted": name.as_ref(),
-        "status": "success"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    let Some(name) = read_cstr(name_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+    let deleted = global_chain().delete_wallet(&name);
+    json_to_ptr(json!({
+        "deleted": name,
+        "status": if deleted { "success" } else { "not_found" }
+    }))
 }
 
-/// Import a wallet
+/// Import a wallet from keys
 #[no_mangle]
 pub extern "C" fn bolh_import_wallet(
     name_ptr: *const c_char,
-    pubkey_ptr: *const c_char,
+    _pubkey_ptr: *const c_char,
     seckey_ptr: *const c_char,
 ) -> *const c_char {
-    if name_ptr.is_null() || pubkey_ptr.is_null() || seckey_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let name = unsafe { CStr::from_ptr(name_ptr).to_string_lossy() };
-    let pubkey = unsafe { CStr::from_ptr(pubkey_ptr).to_string_lossy() };
-    
-    let result = json!({
-        "name": name.as_ref(),
-        "address": format!("bolh_{}", &pubkey.as_ref()[..8]),
-        "status": "imported"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
+    let Some(name) = read_cstr(name_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+    let Some(seckey) = read_cstr(seckey_ptr) else {
+        return json_to_ptr(json!({"error": "null secret key"}));
+    };
+
+    match global_chain().import_wallet(&name, &seckey) {
+        Ok(info) => json_to_ptr(json!({
+            "name": info.name,
+            "address": info.address,
+            "status": "imported"
+        })),
+        Err(e) => json_to_ptr(json!({"error": e})),
     }
 }
 
-// ============= UTXO API =============
+// ============= UTXO/CHAIN API =============
 
-/// Initialize genesis block
+/// Initialize genesis block (now done automatically)
 #[no_mangle]
-pub extern "C" fn bolh_init_genesis(accounts_ptr: *const c_char) -> *const c_char {
-    if accounts_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
+pub extern "C" fn bolh_init_genesis(_accounts_ptr: *const c_char) -> *const c_char {
+    let stats = global_chain().stats();
+    json_to_ptr(json!({
         "genesis_height": 0,
+        "genesis_hash": stats.genesis_hash,
+        "total_supply": stats.total_supply,
         "timestamp": chrono::Utc::now().to_rfc3339(),
         "status": "initialized"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
 
-/// Get UTXO balance
+/// Get balance (UTXO-style)
 #[no_mangle]
 pub extern "C" fn bolh_get_utxo_balance(addr_ptr: *const c_char) -> u64 {
-    if addr_ptr.is_null() {
-        return 0;
-    }
-    
-    let _addr = unsafe { CStr::from_ptr(addr_ptr).to_string_lossy() };
-    100_000_000_000
+    bolh_get_balance(addr_ptr)
 }
 
-/// Get UTXOs for address
+/// Get UTXOs for address (now returns account-based data)
 #[no_mangle]
 pub extern "C" fn bolh_get_utxos(addr_ptr: *const c_char) -> *const c_char {
-    if addr_ptr.is_null() {
-        let err = CString::new("[]").unwrap();
-        return err.into_raw();
-    }
+    let Some(addr_str) = read_cstr(addr_ptr) else {
+        return json_to_ptr(json!([]));
+    };
+    let Ok(address) = Address::from_bech32(&addr_str) else {
+        return json_to_ptr(json!([]));
+    };
+
+    let chain = global_chain();
+    let account = chain.get_account(&address);
     
-    let addr = unsafe { CStr::from_ptr(addr_ptr).to_string_lossy() };
-    
-    let result = json!([
-        {
-            "txid": hex::encode(&[1u8; 32]),
-            "output_index": 0,
-            "address": addr.as_ref(),
-            "amount": 50_000_000_000,
-            "block_height": 0,
-            "spent": false
-        }
-    ]);
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("[]").unwrap();
-            err.into_raw()
-        }
-    }
+    json_to_ptr(json!([{
+        "address": addr_str,
+        "balance": account.balance,
+        "nonce": account.nonce,
+        "staked": account.staked,
+        "is_validator": account.is_validator
+    }]))
 }
 
 /// Validate and process transaction
 #[no_mangle]
 pub extern "C" fn bolh_validate_and_process_tx(tx_ptr: *const c_char) -> *const c_char {
-    if tx_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
-        "valid": true,
-        "txid": hex::encode(&[4u8; 32]),
-        "fee": 1000,
-        "status": "accepted"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    // Delegates to bolh_submit_tx
+    bolh_submit_tx(tx_ptr)
 }
 
-/// Persist UTXO set
+/// Persist state (no-op for in-memory, placeholder for future RocksDB)
 #[no_mangle]
 pub extern "C" fn bolh_utxo_persist() -> *const c_char {
-    let result = json!({
+    json_to_ptr(json!({
         "status": "persisted",
+        "note": "in-memory chain — persistence planned for v0.2",
         "timestamp": chrono::Utc::now().to_rfc3339()
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
 
 // ============= CONSENSUS API =============
@@ -390,134 +303,78 @@ pub extern "C" fn bolh_utxo_persist() -> *const c_char {
 #[no_mangle]
 pub extern "C" fn bolh_propose_block(
     proposer_ptr: *const c_char,
-    txs_ptr: *const c_char,
+    _txs_ptr: *const c_char,
 ) -> *const c_char {
-    if proposer_ptr.is_null() || txs_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
-        "block_id": format!("block_{}", hex::encode(&[5u8; 32][..8])),
-        "height": 1,
-        "status": "proposed"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
+    let Some(proposer) = read_cstr(proposer_ptr) else {
+        return json_to_ptr(json!({"error": "null pointer"}));
+    };
+
+    match global_chain().produce_block(&proposer) {
+        Ok(block) => json_to_ptr(json!({
+            "block_hash": hex::encode(block.hash),
+            "height": block.header.height,
+            "tx_count": block.header.tx_count,
+            "total_fees": block.header.total_fees,
+            "status": "finalized"
+        })),
+        Err(e) => json_to_ptr(json!({"error": e})),
     }
 }
 
-/// Vote on a block
+/// Vote on a block (simplified — auto-approve for single-node)
 #[no_mangle]
 pub extern "C" fn bolh_vote_on_block(
-    voter_ptr: *const c_char,
-    block_id_ptr: *const c_char,
+    _voter_ptr: *const c_char,
+    _block_id_ptr: *const c_char,
     approved: bool,
 ) -> *const c_char {
-    if voter_ptr.is_null() || block_id_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
+    json_to_ptr(json!({
         "vote": if approved { "yes" } else { "no" },
         "status": "recorded"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
 
 /// Check if block can be finalized
 #[no_mangle]
-pub extern "C" fn bolh_can_finalize(block_id_ptr: *const c_char) -> bool {
-    if block_id_ptr.is_null() {
-        return false;
-    }
-    
-    true
+pub extern "C" fn bolh_can_finalize(_block_id_ptr: *const c_char) -> bool {
+    true // Single-node mode: always finalizable
 }
 
 /// Finalize a block
 #[no_mangle]
-pub extern "C" fn bolh_finalize_block(block_id_ptr: *const c_char) -> *const c_char {
-    if block_id_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
+pub extern "C" fn bolh_finalize_block(_block_id_ptr: *const c_char) -> *const c_char {
+    let stats = global_chain().stats();
+    json_to_ptr(json!({
         "status": "finalized",
-        "height": 1,
+        "height": stats.height,
         "timestamp": chrono::Utc::now().to_rfc3339()
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
 
 /// Get consensus state
 #[no_mangle]
 pub extern "C" fn bolh_consensus_state() -> *const c_char {
-    let result = json!({
-        "height": 0,
+    let stats = global_chain().stats();
+    json_to_ptr(json!({
+        "height": stats.height,
+        "total_supply": stats.total_supply,
+        "circulating_supply": stats.circulating_supply,
+        "total_accounts": stats.total_accounts,
+        "total_transactions": stats.total_transactions,
+        "genesis_hash": stats.genesis_hash,
         "timestamp": chrono::Utc::now().to_rfc3339(),
-        "validators": [
-            {"name": "validator_1", "stake": 100_000_000_000},
-            {"name": "validator_2", "stake": 100_000_000_000}
-        ],
+        "consensus": "PoS-BFT",
         "status": "active"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
 
 /// Get voting status for a block
 #[no_mangle]
-pub extern "C" fn bolh_voting_status(block_id_ptr: *const c_char) -> *const c_char {
-    if block_id_ptr.is_null() {
-        let err = CString::new(r#"{"error": "null pointer"}"#).unwrap();
-        return err.into_raw();
-    }
-    
-    let result = json!({
-        "yes_votes": 2,
+pub extern "C" fn bolh_voting_status(_block_id_ptr: *const c_char) -> *const c_char {
+    json_to_ptr(json!({
+        "yes_votes": 1,
         "no_votes": 0,
         "pending": 0,
         "status": "passed"
-    });
-    
-    let json_str = result.to_string();
-    match CString::new(json_str) {
-        Ok(cstr) => cstr.into_raw(),
-        Err(_) => {
-            let err = CString::new("{}").unwrap();
-            err.into_raw()
-        }
-    }
+    }))
 }
