@@ -18,7 +18,7 @@ function getInitialLanguage(): LangCode {
     // localStorage might not be available
   }
   
-  return 'ru'; // Default
+  return 'en'; // Default — English
 }
 
 const [currentLang, setCurrentLang] = createSignal<LangCode>(getInitialLanguage());

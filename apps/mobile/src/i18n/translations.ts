@@ -2,32 +2,89 @@
 // RTL languages: Arabic, Hebrew, Persian, Urdu
 
 export const languages = {
-  ru: { name: 'Русский', flag: '🇷🇺', rtl: false },
+  // ── Tier 1: 100M+ native speakers ──
   en: { name: 'English', flag: '🇺🇸', rtl: false },
-  ar: { name: 'العربية', flag: '🇸🇦', rtl: true },
   zh: { name: '中文', flag: '🇨🇳', rtl: false },
-  fr: { name: 'Français', flag: '🇫🇷', rtl: false },
-  de: { name: 'Deutsch', flag: '🇩🇪', rtl: false },
-  tr: { name: 'Türkçe', flag: '🇹🇷', rtl: false },
-  kk: { name: 'Қазақша', flag: '🇰🇿', rtl: false },
-  no: { name: 'Norsk', flag: '🇳🇴', rtl: false },
-  fil: { name: 'Filipino', flag: '🇵🇭', rtl: false },
-  ce: { name: 'Нохчийн', flag: '🏴', rtl: false },
   es: { name: 'Español', flag: '🇪🇸', rtl: false },
-  pt: { name: 'Português', flag: '🇧🇷', rtl: false },
-  ja: { name: '日本語', flag: '🇯🇵', rtl: false },
-  ko: { name: '한국어', flag: '🇰🇷', rtl: false },
+  ar: { name: 'العربية', flag: '🇸🇦', rtl: true },
   hi: { name: 'हिन्दी', flag: '🇮🇳', rtl: false },
+  bn: { name: 'বাংলা', flag: '🇧🇩', rtl: false },
+  pt: { name: 'Português', flag: '🇧🇷', rtl: false },
+  ru: { name: 'Русский', flag: '🇷🇺', rtl: false },
+  ja: { name: '日本語', flag: '🇯🇵', rtl: false },
+  pa: { name: 'ਪੰਜਾਬੀ', flag: '🇮🇳', rtl: false },
+  // ── Tier 2: 50M–100M ──
+  de: { name: 'Deutsch', flag: '🇩🇪', rtl: false },
+  jv: { name: 'Basa Jawa', flag: '🇮🇩', rtl: false },
+  ko: { name: '한국어', flag: '🇰🇷', rtl: false },
+  fr: { name: 'Français', flag: '🇫🇷', rtl: false },
+  te: { name: 'తెలుగు', flag: '🇮🇳', rtl: false },
+  vi: { name: 'Tiếng Việt', flag: '🇻🇳', rtl: false },
+  mr: { name: 'मराठी', flag: '🇮🇳', rtl: false },
+  tr: { name: 'Türkçe', flag: '🇹🇷', rtl: false },
+  ta: { name: 'தமிழ்', flag: '🇮🇳', rtl: false },
+  ur: { name: 'اردو', flag: '🇵🇰', rtl: true },
+  it: { name: 'Italiano', flag: '🇮🇹', rtl: false },
+  th: { name: 'ไทย', flag: '🇹🇭', rtl: false },
+  gu: { name: 'ગુજરાતી', flag: '🇮🇳', rtl: false },
+  fa: { name: 'فارسی', flag: '🇮🇷', rtl: true },
+  id: { name: 'Bahasa Indonesia', flag: '🇮🇩', rtl: false },
+  ms: { name: 'Bahasa Melayu', flag: '🇲🇾', rtl: false },
+  // ── Tier 3: 20M–50M ──
+  pl: { name: 'Polski', flag: '🇵🇱', rtl: false },
+  uk: { name: 'Українська', flag: '🇺🇦', rtl: false },
+  kn: { name: 'ಕನ್ನಡ', flag: '🇮🇳', rtl: false },
+  ml: { name: 'മലയാളം', flag: '🇮🇳', rtl: false },
+  su: { name: 'Basa Sunda', flag: '🇮🇩', rtl: false },
+  ha: { name: 'Hausa', flag: '🇳🇬', rtl: false },
+  yo: { name: 'Yorùbá', flag: '🇳🇬', rtl: false },
+  or: { name: 'ଓଡ଼ିଆ', flag: '🇮🇳', rtl: false },
+  my: { name: 'မြန်မာ', flag: '🇲🇲', rtl: false },
   uz: { name: "O'zbek", flag: '🇺🇿', rtl: false },
   az: { name: 'Azərbaycan', flag: '🇦🇿', rtl: false },
-  uk: { name: 'Українська', flag: '🇺🇦', rtl: false },
-  pl: { name: 'Polski', flag: '🇵🇱', rtl: false },
-  ro: { name: 'Română', flag: '🇲🇩', rtl: false },
-  it: { name: 'Italiano', flag: '🇮🇹', rtl: false },
+  ps: { name: 'پښتو', flag: '🇦🇫', rtl: true },
+  ku: { name: 'Kurdî', flag: '🇮🇶', rtl: false },
+  sd: { name: 'سنڌي', flag: '🇵🇰', rtl: true },
   nl: { name: 'Nederlands', flag: '🇳🇱', rtl: false },
-  sv: { name: 'Svenska', flag: '🇸🇪', rtl: false },
-  hu: { name: 'Magyar', flag: '🇭🇺', rtl: false },
+  ro: { name: 'Română', flag: '🇲🇩', rtl: false },
+  ig: { name: 'Igbo', flag: '🇳🇬', rtl: false },
+  fil: { name: 'Filipino', flag: '🇵🇭', rtl: false },
+  am: { name: 'አማርኛ', flag: '🇪🇹', rtl: false },
+  // ── Tier 4: 5M–20M ──
+  ne: { name: 'नेपाली', flag: '🇳🇵', rtl: false },
+  si: { name: 'සිංහල', flag: '🇱🇰', rtl: false },
+  km: { name: 'ខ្មែរ', flag: '🇰🇭', rtl: false },
+  so: { name: 'Soomaali', flag: '🇸🇴', rtl: false },
+  sw: { name: 'Kiswahili', flag: '🇹🇿', rtl: false },
+  zu: { name: 'isiZulu', flag: '🇿🇦', rtl: false },
+  sn: { name: 'chiShona', flag: '🇿🇼', rtl: false },
+  rw: { name: 'Kinyarwanda', flag: '🇷🇼', rtl: false },
+  mg: { name: 'Malagasy', flag: '🇲🇬', rtl: false },
+  xh: { name: 'isiXhosa', flag: '🇿🇦', rtl: false },
+  el: { name: 'Ελληνικά', flag: '🇬🇷', rtl: false },
   cs: { name: 'Čeština', flag: '🇨🇿', rtl: false },
+  hu: { name: 'Magyar', flag: '🇭🇺', rtl: false },
+  sv: { name: 'Svenska', flag: '🇸🇪', rtl: false },
+  bg: { name: 'Български', flag: '🇧🇬', rtl: false },
+  sr: { name: 'Српски', flag: '🇷🇸', rtl: false },
+  hr: { name: 'Hrvatski', flag: '🇭🇷', rtl: false },
+  sk: { name: 'Slovenčina', flag: '🇸🇰', rtl: false },
+  da: { name: 'Dansk', flag: '🇩🇰', rtl: false },
+  fi: { name: 'Suomi', flag: '🇫🇮', rtl: false },
+  no: { name: 'Norsk', flag: '🇳🇴', rtl: false },
+  he: { name: 'עברית', flag: '🇮🇱', rtl: true },
+  ka: { name: 'ქართული', flag: '🇬🇪', rtl: false },
+  hy: { name: 'Հայերեն', flag: '🇦🇲', rtl: false },
+  kk: { name: 'Қазақша', flag: '🇰🇿', rtl: false },
+  ky: { name: 'Кыргызча', flag: '🇰🇬', rtl: false },
+  tg: { name: 'Тоҷикӣ', flag: '🇹🇯', rtl: false },
+  tk: { name: 'Türkmen', flag: '🇹🇲', rtl: false },
+  mn: { name: 'Монгол', flag: '🇲🇳', rtl: false },
+  lo: { name: 'ລາວ', flag: '🇱🇦', rtl: false },
+  be: { name: 'Беларуская', flag: '🇧🇾', rtl: false },
+  af: { name: 'Afrikaans', flag: '🇿🇦', rtl: false },
+  // ── Special ──
+  ce: { name: 'Нохчийн', flag: '🏴', rtl: false },
 };
 
 export type LangCode = keyof typeof languages;
@@ -665,6 +722,67 @@ export const translations: Record<LangCode, Record<string, string>> = {
     'worker.message': 'Написать',
     'worker.bookNow': 'Нанять',
     'nav.back': 'Назад',
+
+    // Daily English Lessons
+    'elearn.title': 'Учи английский',
+    'elearn.subtitle': 'Ежедневный урок',
+    'elearn.more': 'Подробнее',
+    'elearn.1.tr': 'Привет / Здравствуйте', 'elearn.1.ex': 'Привет, как дела?', 'elearn.1.tip': 'Универсальное приветствие на все случаи',
+    'elearn.2.tr': 'Спасибо', 'elearn.2.ex': 'Спасибо за вашу помощь!', 'elearn.2.tip': '"Thanks" — короткий вариант',
+    'elearn.3.tr': 'Пожалуйста', 'elearn.3.ex': 'Пожалуйста, подождите минуту.', 'elearn.3.tip': 'Ставится перед просьбой или после неё',
+    'elearn.4.tr': 'Извините', 'elearn.4.ex': 'Извините, я опоздал.', 'elearn.4.tip': '"Excuse me" — для привлечения внимания',
+    'elearn.5.tr': 'Приятно познакомиться', 'elearn.5.ex': 'Привет, я Алекс. Приятно познакомиться!', 'elearn.5.tip': 'Говорят при первой встрече',
+    'elearn.6.tr': 'Я / Ты / Он — глагол "быть"', 'elearn.6.ex': 'Я работник. Ты клиент. Он эксперт.', 'elearn.6.tip': 'am/is/are — важнейший глагол английского',
+    'elearn.7.tr': 'Хорошего дня!', 'elearn.7.ex': 'До встречи! Хорошего дня!', 'elearn.7.tip': 'Вежливое прощание',
+    'elearn.8.tr': 'Работа', 'elearn.8.ex': 'Я нашёл отличную работу.', 'elearn.8.tip': '"Work" — процесс, "Job" — место работы',
+    'elearn.9.tr': 'Услуга / Сервис', 'elearn.9.ex': 'Этот сервис отличный!', 'elearn.9.tip': 'Может означать и обслуживание, и услугу',
+    'elearn.10.tr': 'Цена', 'elearn.10.ex': 'Какая цена?', 'elearn.10.tip': '"Cost" — стоимость, "Price" — цена товара',
+    'elearn.11.tr': 'Заказ', 'elearn.11.ex': 'Я хочу сделать заказ.', 'elearn.11.tip': 'Order = и заказ, и порядок',
+    'elearn.12.tr': 'Сколько это стоит?', 'elearn.12.ex': 'Сколько стоит починить трубу?', 'elearn.12.tip': 'Ключевая фраза для любой покупки',
+    'elearn.13.tr': 'Do/Does — для вопросов', 'elearn.13.ex': 'Ты тут работаешь? Он доставляет?', 'elearn.13.tip': 'Do — I/you/we/they, Does — he/she/it',
+    'elearn.14.tr': 'Мне нужна помощь с...', 'elearn.14.ex': 'Мне нужна помощь с машиной.', 'elearn.14.tip': 'Универсальный шаблон для просьб',
+    'elearn.15.tr': 'Один, два, три', 'elearn.15.ex': 'Мне нужно три часа.', 'elearn.15.tip': 'Числа 1-10 — учи первыми',
+    'elearn.16.tr': 'Сегодня / Завтра', 'elearn.16.ex': 'Вы можете прийти сегодня или завтра?', 'elearn.16.tip': '"Yesterday" — вчера',
+    'elearn.17.tr': 'Час / Минута', 'elearn.17.ex': 'Подождите 30 минут.', 'elearn.17.tip': '"Half an hour" — полчаса',
+    'elearn.18.tr': 'Деньги', 'elearn.18.ex': 'Деньги в кошельке.', 'elearn.18.tip': 'Money — всегда единственное число',
+    'elearn.19.tr': 'Который час?', 'elearn.19.ex': 'Извините, который час?', 'elearn.19.tip': 'Ответ: "It\'s 3 o\'clock"',
+    'elearn.20.tr': 'Есть / Имеется', 'elearn.20.ex': 'Есть проблема. Есть два варианта.', 'elearn.20.tip': 'There is — ед. число, There are — мн. число',
+    'elearn.21.tr': 'Буду через 10 минут', 'elearn.21.ex': 'Не переживайте, буду через 10 минут.', 'elearn.21.tip': '"I\'ll" = "I will" — сокращение',
+    'elearn.22.tr': 'Починить / Отремонтировать', 'elearn.22.ex': 'Можете это починить?', 'elearn.22.tip': 'Fix — быстро, Repair — капитально',
+    'elearn.23.tr': 'Сломанный', 'elearn.23.ex': 'Труба сломана.', 'elearn.23.tip': '"Break — broke — broken" — неправильный глагол',
+    'elearn.24.tr': 'Безопасный / Безопасность', 'elearn.24.ex': 'Ваша безопасность — наш приоритет.', 'elearn.24.tip': 'Safe = прилагательное, Safety = существительное',
+    'elearn.25.tr': 'Доставка', 'elearn.25.ex': 'Доставка скоро прибудет.', 'elearn.25.tip': '"Deliver" — глагол, "Delivery" — существительное',
+    'elearn.26.tr': 'Всё в порядке?', 'elearn.26.ex': 'Работа сделана. Всё в порядке?', 'elearn.26.tip': '"OK" произошло из английского!',
+    'elearn.27.tr': 'Могу / Не могу', 'elearn.27.ex': 'Я могу починить. Не могу прийти сегодня.', 'elearn.27.tip': 'Can — возможность, May — разрешение',
+    'elearn.28.tr': 'Давайте я посмотрю', 'elearn.28.ex': 'Давайте я посмотрю проблему.', 'elearn.28.tip': '"Let me..." — вежливое предложение',
+    'elearn.29.tr': 'Позвонить / Сообщение', 'elearn.29.ex': 'Я перезвоню.', 'elearn.29.tip': '"Text me" — напиши мне (смс)',
+    'elearn.30.tr': 'Адрес', 'elearn.30.ex': 'Какой у вас адрес?', 'elearn.30.tip': 'Ударение на первый слог: AD-res',
+    'elearn.31.tr': 'Готов', 'elearn.31.ex': 'Я готов начать.', 'elearn.31.tip': '"Get ready" — подготовиться',
+    'elearn.32.tr': 'Подождать', 'elearn.32.ex': 'Пожалуйста, подождите минуту.', 'elearn.32.tip': '"Wait for" — ждать чего-то/кого-то',
+    'elearn.33.tr': 'Можете прислать фото?', 'elearn.33.ex': 'Можете прислать фото проблемы?', 'elearn.33.tip': '"Could you" — вежливее чем "Can you"',
+    'elearn.34.tr': 'Will / Won\'t — будущее', 'elearn.34.ex': 'Я закончу сегодня. Это не займёт долго.', 'elearn.34.tip': 'Will + глагол = простое будущее',
+    'elearn.35.tr': 'Я в пути', 'elearn.35.ex': 'Я в пути к вашему адресу.', 'elearn.35.tip': 'Очень частая фраза в мессенджерах',
+    'elearn.36.tr': 'Оплата', 'elearn.36.ex': 'Оплата подтверждена.', 'elearn.36.tip': '"Pay" — платить, "Payment" — оплата',
+    'elearn.37.tr': 'Отзыв / Рейтинг', 'elearn.37.ex': 'Пожалуйста, оставьте отзыв.', 'elearn.37.tip': '"Rate" — оценить, "Review" — написать отзыв',
+    'elearn.38.tr': 'Расписание', 'elearn.38.ex': 'Дайте проверю расписание.', 'elearn.38.tip': 'Американцы: SKEH-jool, Британцы: SHED-yool',
+    'elearn.39.tr': 'Опыт', 'elearn.39.ex': 'У меня 5 лет опыта.', 'elearn.39.tip': '"Experienced" — опытный',
+    'elearn.40.tr': 'Я хочу вас нанять', 'elearn.40.ex': 'Отличный профиль! Я хочу вас нанять.', 'elearn.40.tip': '"Hire" — нанять, "Fire" — уволить',
+    'elearn.41.tr': 'Have/Has — настоящее завершённое', 'elearn.41.ex': 'Я закончил. Она приехала.', 'elearn.41.tip': 'Have + 3-я форма глагола = результат',
+    'elearn.42.tr': 'Работа сделана!', 'elearn.42.ex': 'Всё чисто. Работа сделана!', 'elearn.42.tip': 'Идеальная фраза по завершении',
+    'elearn.43.tr': 'Налево / Направо / Прямо', 'elearn.43.ex': 'Поверните налево, потом прямо.', 'elearn.43.tip': '"Turn left/right" — повернуть',
+    'elearn.44.tr': 'Близко / Далеко', 'elearn.44.ex': 'Это близко или далеко?', 'elearn.44.tip': '"Nearby" — поблизости',
+    'elearn.45.tr': 'Быстро / Медленно', 'elearn.45.ex': 'Доставка была быстрой!', 'elearn.45.tip': '"Quickly" — быстро (наречие)',
+    'elearn.46.tr': 'Осторожно', 'elearn.46.ex': 'Осторожно, хрупкое!', 'elearn.46.tip': '"Be careful!" — Будь осторожен!',
+    'elearn.47.tr': 'Где ближайший...?', 'elearn.47.ex': 'Где ближайшая парковка?', 'elearn.47.tip': '"Nearest" — превосходная от "near"',
+    'elearn.48.tr': 'Much/Many/A lot of — количество', 'elearn.48.ex': 'Сколько времени? Сколько людей?', 'elearn.48.tip': 'Much — неисчисл., Many — исчисляемое',
+    'elearn.49.tr': 'Не торопитесь', 'elearn.49.ex': 'Не спешите. Не торопитесь.', 'elearn.49.tip': 'Вежливое "без спешки"',
+    'elearn.50.tr': 'Хороший / Плохой / Отличный', 'elearn.50.ex': 'Качество отличное!', 'elearn.50.tip': 'Good — better — best (степени)',
+    'elearn.51.tr': 'Дорогой / Дешёвый', 'elearn.51.ex': 'Это дорого?', 'elearn.51.tip': '"Affordable" — доступный по цене',
+    'elearn.52.tr': 'Проблема / Решение', 'elearn.52.ex': 'Я нашёл решение проблемы.', 'elearn.52.tip': '"Solve a problem" — решить проблему',
+    'elearn.53.tr': 'Качество', 'elearn.53.ex': 'Мы гарантируем высокое качество.', 'elearn.53.tip': '"High quality" — высокое качество',
+    'elearn.54.tr': 'Что думаете?', 'elearn.54.ex': 'Вот мой план. Что думаете?', 'elearn.54.tip': '"I think" — Я думаю',
+    'elearn.55.tr': 'Сравнения: -er / more', 'elearn.55.ex': 'Это быстрее. Это дороже.', 'elearn.55.tip': 'Короткие слова + -er, длинные — more',
+    'elearn.56.tr': 'Звучит хорошо!', 'elearn.56.ex': 'Ваш план звучит хорошо. Давайте!', 'elearn.56.tip': 'Популярное одобрение в разговоре',
   },
 
   // ==================== ENGLISH ====================
@@ -1303,6 +1421,67 @@ export const translations: Record<LangCode, Record<string, string>> = {
     'worker.message': 'Message',
     'worker.bookNow': 'Book Now',
     'nav.back': 'Back',
+
+    // Daily English Lessons (English = explanations in simple English for all non-translated languages)
+    'elearn.title': 'Learn English',
+    'elearn.subtitle': 'Daily lesson',
+    'elearn.more': 'More',
+    'elearn.1.tr': 'A greeting', 'elearn.1.ex': 'Hello, how are you?', 'elearn.1.tip': 'Universal greeting for any situation',
+    'elearn.2.tr': 'Expressing gratitude', 'elearn.2.ex': 'Thank you for your help!', 'elearn.2.tip': '"Thanks" is the short version',
+    'elearn.3.tr': 'A polite request word', 'elearn.3.ex': 'Please wait a moment.', 'elearn.3.tip': 'Put before or after a request',
+    'elearn.4.tr': 'An apology', 'elearn.4.ex': 'Sorry, I\'m late.', 'elearn.4.tip': '"Excuse me" to get attention',
+    'elearn.5.tr': 'First meeting phrase', 'elearn.5.ex': 'Hi, I\'m Alex. Nice to meet you!', 'elearn.5.tip': 'Say this when you meet someone new',
+    'elearn.6.tr': 'Verb "to be"', 'elearn.6.ex': 'I am a worker. You are the client.', 'elearn.6.tip': 'The most important English verb',
+    'elearn.7.tr': 'A friendly goodbye', 'elearn.7.ex': 'See you later! Have a great day!', 'elearn.7.tip': 'Polite way to say goodbye',
+    'elearn.8.tr': 'Employment', 'elearn.8.ex': 'I found a great job.', 'elearn.8.tip': '"Work" = process, "Job" = position',
+    'elearn.9.tr': 'Help or work done for others', 'elearn.9.ex': 'This service is excellent!', 'elearn.9.tip': 'Can mean assistance or a business',
+    'elearn.10.tr': 'Cost of something', 'elearn.10.ex': 'What is the price?', 'elearn.10.tip': '"Cost" = total, "Price" = per item',
+    'elearn.11.tr': 'A request to buy/get', 'elearn.11.ex': 'I want to place an order.', 'elearn.11.tip': 'Order = purchase request or sequence',
+    'elearn.12.tr': 'Asking about cost', 'elearn.12.ex': 'How much does it cost to fix the pipe?', 'elearn.12.tip': 'Key phrase for any purchase',
+    'elearn.13.tr': 'Making questions', 'elearn.13.ex': 'Do you work here? Does he deliver?', 'elearn.13.tip': 'Do = I/you/we/they, Does = he/she/it',
+    'elearn.14.tr': 'Asking for help', 'elearn.14.ex': 'I need help with my car.', 'elearn.14.tip': 'Universal template for requests',
+    'elearn.15.tr': 'Numbers 1-3', 'elearn.15.ex': 'I need three hours.', 'elearn.15.tip': 'Learn numbers 1-10 first',
+    'elearn.16.tr': 'Time words', 'elearn.16.ex': 'Can you come today or tomorrow?', 'elearn.16.tip': '"Yesterday" = the day before',
+    'elearn.17.tr': 'Time units', 'elearn.17.ex': 'Wait 30 minutes please.', 'elearn.17.tip': '"Half an hour" = 30 minutes',
+    'elearn.18.tr': 'Currency/cash', 'elearn.18.ex': 'The money is in the wallet.', 'elearn.18.tip': 'Money is always singular',
+    'elearn.19.tr': 'Asking the time', 'elearn.19.ex': 'Excuse me, what time is it?', 'elearn.19.tip': 'Answer: "It\'s 3 o\'clock"',
+    'elearn.20.tr': 'Existence', 'elearn.20.ex': 'There is a problem. There are two options.', 'elearn.20.tip': '"There is" = singular, "There are" = plural',
+    'elearn.21.tr': 'Giving ETA', 'elearn.21.ex': 'Don\'t worry, I\'ll be there in 10 minutes.', 'elearn.21.tip': '"I\'ll" = "I will" (contraction)',
+    'elearn.22.tr': 'To make something work again', 'elearn.22.ex': 'Can you fix this?', 'elearn.22.tip': 'Fix = quick, Repair = thorough',
+    'elearn.23.tr': 'Not working / damaged', 'elearn.23.ex': 'The pipe is broken.', 'elearn.23.tip': '"Break — broke — broken" irregular verb',
+    'elearn.24.tr': 'Free from danger', 'elearn.24.ex': 'Your safety is our priority.', 'elearn.24.tip': 'Safe = adjective, Safety = noun',
+    'elearn.25.tr': 'Bringing items to a place', 'elearn.25.ex': 'The delivery will arrive soon.', 'elearn.25.tip': '"Deliver" = verb, "Delivery" = noun',
+    'elearn.26.tr': 'Checking satisfaction', 'elearn.26.ex': 'The work is done. Is everything okay?', 'elearn.26.tip': '"OK" originated in English!',
+    'elearn.27.tr': 'Ability / inability', 'elearn.27.ex': 'I can fix it. I can\'t come today.', 'elearn.27.tip': 'Can = ability, May = permission',
+    'elearn.28.tr': 'Offering to check', 'elearn.28.ex': 'Let me take a look at the problem.', 'elearn.28.tip': '"Let me..." = polite offer',
+    'elearn.29.tr': 'Communication methods', 'elearn.29.ex': 'I will call you back.', 'elearn.29.tip': '"Text me" = send me a message',
+    'elearn.30.tr': 'Location', 'elearn.30.ex': 'What is your address?', 'elearn.30.tip': 'Stress on first syllable: AD-dress',
+    'elearn.31.tr': 'Prepared', 'elearn.31.ex': 'I\'m ready to start.', 'elearn.31.tip': '"Get ready" = prepare yourself',
+    'elearn.32.tr': 'Stay until something happens', 'elearn.32.ex': 'Please wait a moment.', 'elearn.32.tip': '"Wait for" = wait for something/someone',
+    'elearn.33.tr': 'Polite photo request', 'elearn.33.ex': 'Could you send me a photo of the problem?', 'elearn.33.tip': '"Could you" is more polite than "Can you"',
+    'elearn.34.tr': 'Future tense', 'elearn.34.ex': 'I will finish today. It won\'t take long.', 'elearn.34.tip': 'Will + verb = simple future',
+    'elearn.35.tr': 'Currently traveling to you', 'elearn.35.ex': 'I\'m on my way to your location.', 'elearn.35.tip': 'Very common in messaging',
+    'elearn.36.tr': 'Paying for something', 'elearn.36.ex': 'Payment confirmed.', 'elearn.36.tip': '"Pay" = verb, "Payment" = noun',
+    'elearn.37.tr': 'Feedback / score', 'elearn.37.ex': 'Please leave a review.', 'elearn.37.tip': '"Rate" = give score, "Review" = write feedback',
+    'elearn.38.tr': 'Planned times', 'elearn.38.ex': 'Let me check my schedule.', 'elearn.38.tip': 'US: SKEH-jool, UK: SHED-yool',
+    'elearn.39.tr': 'Knowledge from practice', 'elearn.39.ex': 'I have 5 years of experience.', 'elearn.39.tip': '"Experienced" = skilled through practice',
+    'elearn.40.tr': 'Wanting to employ someone', 'elearn.40.ex': 'Great profile! I\'d like to hire you.', 'elearn.40.tip': '"Hire" = employ, "Fire" = dismiss',
+    'elearn.41.tr': 'Present perfect tense', 'elearn.41.ex': 'I have finished. She has arrived.', 'elearn.41.tip': 'Have + past participle = completed action',
+    'elearn.42.tr': 'Work completed', 'elearn.42.ex': 'Everything is clean. The job is done!', 'elearn.42.tip': 'Perfect phrase when finishing',
+    'elearn.43.tr': 'Directions', 'elearn.43.ex': 'Turn left, then go straight.', 'elearn.43.tip': '"Turn left/right" = change direction',
+    'elearn.44.tr': 'Distance', 'elearn.44.ex': 'Is it near or far?', 'elearn.44.tip': '"Nearby" = close to here',
+    'elearn.45.tr': 'Speed', 'elearn.45.ex': 'The delivery was fast!', 'elearn.45.tip': '"Quickly" = fast (adverb)',
+    'elearn.46.tr': 'Being cautious', 'elearn.46.ex': 'Be careful, it\'s fragile.', 'elearn.46.tip': '"Be careful!" = Watch out!',
+    'elearn.47.tr': 'Finding closest location', 'elearn.47.ex': 'Where is the nearest parking?', 'elearn.47.tip': '"Nearest" = superlative of "near"',
+    'elearn.48.tr': 'Quantity words', 'elearn.48.ex': 'How much time? How many people?', 'elearn.48.tip': 'Much = uncountable, Many = countable',
+    'elearn.49.tr': 'No rush', 'elearn.49.ex': 'No rush. Take your time.', 'elearn.49.tip': 'Polite "no hurry"',
+    'elearn.50.tr': 'Quality adjectives', 'elearn.50.ex': 'The quality is great!', 'elearn.50.tip': 'Good — better — best (comparison)',
+    'elearn.51.tr': 'Price adjectives', 'elearn.51.ex': 'Is it expensive?', 'elearn.51.tip': '"Affordable" = reasonably priced',
+    'elearn.52.tr': 'Issue and answer', 'elearn.52.ex': 'I found the solution to the problem.', 'elearn.52.tip': '"Solve a problem" = find the answer',
+    'elearn.53.tr': 'How good something is', 'elearn.53.ex': 'We guarantee high quality.', 'elearn.53.tip': '"High quality" = very good standard',
+    'elearn.54.tr': 'Asking opinion', 'elearn.54.ex': 'Here\'s my plan. What do you think?', 'elearn.54.tip': '"I think" = My opinion is',
+    'elearn.55.tr': 'Comparing things', 'elearn.55.ex': 'This is faster. This is more expensive.', 'elearn.55.tip': 'Short words + -er, long words use more',
+    'elearn.56.tr': 'Agreeing / approving', 'elearn.56.ex': 'Your plan sounds good. Let\'s do it!', 'elearn.56.tip': 'Popular way to agree',
   },
 
   // ==================== ARABIC ====================
@@ -12900,4 +13079,69 @@ export const translations: Record<LangCode, Record<string, string>> = {
     'settings.resetConfirm': 'Obnovit',
     'settings.cancel': 'Zrušit',
   },
+
+  // ══════════════════════════════════════════════════════
+  // Languages below: registered, fallback to English.
+  // Full translations will be added progressively.
+  // ══════════════════════════════════════════════════════
+
+  // ── Tier 1 ──
+  bn: {}, // বাংলা (Bengali) — 234M speakers
+  pa: {}, // ਪੰਜਾਬੀ (Punjabi) — 113M speakers
+
+  // ── Tier 2 ──
+  jv: {}, // Basa Jawa (Javanese) — 82M speakers
+  te: {}, // తెలుగు (Telugu) — 83M speakers
+  vi: {}, // Tiếng Việt (Vietnamese) — 85M speakers
+  mr: {}, // मराठी (Marathi) — 83M speakers
+  ta: {}, // தமிழ் (Tamil) — 79M speakers
+  ur: {}, // اردو (Urdu) — 70M speakers — RTL
+  th: {}, // ไทย (Thai) — 61M speakers
+  gu: {}, // ગુજરાતી (Gujarati) — 57M speakers
+  fa: {}, // فارسی (Persian) — 57M speakers — RTL
+  id: {}, // Bahasa Indonesia — 43M speakers
+  ms: {}, // Bahasa Melayu (Malay) — 77M speakers
+
+  // ── Tier 3 ──
+  kn: {}, // ಕನ್ನಡ (Kannada) — 44M speakers
+  ml: {}, // മലയാളം (Malayalam) — 38M speakers
+  su: {}, // Basa Sunda (Sundanese) — 42M speakers
+  ha: {}, // Hausa — 47M speakers
+  yo: {}, // Yorùbá — 47M speakers
+  or: {}, // ଓଡ଼ିଆ (Odia) — 35M speakers
+  my: {}, // မြန်မာ (Burmese) — 33M speakers
+  ps: {}, // پښتو (Pashto) — 40M speakers — RTL
+  ku: {}, // Kurdî (Kurdish) — 30M speakers
+  sd: {}, // سنڌي (Sindhi) — 25M speakers — RTL
+  ig: {}, // Igbo — 27M speakers
+  am: {}, // አማርኛ (Amharic) — 32M speakers
+
+  // ── Tier 4 ──
+  ne: {}, // नेपाली (Nepali) — 16M speakers
+  si: {}, // සිංහල (Sinhalese) — 17M speakers
+  km: {}, // ខ្មែរ (Khmer) — 16M speakers
+  so: {}, // Soomaali (Somali) — 16M speakers
+  sw: {}, // Kiswahili (Swahili) — 100M+ total speakers
+  zu: {}, // isiZulu — 12M speakers
+  sn: {}, // chiShona — 12M speakers
+  rw: {}, // Kinyarwanda — 12M speakers
+  mg: {}, // Malagasy — 18M speakers
+  xh: {}, // isiXhosa — 8M speakers
+  el: {}, // Ελληνικά (Greek) — 13M speakers
+  bg: {}, // Български (Bulgarian) — 7M speakers
+  sr: {}, // Српски (Serbian) — 9M speakers
+  hr: {}, // Hrvatski (Croatian) — 5.5M speakers
+  sk: {}, // Slovenčina (Slovak) — 5M speakers
+  da: {}, // Dansk (Danish) — 5.5M speakers
+  fi: {}, // Suomi (Finnish) — 5M speakers
+  he: {}, // עברית (Hebrew) — 9M speakers — RTL
+  ka: {}, // ქართული (Georgian) — 4M speakers
+  hy: {}, // Հայերեն (Armenian) — 6M speakers
+  ky: {}, // Кыргызча (Kyrgyz) — 5M speakers
+  tg: {}, // Тоҷикӣ (Tajik) — 8M speakers
+  tk: {}, // Türkmen (Turkmen) — 7M speakers
+  mn: {}, // Монгол (Mongolian) — 6M speakers
+  lo: {}, // ລາວ (Lao) — 7M speakers
+  be: {}, // Беларуская (Belarusian) — 6M speakers
+  af: {}, // Afrikaans — 7M speakers
 };
