@@ -467,7 +467,7 @@ fn global_node() -> &'static crate::network::BolhNode {
     })
 }
 
-/// Get P2P network status
+/// Get P2P network status (extended with reputation and gossip stats)
 #[no_mangle]
 pub extern "C" fn bolh_network_status() -> *const c_char {
     let node = global_node();
@@ -478,6 +478,10 @@ pub extern "C" fn bolh_network_status() -> *const c_char {
         "inbound_peers": stats.inbound_peers,
         "outbound_peers": stats.outbound_peers,
         "known_peers": stats.known_peers,
+        "banned_peers": stats.banned_peers,
+        "seen_txs": stats.seen_txs,
+        "seen_blocks": stats.seen_blocks,
+        "avg_peer_reputation": stats.avg_peer_reputation,
         "is_running": stats.is_running,
         "listen_addr": stats.listen_addr,
         "protocol_version": crate::network::protocol::PROTOCOL_VERSION,

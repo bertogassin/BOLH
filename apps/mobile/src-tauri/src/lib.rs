@@ -239,6 +239,10 @@ async fn bolh_network_info() -> Result<serde_json::Value, String> {
             "inbound_peers": ns.inbound_peers,
             "outbound_peers": ns.outbound_peers,
             "known_peers": ns.known_peers,
+            "banned_peers": ns.banned_peers,
+            "seen_txs": ns.seen_txs,
+            "seen_blocks": ns.seen_blocks,
+            "avg_peer_reputation": ns.avg_peer_reputation,
             "is_running": ns.is_running,
             "listen_addr": ns.listen_addr,
             "protocol_version": 1,
@@ -292,6 +296,71 @@ async fn bolh_p2p_peers() -> Result<serde_json::Value, String> {
             })
         }).collect();
         serde_json::json!({"peers": peers, "count": peers.len()})
+    }).await.map_err(|e| e.to_string())
+}
+
+// ============= P2P Advanced =============
+
+#[tauri::command]
+async fn bolh_p2p_auto_sync() -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(|| {
+        let node = global_node();
+        let chain = global_chain();
+        match node.auto_sync(chain) {
+            Ok(synced) => serde_json::json!({
+                "success": true,
+                "blocks_synced": synced,
+                "new_height": chain.height(),
+                "status": if synced > 0 { "synced" } else { "up_to_date" }
+            }),
+            Err(e) => serde_json::json!({"success": false, "error": e}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_p2p_discover(peer_id: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let node = global_node();
+        match node.discover_peers(&peer_id) {
+            Ok(peers) => {
+                let list: Vec<serde_json::Value> = peers.iter().map(|p| {
+                    serde_json::json!({
+                        "node_id": p.node_id,
+                        "host": p.host,
+                        "port": p.port,
+                        "height": p.height
+                    })
+                }).collect();
+                serde_json::json!({"success": true, "discovered": list, "count": list.len()})
+            }
+            Err(e) => serde_json::json!({"success": false, "error": e}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_p2p_ban(peer_id: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        global_node().ban_peer(&peer_id);
+        serde_json::json!({"success": true, "banned": peer_id})
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_p2p_sync_peer(peer_id: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let node = global_node();
+        let chain = global_chain();
+        match node.sync_with_peer(&peer_id, chain) {
+            Ok(synced) => serde_json::json!({
+                "success": true,
+                "blocks_synced": synced,
+                "new_height": chain.height(),
+                "status": if synced > 0 { "synced" } else { "up_to_date" }
+            }),
+            Err(e) => serde_json::json!({"success": false, "error": e}),
+        }
     }).await.map_err(|e| e.to_string())
 }
 
@@ -527,6 +596,45 @@ async fn bolh_contract_stats() -> Result<serde_json::Value, String> {
         let stats = global_contracts().stats();
         serde_json::to_value(stats).unwrap_or_default()
     }).await.map_err(|e| e.to_string())
+}
+
+// ============= Contract Creation (Subscription + Bounty) =============
+
+#[tauri::command]
+async fn bolh_create_subscription(
+    client_addr: String,
+    provider_addr: String,
+    monthly_amount: u64,
+    description: String,
+) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let client = Address::from_bech32(&client_addr).map_err(|e| format!("Bad client addr: {}", e))?;
+        let provider = Address::from_bech32(&provider_addr).map_err(|e| format!("Bad provider addr: {}", e))?;
+        let result = global_contracts().create_subscription(&client, &provider, monthly_amount, &description);
+        Ok(serde_json::json!({
+            "success": result.success,
+            "contract_id": result.contract_id,
+            "message": result.message
+        }))
+    }).await.map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn bolh_create_bounty(
+    creator_addr: String,
+    amount: u64,
+    description: String,
+    deadline: u64,
+) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let creator = Address::from_bech32(&creator_addr).map_err(|e| format!("Bad addr: {}", e))?;
+        let result = global_contracts().create_bounty(&creator, amount, &description, deadline);
+        Ok(serde_json::json!({
+            "success": result.success,
+            "contract_id": result.contract_id,
+            "message": result.message
+        }))
+    }).await.map_err(|e| e.to_string())?
 }
 
 // ============= Business Module Stats =============
@@ -837,6 +945,10 @@ pub fn run() {
             bolh_p2p_stop,
             bolh_p2p_connect,
             bolh_p2p_peers,
+            bolh_p2p_auto_sync,
+            bolh_p2p_discover,
+            bolh_p2p_ban,
+            bolh_p2p_sync_peer,
             bolh_save,
             // Block Explorer
             bolh_get_block,
@@ -852,6 +964,8 @@ pub fn run() {
             bolh_get_contract,
             bolh_my_contracts,
             bolh_contract_stats,
+            bolh_create_subscription,
+            bolh_create_bounty,
             // Business modules
             bolh_delivery_stats,
             bolh_rental_stats,

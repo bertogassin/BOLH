@@ -1,13 +1,15 @@
-//! Security Pipeline (V1) — centralized transaction validation.
+//! Security Pipeline (V2) — centralized transaction validation.
 //!
 //! This is the single gate that every transaction must pass before being
 //! accepted into mempool / executed.
 //!
 //! It combines:
 //! - Format checks (size, fee rules, timestamps)
-//! - Signature checks (Ed25519 in v1)
+//! - Data payload size limits
+//! - Signature checks (Ed25519)
 //! - State checks (nonce, balance)
 //! - Policy checks (rate limits, replay, blacklists) via `SecurityEngine`
+//! - Timestamp freshness checks
 
 use std::sync::OnceLock;
 
@@ -15,6 +17,15 @@ use crate::chain::BolhChain;
 use crate::security::SecurityEngine;
 use crate::types::{Transaction, TxType};
 use crate::wallet::verify_ed25519;
+
+/// Maximum transaction data payload (64 KB)
+const MAX_TX_DATA_SIZE: usize = 64 * 1024;
+
+/// Maximum transaction age — reject txs older than 1 hour
+const MAX_TX_AGE_MS: u64 = 60 * 60 * 1000;
+
+/// Maximum transaction future drift — reject txs more than 5 minutes in the future
+const MAX_TX_FUTURE_MS: u64 = 5 * 60 * 1000;
 
 static ENGINE: OnceLock<SecurityEngine> = OnceLock::new();
 
@@ -31,7 +42,18 @@ impl SecurityPipeline {
             return Err("Invalid transaction format".into());
         }
 
-        // 1) Signature check (Ed25519 for v1)
+        // 0b) Data payload size limit
+        if tx.data.len() > MAX_TX_DATA_SIZE {
+            return Err(format!(
+                "Transaction data too large: {} bytes > {} limit",
+                tx.data.len(), MAX_TX_DATA_SIZE
+            ));
+        }
+
+        // 0c) Timestamp freshness
+        Self::check_timestamp(tx)?;
+
+        // 1) Signature check (Ed25519)
         Self::check_signature(tx)?;
 
         // 2) Replay pre-check (avoid misclassifying duplicates as nonce errors)
@@ -90,6 +112,36 @@ impl SecurityPipeline {
         if available < total_cost {
             return Err("Insufficient balance".into());
         }
+        Ok(())
+    }
+
+    fn check_timestamp(tx: &Transaction) -> Result<(), String> {
+        // System/reward txs may have synthetic timestamps
+        if matches!(tx.tx_type, TxType::System | TxType::MiningReward | TxType::ReferralReward) {
+            return Ok(());
+        }
+
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
+
+        // Reject transactions too old
+        if tx.timestamp > 0 && now > tx.timestamp && (now - tx.timestamp) > MAX_TX_AGE_MS {
+            return Err(format!(
+                "Transaction too old: {} ms ago",
+                now - tx.timestamp
+            ));
+        }
+
+        // Reject transactions from the future
+        if tx.timestamp > now + MAX_TX_FUTURE_MS {
+            return Err(format!(
+                "Transaction timestamp is in the future: {} > {}",
+                tx.timestamp, now
+            ));
+        }
+
         Ok(())
     }
 

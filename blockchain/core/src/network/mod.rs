@@ -6,8 +6,14 @@
 //! Architecture:
 //! - protocol.rs — wire protocol (message framing and types)
 //! - node.rs — P2P node (connection management, sync, broadcast)
-//! - peer.rs — peer information
+//! - peer.rs — peer information and reputation scoring
 //! - gossip.rs — gossip topics
+//!
+//! v2 improvements:
+//! - Persistent connections with per-peer message loops
+//! - Background maintenance (ping/pong, reconnect, discovery)
+//! - Transaction/block deduplication via seen-cache
+//! - Peer reputation scoring with auto-ban
 
 pub mod protocol;
 pub mod peer;
@@ -31,9 +37,11 @@ pub enum NetworkEvent {
     PeerDisconnected(String),
     /// Chain sync completed
     SyncCompleted { peer_id: String, blocks_synced: u64 },
+    /// Peer banned due to bad reputation
+    PeerBanned(String),
 }
 
-/// Network configuration
+/// Network configuration (high-level)
 pub struct NetworkConfig {
     /// Listen address
     pub listen_addr: String,

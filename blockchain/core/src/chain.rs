@@ -676,6 +676,9 @@ impl BolhChain {
         Ok(tx)
     }
 
+    /// Maximum mempool size (prevent OOM)
+    const MAX_MEMPOOL_SIZE: usize = 5_000;
+
     /// Submit a signed transaction (mempool admission only).
     ///
     /// V2 model: state changes happen ONLY during block application.
@@ -683,6 +686,27 @@ impl BolhChain {
         // Ensure hash is computed (it may be missing when deserialized)
         tx.hash = tx.compute_hash();
         let txid = hex::encode(tx.hash);
+
+        // Check mempool size limit
+        if self.mempool.read().len() >= Self::MAX_MEMPOOL_SIZE {
+            return TxSubmitResult {
+                success: false,
+                txid,
+                error: Some("Mempool full — try again later".into()),
+            };
+        }
+
+        // Check mempool dedup (prevent double-submission)
+        {
+            let mempool = self.mempool.read();
+            if mempool.iter().any(|m| m.hash == tx.hash) {
+                return TxSubmitResult {
+                    success: false,
+                    txid,
+                    error: Some("Transaction already in mempool".into()),
+                };
+            }
+        }
 
         // Centralized security/validation gate
         if let Err(e) = SecurityPipeline::validate_tx(self, &tx) {
@@ -782,6 +806,17 @@ impl BolhChain {
     pub fn get_block(&self, height: u64) -> Option<Block> {
         let blocks = self.blocks.read();
         blocks.get(height as usize).cloned()
+    }
+
+    /// Get blocks in a height range (inclusive)
+    pub fn get_blocks_range(&self, from_height: u64, to_height: u64) -> Vec<Block> {
+        let blocks = self.blocks.read();
+        let from = from_height as usize;
+        let to = std::cmp::min(to_height as usize + 1, blocks.len());
+        if from >= blocks.len() || from > to {
+            return Vec::new();
+        }
+        blocks[from..to].to_vec()
     }
 
     /// Get current block height
