@@ -6,7 +6,7 @@
 
 :root {
   /* Brand colors - Dark theme */
-  --primary: #6366f1;
+  --primary: #0ea5e9;
   --primary-dark: #4f46e5;
   --primary-light: #818cf8;
   --success: #10b981;
@@ -15,15 +15,15 @@
   --danger: #ef4444;
   --info: #3b82f6;
   
-  /* Dark theme */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  /* Dark theme — bright black + bright white */
+  --bg-primary: #050507;
+  --bg-secondary: #0c0c10;
+  --bg-tertiary: #18181f;
+  --text-primary: #ffffff;
+  --text-secondary: #e4e4e7;
+  --text-muted: #a1a1aa;
   --border: #475569;
-  --glow: rgba(99, 102, 241, 0.3);
+  --glow: rgba(14, 165, 233, 0.3);
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-border: rgba(255, 255, 255, 0.35);
   --input-bg: rgba(241, 245, 249, 0.8);
@@ -31,17 +31,17 @@
 }
 
 .dark {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: rgba(30, 41, 59, 0.8);
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border-color: rgba(148, 163, 184, 0.1);
-  --glass-bg: rgba(30, 41, 59, 0.88);
-  --glass-border: rgba(148, 163, 184, 0.12);
-  --input-bg: rgba(51, 65, 85, 0.5);
-  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
+  --bg-primary: #050507;
+  --bg-secondary: #0c0c10;
+  --bg-card: rgba(12, 12, 16, 0.85);
+  --text-primary: #ffffff;
+  --text-secondary: #e4e4e7;
+  --text-muted: #71717a;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(12, 12, 16, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --input-bg: rgba(24, 24, 31, 0.6);
+  --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* ========== PERFORMANCE: GPU Layer Promotion ========== */
@@ -61,13 +61,14 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #050507;
+  color: #ffffff;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
 
 .dark body {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  background: #050507;
 }
 
 /* ========== GLASSMORPHISM (Optimized) ========== */
@@ -81,15 +82,15 @@ body {
 }
 
 .dark .glass {
-  background: rgba(30, 41, 59, 0.88);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(12, 12, 16, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-dark {
-  background: rgba(15, 15, 35, 0.9);
+  background: rgba(8, 8, 14, 0.92);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
 }
 
 /* ========== DARK MODE TEXT ========== */
@@ -118,13 +119,13 @@ body {
 }
 
 /* Dark mode special backgrounds */
-.dark .bg-indigo-100 { background-color: rgba(99, 102, 241, 0.2); }
+.dark .bg-sky-100 { background-color: rgba(14, 165, 233, 0.2); }
 .dark .bg-green-100 { background-color: rgba(16, 185, 129, 0.2); }
 .dark .bg-amber-100 { background-color: rgba(245, 158, 11, 0.2); }
 .dark .bg-red-100 { background-color: rgba(239, 68, 68, 0.2); }
 .dark .bg-blue-100 { background-color: rgba(59, 130, 246, 0.2); }
 .dark .bg-cyan-100 { background-color: rgba(34, 211, 238, 0.2); }
-.dark .bg-indigo-50 { background-color: rgba(99, 102, 241, 0.15); }
+.dark .bg-sky-50 { background-color: rgba(14, 165, 233, 0.15); }
 .dark .bg-green-50 { background-color: rgba(16, 185, 129, 0.15); }
 .dark .bg-amber-50 { background-color: rgba(245, 158, 11, 0.15); }
 .dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.15); }
@@ -139,7 +140,7 @@ body {
 
 /* ========== GLOW EFFECTS ========== */
 .glow {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4), 0 0 60px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 20px rgba(14, 165, 233, 0.4), 0 0 60px rgba(14, 165, 233, 0.1);
 }
 
 .glow-success {
@@ -238,8 +239,8 @@ body {
 
 /* Glow pulse */
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
-  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6), 0 0 60px rgba(99, 102, 241, 0.2); }
+  0%, 100% { box-shadow: 0 0 15px rgba(14, 165, 233, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(14, 165, 233, 0.6), 0 0 60px rgba(14, 165, 233, 0.2); }
 }
 
 /* Skeleton wave */
@@ -549,10 +550,10 @@ body {
 }
 
 .custom-marker {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
   border-radius: 50%;
   border: 3px solid white;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.5);
 }
 
 .guard-marker {
@@ -571,27 +572,27 @@ body {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #6366f1;
+  background: #0ea5e9;
   border: 3px solid white;
-  box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 8px rgba(14, 165, 233, 0.3);
 }
 
 /* ========== BUTTONS ========== */
 .btn-primary {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
   color: white;
   border: none;
   border-radius: 16px;
   padding: 16px 32px;
   font-weight: 600;
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 8px 30px rgba(14, 165, 233, 0.35);
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: transform;
 }
 
 .btn-primary:active {
   transform: scale3d(0.96, 0.96, 1);
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
 }
 
 .btn-danger {
@@ -617,25 +618,28 @@ body {
 }
 
 /* ========== NAV BAR EFFECTS ========== */
-nav.glass {
-  backdrop-filter: blur(30px) saturate(200%);
-  -webkit-backdrop-filter: blur(30px) saturate(200%);
+nav {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+nav button {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 /* ========== SELECTION ========== */
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgba(14, 165, 233, 0.3);
   color: inherit;
 }
 
 /* ========== FOCUS STATES ========== */
 input:focus, textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 /* ========== IMAGE RENDERING ========== */
-img, svg {
+img {
   image-rendering: -webkit-optimize-contrast;
 }
 
@@ -647,4 +651,24 @@ img, svg {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Ensure SVG icons always fill their container — no DOM hacks, pure CSS */
+.bolh-icon svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  flex-shrink: 0;
+  fill: currentColor !important;
+  overflow: hidden;
+}
+
+/* Slightly bolder outlines for all Phosphor icons.
+   paint-order: stroke fill — draws stroke BEHIND fill so inner gaps stay clear */
+.bolh-icon svg path {
+  stroke: currentColor;
+  stroke-width: 8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  paint-order: stroke fill;
 }

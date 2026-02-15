@@ -1,4 +1,4 @@
-// BOLH Multi-Profession Department System
+﻿// BOLH Multi-Profession Department System
 // 11 departments, 135 skills, sorted easy → expert
 
 /** 4th-level variant within a skill */
@@ -159,11 +159,11 @@ export const departments: Department[] = [
     name: 'Ремонт техники',
     nameEn: 'Tech Repair',
     icon: '💻',
-    color: 'from-violet-500 to-purple-700',
-    colorFrom: '#8b5cf6',
+    color: 'from-sky-500 to-blue-700',
+    colorFrom: '#0ea5e9',
     colorTo: '#7e22ce',
-    accentBg: 'bg-violet-100',
-    accentText: 'text-violet-700',
+    accentBg: 'bg-sky-100',
+    accentText: 'text-sky-700',
     description: 'Бытовая техника, ПК, телефоны',
     descriptionEn: 'Appliances, PC, phones',
     workerTitle: 'Мастер',
@@ -334,11 +334,11 @@ export const departments: Department[] = [
     name: 'Охрана',
     nameEn: 'Security',
     icon: '🛡️',
-    color: 'from-indigo-500 to-purple-600',
-    colorFrom: '#6366f1',
-    colorTo: '#9333ea',
-    accentBg: 'bg-indigo-100',
-    accentText: 'text-indigo-700',
+    color: 'from-sky-500 to-blue-600',
+    colorFrom: '#0ea5e9',
+    colorTo: '#1d4ed8',
+    accentBg: 'bg-sky-100',
+    accentText: 'text-sky-700',
     description: 'Личная охрана, объекты, сопровождение',
     descriptionEn: 'Personal guard, facility, escort',
     workerTitle: 'Охранник',
