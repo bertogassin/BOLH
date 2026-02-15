@@ -1,0 +1,24 @@
+[package]
+name = "bolh-app"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "guardio_mobile"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { workspace = true, features = [] }
+
+[dependencies]
+guardio-core = { path = "../../../packages/core" }
+bolh-chain = { path = "../../../blockchain/core" }
+tauri = { workspace = true, features = [] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+libloading = "0.8"
+lazy_static = "1.4"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

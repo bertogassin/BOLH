@@ -1,0 +1,237 @@
+.balance-display {
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg-secondary);
+  margin-bottom: 16px;
+}
+
+.balance-card {
+  text-align: center;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-radius: 12px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.balance-label {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 8px;
+}
+
+.balance-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.refresh-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auto-refresh-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary);
+  color: white;
+  opacity: 1;
+  transform: rotate(15deg);
+}
+
+.refresh-btn:active:not(:disabled) {
+  transform: rotate(15deg) scale(0.95);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.balance-amount {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+.balance-amount .loading {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+.balance-subtext {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.wallet-details {
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row .label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-row .value {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.detail-row .value.mono {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.address-container {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.copy-btn-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 0.25rem;
+  color: var(--primary-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.copy-btn-inline:hover {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: var(--primary);
+  color: white;
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.copy-btn-inline:active {
+  transform: scale(0.95);
+}
+
+.utxo-section {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.expand-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.expand-btn:hover {
+  background: var(--bg-hover);
+}
+
+.arrow {
+  display: inline-block;
+  font-size: 10px;
+}
+
+.utxos-list {
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.utxo-item {
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border-left: 3px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.utxo-item.unspent {
+  border-left-color: #2ecc71;
+}
+
+.utxo-item.spent {
+  border-left-color: #e74c3c;
+  opacity: 0.6;
+}
+
+.utxo-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.utxo-header .status {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg-secondary);
+}
+
+.utxo-header .amount {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.utxo-txid {
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 11px;
+}

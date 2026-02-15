@@ -1,0 +1,40 @@
+[package]
+name = "bolh-chain"
+version = "0.1.0"
+edition = "2021"
+description = "BOLH Chain — quantum-resistant, private, modular blockchain"
+authors = ["BOLH Team"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "bolh_core"
+
+[dependencies]
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1"
+
+# Wallet vault (V1 security foundation)
+aes-gcm = "0.10"
+argon2 = "0.5"
+
+# Crypto
+sha3 = "0.10"
+blake3 = "1"
+rand = "0.8"
+hex = "0.4"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# Thread-safe state
+parking_lot = "0.12"
+
+[dev-dependencies]
+tempfile = "3"
