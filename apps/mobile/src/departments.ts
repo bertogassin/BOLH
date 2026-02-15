@@ -1,5 +1,5 @@
 // BOLH Multi-Profession Department System
-// 9 departments, 50+ skills, expert services
+// 11 departments, 135 skills, sorted easy → expert
 
 /** 4th-level variant within a skill */
 export interface SkillVariant {
@@ -187,8 +187,8 @@ export const departments: Department[] = [
         { id: 'tech_phone_water', name: 'После воды', nameEn: 'Water damage', icon: '💧' },
         { id: 'tech_phone_software', name: 'Прошивка', nameEn: 'Firmware / Software', icon: '⚙️' },
       ]},
+      { id: 'tech_remote', name: 'Удалённая помощь', nameEn: 'Remote Assistance', icon: '🌐', requiresDiploma: false, isExpert: true, urgent: true, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍' },
       { id: 'tech_expert', name: 'Диагностика перед покупкой', nameEn: 'Pre-purchase Diagnosis', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Проверить ноутбук/телефон по объявлению, купить и доставить', proxyExamplesEn: 'Inspect, buy & deliver a laptop/phone from listing' },
-      { id: 'tech_remote', name: 'Удалённая помощь', nameEn: 'Remote Assistance', icon: '🌐', requiresDiploma: false, isExpert: true, urgent: true },
     ]
   },
 
@@ -229,7 +229,7 @@ export const departments: Department[] = [
         { id: 'handy_tile_mosaic', name: 'Мозаика', nameEn: 'Mosaic', icon: '🎨' },
       ]},
       { id: 'handy_expert', name: 'Оценка квартиры/ремонта', nameEn: 'Apartment/Renovation Assessment', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Осмотреть квартиру, оценить ремонт, фото/видео отчёт', proxyExamplesEn: 'Inspect apartment, assess renovation, photo/video report' },
-      { id: 'handy_control', name: 'Контроль качества работ', nameEn: 'Quality Control', icon: '✅', requiresDiploma: false, isExpert: true, urgent: false },
+      { id: 'handy_control', name: 'Контроль качества работ', nameEn: 'Quality Control', icon: '✅', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍' },
     ]
   },
 
@@ -254,6 +254,7 @@ export const departments: Department[] = [
     internExample: 'Стажёр-клинер: уборка, химчистка, дезинфекция',
     internExampleEn: 'Cleaning intern: cleaning, dry cleaning, sanitation',
     skills: [
+      // ── Регулярная (простое → сложное) ──
       { id: 'clean_home', name: 'Уборка квартир/домов', nameEn: 'Home Cleaning', icon: '🏠', requiresDiploma: false, isExpert: false, urgent: true, group: 'regular', groupName: 'Регулярная', groupNameEn: 'Regular', groupIcon: '🏠', variants: [
         { id: 'clean_home_1r', name: '1-комнатная', nameEn: '1-room', icon: '1️⃣' },
         { id: 'clean_home_2r', name: '2-комнатная', nameEn: '2-room', icon: '2️⃣' },
@@ -266,10 +267,12 @@ export const departments: Department[] = [
         { id: 'clean_office_daily', name: 'Ежедневная', nameEn: 'Daily', icon: '📅' },
         { id: 'clean_office_warehouse', name: 'Склад / Производство', nameEn: 'Warehouse / Factory', icon: '🏭' },
       ]},
-      { id: 'clean_deep', name: 'Генеральная уборка', nameEn: 'Deep Cleaning', icon: '✨', requiresDiploma: false, isExpert: false, urgent: false, group: 'special', groupName: 'Специальная', groupNameEn: 'Special', groupIcon: '✨' },
+      // ── Специальная (простое → сложное) ──
       { id: 'clean_window', name: 'Мойка окон', nameEn: 'Window Cleaning', icon: '🪟', requiresDiploma: false, isExpert: false, urgent: false, group: 'special', groupName: 'Специальная', groupNameEn: 'Special', groupIcon: '✨' },
+      { id: 'clean_deep', name: 'Генеральная уборка', nameEn: 'Deep Cleaning', icon: '✨', requiresDiploma: false, isExpert: false, urgent: false, group: 'special', groupName: 'Специальная', groupNameEn: 'Special', groupIcon: '✨' },
+      { id: 'clean_chem', name: 'Химчистка мебели/ковров', nameEn: 'Upholstery/Carpet Cleaning', icon: '🛋️', requiresDiploma: false, isExpert: false, urgent: false, group: 'special', groupName: 'Специальная', groupNameEn: 'Special', groupIcon: '✨' },
       { id: 'clean_after', name: 'Уборка после ремонта', nameEn: 'Post-renovation Cleanup', icon: '🧹', requiresDiploma: false, isExpert: false, urgent: false, group: 'special', groupName: 'Специальная', groupNameEn: 'Special', groupIcon: '✨' },
-      { id: 'clean_chem', name: 'Химчистка мебели/ковров', nameEn: 'Upholstery/Carpet Cleaning', icon: '🛋️', requiresDiploma: false, isExpert: false, urgent: false },
+      // ── Эксперт ──
       { id: 'clean_expert', name: 'Экспертиза чистоты и дезинфекции', nameEn: 'Cleaning & Sanitation Expert', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Проверить чистоту перед арендой или покупкой', proxyExamplesEn: 'Inspect cleanliness before renting or buying' },
     ]
   },
@@ -344,12 +347,14 @@ export const departments: Department[] = [
     internExample: 'Стажёр-охранник: видеонаблюдение, патруль',
     internExampleEn: 'Security intern: CCTV, patrol, monitoring',
     skills: [
-      { id: 'sec_personal', name: 'Личная охрана', nameEn: 'Personal Guard', icon: '🛡️', requiresDiploma: true, isExpert: false, urgent: true, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
-      { id: 'sec_facility', name: 'Охрана объектов', nameEn: 'Facility Security', icon: '🏢', requiresDiploma: true, isExpert: false, urgent: false, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
+      // ── Охрана (простое → сложное) ──
       { id: 'sec_escort', name: 'Сопровождение', nameEn: 'Escort Service', icon: '🚶', requiresDiploma: false, isExpert: false, urgent: true, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
       { id: 'sec_urgent', name: 'Срочный выезд', nameEn: 'Emergency Dispatch', icon: '🚨', requiresDiploma: false, isExpert: false, urgent: true, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
-      { id: 'sec_expert', name: 'Оценка безопасности объекта', nameEn: 'Security Assessment', icon: '🔍', requiresDiploma: true, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Проверить безопасность дома/офиса перед покупкой/арендой', proxyExamplesEn: 'Assess security of a property before purchase/rental' },
+      { id: 'sec_facility', name: 'Охрана объектов', nameEn: 'Facility Security', icon: '🏢', requiresDiploma: true, isExpert: false, urgent: false, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
+      { id: 'sec_personal', name: 'Личная охрана', nameEn: 'Personal Guard', icon: '🛡️', requiresDiploma: true, isExpert: false, urgent: true, group: 'guard', groupName: 'Охрана', groupNameEn: 'Guard', groupIcon: '🛡️' },
+      // ── Эксперт ──
       { id: 'sec_consult', name: 'Консультация по защите', nameEn: 'Protection Consulting', icon: '📋', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Консультация и рекомендации по защите', proxyExamplesEn: 'Security consulting and recommendations' },
+      { id: 'sec_expert', name: 'Оценка безопасности объекта', nameEn: 'Security Assessment', icon: '🔍', requiresDiploma: true, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Проверить безопасность дома/офиса перед покупкой/арендой', proxyExamplesEn: 'Assess security of a property before purchase/rental' },
     ]
   },
 
@@ -374,6 +379,28 @@ export const departments: Department[] = [
     internExample: 'Стажёр-автомеханик: диагностика, ремонт, шины',
     internExampleEn: 'Auto mechanic intern: diagnostics, repair, tires',
     skills: [
+      // ── Сервис (простое → сложное) ──
+      { id: 'auto_wash', name: 'Мойка авто', nameEn: 'Car Wash', icon: '🧽', requiresDiploma: false, isExpert: false, urgent: false, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗', variants: [
+        { id: 'auto_wash_basic', name: 'Стандартная мойка', nameEn: 'Standard wash', icon: '💦' },
+        { id: 'auto_wash_full', name: 'Полная мойка', nameEn: 'Full wash', icon: '✨' },
+        { id: 'auto_wash_detail', name: 'Детейлинг', nameEn: 'Detailing', icon: '💎' },
+        { id: 'auto_wash_dry', name: 'Химчистка салона', nameEn: 'Interior dry clean', icon: '🧹' },
+      ]},
+      { id: 'auto_tire', name: 'Шиномонтаж', nameEn: 'Tire Service', icon: '🛞', requiresDiploma: false, isExpert: false, urgent: true, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗', variants: [
+        { id: 'auto_tire_change', name: 'Замена колёс', nameEn: 'Tire change', icon: '🔄' },
+        { id: 'auto_tire_repair', name: 'Ремонт прокола', nameEn: 'Puncture repair', icon: '🩹' },
+        { id: 'auto_tire_balance', name: 'Балансировка', nameEn: 'Balancing', icon: '⚖️' },
+        { id: 'auto_tire_align', name: 'Развал-схождение', nameEn: 'Alignment', icon: '📐' },
+      ]},
+      { id: 'auto_tow', name: 'Буксир / Эвакуатор', nameEn: 'Towing / Recovery', icon: '🚛', requiresDiploma: false, isExpert: false, urgent: true, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗' },
+      // ── Механика (простое → сложное) ──
+      { id: 'auto_mobile', name: 'Механик на выезд', nameEn: 'Mobile Mechanic', icon: '🔧', requiresDiploma: false, isExpert: false, urgent: true, group: 'mechanic', groupName: 'Механика', groupNameEn: 'Mechanic', groupIcon: '🔧', variants: [
+        { id: 'auto_mobile_battery', name: 'Аккумулятор', nameEn: 'Battery', icon: '🔋' },
+        { id: 'auto_mobile_start', name: 'Не заводится', nameEn: 'Won\'t start', icon: '🔑' },
+        { id: 'auto_mobile_oil', name: 'Масло / Жидкости', nameEn: 'Oil / Fluids', icon: '🛢️' },
+        { id: 'auto_mobile_lock', name: 'Заблокировался', nameEn: 'Locked out', icon: '🔒' },
+      ]},
+      { id: 'auto_electric', name: 'Автоэлектрик', nameEn: 'Auto Electrician', icon: '⚡', requiresDiploma: false, isExpert: false, urgent: true, group: 'mechanic', groupName: 'Механика', groupNameEn: 'Mechanic', groupIcon: '🔧' },
       { id: 'auto_garage', name: 'Механик с гаражом', nameEn: 'Garage Mechanic', icon: '🏗️', requiresDiploma: false, isExpert: false, urgent: false, group: 'mechanic', groupName: 'Механика', groupNameEn: 'Mechanic', groupIcon: '🔧', variants: [
         { id: 'auto_garage_engine', name: 'Двигатель', nameEn: 'Engine', icon: '⚙️' },
         { id: 'auto_garage_trans', name: 'Коробка передач', nameEn: 'Transmission', icon: '🔄' },
@@ -382,28 +409,9 @@ export const departments: Department[] = [
         { id: 'auto_garage_exhaust', name: 'Выхлопная система', nameEn: 'Exhaust', icon: '💨' },
         { id: 'auto_garage_ac', name: 'Кондиционер', nameEn: 'AC / Climate', icon: '❄️' },
       ]},
-      { id: 'auto_mobile', name: 'Механик на выезд', nameEn: 'Mobile Mechanic', icon: '🔧', requiresDiploma: false, isExpert: false, urgent: true, group: 'mechanic', groupName: 'Механика', groupNameEn: 'Mechanic', groupIcon: '🔧', variants: [
-        { id: 'auto_mobile_battery', name: 'Аккумулятор', nameEn: 'Battery', icon: '🔋' },
-        { id: 'auto_mobile_start', name: 'Не заводится', nameEn: 'Won\'t start', icon: '🔑' },
-        { id: 'auto_mobile_oil', name: 'Масло / Жидкости', nameEn: 'Oil / Fluids', icon: '🛢️' },
-        { id: 'auto_mobile_lock', name: 'Заблокировался', nameEn: 'Locked out', icon: '🔒' },
-      ]},
-      { id: 'auto_tow', name: 'Буксир / Эвакуатор', nameEn: 'Towing / Recovery', icon: '🚛', requiresDiploma: false, isExpert: false, urgent: true, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗' },
-      { id: 'auto_tire', name: 'Шиномонтаж', nameEn: 'Tire Service', icon: '🛞', requiresDiploma: false, isExpert: false, urgent: true, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗', variants: [
-        { id: 'auto_tire_change', name: 'Замена колёс', nameEn: 'Tire change', icon: '🔄' },
-        { id: 'auto_tire_repair', name: 'Ремонт прокола', nameEn: 'Puncture repair', icon: '🩹' },
-        { id: 'auto_tire_balance', name: 'Балансировка', nameEn: 'Balancing', icon: '⚖️' },
-        { id: 'auto_tire_align', name: 'Развал-схождение', nameEn: 'Alignment', icon: '📐' },
-      ]},
-      { id: 'auto_wash', name: 'Мойка авто', nameEn: 'Car Wash', icon: '🧽', requiresDiploma: false, isExpert: false, urgent: false, group: 'service', groupName: 'Сервис', groupNameEn: 'Service', groupIcon: '🚗', variants: [
-        { id: 'auto_wash_basic', name: 'Стандартная мойка', nameEn: 'Standard wash', icon: '💦' },
-        { id: 'auto_wash_full', name: 'Полная мойка', nameEn: 'Full wash', icon: '✨' },
-        { id: 'auto_wash_detail', name: 'Детейлинг', nameEn: 'Detailing', icon: '💎' },
-        { id: 'auto_wash_dry', name: 'Химчистка салона', nameEn: 'Interior dry clean', icon: '🧹' },
-      ]},
-      { id: 'auto_electric', name: 'Автоэлектрик', nameEn: 'Auto Electrician', icon: '⚡', requiresDiploma: false, isExpert: false, urgent: true, group: 'mechanic', groupName: 'Механика', groupNameEn: 'Mechanic', groupIcon: '🔧' },
-      { id: 'auto_expert', name: 'Проверка авто перед покупкой', nameEn: 'Pre-purchase Car Inspection', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Осмотреть, купить, застраховать и пригнать/эвакуировать авто', proxyExamplesEn: 'Inspect, buy, insure & deliver/tow a car for you' },
+      // ── Эксперт ──
       { id: 'auto_diag', name: 'Диагностика', nameEn: 'Diagnostics', icon: '📊', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Компьютерная диагностика авто в другом городе', proxyExamplesEn: 'Remote car diagnostics in another city' },
+      { id: 'auto_expert', name: 'Проверка авто перед покупкой', nameEn: 'Pre-purchase Car Inspection', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Осмотреть, купить, застраховать и пригнать/эвакуировать авто', proxyExamplesEn: 'Inspect, buy, insure & deliver/tow a car for you' },
     ]
   },
 
@@ -514,6 +522,147 @@ export const departments: Department[] = [
       { id: 'rent_pickup', name: 'Самовывоз / Возврат', nameEn: 'Pickup / Return', icon: '📍', requiresDiploma: false, isExpert: false, urgent: false, group: 'delivery', groupName: 'Доставка', groupNameEn: 'Delivery', groupIcon: '🚚' },
       // ── Эксперт ──
       { id: 'rent_expert', name: 'Оценка / Страхование', nameEn: 'Appraisal / Insurance', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Оценить состояние арендуемого оборудования вместо вас', proxyExamplesEn: 'Assess rental equipment condition on your behalf' },
+    ]
+  },
+
+  // ═══════════════════════════════════════
+  // 11. ОНЛАЙН-КУРСЫ / ONLINE COURSES
+  // ═══════════════════════════════════════
+  {
+    id: 'courses',
+    name: 'Онлайн-курсы',
+    nameEn: 'Online Courses',
+    icon: '🎓',
+    color: 'from-sky-500 to-blue-600',
+    colorFrom: '#0ea5e9',
+    colorTo: '#2563eb',
+    accentBg: 'bg-sky-100',
+    accentText: 'text-sky-700',
+    description: 'IT, дизайн, бизнес, языки, маркетинг',
+    descriptionEn: 'IT, design, business, languages, marketing',
+    workerTitle: 'Преподаватель',
+    workerTitleEn: 'Instructor',
+    internshipAvailable: true,
+    internExample: 'Стажёр-куратор: помощь студентам, проверка заданий',
+    internExampleEn: 'Curator intern: student support, homework review',
+    skills: [
+      // ── Программирование / Programming ──
+      { id: 'course_web', name: 'Веб-разработка', nameEn: 'Web Development', icon: '🌐', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_web_html', name: 'HTML / CSS', nameEn: 'HTML / CSS', icon: '🎨' },
+        { id: 'course_web_js', name: 'JavaScript', nameEn: 'JavaScript', icon: '⚡' },
+        { id: 'course_web_react', name: 'React / Vue / Angular', nameEn: 'React / Vue / Angular', icon: '⚛️' },
+        { id: 'course_web_node', name: 'Node.js / Backend', nameEn: 'Node.js / Backend', icon: '🟢' },
+        { id: 'course_web_fullstack', name: 'Fullstack', nameEn: 'Fullstack', icon: '🔗' },
+      ]},
+      { id: 'course_mobile', name: 'Мобильная разработка', nameEn: 'Mobile Development', icon: '📱', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_mobile_android', name: 'Android / Kotlin', nameEn: 'Android / Kotlin', icon: '🤖' },
+        { id: 'course_mobile_ios', name: 'iOS / Swift', nameEn: 'iOS / Swift', icon: '🍎' },
+        { id: 'course_mobile_flutter', name: 'Flutter / React Native', nameEn: 'Flutter / React Native', icon: '🦋' },
+      ]},
+      { id: 'course_python', name: 'Python', nameEn: 'Python', icon: '🐍', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_python_basic', name: 'Основы Python', nameEn: 'Python Basics', icon: '📗' },
+        { id: 'course_python_data', name: 'Data Science', nameEn: 'Data Science', icon: '📊' },
+        { id: 'course_python_ml', name: 'Machine Learning', nameEn: 'Machine Learning', icon: '🤖' },
+        { id: 'course_python_auto', name: 'Автоматизация', nameEn: 'Automation', icon: '⚙️' },
+      ]},
+      { id: 'course_devops', name: 'DevOps / Cloud', nameEn: 'DevOps / Cloud', icon: '☁️', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_devops_docker', name: 'Docker / Kubernetes', nameEn: 'Docker / Kubernetes', icon: '🐳' },
+        { id: 'course_devops_aws', name: 'AWS / GCP / Azure', nameEn: 'AWS / GCP / Azure', icon: '☁️' },
+        { id: 'course_devops_cicd', name: 'CI/CD', nameEn: 'CI/CD', icon: '🔄' },
+        { id: 'course_devops_linux', name: 'Linux / Серверы', nameEn: 'Linux / Servers', icon: '🐧' },
+      ]},
+      { id: 'course_blockchain', name: 'Блокчейн / Web3', nameEn: 'Blockchain / Web3', icon: '⛓️', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_blockchain_solidity', name: 'Solidity / Smart Contracts', nameEn: 'Solidity / Smart Contracts', icon: '📜' },
+        { id: 'course_blockchain_rust', name: 'Rust / Substrate', nameEn: 'Rust / Substrate', icon: '🦀' },
+        { id: 'course_blockchain_defi', name: 'DeFi / NFT', nameEn: 'DeFi / NFT', icon: '💎' },
+      ]},
+      { id: 'course_cyber', name: 'Кибербезопасность', nameEn: 'Cybersecurity', icon: '🛡️', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻' },
+      { id: 'course_gamedev', name: 'Разработка игр', nameEn: 'Game Development', icon: '🎮', requiresDiploma: false, isExpert: false, urgent: false, group: 'programming', groupName: 'Программирование', groupNameEn: 'Programming', groupIcon: '💻', variants: [
+        { id: 'course_gamedev_unity', name: 'Unity / C#', nameEn: 'Unity / C#', icon: '🎯' },
+        { id: 'course_gamedev_unreal', name: 'Unreal Engine', nameEn: 'Unreal Engine', icon: '🔥' },
+        { id: 'course_gamedev_2d', name: '2D / Pixel Art', nameEn: '2D / Pixel Art', icon: '🕹️' },
+      ]},
+      // ── Дизайн / Design ──
+      { id: 'course_uiux', name: 'UI/UX Дизайн', nameEn: 'UI/UX Design', icon: '🎨', requiresDiploma: false, isExpert: false, urgent: false, group: 'design', groupName: 'Дизайн', groupNameEn: 'Design', groupIcon: '🎨', variants: [
+        { id: 'course_uiux_figma', name: 'Figma', nameEn: 'Figma', icon: '🖌️' },
+        { id: 'course_uiux_proto', name: 'Прототипирование', nameEn: 'Prototyping', icon: '📐' },
+        { id: 'course_uiux_research', name: 'UX-исследования', nameEn: 'UX Research', icon: '🔍' },
+      ]},
+      { id: 'course_graphic', name: 'Графический дизайн', nameEn: 'Graphic Design', icon: '🖼️', requiresDiploma: false, isExpert: false, urgent: false, group: 'design', groupName: 'Дизайн', groupNameEn: 'Design', groupIcon: '🎨', variants: [
+        { id: 'course_graphic_ps', name: 'Photoshop', nameEn: 'Photoshop', icon: '📸' },
+        { id: 'course_graphic_ai', name: 'Illustrator', nameEn: 'Illustrator', icon: '✏️' },
+        { id: 'course_graphic_brand', name: 'Брендинг / Лого', nameEn: 'Branding / Logo', icon: '💼' },
+      ]},
+      { id: 'course_3d', name: '3D и анимация', nameEn: '3D & Animation', icon: '🧊', requiresDiploma: false, isExpert: false, urgent: false, group: 'design', groupName: 'Дизайн', groupNameEn: 'Design', groupIcon: '🎨', variants: [
+        { id: 'course_3d_blender', name: 'Blender', nameEn: 'Blender', icon: '🧊' },
+        { id: 'course_3d_cinema', name: 'Cinema 4D / 3ds Max', nameEn: 'Cinema 4D / 3ds Max', icon: '🎬' },
+        { id: 'course_3d_motion', name: 'Motion Design', nameEn: 'Motion Design', icon: '🎞️' },
+      ]},
+      { id: 'course_video', name: 'Видеомонтаж', nameEn: 'Video Editing', icon: '🎬', requiresDiploma: false, isExpert: false, urgent: false, group: 'design', groupName: 'Дизайн', groupNameEn: 'Design', groupIcon: '🎨', variants: [
+        { id: 'course_video_premiere', name: 'Premiere Pro', nameEn: 'Premiere Pro', icon: '🎞️' },
+        { id: 'course_video_after', name: 'After Effects', nameEn: 'After Effects', icon: '✨' },
+        { id: 'course_video_davinci', name: 'DaVinci Resolve', nameEn: 'DaVinci Resolve', icon: '🎨' },
+        { id: 'course_video_mobile', name: 'Монтаж на телефоне', nameEn: 'Mobile Editing', icon: '📱' },
+      ]},
+      // ── Маркетинг / Marketing ──
+      { id: 'course_smm', name: 'SMM / Соцсети', nameEn: 'SMM / Social Media', icon: '📣', requiresDiploma: false, isExpert: false, urgent: false, group: 'marketing', groupName: 'Маркетинг', groupNameEn: 'Marketing', groupIcon: '📈', variants: [
+        { id: 'course_smm_insta', name: 'Instagram / TikTok', nameEn: 'Instagram / TikTok', icon: '📷' },
+        { id: 'course_smm_youtube', name: 'YouTube', nameEn: 'YouTube', icon: '▶️' },
+        { id: 'course_smm_telegram', name: 'Telegram / VK', nameEn: 'Telegram / VK', icon: '✈️' },
+        { id: 'course_smm_content', name: 'Контент-план', nameEn: 'Content Planning', icon: '📝' },
+      ]},
+      { id: 'course_seo', name: 'SEO / Контекст', nameEn: 'SEO / PPC', icon: '🔍', requiresDiploma: false, isExpert: false, urgent: false, group: 'marketing', groupName: 'Маркетинг', groupNameEn: 'Marketing', groupIcon: '📈', variants: [
+        { id: 'course_seo_google', name: 'Google Ads', nameEn: 'Google Ads', icon: '🔎' },
+        { id: 'course_seo_yandex', name: 'Яндекс.Директ', nameEn: 'Yandex.Direct', icon: '🟡' },
+        { id: 'course_seo_organic', name: 'Органическое SEO', nameEn: 'Organic SEO', icon: '🌱' },
+      ]},
+      { id: 'course_copywrite', name: 'Копирайтинг', nameEn: 'Copywriting', icon: '✍️', requiresDiploma: false, isExpert: false, urgent: false, group: 'marketing', groupName: 'Маркетинг', groupNameEn: 'Marketing', groupIcon: '📈' },
+      { id: 'course_target', name: 'Таргетированная реклама', nameEn: 'Targeted Ads', icon: '🎯', requiresDiploma: false, isExpert: false, urgent: false, group: 'marketing', groupName: 'Маркетинг', groupNameEn: 'Marketing', groupIcon: '📈' },
+      { id: 'course_analytics', name: 'Аналитика и метрики', nameEn: 'Analytics & Metrics', icon: '📊', requiresDiploma: false, isExpert: false, urgent: false, group: 'marketing', groupName: 'Маркетинг', groupNameEn: 'Marketing', groupIcon: '📈' },
+      // ── Бизнес / Business ──
+      { id: 'course_startup', name: 'Стартап / Предпринимательство', nameEn: 'Startup / Entrepreneurship', icon: '🚀', requiresDiploma: false, isExpert: false, urgent: false, group: 'business', groupName: 'Бизнес', groupNameEn: 'Business', groupIcon: '💼' },
+      { id: 'course_finance', name: 'Финансы и инвестиции', nameEn: 'Finance & Investing', icon: '💰', requiresDiploma: false, isExpert: false, urgent: false, group: 'business', groupName: 'Бизнес', groupNameEn: 'Business', groupIcon: '💼', variants: [
+        { id: 'course_finance_invest', name: 'Инвестирование', nameEn: 'Investing', icon: '📈' },
+        { id: 'course_finance_crypto', name: 'Криптовалюты', nameEn: 'Crypto', icon: '₿' },
+        { id: 'course_finance_personal', name: 'Личные финансы', nameEn: 'Personal Finance', icon: '💳' },
+        { id: 'course_finance_trading', name: 'Трейдинг', nameEn: 'Trading', icon: '📊' },
+      ]},
+      { id: 'course_management', name: 'Менеджмент / Управление', nameEn: 'Management', icon: '👔', requiresDiploma: false, isExpert: false, urgent: false, group: 'business', groupName: 'Бизнес', groupNameEn: 'Business', groupIcon: '💼' },
+      { id: 'course_pm', name: 'Управление проектами', nameEn: 'Project Management', icon: '📋', requiresDiploma: false, isExpert: false, urgent: false, group: 'business', groupName: 'Бизнес', groupNameEn: 'Business', groupIcon: '💼', variants: [
+        { id: 'course_pm_agile', name: 'Agile / Scrum', nameEn: 'Agile / Scrum', icon: '🔄' },
+        { id: 'course_pm_jira', name: 'Jira / Trello', nameEn: 'Jira / Trello', icon: '📌' },
+        { id: 'course_pm_product', name: 'Product Manager', nameEn: 'Product Manager', icon: '🎯' },
+      ]},
+      { id: 'course_sales', name: 'Продажи и переговоры', nameEn: 'Sales & Negotiation', icon: '🤝', requiresDiploma: false, isExpert: false, urgent: false, group: 'business', groupName: 'Бизнес', groupNameEn: 'Business', groupIcon: '💼' },
+      // ── Языки / Languages ──
+      { id: 'course_english', name: 'Английский язык', nameEn: 'English Language', icon: '🇬🇧', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍', variants: [
+        { id: 'course_english_beginner', name: 'С нуля (A1–A2)', nameEn: 'Beginner (A1–A2)', icon: '🌱' },
+        { id: 'course_english_inter', name: 'Средний (B1–B2)', nameEn: 'Intermediate (B1–B2)', icon: '📗' },
+        { id: 'course_english_advanced', name: 'Продвинутый (C1–C2)', nameEn: 'Advanced (C1–C2)', icon: '🎯' },
+        { id: 'course_english_business', name: 'Business English', nameEn: 'Business English', icon: '💼' },
+        { id: 'course_english_ielts', name: 'IELTS / TOEFL', nameEn: 'IELTS / TOEFL', icon: '📝' },
+      ]},
+      { id: 'course_chinese', name: 'Китайский язык', nameEn: 'Chinese Language', icon: '🇨🇳', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍' },
+      { id: 'course_korean', name: 'Корейский язык', nameEn: 'Korean Language', icon: '🇰🇷', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍' },
+      { id: 'course_german', name: 'Немецкий язык', nameEn: 'German Language', icon: '🇩🇪', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍' },
+      { id: 'course_turkish', name: 'Турецкий язык', nameEn: 'Turkish Language', icon: '🇹🇷', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍' },
+      { id: 'course_arabic', name: 'Арабский язык', nameEn: 'Arabic Language', icon: '🇸🇦', requiresDiploma: false, isExpert: false, urgent: false, group: 'languages', groupName: 'Языки', groupNameEn: 'Languages', groupIcon: '🌍' },
+      // ── Саморазвитие / Self-development ──
+      { id: 'course_ai_tools', name: 'AI инструменты', nameEn: 'AI Tools', icon: '🤖', requiresDiploma: false, isExpert: false, urgent: false, group: 'selfdev', groupName: 'Саморазвитие', groupNameEn: 'Self-development', groupIcon: '🧠', variants: [
+        { id: 'course_ai_chatgpt', name: 'ChatGPT / Prompt Engineering', nameEn: 'ChatGPT / Prompt Engineering', icon: '💬' },
+        { id: 'course_ai_midjourney', name: 'Midjourney / DALL-E', nameEn: 'Midjourney / DALL-E', icon: '🖼️' },
+        { id: 'course_ai_automation', name: 'AI автоматизация', nameEn: 'AI Automation', icon: '⚡' },
+      ]},
+      { id: 'course_excel', name: 'Excel / Google Таблицы', nameEn: 'Excel / Google Sheets', icon: '📊', requiresDiploma: false, isExpert: false, urgent: false, group: 'selfdev', groupName: 'Саморазвитие', groupNameEn: 'Self-development', groupIcon: '🧠' },
+      { id: 'course_nocode', name: 'No-Code / Low-Code', nameEn: 'No-Code / Low-Code', icon: '🧩', requiresDiploma: false, isExpert: false, urgent: false, group: 'selfdev', groupName: 'Саморазвитие', groupNameEn: 'Self-development', groupIcon: '🧠', variants: [
+        { id: 'course_nocode_tilda', name: 'Tilda / Wix', nameEn: 'Tilda / Wix', icon: '🌐' },
+        { id: 'course_nocode_notion', name: 'Notion / Airtable', nameEn: 'Notion / Airtable', icon: '📝' },
+        { id: 'course_nocode_zapier', name: 'Zapier / Make', nameEn: 'Zapier / Make', icon: '🔗' },
+      ]},
+      { id: 'course_photo', name: 'Фотография', nameEn: 'Photography', icon: '📸', requiresDiploma: false, isExpert: false, urgent: false, group: 'selfdev', groupName: 'Саморазвитие', groupNameEn: 'Self-development', groupIcon: '🧠' },
+      { id: 'course_public', name: 'Публичные выступления', nameEn: 'Public Speaking', icon: '🎤', requiresDiploma: false, isExpert: false, urgent: false, group: 'selfdev', groupName: 'Саморазвитие', groupNameEn: 'Self-development', groupIcon: '🧠' },
+      // ── Эксперт / Expert ──
+      { id: 'course_mentor', name: 'Менторство / Консультации', nameEn: 'Mentorship / Consulting', icon: '🔍', requiresDiploma: false, isExpert: true, urgent: false, group: 'expert', groupName: 'Эксперт', groupNameEn: 'Expert', groupIcon: '🔍', proxyAvailable: true, proxyExamples: 'Персональный ментор по карьере или обучению', proxyExamplesEn: 'Personal career or learning mentor' },
     ]
   },
 

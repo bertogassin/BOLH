@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 use std::io::{Read, Write};
-use std::net::{TcpStream, SocketAddr};
+use std::net::{TcpStream, TcpListener, SocketAddr};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use parking_lot::RwLock;
@@ -366,6 +366,231 @@ impl BolhNode {
             is_running: *self.running.read(),
             listen_addr: self.config.listen_addr.clone(),
             node_id: self.node_id.clone(),
+        }
+    }
+
+    /// Start the P2P node: TCP listener + connect to seed nodes
+    /// Returns immediately; listener runs in a background thread.
+    pub fn start(&self, chain: &'static BolhChain) -> Result<(), String> {
+        if *self.running.read() {
+            return Err("Node already running".into());
+        }
+        *self.running.write() = true;
+
+        // 1. Start TCP listener in a background thread
+        let listener_addr = self.config.listen_addr.clone();
+        let peers = Arc::clone(&self.peers);
+        let known = Arc::clone(&self.known_peers);
+        let running = Arc::clone(&self.running);
+        let node_id = self.node_id.clone();
+        let network = self.network.clone();
+        let listen_port = self.listen_port;
+        let max_peers = self.config.max_peers;
+
+        std::thread::Builder::new()
+            .name("bolh-p2p-listener".into())
+            .spawn(move || {
+                let listener = match TcpListener::bind(&listener_addr) {
+                    Ok(l) => l,
+                    Err(e) => {
+                        eprintln!("[P2P] Listen failed on {}: {}", listener_addr, e);
+                        *running.write() = false;
+                        return;
+                    }
+                };
+                // Non-blocking with timeout so we can check `running`
+                listener.set_nonblocking(false).ok();
+                let _ = listener
+                    .set_nonblocking(false);
+
+                eprintln!("[P2P] Listening on {}", listener_addr);
+
+                for incoming in listener.incoming() {
+                    if !*running.read() {
+                        break;
+                    }
+                    match incoming {
+                        Ok(stream) => {
+                            if peers.read().len() >= max_peers {
+                                continue; // drop excess connections
+                            }
+                            stream.set_nodelay(true).ok();
+                            stream.set_read_timeout(Some(Duration::from_secs(30))).ok();
+                            stream.set_write_timeout(Some(Duration::from_secs(10))).ok();
+
+                            // Handle handshake on the incoming stream
+                            let peer_addr = match stream.peer_addr() {
+                                Ok(a) => a,
+                                Err(_) => continue,
+                            };
+
+                            match read_message(&stream) {
+                                Ok(Message::Handshake(peer_hs)) => {
+                                    let our_stats = chain.stats();
+                                    if peer_hs.network != network || peer_hs.genesis_hash != our_stats.genesis_hash {
+                                        continue; // wrong chain
+                                    }
+                                    // Send ack
+                                    let ack = HandshakeData {
+                                        version: PROTOCOL_VERSION,
+                                        node_id: node_id.clone(),
+                                        network: network.clone(),
+                                        height: our_stats.height,
+                                        genesis_hash: our_stats.genesis_hash,
+                                        listen_port,
+                                        user_agent: format!("BOLH-Core/{}", crate::VERSION),
+                                    };
+                                    if send_message(&stream, &Message::HandshakeAck(ack)).is_ok() {
+                                        let pid = peer_hs.node_id.clone();
+                                        peers.write().insert(pid.clone(), ConnectedPeer {
+                                            info: PeerInfo {
+                                                id: peer_hs.node_id.clone(),
+                                                addr: peer_addr.to_string(),
+                                                version: peer_hs.user_agent,
+                                                best_height: peer_hs.height,
+                                            },
+                                            addr: peer_addr,
+                                            connected_at: Instant::now(),
+                                            last_ping: Instant::now(),
+                                            last_pong: None,
+                                            latency_ms: 0,
+                                            inbound: true,
+                                        });
+                                        known.write().push(PeerAddress {
+                                            host: peer_addr.ip().to_string(),
+                                            port: peer_hs.listen_port,
+                                            node_id: pid,
+                                            height: peer_hs.height,
+                                        });
+                                        eprintln!("[P2P] Inbound peer {} connected", peer_addr);
+                                    }
+                                }
+                                _ => {} // ignore non-handshake
+                            }
+                        }
+                        Err(e) => {
+                            if !*running.read() {
+                                break;
+                            }
+                            eprintln!("[P2P] Accept error: {}", e);
+                            std::thread::sleep(Duration::from_millis(100));
+                        }
+                    }
+                }
+                eprintln!("[P2P] Listener stopped");
+                *running.write() = false;
+            })
+            .map_err(|e| format!("Thread spawn error: {}", e))?;
+
+        // 2. Connect to seed nodes in background
+        let seeds = self.config.seed_nodes.clone();
+        if !seeds.is_empty() {
+            let peers2 = Arc::clone(&self.peers);
+            let known2 = Arc::clone(&self.known_peers);
+            let node_id2 = self.node_id.clone();
+            let network2 = self.network.clone();
+            let listen_port2 = self.listen_port;
+            let timeout = self.config.connect_timeout_secs;
+
+            std::thread::Builder::new()
+                .name("bolh-p2p-seeds".into())
+                .spawn(move || {
+                    for seed in &seeds {
+                        let socket_addr: SocketAddr = match seed.parse() {
+                            Ok(a) => a,
+                            Err(_) => continue,
+                        };
+                        let stream = match TcpStream::connect_timeout(&socket_addr, Duration::from_secs(timeout)) {
+                            Ok(s) => s,
+                            Err(_) => continue,
+                        };
+                        stream.set_nodelay(true).ok();
+                        stream.set_read_timeout(Some(Duration::from_secs(30))).ok();
+
+                        let our_stats = chain.stats();
+                        let hs = HandshakeData {
+                            version: PROTOCOL_VERSION,
+                            node_id: node_id2.clone(),
+                            network: network2.clone(),
+                            height: our_stats.height,
+                            genesis_hash: our_stats.genesis_hash.clone(),
+                            listen_port: listen_port2,
+                            user_agent: format!("BOLH-Core/{}", crate::VERSION),
+                        };
+                        if send_message(&stream, &Message::Handshake(hs)).is_err() {
+                            continue;
+                        }
+                        match read_message(&stream) {
+                            Ok(Message::HandshakeAck(peer_hs)) => {
+                                if peer_hs.network == network2 && peer_hs.genesis_hash == our_stats.genesis_hash {
+                                    let pid = peer_hs.node_id.clone();
+                                    peers2.write().insert(pid.clone(), ConnectedPeer {
+                                        info: PeerInfo {
+                                            id: peer_hs.node_id.clone(),
+                                            addr: seed.clone(),
+                                            version: peer_hs.user_agent,
+                                            best_height: peer_hs.height,
+                                        },
+                                        addr: socket_addr,
+                                        connected_at: Instant::now(),
+                                        last_ping: Instant::now(),
+                                        last_pong: None,
+                                        latency_ms: 0,
+                                        inbound: false,
+                                    });
+                                    known2.write().push(PeerAddress {
+                                        host: socket_addr.ip().to_string(),
+                                        port: peer_hs.listen_port,
+                                        node_id: pid,
+                                        height: peer_hs.height,
+                                    });
+                                    eprintln!("[P2P] Connected to seed {}", seed);
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                })
+                .ok();
+        }
+
+        Ok(())
+    }
+
+    /// Stop the P2P node
+    pub fn stop(&self) {
+        *self.running.write() = false;
+        // Disconnect all peers
+        self.peers.write().clear();
+        self.known_peers.write().clear();
+        eprintln!("[P2P] Node stopped");
+    }
+
+    /// Request peer list from a connected peer (peer discovery)
+    pub fn discover_peers(&self, peer_id: &str) -> Result<Vec<PeerAddress>, String> {
+        let peers = self.peers.read();
+        let peer = peers.get(peer_id)
+            .ok_or_else(|| format!("Peer '{}' not found", peer_id))?;
+
+        let stream = TcpStream::connect_timeout(
+            &peer.addr,
+            Duration::from_secs(self.config.connect_timeout_secs),
+        ).map_err(|e| format!("Connect failed: {}", e))?;
+
+        send_message(&stream, &Message::RequestPeers)?;
+
+        match read_message(&stream)? {
+            Message::ResponsePeers(peer_list) => {
+                // Add to known peers (dedup by node_id)
+                let mut known = self.known_peers.write();
+                for p in &peer_list.peers {
+                    if !known.iter().any(|k| k.node_id == p.node_id) && p.node_id != self.node_id {
+                        known.push(p.clone());
+                    }
+                }
+                Ok(peer_list.peers)
+            }
+            _ => Err("Expected ResponsePeers".into()),
         }
     }
 }

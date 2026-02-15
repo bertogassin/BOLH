@@ -380,677 +380,133 @@ const hapticOrder = (priority: OrderPriority) => {
   } catch (e) {}
 };
 
-// ============== SVG Icons ==============
+// ============== SVG Icons (Phosphor Regular) ==============
 const Icons = {
-  home: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      <polyline points="9 22 9 12 15 12 15 22"/>
-    </svg>
-  ),
-  search: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-  ),
-  shield: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-  ),
-  map: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-      <line x1="8" y1="2" x2="8" y2="18"/>
-      <line x1="16" y1="6" x2="16" y2="22"/>
-    </svg>
-  ),
-  user: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-  ),
-  star: (
-    <svg viewBox="0 0 24 24" fill="currentColor">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-    </svg>
-  ),
-  location: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-      <circle cx="12" cy="10" r="3"/>
-    </svg>
-  ),
-  phone: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-    </svg>
-  ),
-  message: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-  ),
-  clock: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  ),
-  check: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="20 6 9 17 4 12"/>
-    </svg>
-  ),
-  zap: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>
-  ),
-  settings: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-  ),
-  chevronRight: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  ),
-  chevronLeft: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-  ),
-  x: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/>
-      <line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  ),
-  wallet: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-      <line x1="1" y1="10" x2="23" y2="10"/>
-    </svg>
-  ),
-  history: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 3v5h5"/>
-      <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/>
-      <path d="M12 7v5l4 2"/>
-    </svg>
-  ),
-  logout: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-      <polyline points="16 17 21 12 16 7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-  ),
-  plus: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-  ),
-  minus: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-  ),
-  send: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13"/>
-      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-    </svg>
-  ),
-  globe: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="2" y1="12" x2="22" y2="12"/>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-    </svg>
-  ),
-  sun: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="5"/>
-      <line x1="12" y1="1" x2="12" y2="3"/>
-      <line x1="12" y1="21" x2="12" y2="23"/>
-      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-      <line x1="1" y1="12" x2="3" y2="12"/>
-      <line x1="21" y1="12" x2="23" y2="12"/>
-      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-    </svg>
-  ),
-  moon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  ),
-  creditCard: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-      <line x1="1" y1="10" x2="23" y2="10"/>
-    </svg>
-  ),
-  fileText: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
-    </svg>
-  ),
-  lock: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-  ),
-  fingerprint: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 11c0 2.21-1.79 4-4 4s-4-1.79-4-4 1.79-4 4-4 4 1.79 4 4z"/>
-      <path d="M12 11v2c0 2.21 1.79 4 4 4s4-1.79 4-4v-2"/>
-      <path d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z"/>
-      <path d="M12 13c-2.21 0-4 1.79-4 4v3M16 17v-2c0-1.1.9-2 2-2"/>
-      <path d="M8 21v-2c0-1.1-.9-2-2-2"/>
-      <path d="M20 11v2c0 2.21-1.79 4-4 4"/>
-    </svg>
-  ),
-  repeat: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="17 1 21 5 17 9"/>
-      <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-      <polyline points="7 23 3 19 7 15"/>
-      <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-    </svg>
-  ),
-  calendar: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-      <line x1="16" y1="2" x2="16" y2="6"/>
-      <line x1="8" y1="2" x2="8" y2="6"/>
-      <line x1="3" y1="10" x2="21" y2="10"/>
-    </svg>
-  ),
-  dollarSign: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="12" y1="1" x2="12" y2="23"/>
-      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-    </svg>
-  ),
-  arrowRight: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="5" y1="12" x2="19" y2="12"/>
-      <polyline points="12 5 19 12 12 19"/>
-    </svg>
-  ),
-  alertCircle: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <line x1="12" y1="8" x2="12" y2="12"/>
-      <line x1="12" y1="16" x2="12.01" y2="16"/>
-    </svg>
-  ),
-  folder: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-    </svg>
-  ),
-  download: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-  ),
-  camera: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-      <circle cx="12" cy="13" r="4"/>
-    </svg>
-  ),
-  checkCircle: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-      <polyline points="22 4 12 14.01 9 11.01"/>
-    </svg>
-  ),
-  eye: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-      <circle cx="12" cy="12" r="3"/>
-    </svg>
-  ),
-  trash: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="3 6 5 6 21 6"/>
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-      <line x1="10" y1="11" x2="10" y2="17"/>
-      <line x1="14" y1="11" x2="14" y2="17"/>
-    </svg>
-  ),
-  award: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="8" r="7"/>
-      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
-    </svg>
-  ),
-  userCheck: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="8.5" cy="7" r="4"/>
-      <polyline points="17 11 19 13 23 9"/>
-    </svg>
-  ),
-  uploadCloud: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="16 16 12 12 8 16"/>
-      <line x1="12" y1="12" x2="12" y2="21"/>
-      <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-    </svg>
-  ),
-  // Game icons
-  fire: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-    </svg>
-  ),
-  heart: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  ),
-  activity: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-  ),
-  lifeBuoy: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <circle cx="12" cy="12" r="4"/>
-      <line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/>
-      <line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/>
-      <line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/>
-      <line x1="14.83" y1="9.17" x2="18.36" y2="5.64"/>
-      <line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/>
-    </svg>
-  ),
-  droplet: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
-    </svg>
-  ),
-  wind: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/>
-    </svg>
-  ),
-  thermometer: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
-    </svg>
-  ),
-  alertTriangle: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-      <line x1="12" y1="9" x2="12" y2="13"/>
-      <line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>
-  ),
-  target: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <circle cx="12" cy="12" r="6"/>
-      <circle cx="12" cy="12" r="2"/>
-    </svg>
-  ),
-  trophy: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
-      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
-      <path d="M4 22h16"/>
-      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
-      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
-      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
-    </svg>
-  ),
-  play: (
-    <svg viewBox="0 0 24 24" fill="currentColor">
-      <polygon points="5 3 19 12 5 21 5 3"/>
-    </svg>
-  ),
-  pause: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="6" y="4" width="4" height="16"/>
-      <rect x="14" y="4" width="4" height="16"/>
-    </svg>
-  ),
-  volume2: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
-    </svg>
-  ),
-  volumeX: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-      <line x1="23" y1="9" x2="17" y2="15"/>
-      <line x1="17" y1="9" x2="23" y2="15"/>
-    </svg>
-  ),
-  book: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-  ),
-  bell: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-      <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-    </svg>
-  ),
-  checkDouble: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="9 11 12 14 22 4"/>
-      <path d="M21 12v7a2 2 0 0 1-2 2h-5"/>
-      <polyline points="16 5 9 12 2 7"/>
-    </svg>
-  ),
-  image: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-      <circle cx="8.5" cy="8.5" r="1.5"/>
-      <polyline points="21 15 16 10 5 21"/>
-    </svg>
-  ),
-  share: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="18" cy="5" r="3"/>
-      <circle cx="6" cy="12" r="3"/>
-      <circle cx="18" cy="19" r="3"/>
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-    </svg>
-  ),
-  printer: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="6 9 6 2 18 2 18 9"/>
-      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-    </svg>
-  ),
-  // ── Department & Skill Icons (professional Lucide set) ──
-  wrench: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-    </svg>
-  ),
-  plug: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8z"/>
-    </svg>
-  ),
-  lightbulb: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
-      <path d="M9 18h6"/><path d="M10 22h4"/>
-    </svg>
-  ),
-  snowflake: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/>
-      <path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/>
-    </svg>
-  ),
-  keyRound: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/><circle cx="16.5" cy="7.5" r=".5"/>
-    </svg>
-  ),
-  doorOpen: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/>
-      <path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/>
-    </svg>
-  ),
-  monitor: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-    </svg>
-  ),
-  smartphone: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
-    </svg>
-  ),
-  hammer: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"/>
-      <path d="M17.64 15 22 10.64"/><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/>
-    </svg>
-  ),
-  paintBrush: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z"/>
-      <path d="m5 2 5 5"/><path d="M2 13h6"/><path d="m20 2-5 5"/>
-    </svg>
-  ),
-  truck: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
-      <path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
-      <circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>
-    </svg>
-  ),
-  packageIcon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-      <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
-    </svg>
-  ),
-  bikeIcon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/>
-      <circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
-    </svg>
-  ),
-  car: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
-      <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
-    </svg>
-  ),
-  building2: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
-      <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
-    </svg>
-  ),
-  sparkles: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-      <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
-    </svg>
-  ),
-  screwdriver: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m13 13 8.5-8.5a2.12 2.12 0 0 0-3-3L10 10"/>
-      <path d="m13 13-1.53-1.53a.5.5 0 0 0-.38-.15H9.5a.5.5 0 0 0-.35.15l-.74.74a2.12 2.12 0 0 0 0 3L11 18l3-3"/>
-      <path d="m3 21 3-3"/>
-    </svg>
-  ),
-  hardDrive: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="22" y1="12" x2="2" y2="12"/>
-      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-      <line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>
-    </svg>
-  ),
-  cpu: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
-      <rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/>
-      <line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/>
-      <line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/>
-      <line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>
-    </svg>
-  ),
-  batteryFull: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="7" width="16" height="10" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/>
-      <line x1="6" y1="11" x2="6" y2="13"/><line x1="10" y1="11" x2="10" y2="13"/><line x1="14" y1="11" x2="14" y2="13"/>
-    </svg>
-  ),
-  shieldCheck: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
-    </svg>
-  ),
-  siren: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/>
-      <path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/>
-    </svg>
-  ),
-  sofa: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v3"/>
-      <path d="M2 11v5a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H6v-2a2 2 0 0 0-4 0Z"/><path d="M4 18v2"/><path d="M20 18v2"/>
-    </svg>
-  ),
-  bed: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/>
-    </svg>
-  ),
-  tent: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/>
-    </svg>
-  ),
-  waves: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
-      <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
-      <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
-    </svg>
-  ),
-  crown: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M4 18a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2"/>
-    </svg>
-  ),
-  gem: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
-    </svg>
-  ),
-  mountain: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="m4.14 15.08 2.6-3.51"/>
-    </svg>
-  ),
-  palette: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12" r=".5"/>
-      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
-    </svg>
-  ),
-  warehouse: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/>
-      <path d="M6 18h12"/><path d="M6 14h12"/><rect x="6" y="10" width="12" height="12"/>
-    </svg>
-  ),
-  grid3x3: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
-    </svg>
-  ),
-  plane: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
-    </svg>
-  ),
-  footprints: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5 10 7.89 8 10 8 12h0a3.5 3.5 0 0 0 3.5 3.5H12"/>
-      <path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 2.39 2 4.5 2 6.5h0a3.5 3.5 0 0 1-3.5 3.5H12"/>
-    </svg>
-  ),
-  showerHead: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m4 4 2.5 2.5"/><path d="M13.5 6.5a4.95 4.95 0 0 0-7 7"/>
-      <path d="M15 5 5 15"/><path d="M14 17v.01"/><path d="M10 16v.01"/><path d="M13 13v.01"/>
-      <path d="M16 10v.01"/><path d="M11 20v.01"/><path d="M17 14v.01"/><path d="M20 11v.01"/>
-    </svg>
-  ),
-  pipette: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m2 22 1-1h3l9-9"/><path d="M3 21v-3l9-9"/>
-      <path d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z"/>
-    </svg>
-  ),
-  gauge: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>
-    </svg>
-  ),
-  circleDot: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>
-    </svg>
-  ),
-  users: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-  ),
-  userPlus: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-      <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
-    </svg>
-  ),
-  box: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-      <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
-    </svg>
-  ),
-  piano: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M18.5 8c-1.4 0-2.6-.8-3.2-2A6.87 6.87 0 0 0 2 9v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8.5C22 9.6 20.4 8 18.5 8"/>
-      <path d="M2 14h20"/><path d="M6 14v4"/><path d="M10 14v4"/><path d="M14 14v4"/><path d="M18 14v4"/>
-    </svg>
-  ),
-  radio: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
-      <circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
-    </svg>
-  ),
-  close: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  ),
-  clipboard: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="9" y="2" width="6" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-    </svg>
-  ),
+  home: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg>),
+  search: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>),
+  shield: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.27,47,25.53a8,8,0,0,0,4.2,0c1-.26,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0Z"/></svg>),
+  map: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M228.92,49.69a8,8,0,0,0-6.86-1.45L160.93,63.52,99.58,32.84a8,8,0,0,0-5.52-.6l-64,16A8,8,0,0,0,24,56V200a8,8,0,0,0,9.94,7.76l61.13-15.28,61.35,30.68A8.15,8.15,0,0,0,160,224a8,8,0,0,0,1.94-.24l64-16A8,8,0,0,0,232,200V56A8,8,0,0,0,228.92,49.69ZM104,52.94l48,24V203.06l-48-24ZM40,62.25l48-12v127.5l-48,12Zm176,131.5-48,12V78.25l48-12Z"/></svg>),
+  user: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/></svg>),
+  star: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"/></svg>),
+  location: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"/></svg>),
+  phone: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"/></svg>),
+  message: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,48H40A16,16,0,0,0,24,64V224a15.84,15.84,0,0,0,9.25,14.5A16.05,16.05,0,0,0,40,240a15.89,15.89,0,0,0,10.25-3.78l.09-.07L83,208H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM40,224h0ZM216,192H80a8,8,0,0,0-5.23,1.95L40,224V64H216Z"/></svg>),
+  clock: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"/></svg>),
+  check: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>),
+  zap: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M215.79,118.17a8,8,0,0,0-5-5.66L153.18,90.9l14.66-73.33a8,8,0,0,0-13.69-7l-112,120a8,8,0,0,0,3,13l57.63,21.61L88.16,238.43a8,8,0,0,0,13.69,7l112-120A8,8,0,0,0,215.79,118.17ZM109.37,214l10.47-52.38a8,8,0,0,0-5-9.06L62,132.71l84.62-90.66L136.16,94.43a8,8,0,0,0,5,9.06l52.8,19.8Z"/></svg>),
+  settings: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"/></svg>),
+  chevronRight: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>),
+  chevronLeft: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"/></svg>),
+  x: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg>),
+  wallet: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,64H56a8,8,0,0,1,0-16H192a8,8,0,0,0,0-16H56A24,24,0,0,0,32,56V184a24,24,0,0,0,24,24H216a16,16,0,0,0,16-16V80A16,16,0,0,0,216,64Zm0,128H56a8,8,0,0,1-8-8V78.63A23.84,23.84,0,0,0,56,80H216Zm-48-60a12,12,0,1,1,12,12A12,12,0,0,1,168,132Z"/></svg>),
+  history: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z"/></svg>),
+  logout: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"/></svg>),
+  plus: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"/></svg>),
+  minus: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128Z"/></svg>),
+  send: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M227.32,28.68a16,16,0,0,0-15.66-4.08l-.15,0L19.57,82.84a16,16,0,0,0-2.49,29.8L102,154l41.3,84.87A15.86,15.86,0,0,0,157.74,248q.69,0,1.38-.06a15.88,15.88,0,0,0,14-11.51l58.2-191.94c0-.05,0-.1,0-.15A16,16,0,0,0,227.32,28.68ZM157.83,231.85l-.05.14,0-.07-40.06-82.3,48-48a8,8,0,0,0-11.31-11.31l-48,48L24.08,98.25l-.07,0,.14,0L216,40Z"/></svg>),
+  globe: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24h0A104,104,0,1,0,232,128,104.12,104.12,0,0,0,128,24Zm88,104a87.61,87.61,0,0,1-3.33,24H174.16a157.44,157.44,0,0,0,0-48h38.51A87.61,87.61,0,0,1,216,128ZM102,168H154a115.11,115.11,0,0,1-26,45A115.27,115.27,0,0,1,102,168Zm-3.9-16a140.84,140.84,0,0,1,0-48h59.88a140.84,140.84,0,0,1,0,48ZM40,128a87.61,87.61,0,0,1,3.33-24H81.84a157.44,157.44,0,0,0,0,48H43.33A87.61,87.61,0,0,1,40,128ZM154,88H102a115.11,115.11,0,0,1,26-45A115.27,115.27,0,0,1,154,88Zm52.33,0H170.71a135.28,135.28,0,0,0-22.3-45.6A88.29,88.29,0,0,1,206.37,88ZM107.59,42.4A135.28,135.28,0,0,0,85.29,88H49.63A88.29,88.29,0,0,1,107.59,42.4ZM49.63,168H85.29a135.28,135.28,0,0,0,22.3,45.6A88.29,88.29,0,0,1,49.63,168Zm98.78,45.6a135.28,135.28,0,0,0,22.3-45.6h35.66A88.29,88.29,0,0,1,148.41,213.6Z"/></svg>),
+  sun: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>),
+  moon: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/></svg>),
+  creditCard: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,48H32A16,16,0,0,0,16,64V192a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48Zm0,16V88H32V64Zm0,128H32V104H224v88Zm-16-24a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h32A8,8,0,0,1,208,168Zm-64,0a8,8,0,0,1-8,8H120a8,8,0,0,1,0-16h16A8,8,0,0,1,144,168Z"/></svg>),
+  fileText: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-32-80a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,136Zm0,32a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,168Z"/></svg>),
+  lock: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Zm-68-56a12,12,0,1,1-12-12A12,12,0,0,1,140,152Z"/></svg>),
+  fingerprint: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M72,128a134.63,134.63,0,0,1-14.16,60.47,8,8,0,1,1-14.32-7.12A118.8,118.8,0,0,0,56,128,71.73,71.73,0,0,1,83,71.8,8,8,0,1,1,93,84.29,55.76,55.76,0,0,0,72,128Zm56-8a8,8,0,0,0-8,8,184.12,184.12,0,0,1-23,89.1,8,8,0,0,0,14,7.76A200.19,200.19,0,0,0,136,128,8,8,0,0,0,128,120Zm0-32a40,40,0,0,0-40,40,8,8,0,0,0,16,0,24,24,0,0,1,48,0,214.09,214.09,0,0,1-20.51,92A8,8,0,1,0,146,226.83,230,230,0,0,0,168,128,40,40,0,0,0,128,88Zm0-64A104.11,104.11,0,0,0,24,128a87.76,87.76,0,0,1-5,29.33,8,8,0,0,0,15.09,5.33A103.9,103.9,0,0,0,40,128a88,88,0,0,1,176,0,282.24,282.24,0,0,1-5.29,54.45,8,8,0,0,0,6.3,9.4,8.22,8.22,0,0,0,1.55.15,8,8,0,0,0,7.84-6.45A298.37,298.37,0,0,0,232,128,104.12,104.12,0,0,0,128,24ZM94.4,152.17A8,8,0,0,0,85,158.42a151,151,0,0,1-17.21,45.44,8,8,0,0,0,13.86,8,166.67,166.67,0,0,0,19-50.25A8,8,0,0,0,94.4,152.17ZM128,56a72.85,72.85,0,0,0-9,.56,8,8,0,0,0,2,15.87A56.08,56.08,0,0,1,184,128a252.12,252.12,0,0,1-1.92,31A8,8,0,0,0,189,168a8.39,8.39,0,0,0,1,.06,8,8,0,0,0,7.92-7,266.48,266.48,0,0,0,2-33A72.08,72.08,0,0,0,128,56Zm57.93,128.25a8,8,0,0,0-9.75,5.75c-1.46,5.69-3.15,11.4-5,17a8,8,0,0,0,5,10.13,7.88,7.88,0,0,0,2.55.42,8,8,0,0,0,7.58-5.46c2-5.92,3.79-12,5.35-18.05A8,8,0,0,0,185.94,184.26Z"/></svg>),
+  repeat: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M24,128A72.08,72.08,0,0,1,96,56H204.69L194.34,45.66a8,8,0,0,1,11.32-11.32l24,24a8,8,0,0,1,0,11.32l-24,24a8,8,0,0,1-11.32-11.32L204.69,72H96a56.06,56.06,0,0,0-56,56,8,8,0,0,1-16,0Zm200-8a8,8,0,0,0-8,8,56.06,56.06,0,0,1-56,56H51.31l10.35-10.34a8,8,0,0,0-11.32-11.32l-24,24a8,8,0,0,0,0,11.32l24,24a8,8,0,0,0,11.32-11.32L51.31,200H160a72.08,72.08,0,0,0,72-72A8,8,0,0,0,224,120Z"/></svg>),
+  calendar: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Zm-96-88v64a8,8,0,0,1-16,0V132.94l-4.42,2.22a8,8,0,0,1-7.16-14.32l16-8A8,8,0,0,1,112,120Zm59.16,30.45L152,176h16a8,8,0,0,1,0,16H136a8,8,0,0,1-6.4-12.8l28.78-38.37A8,8,0,1,0,145.07,132a8,8,0,1,1-13.85-8A24,24,0,0,1,176,136,23.76,23.76,0,0,1,171.16,150.45Z"/></svg>),
+  dollarSign: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"/></svg>),
+  arrowRight: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"/></svg>),
+  alertCircle: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/></svg>),
+  folder: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,72H131.31L104,44.69A15.86,15.86,0,0,0,92.69,40H40A16,16,0,0,0,24,56V200.62A15.4,15.4,0,0,0,39.38,216H216.89A15.13,15.13,0,0,0,232,200.89V88A16,16,0,0,0,216,72ZM40,56H92.69l16,16H40ZM216,200H40V88H216Z"/></svg>),
+  download: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,136v64a16,16,0,0,1-16,16H32a16,16,0,0,1-16-16V136a16,16,0,0,1,16-16H72a8,8,0,0,1,0,16H32v64H224V136H184a8,8,0,0,1,0-16h40A16,16,0,0,1,240,136Zm-117.66-2.34a8,8,0,0,0,11.32,0l48-48a8,8,0,0,0-11.32-11.32L136,108.69V24a8,8,0,0,0-16,0v84.69L85.66,74.34A8,8,0,0,0,74.34,85.66ZM200,168a12,12,0,1,0-12,12A12,12,0,0,0,200,168Z"/></svg>),
+  camera: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,56H180.28L166.65,35.56A8,8,0,0,0,160,32H96a8,8,0,0,0-6.65,3.56L75.71,56H48A24,24,0,0,0,24,80V192a24,24,0,0,0,24,24H208a24,24,0,0,0,24-24V80A24,24,0,0,0,208,56Zm8,136a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H80a8,8,0,0,0,6.66-3.56L100.28,48h55.43l13.63,20.44A8,8,0,0,0,176,72h32a8,8,0,0,1,8,8ZM128,88a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,88Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,160Z"/></svg>),
+  checkCircle: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"/></svg>),
+  eye: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/></svg>),
+  trash: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"/></svg>),
+  award: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,96A88,88,0,1,0,72,163.83V240a8,8,0,0,0,11.58,7.16L128,225l44.43,22.21A8.07,8.07,0,0,0,176,248a8,8,0,0,0,8-8V163.83A87.85,87.85,0,0,0,216,96ZM56,96a72,72,0,1,1,72,72A72.08,72.08,0,0,1,56,96ZM168,227.06l-36.43-18.21a8,8,0,0,0-7.16,0L88,227.06V174.37a87.89,87.89,0,0,0,80,0ZM128,152A56,56,0,1,0,72,96,56.06,56.06,0,0,0,128,152Zm0-96A40,40,0,1,1,88,96,40,40,0,0,1,128,56Z"/></svg>),
+  userCheck: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M144,157.68a68,68,0,1,0-71.9,0c-20.65,6.76-39.23,19.39-54.17,37.17a8,8,0,0,0,12.25,10.3C50.25,181.19,77.91,168,108,168s57.75,13.19,77.87,37.15a8,8,0,0,0,12.25-10.3C183.18,177.07,164.6,164.44,144,157.68ZM56,100a52,52,0,1,1,52,52A52.06,52.06,0,0,1,56,100Zm197.66,33.66-32,32a8,8,0,0,1-11.32,0l-16-16a8,8,0,0,1,11.32-11.32L216,148.69l26.34-26.35a8,8,0,0,1,11.32,11.32Z"/></svg>),
+  uploadCloud: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M178.34,165.66,160,147.31V208a8,8,0,0,1-16,0V147.31l-18.34,18.35a8,8,0,0,1-11.32-11.32l32-32a8,8,0,0,1,11.32,0l32,32a8,8,0,0,1-11.32,11.32ZM160,40A88.08,88.08,0,0,0,81.29,88.68,64,64,0,1,0,72,216h40a8,8,0,0,0,0-16H72a48,48,0,0,1,0-96c1.1,0,2.2,0,3.29.12A88,88,0,0,0,72,128a8,8,0,0,0,16,0,72,72,0,1,1,100.8,66,8,8,0,0,0,3.2,15.34,7.9,7.9,0,0,0,3.2-.68A88,88,0,0,0,160,40Z"/></svg>),
+  fire: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M183.89,153.34a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68ZM216,144a88,88,0,0,1-176,0c0-27.92,11-56.47,32.66-84.85a8,8,0,0,1,11.93-.89l24.12,23.41,22-60.41a8,8,0,0,1,12.63-3.41C165.21,36,216,84.55,216,144Zm-16,0c0-46.09-35.79-85.92-58.21-106.33L119.52,98.74a8,8,0,0,1-13.09,3L80.06,76.16C64.09,99.21,56,122,56,144a72,72,0,0,0,144,0Z"/></svg>),
+  heart: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"/></svg>),
+  activity: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M72,144H32a8,8,0,0,1,0-16H67.72l13.62-20.44a8,8,0,0,1,13.32,0l25.34,38,9.34-14A8,8,0,0,1,136,128h24a8,8,0,0,1,0,16H140.28l-13.62,20.44a8,8,0,0,1-13.32,0L88,126.42l-9.34,14A8,8,0,0,1,72,144ZM178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,.75,0,1.5,0,2.25a8,8,0,1,0,16-.5c0-.58,0-1.17,0-1.75A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46c0,53.61-77.76,102.15-96,112.8-10.83-6.31-42.63-26-66.68-52.21a8,8,0,1,0-11.8,10.82c31.17,34,72.93,56.68,74.69,57.63a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40Z"/></svg>),
+  lifeBuoy: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm39.1,131.79a47.84,47.84,0,0,0,0-55.58l28.5-28.49a87.83,87.83,0,0,1,0,112.56ZM96,128a32,32,0,1,1,32,32A32,32,0,0,1,96,128Zm88.28-67.6L155.79,88.9a47.84,47.84,0,0,0-55.58,0L71.72,60.4a87.83,87.83,0,0,1,112.56,0ZM60.4,71.72l28.5,28.49a47.84,47.84,0,0,0,0,55.58L60.4,184.28a87.83,87.83,0,0,1,0-112.56ZM71.72,195.6l28.49-28.5a47.84,47.84,0,0,0,55.58,0l28.49,28.5a87.83,87.83,0,0,1-112.56,0Z"/></svg>),
+  droplet: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M174,47.75a254.19,254.19,0,0,0-41.45-38.3,8,8,0,0,0-9.18,0A254.19,254.19,0,0,0,82,47.75C54.51,79.32,40,112.6,40,144a88,88,0,0,0,176,0C216,112.6,201.49,79.32,174,47.75ZM128,216a72.08,72.08,0,0,1-72-72c0-57.23,55.47-105,72-118,16.53,13,72,60.75,72,118A72.08,72.08,0,0,1,128,216Zm55.89-62.66a57.6,57.6,0,0,1-46.56,46.55A8.75,8.75,0,0,1,136,200a8,8,0,0,1-1.32-15.89c16.57-2.79,30.63-16.85,33.44-33.45a8,8,0,0,1,15.78,2.68Z"/></svg>),
+  wind: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M184,184a32,32,0,0,1-32,32c-13.7,0-26.95-8.93-31.5-21.22a8,8,0,0,1,15-5.56C137.74,195.27,145,200,152,200a16,16,0,0,0,0-32H40a8,8,0,0,1,0-16H152A32,32,0,0,1,184,184Zm-64-80a32,32,0,0,0,0-64c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C105.74,60.73,113,56,120,56a16,16,0,0,1,0,32H24a8,8,0,0,0,0,16Zm88-32c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C193.74,92.73,201,88,208,88a16,16,0,0,1,0,32H32a8,8,0,0,0,0,16H208a32,32,0,0,0,0-64Z"/></svg>),
+  thermometer: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M212,56a28,28,0,1,0,28,28A28,28,0,0,0,212,56Zm0,40a12,12,0,1,1,12-12A12,12,0,0,1,212,96Zm-84,57V88a8,8,0,0,0-16,0v65a32,32,0,1,0,16,0Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,120,200Zm40-66V48a40,40,0,0,0-80,0v86a64,64,0,1,0,80,0Zm-40,98a48,48,0,0,1-27.42-87.4A8,8,0,0,0,96,138V48a24,24,0,0,1,48,0v90a8,8,0,0,0,3.42,6.56A48,48,0,0,1,120,232Z"/></svg>),
+  alertTriangle: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"/></svg>),
+  target: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M232,120h-8.34A96.14,96.14,0,0,0,136,32.34V24a8,8,0,0,0-16,0v8.34A96.14,96.14,0,0,0,32.34,120H24a8,8,0,0,0,0,16h8.34A96.14,96.14,0,0,0,120,223.66V232a8,8,0,0,0,16,0v-8.34A96.14,96.14,0,0,0,223.66,136H232a8,8,0,0,0,0-16Zm-96,87.6V200a8,8,0,0,0-16,0v7.6A80.15,80.15,0,0,1,48.4,136H56a8,8,0,0,0,0-16H48.4A80.15,80.15,0,0,1,120,48.4V56a8,8,0,0,0,16,0V48.4A80.15,80.15,0,0,1,207.6,120H200a8,8,0,0,0,0,16h7.6A80.15,80.15,0,0,1,136,207.6ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z"/></svg>),
+  trophy: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8Zm144-8.9c0,35.52-29,64.64-64,64.9a64,64,0,0,1-64-64V56H192ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg>),
+  play: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></svg>),
+  pause: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z"/></svg>),
+  volume2: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M155.51,24.81a8,8,0,0,0-8.42.88L77.25,80H32A16,16,0,0,0,16,96v64a16,16,0,0,0,16,16H77.25l69.84,54.31A8,8,0,0,0,160,224V32A8,8,0,0,0,155.51,24.81ZM32,96H72v64H32ZM144,207.64,88,164.09V91.91l56-43.55Zm54-106.08a40,40,0,0,1,0,52.88,8,8,0,0,1-12-10.58,24,24,0,0,0,0-31.72,8,8,0,0,1,12-10.58ZM248,128a79.9,79.9,0,0,1-20.37,53.34,8,8,0,0,1-11.92-10.67,64,64,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67A79.83,79.83,0,0,1,248,128Z"/></svg>),
+  volumeX: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M155.51,24.81a8,8,0,0,0-8.42.88L77.25,80H32A16,16,0,0,0,16,96v64a16,16,0,0,0,16,16H77.25l69.84,54.31A8,8,0,0,0,160,224V32A8,8,0,0,0,155.51,24.81ZM32,96H72v64H32ZM144,207.64,88,164.09V91.91l56-43.55Zm101.66-61.3a8,8,0,0,1-11.32,11.32L216,139.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L204.69,128l-18.35-18.34a8,8,0,0,1,11.32-11.32L216,116.69l18.34-18.35a8,8,0,0,1,11.32,11.32L227.31,128Z"/></svg>),
+  book: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,24H72A32,32,0,0,0,40,56V224a8,8,0,0,0,8,8H192a8,8,0,0,0,0-16H56a16,16,0,0,1,16-16H208a8,8,0,0,0,8-8V32A8,8,0,0,0,208,24Zm-8,160H72a31.82,31.82,0,0,0-16,4.29V56A16,16,0,0,1,72,40H200Z"/></svg>),
+  bell: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M221.8,175.94C216.25,166.38,208,139.33,208,104a80,80,0,1,0-160,0c0,35.34-8.26,62.38-13.81,71.94A16,16,0,0,0,48,200H88.81a40,40,0,0,0,78.38,0H208a16,16,0,0,0,13.8-24.06ZM128,216a24,24,0,0,1-22.62-16h45.24A24,24,0,0,1,128,216ZM48,184c7.7-13.24,16-43.92,16-80a64,64,0,1,1,128,0c0,36.05,8.28,66.73,16,80Z"/></svg>),
+  checkDouble: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M149.61,85.71l-89.6,88a8,8,0,0,1-11.22,0L10.39,136a8,8,0,1,1,11.22-11.41L54.4,156.79l84-82.5a8,8,0,1,1,11.22,11.42Zm96.1-11.32a8,8,0,0,0-11.32-.1l-84,82.5-18.83-18.5a8,8,0,0,0-11.21,11.42l24.43,24a8,8,0,0,0,11.22,0l89.6-88A8,8,0,0,0,245.71,74.39Z"/></svg>),
+  image: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V158.75l-26.07-26.06a16,16,0,0,0-22.63,0l-20,20-44-44a16,16,0,0,0-22.62,0L40,149.37V56ZM40,172l52-52,80,80H40Zm176,28H194.63l-36-36,20-20L216,181.38V200ZM144,100a12,12,0,1,1,12,12A12,12,0,0,1,144,100Z"/></svg>),
+  share: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M176,160a39.89,39.89,0,0,0-28.62,12.09l-46.1-29.63a39.8,39.8,0,0,0,0-28.92l46.1-29.63a40,40,0,1,0-8.66-13.45l-46.1,29.63a40,40,0,1,0,0,55.82l46.1,29.63A40,40,0,1,0,176,160Zm0-128a24,24,0,1,1-24,24A24,24,0,0,1,176,32ZM64,152a24,24,0,1,1,24-24A24,24,0,0,1,64,152Zm112,72a24,24,0,1,1,24-24A24,24,0,0,1,176,224Z"/></svg>),
+  printer: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M214.67,72H200V40a8,8,0,0,0-8-8H64a8,8,0,0,0-8,8V72H41.33C27.36,72,16,82.77,16,96v80a8,8,0,0,0,8,8H56v32a8,8,0,0,0,8,8H192a8,8,0,0,0,8-8V184h32a8,8,0,0,0,8-8V96C240,82.77,228.64,72,214.67,72ZM72,48H184V72H72ZM184,208H72V160H184Zm40-40H200V152a8,8,0,0,0-8-8H64a8,8,0,0,0-8,8v16H32V96c0-4.41,4.19-8,9.33-8H214.67c5.14,0,9.33,3.59,9.33,8Zm-24-52a12,12,0,1,1-12-12A12,12,0,0,1,200,116Z"/></svg>),
+  wrench: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M226.76,69a8,8,0,0,0-12.84-2.88l-40.3,37.19-17.23-3.7-3.7-17.23,37.19-40.3A8,8,0,0,0,187,29.24,72,72,0,0,0,88,96,72.34,72.34,0,0,0,94,124.94L33.79,177c-.15.12-.29.26-.43.39a32,32,0,0,0,45.26,45.26c.13-.13.27-.28.39-.42L131.06,162A72,72,0,0,0,232,96,71.56,71.56,0,0,0,226.76,69ZM160,152a56.14,56.14,0,0,1-27.07-7,8,8,0,0,0-9.92,1.77L67.11,211.51a16,16,0,0,1-22.62-22.62L109.18,133a8,8,0,0,0,1.77-9.93,56,56,0,0,1,58.36-82.31l-31.2,33.81a8,8,0,0,0-1.94,7.1L141.83,108a8,8,0,0,0,6.14,6.14l26.35,5.66a8,8,0,0,0,7.1-1.94l33.81-31.2A56.06,56.06,0,0,1,160,152Z"/></svg>),
+  plug: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M237.66,66.34a8,8,0,0,0-11.32,0L192,100.69,155.31,64l34.35-34.34a8,8,0,1,0-11.32-11.32L144,52.69,117.66,26.34a8,8,0,0,0-11.32,11.32L112.69,44l-53,53a40,40,0,0,0,0,56.57l15.71,15.71L26.34,218.34a8,8,0,0,0,11.32,11.32l49.09-49.09,15.71,15.71a40,40,0,0,0,56.57,0l53-53,6.34,6.35a8,8,0,0,0,11.32-11.32L203.31,112l34.35-34.34A8,8,0,0,0,237.66,66.34ZM147.72,185a24,24,0,0,1-33.95,0L71,142.23a24,24,0,0,1,0-33.95l53-53L200.69,132Z"/></svg>),
+  lightbulb: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M176,232a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h80A8,8,0,0,1,176,232Zm40-128a87.55,87.55,0,0,1-33.64,69.21A16.24,16.24,0,0,0,176,186v6a16,16,0,0,1-16,16H96a16,16,0,0,1-16-16v-6a16,16,0,0,0-6.23-12.66A87.59,87.59,0,0,1,40,104.49C39.74,56.83,78.26,17.14,125.88,16A88,88,0,0,1,216,104Zm-16,0a72,72,0,0,0-73.74-72c-39,.92-70.47,33.39-70.26,72.39a71.65,71.65,0,0,0,27.64,56.3A32,32,0,0,1,96,186v6h64v-6a32.15,32.15,0,0,1,12.47-25.35A71.65,71.65,0,0,0,200,104Zm-16.11-9.34a57.6,57.6,0,0,0-46.56-46.55,8,8,0,0,0-2.66,15.78c16.57,2.79,30.63,16.85,33.44,33.45A8,8,0,0,0,176,104a9,9,0,0,0,1.35-.11A8,8,0,0,0,183.89,94.66Z"/></svg>),
+  snowflake: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M223.77,150.09a8,8,0,0,1-5.86,9.68l-24.64,6,6.46,24.11a8,8,0,0,1-5.66,9.8A8.25,8.25,0,0,1,192,200a8,8,0,0,1-7.72-5.93l-7.72-28.8L136,141.86v46.83l21.66,21.65a8,8,0,0,1-11.32,11.32L128,203.31l-18.34,18.35a8,8,0,0,1-11.32-11.32L120,188.69V141.86L79.45,165.27l-7.72,28.8A8,8,0,0,1,64,200a8.25,8.25,0,0,1-2.08-.27,8,8,0,0,1-5.66-9.8l6.46-24.11-24.64-6a8,8,0,0,1,3.82-15.54l29.45,7.23L112,128,71.36,104.54l-29.45,7.23A7.85,7.85,0,0,1,40,112a8,8,0,0,1-1.91-15.77l24.64-6L56.27,66.07a8,8,0,0,1,15.46-4.14l7.72,28.8L120,114.14V67.31L98.34,45.66a8,8,0,0,1,11.32-11.32L128,52.69l18.34-18.35a8,8,0,0,1,11.32,11.32L136,67.31v46.83l40.55-23.41,7.72-28.8a8,8,0,0,1,15.46,4.14l-6.46,24.11,24.64,6A8,8,0,0,1,216,112a7.85,7.85,0,0,1-1.91-.23l-29.45-7.23L144,128l40.64,23.46,29.45-7.23A8,8,0,0,1,223.77,150.09Z"/></svg>),
+  keyRound: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216.57,39.43A80,80,0,0,0,83.91,120.78L28.69,176A15.86,15.86,0,0,0,24,187.31V216a16,16,0,0,0,16,16H72a8,8,0,0,0,8-8V208H96a8,8,0,0,0,8-8V184h16a8,8,0,0,0,5.66-2.34l9.56-9.57A79.73,79.73,0,0,0,160,176h.1A80,80,0,0,0,216.57,39.43ZM224,98.1c-1.09,34.09-29.75,61.86-63.89,61.9H160a63.7,63.7,0,0,1-23.65-4.51,8,8,0,0,0-8.84,1.68L116.69,168H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0-8,8v16H40V187.31l58.83-58.82a8,8,0,0,0,1.68-8.84A63.72,63.72,0,0,1,96,95.92c0-34.14,27.81-62.8,61.9-63.89A64,64,0,0,1,224,98.1ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"/></svg>),
+  doorOpen: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M232,216H208V40a16,16,0,0,0-16-16H64A16,16,0,0,0,48,40V216H24a8,8,0,0,0,0,16H232a8,8,0,0,0,0-16Zm-40,0H176V40h16ZM64,40h96V216H64Zm80,92a12,12,0,1,1-12-12A12,12,0,0,1,144,132Z"/></svg>),
+  monitor: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,40H48A24,24,0,0,0,24,64V176a24,24,0,0,0,24,24h72v16H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V200h72a24,24,0,0,0,24-24V64A24,24,0,0,0,208,40ZM48,56H208a8,8,0,0,1,8,8v80H40V64A8,8,0,0,1,48,56ZM208,184H48a8,8,0,0,1-8-8V160H216v16A8,8,0,0,1,208,184Z"/></svg>),
+  smartphone: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M176,16H80A24,24,0,0,0,56,40V216a24,24,0,0,0,24,24h96a24,24,0,0,0,24-24V40A24,24,0,0,0,176,16ZM72,64H184V192H72Zm8-32h96a8,8,0,0,1,8,8v8H72V40A8,8,0,0,1,80,32Zm96,192H80a8,8,0,0,1-8-8v-8H184v8A8,8,0,0,1,176,224Z"/></svg>),
+  hammer: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M251.34,112,183.88,44.08a96.1,96.1,0,0,0-135.77,0l-.09.09L34.25,58.4A8,8,0,0,0,45.74,69.53L59.47,55.35a79.92,79.92,0,0,1,18.71-13.9L124.68,88l-96,96a16,16,0,0,0,0,22.63l20.69,20.69a16,16,0,0,0,22.63,0l96-96,14.34,14.34h0L200,163.3a16,16,0,0,0,22.63,0l28.69-28.69A16,16,0,0,0,251.34,112ZM60.68,216,40,195.31l68-68L128.68,148ZM162.34,114.32,140,136.67,119.31,116l22.35-22.35a8,8,0,0,0,0-11.32L94.32,35a80,80,0,0,1,78.23,20.41l44.22,44.51L188,128.66l-14.34-14.34A8,8,0,0,0,162.34,114.32Zm49,37.66-12-12L228,111.25l12,12Z"/></svg>),
+  paintBrush: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M232,32a8,8,0,0,0-8-8c-44.08,0-89.31,49.71-114.43,82.63A60,60,0,0,0,32,164c0,30.88-19.54,44.73-20.47,45.37A8,8,0,0,0,16,224H92a60,60,0,0,0,57.37-77.57C182.3,121.31,232,76.08,232,32ZM92,208H34.63C41.38,198.41,48,183.92,48,164a44,44,0,1,1,44,44Zm32.42-94.45q5.14-6.66,10.09-12.55A76.23,76.23,0,0,1,155,121.49q-5.9,4.94-12.55,10.09A60.54,60.54,0,0,0,124.42,113.55Zm42.7-2.68a92.57,92.57,0,0,0-22-22c31.78-34.53,55.75-45,69.9-47.91C212.17,55.12,201.65,79.09,167.12,110.87Z"/></svg>),
+  truck: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M255.42,117l-14-35A15.93,15.93,0,0,0,226.58,72H192V64a8,8,0,0,0-8-8H32A16,16,0,0,0,16,72V184a16,16,0,0,0,16,16H49a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,255.42,117ZM192,88h34.58l9.6,24H192ZM32,72H176v64H32ZM80,208a16,16,0,1,1,16-16A16,16,0,0,1,80,208Zm81-24H111a32,32,0,0,0-62,0H32V152H176v12.31A32.11,32.11,0,0,0,161,184Zm31,24a16,16,0,1,1,16-16A16,16,0,0,1,192,208Zm48-24H223a32.06,32.06,0,0,0-31-24V128h48Z"/></svg>),
+  packageIcon: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"/></svg>),
+  bikeIcon: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,112a47.81,47.81,0,0,0-16.93,3.09L165.93,72H192a8,8,0,0,1,8,8,8,8,0,0,0,16,0,24,24,0,0,0-24-24H152a8,8,0,0,0-6.91,12l11.65,20H99.26L82.91,60A8,8,0,0,0,76,56H48a8,8,0,0,0,0,16H71.41L85.12,95.51,69.41,117.06a48.13,48.13,0,1,0,12.92,9.44l11.59-15.9L125.09,164A8,8,0,1,0,138.91,156l-30.32-52h57.48l11.19,19.17A48,48,0,1,0,208,112ZM80,160a32,32,0,1,1-20.21-29.74l-18.25,25a8,8,0,1,0,12.92,9.42l18.25-25A31.88,31.88,0,0,1,80,160Zm128,32a32,32,0,0,1-22.51-54.72L201.09,164A8,8,0,1,0,214.91,156L199.3,129.21A32,32,0,1,1,208,192Z"/></svg>),
+  car: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,104H229.2L201.42,41.5A16,16,0,0,0,186.8,32H69.2a16,16,0,0,0-14.62,9.5L26.8,104H16a8,8,0,0,0,0,16h8v80a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16V184h96v16a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16V120h8a8,8,0,0,0,0-16ZM69.2,48H186.8l24.89,56H44.31ZM64,200H40V184H64Zm128,0V184h24v16Zm24-32H40V120H216ZM56,144a8,8,0,0,1,8-8H80a8,8,0,0,1,0,16H64A8,8,0,0,1,56,144Zm112,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H176A8,8,0,0,1,168,144Z"/></svg>),
+  building2: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,208H224V96a16,16,0,0,0-16-16H144V32a16,16,0,0,0-24.88-13.32L39.12,72A16,16,0,0,0,32,85.34V208H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM208,96V208H144V96ZM48,85.34,128,32V208H48ZM112,112v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm-32,0v16a8,8,0,0,1-16,0V112a8,8,0,1,1,16,0Zm0,56v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Zm32,0v16a8,8,0,0,1-16,0V168a8,8,0,0,1,16,0Z"/></svg>),
+  sparkles: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M197.58,129.06,146,110l-19-51.62a15.92,15.92,0,0,0-29.88,0L78,110l-51.62,19a15.92,15.92,0,0,0,0,29.88L78,178l19,51.62a15.92,15.92,0,0,0,29.88,0L146,178l51.62-19a15.92,15.92,0,0,0,0-29.88ZM137,164.22a8,8,0,0,0-4.74,4.74L112,223.85,91.78,169A8,8,0,0,0,87,164.22L32.15,144,87,123.78A8,8,0,0,0,91.78,119L112,64.15,132.22,119a8,8,0,0,0,4.74,4.74L191.85,144ZM144,40a8,8,0,0,1,8-8h16V16a8,8,0,0,1,16,0V32h16a8,8,0,0,1,0,16H184V64a8,8,0,0,1-16,0V48H152A8,8,0,0,1,144,40ZM248,88a8,8,0,0,1-8,8h-8v8a8,8,0,0,1-16,0V96h-8a8,8,0,0,1,0-16h8V72a8,8,0,0,1,16,0v8h8A8,8,0,0,1,248,88Z"/></svg>),
+  screwdriver: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,50.32a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32-11.31l56-56A8,8,0,0,1,205.66,50.32ZM248,58.41a50.13,50.13,0,0,1-14.77,35.66L180,147.3A15.86,15.86,0,0,1,168.69,152H152v16.83a16,16,0,0,1-3.25,9.66,8.08,8.08,0,0,1-.72.83l-8,8a16,16,0,0,1-22.62,0L98.7,168.6l-77,77.06a8,8,0,0,1-11.32-11.32l77.05-77.05-18.7-18.71a16,16,0,0,1,0-22.63l8-8a8,8,0,0,1,.82-.72A16.14,16.14,0,0,1,87.17,104H104V87.3A15.92,15.92,0,0,1,108.68,76l53.24-53.23A50.43,50.43,0,0,1,248,58.41Zm-16,0a34.43,34.43,0,0,0-58.77-24.35L120,87.3V104a16,16,0,0,1-16,16H87.28L80,127.27,128.72,176l7.28-7.28V152a16,16,0,0,1,16-16h16.69l53.23-53.24A34.21,34.21,0,0,0,232,58.41Z"/></svg>),
+  hardDrive: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm0,64H48V152H208v48Zm0-160H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40Zm0,64H48V56H208v48ZM192,80a12,12,0,1,1-12-12A12,12,0,0,1,192,80Zm0,96a12,12,0,1,1-12-12A12,12,0,0,1,192,176Z"/></svg>),
+  cpu: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M152,96H104a8,8,0,0,0-8,8v48a8,8,0,0,0,8,8h48a8,8,0,0,0,8-8V104A8,8,0,0,0,152,96Zm-8,48H112V112h32Zm88,0H216V112h16a8,8,0,0,0,0-16H216V56a16,16,0,0,0-16-16H160V24a8,8,0,0,0-16,0V40H112V24a8,8,0,0,0-16,0V40H56A16,16,0,0,0,40,56V96H24a8,8,0,0,0,0,16H40v32H24a8,8,0,0,0,0,16H40v40a16,16,0,0,0,16,16H96v16a8,8,0,0,0,16,0V216h32v16a8,8,0,0,0,16,0V216h40a16,16,0,0,0,16-16V160h16a8,8,0,0,0,0-16Zm-32,56H56V56H200v95.87s0,.09,0,.13,0,.09,0,.13V200Z"/></svg>),
+  batteryFull: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M200,56H32A24,24,0,0,0,8,80v96a24,24,0,0,0,24,24H200a24,24,0,0,0,24-24V80A24,24,0,0,0,200,56Zm8,120a8,8,0,0,1-8,8H32a8,8,0,0,1-8-8V80a8,8,0,0,1,8-8H200a8,8,0,0,1,8,8ZM184,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm-40,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm-40,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0ZM64,96v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Zm192,0v64a8,8,0,0,1-16,0V96a8,8,0,0,1,16,0Z"/></svg>),
+  shieldCheck: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.26,47,25.53a8,8,0,0,0,4.2,0c1-.27,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/></svg>),
+  siren: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M120,16V8a8,8,0,0,1,16,0v8a8,8,0,0,1-16,0Zm80,32a8,8,0,0,0,5.66-2.34l8-8a8,8,0,0,0-11.32-11.32l-8,8A8,8,0,0,0,200,48ZM50.34,45.66A8,8,0,0,0,61.66,34.34l-8-8A8,8,0,0,0,42.34,37.66Zm87,26.45a8,8,0,1,0-2.64,15.78C153.67,91.08,168,108.32,168,128a8,8,0,0,0,16,0C184,100.6,163.93,76.57,137.32,72.11ZM232,176v24a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V176a16,16,0,0,1,16-16V128a88,88,0,0,1,88.67-88c48.15.36,87.33,40.29,87.33,89v31A16,16,0,0,1,232,176ZM56,160H200V129c0-40-32.05-72.71-71.45-73H128a72,72,0,0,0-72,72Zm160,40V176H40v24H216Z"/></svg>),
+  sofa: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,88.8V72a40,40,0,0,0-40-40H80A40,40,0,0,0,40,72V88.8a40,40,0,0,0,0,78.4V200a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V167.2a40,40,0,0,0,0-78.4ZM80,48h96a24,24,0,0,1,24,24V88.8A40.07,40.07,0,0,0,168,128H88A40.07,40.07,0,0,0,56,88.8V72A24,24,0,0,1,80,48ZM208.39,152H208a8,8,0,0,0-8,8v40H56V160a8,8,0,0,0-8-8h-.39A24,24,0,1,1,72,128v40a8,8,0,0,0,16,0V144h80v24a8,8,0,0,0,16,0V128a24,24,0,1,1,24.39,24Z"/></svg>),
+  bed: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,72H32V48a8,8,0,0,0-16,0V208a8,8,0,0,0,16,0V176H240v32a8,8,0,0,0,16,0V112A40,40,0,0,0,216,72ZM32,88h72v72H32Zm88,72V88h96a24,24,0,0,1,24,24v48Z"/></svg>),
+  tent: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M255.31,188.75l-64-144A8,8,0,0,0,184,40H72a8,8,0,0,0-7.27,4.69.21.21,0,0,0,0,.06l0,.12,0,0L.69,188.75A8,8,0,0,0,8,200H248a8,8,0,0,0,7.31-11.25ZM64,184H20.31L64,85.7Zm16,0V85.7L123.69,184Zm61.2,0L84.31,56H178.8l56.89,128Z"/></svg>),
+  waves: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M222.16,177.25a8,8,0,0,1-1,11.25c-17.36,14.39-32.86,19.5-47,19.5-18.58,0-34.82-8.82-49.93-17-25.35-13.76-47.24-25.64-79.07.74a8,8,0,1,1-10.22-12.31c40.17-33.28,70.32-16.92,96.93-2.48,25.35,13.75,47.24,25.63,79.07-.74A8,8,0,0,1,222.16,177.25Zm-11.27-57c-31.83,26.38-53.72,14.5-79.07.74-26.61-14.43-56.76-30.79-96.93,2.49a8,8,0,0,0,10.22,12.31c31.83-26.38,53.72-14.5,79.07-.74,15.11,8.19,31.35,17,49.93,17,14.14,0,29.64-5.11,47-19.5a8,8,0,1,0-10.22-12.31ZM45.11,79.8c31.83-26.37,53.72-14.49,79.07-.74,15.11,8.2,31.35,17,49.93,17,14.14,0,29.64-5.12,47-19.5a8,8,0,1,0-10.22-12.31c-31.83,26.38-53.72,14.5-79.07.74C105.21,50.58,75.06,34.22,34.89,67.5A8,8,0,1,0,45.11,79.8Z"/></svg>),
+  crown: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M248,80a28,28,0,1,0-51.12,15.77l-26.79,33L146,73.4a28,28,0,1,0-36.06,0L85.91,128.74l-26.79-33a28,28,0,1,0-26.6,12L47,194.63A16,16,0,0,0,62.78,208H193.22A16,16,0,0,0,209,194.63l14.47-86.85A28,28,0,0,0,248,80ZM128,40a12,12,0,1,1-12,12A12,12,0,0,1,128,40ZM24,80A12,12,0,1,1,36,92,12,12,0,0,1,24,80ZM193.22,192H62.78L48.86,108.52,81.79,149A8,8,0,0,0,88,152a7.83,7.83,0,0,0,1.08-.07,8,8,0,0,0,6.26-4.74l29.3-67.4a27,27,0,0,0,6.72,0l29.3,67.4a8,8,0,0,0,6.26,4.74A7.83,7.83,0,0,0,168,152a8,8,0,0,0,6.21-3l32.93-40.52ZM220,92a12,12,0,1,1,12-12A12,12,0,0,1,220,92Z"/></svg>),
+  gem: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M235.33,116.72,139.28,20.66a16,16,0,0,0-22.56,0l-96,96.06a16,16,0,0,0,0,22.56l96.05,96.06h0a16,16,0,0,0,22.56,0l96.05-96.06a16,16,0,0,0,0-22.56ZM128,224h0L32,128,128,32,224,128Z"/></svg>),
+  mountain: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M164,80a28,28,0,1,0-28-28A28,28,0,0,0,164,80Zm0-40a12,12,0,1,1-12,12A12,12,0,0,1,164,40Zm90.88,155.92-54.56-92.08A15.87,15.87,0,0,0,186.55,96h0a15.85,15.85,0,0,0-13.76,7.84L146.63,148l-44.84-76.1a16,16,0,0,0-27.58,0L1.11,195.94A8,8,0,0,0,8,208H248a8,8,0,0,0,6.88-12.08ZM88,80l23.57,40H64.43ZM22,192l33-56h66l18.74,31.8,0,0L154,192Zm150.57,0-16.66-28.28L186.55,112,234,192Z"/></svg>),
+  palette: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M200.77,53.89A103.27,103.27,0,0,0,128,24h-1.07A104,104,0,0,0,24,128c0,43,26.58,79.06,69.36,94.17A32,32,0,0,0,136,192a16,16,0,0,1,16-16h46.21a31.81,31.81,0,0,0,31.2-24.88,104.43,104.43,0,0,0,2.59-24A103.28,103.28,0,0,0,200.77,53.89Zm13,93.71A15.89,15.89,0,0,1,198.21,160H152a32,32,0,0,0-32,32,16,16,0,0,1-21.31,15.07C62.49,194.3,40,164,40,128a88,88,0,0,1,87.09-88h.9a88.35,88.35,0,0,1,88,87.25A88.86,88.86,0,0,1,213.81,147.6ZM140,76a12,12,0,1,1-12-12A12,12,0,0,1,140,76ZM96,100A12,12,0,1,1,84,88,12,12,0,0,1,96,100Zm0,56a12,12,0,1,1-12-12A12,12,0,0,1,96,156Zm88-56a12,12,0,1,1-12-12A12,12,0,0,1,184,100Z"/></svg>),
+  warehouse: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,184h-8V57.9l9.67-2.08a8,8,0,1,0-3.35-15.64l-224,48A8,8,0,0,0,16,104a8.16,8.16,0,0,0,1.69-.18L24,102.47V184H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,99,216,61.33V184H192V128a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v56H40Zm136,53H80V136h96ZM80,168h96v16H80Z"/></svg>),
+  grid3x3: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,48H40A16,16,0,0,0,24,64V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V64A16,16,0,0,0,216,48ZM104,144V112h48v32Zm48,16v32H104V160ZM40,112H88v32H40Zm64-16V64h48V96Zm64,16h48v32H168Zm48-16H168V64h48ZM88,64V96H40V64ZM40,160H88v32H40Zm176,32H168V160h48v32Z"/></svg>),
+  plane: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M235.58,128.84,160,91.06V48a32,32,0,0,0-64,0V91.06L20.42,128.84A8,8,0,0,0,16,136v32a8,8,0,0,0,9.57,7.84L96,161.76v18.93L82.34,194.34A8,8,0,0,0,80,200v32a8,8,0,0,0,11,7.43l37-14.81,37,14.81A8,8,0,0,0,176,232V200a8,8,0,0,0-2.34-5.66L160,180.69V161.76l70.43,14.08A8,8,0,0,0,240,168V136A8,8,0,0,0,235.58,128.84ZM224,158.24l-70.43-14.08A8,8,0,0,0,144,152v32a8,8,0,0,0,2.34,5.66L160,203.31v16.87l-29-11.61a8,8,0,0,0-5.94,0L96,220.18V203.31l13.66-13.65A8,8,0,0,0,112,184V152a8,8,0,0,0-9.57-7.84L32,158.24v-17.3l75.58-37.78A8,8,0,0,0,112,96V48a16,16,0,0,1,32,0V96a8,8,0,0,0,4.42,7.16L224,140.94Z"/></svg>),
+  footprints: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208.06,184H152a8,8,0,0,0-8,8v12a36,36,0,0,0,72.05,0V192A8,8,0,0,0,208.06,184Zm-8,20a20,20,0,0,1-40,0v-4h40ZM104,160h-56a8,8,0,0,0-8,8v12A36,36,0,0,0,112,180V168A8,8,0,0,0,104,160Zm-8,20a20,20,0,0,1-40,0v-4H96ZM76,16C64.36,16,53.07,26.31,44.2,45c-13.93,29.38-18.56,73,.29,96a8,8,0,0,0,6.2,2.93h50.55a8,8,0,0,0,6.2-2.93c18.85-23,14.22-66.65.29-96C98.85,26.31,87.57,16,76,16ZM97.15,128H54.78c-11.4-18.1-7.21-52.7,3.89-76.11C65.14,38.22,72.17,32,76,32s10.82,6.22,17.3,19.89C104.36,75.3,108.55,109.9,97.15,128Zm57.61,40h50.55a8,8,0,0,0,6.2-2.93c18.85-23,14.22-66.65.29-96C202.93,50.31,191.64,40,180,40s-22.89,10.31-31.77,29c-13.93,29.38-18.56,73,.29,96A8.05,8.05,0,0,0,154.76,168Zm8-92.11C169.22,62.22,176.25,56,180,56s10.82,6.22,17.29,19.89c11.1,23.41,15.29,58,3.9,76.11H158.85C147.45,133.9,151.64,99.3,162.74,75.89Z"/></svg>),
+  showerHead: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M64,236a12,12,0,1,1-12-12A12,12,0,0,1,64,236Zm20-44a12,12,0,1,0,12,12A12,12,0,0,0,84,192Zm-64,0a12,12,0,1,0,12,12A12,12,0,0,0,20,192Zm32-32a12,12,0,1,0,12,12A12,12,0,0,0,52,160ZM256,40a8,8,0,0,1-8,8H219.31L191.46,75.86,169.8,202.65a16,16,0,0,1-27.09,8.66l-98-98a16,16,0,0,1,8.69-27.1L180.14,64.54l30.2-30.2A8,8,0,0,1,216,32h32A8,8,0,0,1,256,40ZM174.21,81.79,56,102l98,98Z"/></svg>),
+  pipette: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,67.3a35.79,35.79,0,0,0-11.26-25.66c-14-13.28-36.72-12.78-50.62,1.13L142.8,62.2a24,24,0,0,0-33.14.77l-9,9a16,16,0,0,0,0,22.64l2,2.06-51,51a39.75,39.75,0,0,0-10.53,38l-8,18.41A13.68,13.68,0,0,0,36,219.3a15.92,15.92,0,0,0,17.71,3.35L71.23,215a39.89,39.89,0,0,0,37.06-10.75l51-51,2.06,2.06a16,16,0,0,0,22.62,0l9-9a24,24,0,0,0,.74-33.18l19.75-19.87A35.75,35.75,0,0,0,224,67.3ZM97,193a24,24,0,0,1-24,6,8,8,0,0,0-5.55.31l-18.1,7.91L57,189.41a8,8,0,0,0,.25-5.75A23.88,23.88,0,0,1,63,159l51-51,33.94,34ZM202.13,82l-25.37,25.52a8,8,0,0,0,0,11.3l4.89,4.89a8,8,0,0,1,0,11.32l-9,9L112,83.26l9-9a8,8,0,0,1,11.31,0l4.89,4.89a8,8,0,0,0,11.33,0l24.94-25.09c7.81-7.82,20.5-8.18,28.29-.81a20,20,0,0,1,.39,28.7Z"/></svg>),
+  gauge: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M207.06,72.67A111.24,111.24,0,0,0,128,40h-.4C66.07,40.21,16,91,16,153.13V176a16,16,0,0,0,16,16H224a16,16,0,0,0,16-16V152A111.25,111.25,0,0,0,207.06,72.67ZM224,176H119.71l54.76-75.3a8,8,0,0,0-12.94-9.42L99.92,176H32V153.13c0-3.08.15-6.12.43-9.13H56a8,8,0,0,0,0-16H35.27c10.32-38.86,44-68.24,84.73-71.66V80a8,8,0,0,0,16,0V56.33A96.14,96.14,0,0,1,221,128H200a8,8,0,0,0,0,16h23.67c.21,2.65.33,5.31.33,8Z"/></svg>),
+  circleDot: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/></svg>),
+  users: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"/></svg>),
+  userPlus: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M256,136a8,8,0,0,1-8,8H232v16a8,8,0,0,1-16,0V144H200a8,8,0,0,1,0-16h16V112a8,8,0,0,1,16,0v16h16A8,8,0,0,1,256,136Zm-57.87,58.85a8,8,0,0,1-12.26,10.3C165.75,181.19,138.09,168,108,168s-57.75,13.19-77.87,37.15a8,8,0,0,1-12.25-10.3c14.94-17.78,33.52-30.41,54.17-37.17a68,68,0,1,1,71.9,0C164.6,164.44,183.18,177.07,198.13,194.85ZM108,152a52,52,0,1,0-52-52A52.06,52.06,0,0,0,108,152Z"/></svg>),
+  box: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M223.68,66.15,135.68,18h0a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32h0l80.34,44L128,120,47.66,76ZM40,90l80,43.78v85.79L40,175.82Zm96,129.57V133.82L216,90v85.78Z"/></svg>),
+  piano: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM80,48h24v88H80Zm32,104a8,8,0,0,0,8-8V48h16v96a8,8,0,0,0,8,8h8v56H104V152Zm40-16V48h24v88ZM48,48H64v96a8,8,0,0,0,8,8H88v56H48ZM208,208H168V152h16a8,8,0,0,0,8-8V48h16V208Z"/></svg>),
+  radio: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Zm73.71,7.14a80,80,0,0,1-14.08,22.2,8,8,0,0,1-11.92-10.67,63.95,63.95,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67,80.08,80.08,0,0,1,14.08,84.47ZM69,103.09a64,64,0,0,0,11.26,67.58,8,8,0,0,1-11.92,10.67,79.93,79.93,0,0,1,0-106.67A8,8,0,1,1,80.29,85.34,63.77,63.77,0,0,0,69,103.09ZM248,128a119.58,119.58,0,0,1-34.29,84,8,8,0,1,1-11.42-11.2,103.9,103.9,0,0,0,0-145.56A8,8,0,1,1,213.71,44,119.58,119.58,0,0,1,248,128ZM53.71,200.78A8,8,0,1,1,42.29,212a119.87,119.87,0,0,1,0-168,8,8,0,1,1,11.42,11.2,103.9,103.9,0,0,0,0,145.56Z"/></svg>),
+  close: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></svg>),
+  clipboard: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M200,32H163.74a47.92,47.92,0,0,0-71.48,0H56A16,16,0,0,0,40,48V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm-72,0a32,32,0,0,1,32,32H96A32,32,0,0,1,128,32Zm72,184H56V48H82.75A47.93,47.93,0,0,0,80,64v8a8,8,0,0,0,8,8h80a8,8,0,0,0,8-8V64a47.93,47.93,0,0,0-2.75-16H200Z"/></svg>),
+  link: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M240,88.23a54.43,54.43,0,0,1-16,37L189.25,160a54.27,54.27,0,0,1-38.63,16h-.05A54.63,54.63,0,0,1,96,119.84a8,8,0,0,1,16,.45A38.62,38.62,0,0,0,150.58,160h0a38.39,38.39,0,0,0,27.31-11.31l34.75-34.75a38.63,38.63,0,0,0-54.63-54.63l-11,11A8,8,0,0,1,135.7,59l11-11A54.65,54.65,0,0,1,224,48,54.86,54.86,0,0,1,240,88.23ZM109,185.66l-11,11A38.41,38.41,0,0,1,70.6,208h0a38.63,38.63,0,0,1-27.29-65.94L78,107.31A38.63,38.63,0,0,1,144,135.71a8,8,0,0,0,16,.45A54.86,54.86,0,0,0,144,96a54.65,54.65,0,0,0-77.27,0L32,130.75A54.62,54.62,0,0,0,70.56,224h0a54.28,54.28,0,0,0,38.64-16l11-11A8,8,0,0,0,109,185.66Z"/></svg>),
+  server: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,136H48a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V152A16,16,0,0,0,208,136Zm0,64H48V152H208v48Zm0-160H48A16,16,0,0,0,32,56v48a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V56A16,16,0,0,0,208,40Zm0,64H48V56H208v48ZM192,80a12,12,0,1,1-12-12A12,12,0,0,1,192,80Zm0,96a12,12,0,1,1-12-12A12,12,0,0,1,192,176Z"/></svg>),
+  wifi: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M140,204a12,12,0,1,1-12-12A12,12,0,0,1,140,204ZM237.08,87A172,172,0,0,0,18.92,87,8,8,0,0,0,29.08,99.37a156,156,0,0,1,197.84,0A8,8,0,0,0,237.08,87ZM205,122.77a124,124,0,0,0-153.94,0A8,8,0,0,0,61,135.31a108,108,0,0,1,134.06,0,8,8,0,0,0,11.24-1.3A8,8,0,0,0,205,122.77Zm-32.26,35.76a76.05,76.05,0,0,0-89.42,0,8,8,0,0,0,9.42,12.94,60,60,0,0,1,70.58,0,8,8,0,1,0,9.42-12.94Z"/></svg>),
+  database: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24C74.17,24,32,48.6,32,80v96c0,31.4,42.17,56,96,56s96-24.6,96-56V80C224,48.6,181.83,24,128,24Zm80,104c0,9.62-7.88,19.43-21.61,26.92C170.93,163.35,150.19,168,128,168s-42.93-4.65-58.39-13.08C55.88,147.43,48,137.62,48,128V111.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64ZM69.61,53.08C85.07,44.65,105.81,40,128,40s42.93,4.65,58.39,13.08C200.12,60.57,208,70.38,208,80s-7.88,19.43-21.61,26.92C170.93,115.35,150.19,120,128,120s-42.93-4.65-58.39-13.08C55.88,99.43,48,89.62,48,80S55.88,60.57,69.61,53.08ZM186.39,202.92C170.93,211.35,150.19,216,128,216s-42.93-4.65-58.39-13.08C55.88,195.43,48,185.62,48,176V159.36c17.06,15,46.23,24.64,80,24.64s62.94-9.68,80-24.64V176C208,185.62,200.12,195.43,186.39,202.92Z"/></svg>),
+  scale: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M239.43,133l-32-80h0a8,8,0,0,0-9.16-4.84L136,62V40a8,8,0,0,0-16,0V65.58L54.26,80.19A8,8,0,0,0,48.57,85h0v.06L16.57,165a7.92,7.92,0,0,0-.57,3c0,23.31,24.54,32,40,32s40-8.69,40-32a7.92,7.92,0,0,0-.57-3L66.92,93.77,120,82V208H104a8,8,0,0,0,0,16h48a8,8,0,0,0,0-16H136V78.42L187,67.1,160.57,133a7.92,7.92,0,0,0-.57,3c0,23.31,24.54,32,40,32s40-8.69,40-32A7.92,7.92,0,0,0,239.43,133ZM56,184c-7.53,0-22.76-3.61-23.93-14.64L56,109.54l23.93,59.82C78.76,180.39,63.53,184,56,184Zm144-32c-7.53,0-22.76-3.61-23.93-14.64L200,77.54l23.93,59.82C222.76,148.39,207.53,152,200,152Z"/></svg>),
+  handshake: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M254.3,107.91,228.78,56.85a16,16,0,0,0-21.47-7.15L182.44,62.13,130.05,48.27a8.14,8.14,0,0,0-4.1,0L73.56,62.13,48.69,49.7a16,16,0,0,0-21.47,7.15L1.7,107.9a16,16,0,0,0,7.15,21.47l27,13.51,55.49,39.63a8.06,8.06,0,0,0,2.71,1.25l64,16a8,8,0,0,0,7.6-2.1l55.07-55.08,26.42-13.21a16,16,0,0,0,7.15-21.46Zm-54.89,33.37L165,113.72a8,8,0,0,0-10.68.61C136.51,132.27,116.66,130,104,122L147.24,80h31.81l27.21,54.41ZM41.53,64,62,74.22,36.43,125.27,16,115.06Zm116,119.13L99.42,168.61l-49.2-35.14,28-56L128,64.28l9.8,2.59-45,43.68-.08.09a16,16,0,0,0,2.72,24.81c20.56,13.13,45.37,11,64.91-5L188,152.66Zm62-57.87-25.52-51L214.47,64,240,115.06Zm-87.75,92.67a8,8,0,0,1-7.75,6.06,8.13,8.13,0,0,1-1.95-.24L80.41,213.33a7.89,7.89,0,0,1-2.71-1.25L51.35,193.26a8,8,0,0,1,9.3-13l25.11,17.94L126,208.24A8,8,0,0,1,131.82,217.94Z"/></svg>),
+  layers: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172ZM220,121.09l-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09ZM24,80a8,8,0,0,1,4-6.91l96-56a8,8,0,0,1,8.06,0l96,56a8,8,0,0,1,0,13.82l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,24,80Zm23.88,0L128,126.74,208.12,80,128,33.26Z"/></svg>),
+  scan: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,40V80a8,8,0,0,1-16,0V48H176a8,8,0,0,1,0-16h40A8,8,0,0,1,224,40ZM80,208H48V176a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H80a8,8,0,0,0,0-16Zm136-40a8,8,0,0,0-8,8v32H176a8,8,0,0,0,0,16h40a8,8,0,0,0,8-8V176A8,8,0,0,0,216,168ZM40,88a8,8,0,0,0,8-8V48H80a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8V80A8,8,0,0,0,40,88ZM80,72h96a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V80A8,8,0,0,1,80,72Zm8,96h80V88H88Z"/></svg>),
+  arrowUp: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,117.66a8,8,0,0,1-11.32,0L136,59.31V216a8,8,0,0,1-16,0V59.31L61.66,117.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0l72,72A8,8,0,0,1,205.66,117.66Z"/></svg>),
+  arrowDown: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M205.66,149.66l-72,72a8,8,0,0,1-11.32,0l-72-72a8,8,0,0,1,11.32-11.32L120,196.69V40a8,8,0,0,1,16,0V196.69l58.34-58.35a8,8,0,0,1,11.32,11.32Z"/></svg>),
+  graduationCap: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M251.76,88.94l-120-64a8,8,0,0,0-7.52,0l-120,64a8,8,0,0,0,0,14.12L32,117.87v48.42a15.91,15.91,0,0,0,4.06,10.65C49.16,191.53,78.51,216,128,216a130,130,0,0,0,48-8.76V240a8,8,0,0,0,16,0V199.51a115.63,115.63,0,0,0,27.94-22.57A15.91,15.91,0,0,0,224,166.29V117.87l27.76-14.81a8,8,0,0,0,0-14.12ZM128,200c-43.27,0-68.72-21.14-80-33.71V126.4l76.24,40.66a8,8,0,0,0,7.52,0L176,143.47v46.34C163.4,195.69,147.52,200,128,200Zm80-33.75a97.83,97.83,0,0,1-16,14.25V134.93l16-8.53ZM188,118.94l-.22-.13-56-29.87a8,8,0,0,0-7.52,14.12L171,128l-43,22.93L25,96,128,41.07,231,96Z"/></svg>),
+  briefcase: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M216,56H176V48a24,24,0,0,0-24-24H104A24,24,0,0,0,80,48v8H40A16,16,0,0,0,24,72V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V72A16,16,0,0,0,216,56ZM96,48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM216,72v41.61A184,184,0,0,1,128,136a184.07,184.07,0,0,1-88-22.38V72Zm0,128H40V131.64A200.19,200.19,0,0,0,128,152a200.25,200.25,0,0,0,88-20.37V200ZM104,112a8,8,0,0,1,8-8h32a8,8,0,0,1,0,16H112A8,8,0,0,1,104,112Z"/></svg>),
+  refreshCw: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L182.06,73.37a79.56,79.56,0,0,0-56.13-23.43h-.45A79.52,79.52,0,0,0,69.59,72.71,8,8,0,0,1,58.41,61.27a96,96,0,0,1,135,.79L208,76.69V48a8,8,0,0,1,16,0ZM186.41,183.29a80,80,0,0,1-112.47-.66L59.31,168H88a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8v48a8,8,0,0,0,16,0V179.31l14.63,14.63A95.43,95.43,0,0,0,130,222.06h.53a95.36,95.36,0,0,0,67.07-27.33,8,8,0,0,0-11.18-11.44Z"/></svg>),
+  circleStop: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216ZM160,88H96a8,8,0,0,0-8,8v64a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V96A8,8,0,0,0,160,88Zm-8,64H104V104h48Z"/></svg>),
+  circlePlay: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48.24-94.78-64-40A8,8,0,0,0,100,88v80a8,8,0,0,0,12.24,6.78l64-40a8,8,0,0,0,0-13.56ZM116,153.57V102.43L156.91,128Z"/></svg>),
+  coins: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M184,89.57V84c0-25.08-37.83-44-88-44S8,58.92,8,84v40c0,20.89,26.25,37.49,64,42.46V172c0,25.08,37.83,44,88,44s88-18.92,88-44V132C248,111.3,222.58,94.68,184,89.57ZM232,132c0,13.22-30.79,28-72,28-3.73,0-7.43-.13-11.08-.37C170.49,151.77,184,139,184,124V105.74C213.87,110.19,232,122.27,232,132ZM72,150.25V126.46A183.74,183.74,0,0,0,96,128a183.74,183.74,0,0,0,24-1.54v23.79A163,163,0,0,1,96,152,163,163,0,0,1,72,150.25Zm96-40.32V124c0,8.39-12.41,17.4-32,22.87V123.5C148.91,120.37,159.84,115.71,168,109.93ZM96,56c41.21,0,72,14.78,72,28s-30.79,28-72,28S24,97.22,24,84,54.79,56,96,56ZM24,124V109.93c8.16,5.78,19.09,10.44,32,13.57v23.37C36.41,141.4,24,132.39,24,124Zm64,48v-4.17c2.63.1,5.29.17,8,.17,3.88,0,7.67-.13,11.39-.35A121.92,121.92,0,0,0,120,171.41v23.46C100.41,189.4,88,180.39,88,172Zm48,26.25V174.4a179.48,179.48,0,0,0,24,1.6,183.74,183.74,0,0,0,24-1.54v23.79a165.45,165.45,0,0,1-48,0Zm64-3.38V171.5c12.91-3.13,23.84-7.79,32-13.57V172C232,180.39,219.59,189.4,200,194.87Z"/></svg>),
+  inbox: (<svg viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,16V152h-28.7A15.86,15.86,0,0,0,168,156.69L148.69,176H107.31L88,156.69A15.86,15.86,0,0,0,76.69,152H48V48Zm0,160H48V168H76.69L96,187.31A15.86,15.86,0,0,0,107.31,192h41.38A15.86,15.86,0,0,0,160,187.31L179.31,168H208v40Z"/></svg>),
 };
 
 // ============== Components ==============
@@ -1119,6 +575,20 @@ const EMOJI_TO_ICON: Record<string, keyof typeof Icons> = {
   '🚙': 'car', '🛻': 'truck', '🏎️': 'zap',
   '1️⃣': 'circleDot', '2️⃣': 'circleDot', '3️⃣': 'circleDot', '4️⃣': 'circleDot',
   '⭐⭐': 'star',
+  // ── Missing emoji mappings ──
+  '🚽': 'droplet', '🛁': 'droplet', '🔲': 'grid3x3', '🎥': 'camera',
+  '🎓': 'graduationCap', '⚛️': 'cpu', '🟢': 'circleDot', '🔗': 'link',
+  '🤖': 'cpu', '🍎': 'monitor', '🦋': 'sparkles', '🐍': 'monitor',
+  '📗': 'book', '☁️': 'uploadCloud', '🐳': 'server', '🐧': 'monitor',
+  '⛓️': 'link', '📜': 'fileText', '🦀': 'cpu', '🕹️': 'monitor',
+  '🖌️': 'paintBrush', '🖼️': 'image', '✏️': 'paintBrush', '💼': 'briefcase',
+  '🎬': 'circlePlay', '🎞️': 'circlePlay', '📣': 'bell', '▶️': 'play',
+  '📝': 'clipboard', '🔎': 'search', '🟡': 'circleDot', '🌱': 'sparkles',
+  '✍️': 'clipboard', '🚀': 'zap', '💰': 'coins', '📈': 'arrowUp',
+  '₿': 'coins', '💳': 'creditCard', '📌': 'location', '🤝': 'handshake',
+  '🇬🇧': 'globe', '🇨🇳': 'globe', '🇰🇷': 'globe', '🇩🇪': 'globe',
+  '🇹🇷': 'globe', '🇸🇦': 'globe', '💬': 'message', '🧩': 'layers',
+  '🎤': 'volume2', '🛠️': 'wrench',
 };
 
 /** Renders either a professional SVG icon (if mapping exists) or fallback text */
@@ -1747,7 +1217,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
             <p class="font-bold text-lg text-gray-800">{t('home.urgentOrder')}</p>
             <p class="text-gray-500 text-sm">{t('home.guardIn15min')}</p>
           </div>
-          <Icon name="chevronRight" class="text-amber-500" />
+          <Icon name="chevronRight" class="text-slate-400 dark:text-slate-500" />
         </div>
       </button>
 
@@ -1784,12 +1254,12 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
               <div class="mt-3 pt-3 border-t border-white/10 space-y-2 animate-fade-in">
                 {/* Translation in user's language */}
                 <div class="flex items-start gap-2">
-                  <span class="text-emerald-400 text-sm">📝</span>
+                  <Icon name="fileText" size="xs" class="text-emerald-400" />
                   <p class="text-sm text-white/80">{t(lesson.translationKey)}</p>
                 </div>
                 {/* Example */}
                 <div class="flex items-start gap-2">
-                  <span class="text-blue-400 text-sm">💬</span>
+                  <span class="text-slate-400 dark:text-slate-500 text-sm">💬</span>
                   <div>
                     <p class="text-sm text-white font-medium italic">"{lesson.example}"</p>
                     <p class="text-xs text-white/50 mt-0.5">{t(lesson.exampleKey)}</p>
@@ -1825,7 +1295,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
             }`}
             onClick={() => { setHomeMode('search'); setHomeExpandedDept(null); }}
           >
-            {currentLang() === 'en' ? '🔍 Find a Pro' : '🔍 Найти мастера'}
+            <span class="flex items-center gap-1.5"><Icon name="search" size="xs" class="text-white" /> {currentLang() === 'en' ? 'Find a Pro' : 'Найти мастера'}</span>
           </button>
           <button
             type="button"
@@ -2279,7 +1749,7 @@ function DepartmentViewPage(props: { onNavigate: (page: string) => void; onBack:
                   <span class="ml-0.5 bg-yellow-400 text-yellow-900 text-[9px] px-1 rounded-full font-bold">EXP</span>
                 </Show>
                 <Show when={skill.requiresDiploma}>
-                  <span>🎓</span>
+                  <Icon name="graduationCap" size="xs" class="text-indigo-500 inline-block" />
                 </Show>
               </span>
             )}
@@ -2331,7 +1801,7 @@ function DepartmentViewPage(props: { onNavigate: (page: string) => void; onBack:
                     <div class="flex items-center gap-2">
                       <h3 class="font-semibold text-gray-800 truncate">{worker.name}</h3>
                       {worker.verified && (
-                        <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div class="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
                           <Icon name="check" class="text-white w-3 h-3" />
                         </div>
                       )}
@@ -2703,7 +2173,7 @@ function WorkerSkillsPage(props: { onBack: () => void }) {
                                   : 'bg-gray-100'
                               }`}>
                                 <Show when={isLocked} fallback={<SkillIcon icon={skill.icon} class="text-white" size="lg" />}>
-                                  <span class="text-xl">🔒</span>
+                                  <Icon name="lock" size="sm" class="text-gray-400" />
                                 </Show>
                                 <Show when={!isLocked}>
                                   <LikeBadge likeKey={`skill:${skill.id}`} compact />
@@ -2718,15 +2188,15 @@ function WorkerSkillsPage(props: { onBack: () => void }) {
                                     <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[9px] font-bold rounded-full">{t('skills.expert')}</span>
                                   </Show>
                                   <Show when={needsDiploma}>
-                                    <span class={`px-1.5 py-0.5 text-[9px] font-bold rounded-full ${hasDiploma() ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                      {hasDiploma() ? '✅ ' + t('skills.verified') : '🎓 ' + t('skills.diplomaRequired')}
+                                    <span class={`px-1.5 py-0.5 text-[9px] font-bold rounded-full flex items-center gap-0.5 ${hasDiploma() ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                      {hasDiploma() ? <><Icon name="checkCircle" size="xs" class="text-emerald-600 dark:text-emerald-400" /> {t('skills.verified')}</> : <><Icon name="graduationCap" size="xs" class="text-red-500 dark:text-red-400" /> {t('skills.diplomaRequired')}</>}
                                     </span>
                                   </Show>
                                   <Show when={skill.urgent}>
-                                    <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[9px] font-bold rounded-full">⚡ {t('skills.urgent')}</span>
+                                    <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[9px] font-bold rounded-full flex items-center gap-0.5"><Icon name="zap" size="xs" class="text-red-600" /> {t('skills.urgent')}</span>
                                   </Show>
                                   <Show when={hasVariants()}>
-                                    <span class="px-1.5 py-0.5 bg-blue-100 text-blue-600 text-[9px] font-bold rounded-full">{skill.variants!.length} {currentLang() === 'en' ? 'types' : 'видов'}</span>
+                                    <span class="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 text-[9px] font-bold rounded-full">{skill.variants!.length} {currentLang() === 'en' ? 'types' : 'видов'}</span>
                                   </Show>
                                 </div>
                               </div>
@@ -2742,7 +2212,7 @@ function WorkerSkillsPage(props: { onBack: () => void }) {
                                     <Icon name="check" class="text-white w-4 h-4" />
                                   </Show>
                                   <Show when={isLocked && !active()}>
-                                    <span class="text-[10px]">🔒</span>
+                                    <Icon name="lock" size="xs" class="text-gray-400" />
                                   </Show>
                                 </div>
                               }>
@@ -2817,8 +2287,8 @@ function WorkerSkillsPage(props: { onBack: () => void }) {
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-6" onClick={() => setShowDiplomaPrompt(null)}>
           <div class="glass rounded-3xl p-6 max-w-sm w-full animate-slide-up" onClick={(e) => e.stopPropagation()}>
             <div class="text-center mb-5">
-              <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                <span class="text-3xl">🎓</span>
+              <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mx-auto mb-3">
+                <Icon name="graduationCap" size="xl" class="text-indigo-500" />
               </div>
               <h3 class="text-lg font-bold text-gray-800">{t('skills.diplomaRequired')}</h3>
               <p class="text-gray-500 text-sm mt-2">{t('skills.diplomaUpload')}</p>
@@ -2915,7 +2385,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
           originalPrice: budget(),
           type: 'counter',
           badgeKey: 'urgent.badgeFast',
-          badgeColor: 'bg-blue-500'
+          badgeColor: 'bg-indigo-500'
         }]);
       }, 5000);
 
@@ -3011,7 +2481,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
             <div class="glass rounded-3xl p-5">
               <div class="flex items-center justify-between mb-3">
                 <label class="text-sm font-medium text-gray-700">{t('urgent.address')}</label>
-                <span class="text-xs text-indigo-600 font-medium">📍 GPS</span>
+                <span class="text-xs text-indigo-600 font-medium flex items-center gap-0.5"><Icon name="location" size="xs" class="text-indigo-600" /> GPS</span>
               </div>
               <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-2xl">
                 <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
@@ -3083,7 +2553,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
             <div class="glass rounded-2xl p-4 border border-amber-200 bg-amber-50/50">
               <div class="flex items-start gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                  <Icon name="zap" class="text-amber-600" />
+                  <Icon name="zap" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <div>
                   <p class="font-medium text-gray-800 mb-1">{t('urgent.howItWorks')}</p>
@@ -3129,8 +2599,8 @@ function UrgentOrderPage(props: { onBack: () => void }) {
 
                 {/* Duration */}
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center">
-                    <Icon name="clock" class="text-cyan-600" size="sm" />
+                  <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center">
+                    <Icon name="clock" class="text-slate-500 dark:text-slate-400" size="sm" />
                   </div>
                   <div class="flex-1">
                     <p class="text-xs text-gray-400">{t('urgent.duration')}</p>
@@ -3141,7 +2611,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
                 {/* Search radius */}
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                    <Icon name="shield" class="text-green-600" size="sm" />
+                    <Icon name="shield" class="text-slate-500 dark:text-slate-400" size="sm" />
                   </div>
                   <div class="flex-1">
                     <p class="text-xs text-gray-400">{t('urgent.searchRadius')}</p>
@@ -3256,7 +2726,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
                         <span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">{t('urgent.ownPriceBadge')}</span>
                       </Show>
                       <Show when={offer.type === 'discount'}>
-                        <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">{t('urgent.discount')}</span>
+                        <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 rounded-full text-xs font-medium">{t('urgent.discount')}</span>
                       </Show>
                     </div>
                   )}
@@ -3284,7 +2754,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Icon name="check" class="text-green-600" size="xs" />
+                    <Icon name="check" class="text-emerald-600 dark:text-emerald-400" size="xs" />
                   </div>
                   <span class="font-medium text-gray-700">{offers().length} {t('urgent.guardsResponded')}</span>
                 </div>
@@ -3378,7 +2848,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
                         {/* Price section */}
                         <div class={`p-4 rounded-2xl mb-4 ${
                           isAccept() ? 'bg-green-50 border border-green-200' : 
-                          isDiscount() ? 'bg-blue-50 border border-blue-200' :
+                          isDiscount() ? 'bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700' :
                           'bg-amber-50 border border-amber-200'
                         }`}>
                           <div class="flex items-center justify-between">
@@ -3390,7 +2860,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
                                 </p>
                               </Show>
                               <Show when={isDiscount()}>
-                                <p class="text-blue-700 font-medium">
+                                <p class="text-slate-600 dark:text-slate-300 font-medium">
                                   {t('urgent.offersDiscount')} -{Math.abs(priceDiff()).toLocaleString()} ₸
                                 </p>
                               </Show>
@@ -3489,7 +2959,7 @@ function UrgentOrderPage(props: { onBack: () => void }) {
               <div class="glass rounded-2xl p-4 border border-green-200 bg-green-50/50">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                    <Icon name="shield" class="text-green-600" />
+                    <Icon name="shield" class="text-slate-500 dark:text-slate-400" />
                   </div>
                   <div>
                     <p class="font-medium text-green-800">{t('urgent.secureDeal')}</p>
@@ -3683,7 +3153,7 @@ function DiscoverPage() {
                     <div class="flex items-center gap-2">
                       <h3 class="font-semibold text-gray-800 truncate">{guard.name}</h3>
                       {guard.verified && (
-                        <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div class="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
                           <Icon name="check" class="text-white w-3 h-3" />
                         </div>
                       )}
@@ -4696,7 +4166,7 @@ function ContractsPage(props: { onNavigate: (page: string) => void }) {
                         </Show>
                         <Show when={contract.status === 'completed'}>
                           <div class="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full">
-                            <Icon name="checkCircle" class="text-green-500 w-4 h-4" />
+                            <Icon name="checkCircle" class="text-emerald-600 dark:text-emerald-400 w-4 h-4" />
                             <span class="text-sm font-medium text-green-700">{t('contracts.finished')}</span>
                           </div>
                         </Show>
@@ -5033,7 +4503,7 @@ function NewContractPage(props: { onBack: () => void }) {
               <div class="glass rounded-2xl p-4 border border-green-200 bg-green-50/50">
                 <div class="flex items-start gap-3">
                   <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                    <Icon name="lock" class="text-green-600" size="sm" />
+                    <Icon name="lock" class="text-slate-500 dark:text-slate-400" size="sm" />
                   </div>
                   <div>
                     <p class="font-medium text-green-800">{t('newContract.escrowProtection')}</p>
@@ -5050,7 +4520,7 @@ function NewContractPage(props: { onBack: () => void }) {
               <div class="glass rounded-2xl p-4 border border-green-200 bg-green-50/50">
                 <div class="flex items-start gap-3">
                   <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                    <Icon name="repeat" class="text-green-600" size="sm" />
+                    <Icon name="repeat" class="text-slate-500 dark:text-slate-400" size="sm" />
                   </div>
                   <div>
                     <p class="font-medium text-green-800">Автоматическая подписка</p>
@@ -5122,7 +4592,7 @@ function NewContractPage(props: { onBack: () => void }) {
                 {/* Subscription auto-renewal info */}
                 <Show when={contractType().id === 'subscription'}>
                   <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl">
-                    <Icon name="repeat" class="text-green-600" size="sm" />
+                    <Icon name="repeat" class="text-slate-500 dark:text-slate-400" size="sm" />
                     <div class="flex-1">
                       <p class="text-xs text-green-600">{t('newContract.autoRenewal')}</p>
                       <p class="font-medium text-green-800">{t('newContract.everyMonth')}</p>
@@ -5295,15 +4765,15 @@ function NewContractPage(props: { onBack: () => void }) {
               {/* Platform liability disclaimer */}
               <div class={`p-3 rounded-xl text-xs ${isDark() ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-50 text-amber-800'}`}>
                 <div class="flex items-start gap-2">
-                  <span class="text-base">⚠️</span>
+                  <Icon name="alertTriangle" size="sm" class="text-slate-500 dark:text-slate-400" />
                   <p>{t('legal.liability')}</p>
                 </div>
               </div>
 
               {/* Dispute resolution info */}
-              <div class={`p-3 rounded-xl text-xs ${isDark() ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-50 text-blue-800'}`}>
+              <div class={`p-3 rounded-xl text-xs ${isDark() ? 'bg-slate-800/60 text-slate-300' : 'bg-slate-50 text-slate-700'}`}>
                 <div class="flex items-start gap-2">
-                  <span class="text-base">⚖️</span>
+                  <Icon name="scale" size="sm" class="text-slate-500 dark:text-slate-400" />
                   <p>{t('legal.dispute')}</p>
                 </div>
               </div>
@@ -5393,7 +4863,7 @@ function NewContractPage(props: { onBack: () => void }) {
                 </Show>
                 <Show when={!contractType().escrow}>
                   <div class="flex items-center gap-2 px-3 py-1.5 bg-green-50 rounded-full">
-                    <Icon name="repeat" class="text-green-600 w-4 h-4" />
+                    <Icon name="repeat" class="text-slate-500 dark:text-slate-400 w-4 h-4" />
                     <span class="text-sm font-medium text-green-700">{t('newContract.autoRenewal')}</span>
                   </div>
                 </Show>
@@ -5606,14 +5076,14 @@ function DocumentVaultPage(props: { onBack: () => void }) {
         <div class={`rounded-2xl p-4 border overflow-hidden ${dark() ? 'bg-gradient-to-br from-green-900/60 to-emerald-900/40 border-green-500/30' : 'bg-gradient-to-br from-green-500/20 to-emerald-600/20 border-green-400/40'} glass animate-slide-up`} style="animation-delay: 0.05s">
           <div class="flex items-center gap-3">
             <div class={`w-12 h-12 rounded-xl flex items-center justify-center ${dark() ? 'bg-green-500/30' : 'bg-green-400/30'}`}>
-              <Icon name="lock" class="text-green-400" size="sm" />
+              <Icon name="lock" class="text-slate-500 dark:text-slate-400" size="sm" />
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-green-800 dark:text-green-200">{t('docs.aes256')}</p>
               <p class="text-xs text-green-700 dark:text-green-300/90">{t('docs.onlyYou')}</p>
             </div>
             <div class="w-10 h-10 rounded-full bg-green-400/20 flex items-center justify-center animate-pulse">
-              <Icon name="shield" class="text-green-500" size="sm" />
+              <Icon name="shield" class="text-slate-500 dark:text-slate-400" size="sm" />
             </div>
           </div>
         </div>
@@ -5646,7 +5116,7 @@ function DocumentVaultPage(props: { onBack: () => void }) {
         <div class="px-4 mb-3">
           <div class="rounded-xl px-4 py-2.5 bg-amber-500/20 border border-amber-400/40 flex items-center justify-between gap-2 animate-slide-up" style="animation-delay: 0.12s">
             <span class="text-amber-200 text-sm font-medium">{attentionCount()} {t('docs.needAttention')}</span>
-            <Icon name="chevronRight" class="text-amber-400 w-5 h-5 flex-shrink-0" />
+            <Icon name="chevronRight" class="text-slate-400 dark:text-slate-500 w-5 h-5 flex-shrink-0" />
           </div>
         </div>
       </Show>
@@ -5746,13 +5216,13 @@ function DocumentVaultPage(props: { onBack: () => void }) {
                   <div class="flex flex-col items-center">
                     <div class={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       entry.type === 'viewed' ? 'bg-green-500/20' :
-                      entry.type === 'downloaded' ? 'bg-blue-500/20' :
+                      entry.type === 'downloaded' ? 'bg-slate-500/20' :
                       entry.type === 'shared' ? 'bg-amber-500/20' : 'bg-red-500/20'
                     }`}>
                       <Switch>
-                        <Match when={entry.type === 'viewed'}><Icon name="eye" class="text-green-400" size="xs" /></Match>
-                        <Match when={entry.type === 'downloaded'}><Icon name="download" class="text-blue-400" size="xs" /></Match>
-                        <Match when={entry.type === 'shared'}><Icon name="share" class="text-amber-400" size="xs" /></Match>
+                        <Match when={entry.type === 'viewed'}><Icon name="eye" class="text-slate-500 dark:text-slate-400" size="xs" /></Match>
+                        <Match when={entry.type === 'downloaded'}><Icon name="download" class="text-slate-500 dark:text-slate-400" size="xs" /></Match>
+                        <Match when={entry.type === 'shared'}><Icon name="share" class="text-slate-500 dark:text-slate-400" size="xs" /></Match>
                         <Match when={entry.type === 'deleted_attempt'}><Icon name="trash" class="text-red-400" size="xs" /></Match>
                       </Switch>
                     </div>
@@ -5823,7 +5293,7 @@ function DocumentVaultPage(props: { onBack: () => void }) {
               <Match when={uploadSuccess()}>
                 <div class="text-center py-4">
                   <div class="w-16 h-16 rounded-full bg-green-500/30 flex items-center justify-center mx-auto mb-3">
-                    <Icon name="check" class="text-green-400 w-8 h-8" size="lg" />
+                    <Icon name="check" class="text-emerald-600 dark:text-emerald-400 w-8 h-8" size="lg" />
                   </div>
                   <p class="text-white font-semibold text-lg">{t('docs.uploadSuccess')}</p>
                   <button class="mt-4 px-6 py-2 rounded-xl bg-indigo-500 text-white font-medium touch-scale" onClick={() => { setShowUpload(false); setUploadSuccess(false); }}>{t('nav.home')}</button>
@@ -6079,19 +5549,19 @@ function VerificationPage(props: { onBack: () => void }) {
               <p class="font-medium text-gray-800 mb-3">Требования к документам:</p>
               <ul class="space-y-2 text-sm text-gray-600">
                 <li class="flex items-center gap-2">
-                  <Icon name="check" class="text-green-500" size="xs" />
+                  <Icon name="check" class="text-emerald-600 dark:text-emerald-400" size="xs" />
                   Чёткое фото без бликов
                 </li>
                 <li class="flex items-center gap-2">
-                  <Icon name="check" class="text-green-500" size="xs" />
+                  <Icon name="check" class="text-emerald-600 dark:text-emerald-400" size="xs" />
                   Все углы документа видны
                 </li>
                 <li class="flex items-center gap-2">
-                  <Icon name="check" class="text-green-500" size="xs" />
+                  <Icon name="check" class="text-emerald-600 dark:text-emerald-400" size="xs" />
                   Текст легко читается
                 </li>
                 <li class="flex items-center gap-2">
-                  <Icon name="check" class="text-green-500" size="xs" />
+                  <Icon name="check" class="text-emerald-600 dark:text-emerald-400" size="xs" />
                   Документ действителен
                 </li>
               </ul>
@@ -6100,7 +5570,7 @@ function VerificationPage(props: { onBack: () => void }) {
             {/* Privacy notice */}
             <div class="glass rounded-2xl p-4 border border-green-200 bg-green-50/50">
               <div class="flex items-start gap-3">
-                <Icon name="lock" class="text-green-600" size="sm" />
+                <Icon name="lock" class="text-slate-500 dark:text-slate-400" size="sm" />
                 <div>
                   <p class="font-medium text-green-800">Конфиденциальность</p>
                   <p class="text-xs text-green-700 mt-1">
@@ -6166,7 +5636,7 @@ function VerificationPage(props: { onBack: () => void }) {
             {/* Auto-delete notice */}
             <div class="glass rounded-2xl p-4 border border-amber-200 bg-amber-50/50">
               <div class="flex items-start gap-3">
-                <Icon name="trash" class="text-amber-600" size="sm" />
+                <Icon name="trash" class="text-slate-500 dark:text-slate-400" size="sm" />
                 <div>
                   <p class="font-medium text-amber-800">Авто-удаление</p>
                   <p class="text-xs text-amber-700 mt-1">
@@ -6225,7 +5695,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Plumbing: Rules & Standards',
       icon: 'settings',
       color: 'from-blue-500 to-cyan-600',
-      bgColor: 'bg-blue-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'ISO 21542, безопасность труб, водоснабжение',
       dept: 'plumbing',
       levels: [
@@ -6298,7 +5768,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Tech Repair: Rules & Safety',
       icon: 'settings',
       color: 'from-violet-500 to-purple-700',
-      bgColor: 'bg-violet-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'ESD защита, диагностика, стандарты',
       dept: 'tech',
       levels: [
@@ -6322,7 +5792,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Handyman: Standards & Skills',
       icon: 'settings',
       color: 'from-orange-500 to-red-600',
-      bgColor: 'bg-orange-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'Инструменты, мебель, отделка, безопасность',
       dept: 'handyman',
       levels: [
@@ -6370,7 +5840,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Moving: Transport Rules',
       icon: 'map',
       color: 'from-rose-500 to-red-700',
-      bgColor: 'bg-rose-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'Грузоподъёмность, упаковка, безопасность',
       dept: 'moving',
       levels: [
@@ -6444,7 +5914,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Fire Safety',
       icon: 'fire',
       color: 'from-orange-500 to-red-600',
-      bgColor: 'bg-orange-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'Международные стандарты тушения и эвакуации',
       levels: [
         { title: 'Эвакуация', question: 'При пожаре в высотном здании, что нужно делать?', image: '🏢', options: ['Использовать лифт', 'Спускаться по лестнице', 'Открыть все окна', 'Ждать на месте'], correct: 1, explanation: 'Всегда используйте лестницу! Лифты могут остановиться или открыться на горящем этаже.', titleEn: 'Evacuation', questionEn: 'In a high-rise fire, what should you do?', optionsEn: ['Use elevator', 'Use stairs', 'Open all windows', 'Wait in place'], explanationEn: 'Always use stairs! Elevators may stop or open on a burning floor.', d: 1 },
@@ -6499,7 +5969,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
       nameEn: 'Rescue Operations',
       icon: 'lifeBuoy',
       color: 'from-blue-500 to-cyan-600',
-      bgColor: 'bg-blue-100',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'Водные спасения, эвакуация, транспортировка',
       levels: [
         { title: 'Утопление', question: 'Приоритет при спасении тонущего?', image: '🌊', options: ['Прыгнуть', 'Бросить предмет', 'Звать', 'Ждать'], correct: 1, explanation: 'REACH-THROW-ROW-GO.', titleEn: 'Drowning', questionEn: 'Priority when rescuing a drowning person?', optionsEn: ['Jump in', 'Throw flotation device', 'Yell', 'Wait'], explanationEn: 'REACH-THROW-ROW-GO.', d: 1 },
@@ -6524,8 +5994,8 @@ function AcademyGamePage(props: { onBack: () => void }) {
       name: 'Опасные вещества',
       nameEn: 'Hazmat Safety',
       icon: 'alertTriangle',
-      color: 'from-yellow-500 to-amber-600',
-      bgColor: 'bg-yellow-100',
+      color: 'from-slate-400 to-slate-500',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'Химическая безопасность, маркировка, защита',
       levels: [
         { title: 'Газ', question: 'При утечке газа НЕЛЬЗЯ?', image: '💨', options: ['Открыть окна', 'Включать свет', 'Покинуть', 'Перекрыть'], correct: 1, explanation: 'Искра = взрыв!', titleEn: 'Gas Leak', questionEn: 'What must you NOT do during gas leak?', optionsEn: ['Open windows', 'Turn on/off lights', 'Leave', 'Shut off gas'], explanationEn: 'Any spark = explosion!', d: 1 },
@@ -6597,8 +6067,8 @@ function AcademyGamePage(props: { onBack: () => void }) {
       name: 'Дорожная безопасность',
       nameEn: 'Traffic Safety',
       icon: 'target',
-      color: 'from-green-500 to-teal-600',
-      bgColor: 'bg-green-100',
+      color: 'from-slate-500 to-slate-600',
+      bgColor: 'bg-slate-100 dark:bg-slate-800/60',
       description: 'ПДД, ДТП, регулирование движения',
       levels: [
         { title: 'ДТП', question: 'Первое действие при ДТП?', image: '🚗', options: ['Фото', 'Безопасность', 'Друзьям', 'Уехать'], correct: 1, explanation: 'Безопасность!', titleEn: 'RTA', questionEn: 'First action at road traffic accident?', optionsEn: ['Take photos', 'Safety', 'Call friends', 'Leave'], explanationEn: 'Safety first!', d: 1 },
@@ -6741,7 +6211,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
 
       {/* Professional Modules (by department) */}
       <div class="flex items-center gap-2 mb-1">
-        <span class="text-lg">🎓</span>
+        <Icon name="graduationCap" size="sm" class="text-indigo-500" />
         <p class="font-semibold text-gray-800">{t('academy.professional')}</p>
       </div>
       <p class="text-xs text-gray-500 mb-3">{t('academy.professionalDesc')}</p>
@@ -6782,7 +6252,7 @@ function AcademyGamePage(props: { onBack: () => void }) {
 
       {/* General Safety Modules */}
       <div class="flex items-center gap-2 mb-1">
-        <span class="text-lg">🛡️</span>
+        <Icon name="shieldCheck" size="sm" class="text-indigo-500" />
         <p class="font-semibold text-gray-800">{t('academy.general')}</p>
       </div>
       <p class="text-xs text-gray-500 mb-3">{t('academy.generalDesc')}</p>
@@ -7607,15 +7077,15 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
         
         <div class="flex justify-center gap-8 mt-5">
           <div class="text-center">
-            <p class="text-2xl font-bold text-indigo-600">15</p>
+            <p class="text-2xl font-bold text-slate-700 dark:text-slate-200">15</p>
             <p class="text-xs text-gray-500">{t('profile.orders')}</p>
           </div>
           <div class="text-center">
-            <p class="text-2xl font-bold text-amber-500">4.8</p>
+            <p class="text-2xl font-bold text-slate-700 dark:text-slate-200">4.8</p>
             <p class="text-xs text-gray-500">{t('profile.rating')}</p>
           </div>
           <div class="text-center">
-            <p class="text-2xl font-bold text-green-500">2</p>
+            <p class="text-2xl font-bold text-slate-700 dark:text-slate-200">2</p>
             <p class="text-xs text-gray-500">{t('profile.years')}</p>
           </div>
         </div>
@@ -7646,7 +7116,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
               }`}
               onClick={() => setProfileMode('client')}
             >
-              {currentLang() === 'en' ? '🔍 I Need' : '🔍 Мне нужно'}
+              <span class="flex items-center gap-1"><Icon name="search" size="xs" /> {currentLang() === 'en' ? 'I Need' : 'Мне нужно'}</span>
             </button>
           </div>
         </div>
@@ -7656,7 +7126,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
             : (clientNeeds().length + ' ' + (currentLang() === 'en' ? 'services selected' : 'услуг выбрано'))
           }
         </p>
-        <div class="grid grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-3 gap-3">
           <For each={departments}>
             {(dept) => {
               // Worker mode: uses workerSkills. Client mode: uses clientNeeds.
@@ -7667,68 +7137,60 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
               const hasLockedSkills = () => isWorkerMode() && dept.skills.some(s => s.requiresDiploma && !verifiedDiplomas().includes(s.id));
               return (
                 <div
-                  class={`relative rounded-2xl p-2.5 touch-scale flex flex-col items-center text-center transition-all cursor-pointer ${
-                    active() ? 'shadow-md' : 'opacity-50'
+                  class={`relative rounded-2xl p-3 touch-scale flex flex-col items-center text-center transition-all cursor-pointer ${
+                    active() ? 'shadow-md ring-1' : ''
                   }`}
                   style={active()
-                    ? `background: linear-gradient(135deg, ${dept.colorFrom}12, ${dept.colorTo}08); border: 2px solid ${dept.colorFrom}30`
-                    : isDark() ? 'background: rgba(255,255,255,0.04); border: 2px solid transparent' : 'background: rgba(0,0,0,0.03); border: 2px solid transparent'
+                    ? `background: linear-gradient(135deg, ${dept.colorFrom}20, ${dept.colorTo}10); --tw-ring-color: ${dept.colorFrom}40`
+                    : isDark() ? 'background: rgba(255,255,255,0.06)' : 'background: rgba(243,244,246,1)'
                   }
                   onClick={() => {
-                    if (isWorkerMode()) {
-                      setActiveDepartment(dept.id); props.onNavigate('skilldetail');
-                    } else {
-                      // Client mode: toggle all services in dept
-                      const deptSkillIds = dept.skills.map(s => s.id);
-                      const cur = clientNeeds();
-                      const hasSome = deptSkillIds.some(id => cur.includes(id));
-                      if (hasSome) {
-                        setClientNeeds(cur.filter(id => !deptSkillIds.includes(id)));
-                      } else {
-                        setClientNeeds([...cur, ...deptSkillIds]);
-                      }
-                    }
+                    setActiveDepartment(dept.id);
+                    props.onNavigate('skilldetail');
                   }}
                 >
-                  <LikeBadge likeKey={`dept:${dept.id}`} />
-                  {/* Кружок вкл/выкл в правом верхнем углу */}
-                  <button
-                    type="button"
-                    class="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center touch-scale z-10 border-2 border-white shadow"
-                    style={active()
-                      ? (isWorkerMode() ? 'background: linear-gradient(135deg, #22c55e, #16a34a)' : 'background: linear-gradient(135deg, #f59e0b, #ea580c)')
-                      : (isDark() ? 'background: #4b5563' : 'background: #e5e7eb')
-                    }
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (isWorkerMode()) { toggleDept(dept.id); }
-                      else {
-                        const deptSkillIds = dept.skills.map(s => s.id);
-                        const cur = clientNeeds();
-                        const hasSome = deptSkillIds.some(id => cur.includes(id));
-                        if (hasSome) { setClientNeeds(cur.filter(id => !deptSkillIds.includes(id))); }
-                        else { setClientNeeds([...cur, ...deptSkillIds]); }
-                      }
-                    }}
-                  >
-                    <Show when={active()}>
-                      <Icon name="check" class="text-white w-3 h-3" />
-                    </Show>
-                  </button>
-                  <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center mb-1.5 shadow-lg ${active() ? '' : 'grayscale opacity-40'}`}>
+                  {/* Иконка отдела */}
+                  <div class={`w-14 h-14 rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center mb-2 shadow-lg`}>
                     <SkillIcon icon={dept.icon} class="text-white" size="lg" />
                   </div>
-                  <p class={`font-medium text-[10px] leading-tight ${active() ? (isDark() ? 'text-gray-200' : 'text-gray-800') : (isDark() ? 'text-gray-500' : 'text-gray-400')}`}>{dName()}</p>
+                  {/* Название */}
+                  <p class={`font-semibold text-[10px] leading-tight mb-1 ${active() ? (isDark() ? 'text-gray-100' : 'text-gray-800') : (isDark() ? 'text-gray-400' : 'text-gray-500')}`}>{dName()}</p>
+                  {/* Счётчик навыков */}
                   <Show when={count() > 0}>
                     <span
-                      class="absolute -top-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow"
+                      class="text-[9px] font-bold px-2 py-0.5 rounded-full text-white"
                       style={`background: linear-gradient(135deg, ${dept.colorFrom}, ${dept.colorTo})`}
                     >
-                      {count()}
+                      {count()}/{dept.skills.length}
                     </span>
                   </Show>
+                  <Show when={count() === 0}>
+                    <span class={`text-[9px] px-2 py-0.5 rounded-full ${isDark() ? 'text-gray-500 bg-gray-800' : 'text-gray-400 bg-gray-200'}`}>
+                      0/{dept.skills.length}
+                    </span>
+                  </Show>
+                  {/* Кнопка вкл/выкл — чистый кружок (только для мастера) */}
+                  <Show when={isWorkerMode()}>
+                    <button
+                      type="button"
+                      class="absolute bottom-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center touch-scale z-10"
+                      style={active()
+                        ? 'background: #22c55e'
+                        : (isDark() ? 'background: #374151; border: 1.5px solid #4b5563' : 'background: #e5e7eb; border: 1.5px solid #d1d5db')
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleDept(dept.id);
+                      }}
+                    >
+                      <Show when={active()}>
+                        <Icon name="check" class="text-white w-2.5 h-2.5" />
+                      </Show>
+                    </button>
+                  </Show>
+                  {/* Замок, если есть заблокированные */}
                   <Show when={hasLockedSkills() && active()}>
-                    <span class="absolute bottom-6 left-1/2 -translate-x-1/2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-[9px] shadow">🔒</span>
+                    <span class="absolute top-1.5 right-1.5"><Icon name="lock" size="xs" class="text-gray-400" /></span>
                   </Show>
                 </div>
               );
@@ -7743,15 +7205,15 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-6" onClick={() => setShowDiplomaPrompt(null)}>
           <div class={`glass rounded-3xl p-6 max-w-sm w-full animate-slide-up ${isDark() ? 'bg-gray-800' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div class="text-center mb-5">
-              <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center mx-auto mb-3">
-                <span class="text-3xl">🎓</span>
+              <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mx-auto mb-3">
+                <Icon name="graduationCap" size="xl" class="text-slate-600 dark:text-slate-300" />
               </div>
               <h3 class={`text-lg font-bold ${isDark() ? 'text-gray-100' : 'text-gray-800'}`}>{t('skills.diplomaRequired')}</h3>
               <p class={`text-sm mt-2 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{t('skills.diplomaUpload')}</p>
             </div>
             <button
               type="button"
-              class="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl font-semibold mb-3 touch-scale flex items-center justify-center gap-2"
+              class="w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-2xl font-semibold mb-3 touch-scale flex items-center justify-center gap-2"
               onClick={() => showDiplomaPrompt() && confirmDiploma(showDiplomaPrompt()!)}
             >
               <Icon name="uploadCloud" class="text-white" size="sm" />
@@ -7773,17 +7235,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
         <For each={menuItems()}>
           {(item) => {
             const getIconStyle = () => {
-              switch (item.icon) {
-                case 'settings': return { bg: 'from-violet-500 to-purple-600', text: 'text-white' };
-                case 'book': return { bg: 'from-amber-400 to-orange-500', text: 'text-white' };
-                case 'folder': return { bg: 'from-blue-400 to-cyan-500', text: 'text-white' };
-                case 'userCheck': return { bg: 'from-green-400 to-emerald-500', text: 'text-white' };
-                case 'shield': return { bg: 'from-red-500 to-rose-600', text: 'text-white' };
-                case 'globe': return { bg: 'from-indigo-100 to-purple-100', text: 'text-indigo-600' };
-                case 'sun': return { bg: 'from-amber-100 to-orange-100', text: 'text-amber-600' };
-                case 'moon': return { bg: 'from-indigo-100 to-purple-100', text: 'text-indigo-600' };
-                default: return { bg: 'from-gray-100 to-gray-200', text: 'text-gray-600' };
-              }
+              return { bg: 'from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600', text: 'text-slate-600 dark:text-slate-300' };
             };
             const style = getIconStyle();
             const isSpecial = (item as any).special;
@@ -7809,7 +7261,7 @@ function ProfilePage(props: { onNavigate: (page: string) => void }) {
                   </div>
                   <p class={`text-sm ${isSpecial ? 'text-amber-600' : 'text-gray-500'}`}>{item.desc}</p>
                 </div>
-                <Icon name={isSpecial ? 'play' : 'chevronRight'} class={isSpecial ? 'text-amber-500' : 'text-gray-400'} size="sm" />
+                <Icon name={isSpecial ? 'play' : 'chevronRight'} class={isSpecial ? 'text-indigo-500' : 'text-slate-400 dark:text-slate-500'} size="sm" />
               </button>
             );
           }}
@@ -7976,7 +7428,7 @@ function SecurityCenterPage(props: { onBack: () => void }) {
                     <span class="text-xs font-medium text-gray-800">{action.label}</span>
                     <span class="text-[10px] text-gray-500">{action.value}</span>
                     <Show when={action.enabled && (action.id === 'pin' || action.id === 'bio' || action.id === '2fa')}>
-                      <Icon name="checkCircle" class="text-green-500 w-4 h-4 absolute top-2 right-2" />
+                      <Icon name="checkCircle" class="text-emerald-600 dark:text-emerald-400 w-4 h-4 absolute top-2 right-2" />
                     </Show>
                   </button>
                 )}
@@ -8336,7 +7788,7 @@ function NotificationsPage(props: { onBack: () => void }) {
   const [notifs] = createSignal(MOCK_NOTIFICATIONS);
   const typeColor = (type: NotifType) => {
     if (type === 'accepted') return 'bg-green-500/20 text-green-600';
-    if (type === 'info') return 'bg-blue-500/20 text-blue-600';
+    if (type === 'info') return 'bg-slate-500/20 text-slate-600 dark:text-slate-300';
     if (type === 'warning') return 'bg-amber-500/20 text-amber-600';
     return 'bg-red-500/20 text-red-600';
   };
@@ -8394,21 +7846,32 @@ function NotificationsPage(props: { onBack: () => void }) {
 function SkillDetailPage(props: { onBack: () => void }) {
   const dept = () => activeDepartment() ? getDepartment(activeDepartment()!) : null;
   const dName = () => dept() ? (currentLang() === 'en' ? dept()!.nameEn : dept()!.name) : '';
-  const activeCount = () => dept()?.skills.filter(s => workerSkills().includes(s.id)).length || 0;
+  const isWorkerMode = () => profileMode() === 'worker';
+  const activeSkills = () => isWorkerMode() ? workerSkills() : clientNeeds();
+  const activeCount = () => dept()?.skills.filter(s => activeSkills().includes(s.id)).length || 0;
   const totalSkills = () => dept()?.skills.length || 0;
 
   const [localDiplomaPrompt, setLocalDiplomaPrompt] = createSignal<string | null>(null);
 
   const localToggleSkill = (skillId: string, requiresDiploma: boolean) => {
-    if (requiresDiploma && !verifiedDiplomas().includes(skillId)) {
+    if (isWorkerMode() && requiresDiploma && !verifiedDiplomas().includes(skillId)) {
       setLocalDiplomaPrompt(skillId);
       return;
     }
-    const current = workerSkills();
-    if (current.includes(skillId)) {
-      setWorkerSkills(current.filter(s => s !== skillId));
+    if (isWorkerMode()) {
+      const current = workerSkills();
+      if (current.includes(skillId)) {
+        setWorkerSkills(current.filter(s => s !== skillId));
+      } else {
+        setWorkerSkills([...current, skillId]);
+      }
     } else {
-      setWorkerSkills([...current, skillId]);
+      const current = clientNeeds();
+      if (current.includes(skillId)) {
+        setClientNeeds(current.filter(s => s !== skillId));
+      } else {
+        setClientNeeds([...current, skillId]);
+      }
     }
   };
 
@@ -8428,7 +7891,7 @@ function SkillDetailPage(props: { onBack: () => void }) {
             <Icon name="chevronLeft" class="text-white" size="sm" />
           </button>
           <div class="flex-1">
-            <p class="text-white/70 text-xs font-medium">{t('profile.myProfessions')}</p>
+            <p class="text-white/70 text-xs font-medium">{isWorkerMode() ? t('profile.myProfessions') : (currentLang() === 'en' ? 'Services I Need' : 'Нужные услуги')}</p>
             <h1 class="text-white font-bold text-lg">{dName()}</h1>
           </div>
           <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
@@ -8447,7 +7910,7 @@ function SkillDetailPage(props: { onBack: () => void }) {
       <div class="px-4 pt-3 pb-28">
         <For each={dept() ? getSkillGroups(dept()!.id) : []}>
           {(group, gi) => {
-            const grpActiveCount = () => group.skills.filter(s => workerSkills().includes(s.id)).length;
+            const grpActiveCount = () => group.skills.filter(s => activeSkills().includes(s.id)).length;
             return (
               <div class="mb-5 animate-slide-up" style={`animation-delay: ${gi() * 0.05}s`}>
                 {/* Заголовок группы */}
@@ -8462,67 +7925,67 @@ function SkillDetailPage(props: { onBack: () => void }) {
                 </div>
 
                 {/* Сетка навыков в группе */}
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2.5">
                   <For each={group.skills}>
                     {(skill) => {
-                      const active = () => workerSkills().includes(skill.id);
-                      const needsDiploma = skill.requiresDiploma;
+                      const active = () => activeSkills().includes(skill.id);
+                      const needsDiploma = isWorkerMode() && skill.requiresDiploma;
                       const hasDiploma = () => verifiedDiplomas().includes(skill.id);
                       const isLocked = needsDiploma && !hasDiploma();
 
                       return (
                         <button
                           type="button"
-                          class={`relative flex flex-col items-center p-3 rounded-2xl transition-all text-center touch-scale ${
-                            isLocked ? 'opacity-60' : ''
-                          }`}
+                          class="relative flex flex-col items-center p-3 rounded-2xl transition-all text-center touch-scale"
                           style={
                             active()
-                              ? `background: linear-gradient(135deg, ${dept()?.colorFrom}18, ${dept()?.colorTo}12); border: 1.5px solid ${dept()?.colorFrom}25`
+                              ? isDark()
+                                ? `background: rgba(255,255,255,0.1); border: 1.5px solid ${dept()?.colorFrom}60`
+                                : `background: white; border: 1.5px solid ${dept()?.colorFrom}40; box-shadow: 0 2px 8px ${dept()?.colorFrom}15`
                               : isDark()
-                              ? 'background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08)'
-                              : 'background: white; border: 1.5px solid rgba(0,0,0,0.06); box-shadow: 0 1px 3px rgba(0,0,0,0.04)'
+                              ? 'background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.06)'
+                              : 'background: #f9fafb; border: 1.5px solid #e5e7eb'
                           }
-                          onClick={() => { playGlobalSound('toggle'); haptic('light'); localToggleSkill(skill.id, skill.requiresDiploma); }}
+                          onClick={() => { playGlobalSound('toggle'); haptic('light'); localToggleSkill(skill.id, isWorkerMode() && skill.requiresDiploma); }}
                         >
                           <div class={`w-14 h-14 rounded-2xl flex items-center justify-center mb-2 ${
                             active()
                               ? 'bg-gradient-to-br ' + (dept()?.color || 'from-indigo-500 to-purple-600') + ' shadow-lg'
                               : isLocked
                               ? (isDark() ? 'bg-gray-700' : 'bg-gray-200')
-                              : (isDark() ? 'bg-gray-800' : 'bg-gray-100')
+                              : (isDark() ? 'bg-gray-700' : 'bg-gray-100')
                           }`}>
-                            <Show when={isLocked} fallback={<SkillIcon icon={skill.icon} class="text-white" size="lg" />}>
-                              <span class="text-2xl">🔒</span>
+                            <Show when={isLocked} fallback={<SkillIcon icon={skill.icon} class={active() ? 'text-white' : (isDark() ? 'text-gray-300' : 'text-gray-600')} size="lg" />}>
+                              <Icon name="lock" class="text-gray-400" size="lg" />
                             </Show>
                           </div>
                           <p class={`text-xs font-semibold leading-tight ${active() ? (isDark() ? 'text-gray-100' : 'text-gray-800') : isLocked ? (isDark() ? 'text-gray-500' : 'text-gray-400') : (isDark() ? 'text-gray-300' : 'text-gray-600')}`}>
                             {currentLang() === 'en' ? skill.nameEn : skill.name}
                           </p>
-                          <div class="flex items-center gap-1 mt-1 flex-wrap justify-center">
-                            <Show when={skill.isExpert}>
+                          {/* Теги — эксперт, срочно, диплом (только для мастера) */}
+                          <div class="flex items-center gap-1 mt-1.5 flex-wrap justify-center">
+                            <Show when={isWorkerMode() && skill.isExpert}>
                               <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-[8px] font-bold rounded-full">{t('skills.expert')}</span>
                             </Show>
-                            <Show when={skill.urgent}>
-                              <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[8px] font-bold rounded-full">⚡</span>
+                            <Show when={isWorkerMode() && skill.urgent}>
+                              <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-[8px] font-bold rounded-full flex items-center"><Icon name="zap" size="xs" class="text-red-600" /></span>
                             </Show>
                             <Show when={needsDiploma}>
-                              <span class={`px-1.5 py-0.5 text-[8px] font-bold rounded-full ${hasDiploma() ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                {hasDiploma() ? '✅' : '🎓'}
+                              <span class={`px-1.5 py-0.5 text-[8px] font-bold rounded-full flex items-center ${hasDiploma() ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                {hasDiploma() ? <Icon name="checkCircle" size="xs" class="text-emerald-600 dark:text-emerald-400" /> : <Icon name="graduationCap" size="xs" class="text-red-500 dark:text-red-400" />}
                               </span>
                             </Show>
                           </div>
-                          {/* Чекбокс */}
-                          <div class={`absolute top-2 right-2 w-6 h-6 rounded-lg flex items-center justify-center ${
+                          {/* Чекбокс — аккуратный кружок */}
+                          <div class={`absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center ${
                             active()
-                              ? 'bg-gradient-to-br ' + (dept()?.color || 'from-indigo-500 to-purple-600') + ' shadow'
+                              ? 'bg-gradient-to-br ' + (dept()?.color || 'from-indigo-500 to-purple-600')
                               : (isDark() ? 'border-2 border-gray-600' : 'border-2 border-gray-300')
                           }`}>
                             <Show when={active()}>
-                              <Icon name="check" class="text-white w-3 h-3" />
+                              <Icon name="check" class="text-white w-2.5 h-2.5" />
                             </Show>
                           </div>
-                          <LikeBadge likeKey={`skill:${skill.id}`} compact />
                         </button>
                       );
                     }}
@@ -8539,8 +8002,8 @@ function SkillDetailPage(props: { onBack: () => void }) {
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-6" onClick={() => setLocalDiplomaPrompt(null)}>
           <div class={`glass rounded-3xl p-6 max-w-sm w-full animate-slide-up ${isDark() ? 'bg-gray-800' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div class="text-center mb-5">
-              <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
-                <span class="text-3xl">🎓</span>
+              <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center mx-auto mb-3">
+                <Icon name="graduationCap" size="xl" class="text-indigo-500" />
               </div>
               <h3 class={`text-lg font-bold ${isDark() ? 'text-gray-100' : 'text-gray-800'}`}>{t('skills.diplomaRequired')}</h3>
               <p class={`text-sm mt-2 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{t('skills.diplomaUpload')}</p>
@@ -8747,7 +8210,7 @@ function SettingsPage(props: { onBack: () => void }) {
         <div class="glass rounded-3xl p-5 animate-slide-up">
           <div class="flex items-center gap-3 mb-4">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
-              <span class="text-2xl">🎵</span>
+              <Icon name="volume2" size="lg" class="text-indigo-500" />
             </div>
             <div class="flex-1">
               <p class="font-bold text-gray-800">{t('settings.soundPreview')}</p>
@@ -8858,7 +8321,7 @@ function SettingsPage(props: { onBack: () => void }) {
           <div class="glass rounded-3xl p-6 max-w-sm w-full animate-slide-up mb-8" onClick={(e) => e.stopPropagation()}>
             <div class="text-center mb-4">
               <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-                <span class="text-2xl">⚠️</span>
+                <Icon name="alertTriangle" size="lg" class="text-amber-500 dark:text-amber-400" />
               </div>
               <h3 class="font-bold text-gray-800">{t('settings.resetTitle')}</h3>
               <p class="text-sm text-gray-500 mt-1">{t('settings.resetDesc')}</p>
@@ -9080,7 +8543,14 @@ export default function App() {
                 return (
                   <button
                     type="button"
-                    onClick={() => setCurrentPage(item.id)}
+                    onClick={() => {
+                      if (item.id === 'home') {
+                        setHomeExpandedDept(null);
+                        setHomeExpandedGroup(null);
+                        setHomeExpandedSkill(null);
+                      }
+                      setCurrentPage(item.id);
+                    }}
                     class={`flex flex-col items-center justify-center px-4 py-2 rounded-2xl transition-all duration-300 touch-scale ${
                       isActive() 
                         ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg' 
@@ -9089,11 +8559,11 @@ export default function App() {
                   >
                     <Icon 
                       name={item.icon} 
-                      class={isActive() ? 'text-white' : 'text-gray-500'} 
+                      class={isActive() ? 'text-white' : 'text-slate-500 dark:text-slate-400'} 
                       size="sm"
                     />
                     <span class={`text-xs mt-1 font-medium ${
-                      isActive() ? 'text-white' : 'text-gray-500'
+                      isActive() ? 'text-white' : 'text-slate-500 dark:text-slate-400'
                     }`}>
                       {t(item.labelKey)}
                     </span>
@@ -9292,50 +8762,229 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
   });
   onCleanup(() => clearInterval(refreshTimer));
 
-  const [activeTab, setActiveTab] = createSignal<'balance' | 'chain' | 'network'>('balance');
+  const [activeTab, setActiveTab] = createSignal<'balance' | 'chain' | 'network' | 'explorer'>('balance');
+  const [p2pRunning, setP2pRunning] = createSignal(false);
+  const [p2pPeers, setP2pPeers] = createSignal<any[]>([]);
+  const [p2pConnectOpen, setP2pConnectOpen] = createSignal(false);
+  const [p2pConnectAddr, setP2pConnectAddr] = createSignal('');
+  const [p2pConnectResult, setP2pConnectResult] = createSignal<any>(null);
+  const [p2pLoading, setP2pLoading] = createSignal(false);
+
+  // ── Smart Contract state ──
+  const [contractsOpen, setContractsOpen] = createSignal(false);
+  const [myContracts, setMyContracts] = createSignal<any[]>([]);
+  const [contractStats, setContractStats] = createSignal<any>(null);
+  const [escrowOpen, setEscrowOpen] = createSignal(false);
+  const [escrowProvider, setEscrowProvider] = createSignal('');
+  const [escrowAmount, setEscrowAmount] = createSignal('');
+  const [escrowDesc, setEscrowDesc] = createSignal('');
+  const [escrowResult, setEscrowResult] = createSignal<any>(null);
+  const [escrowLoading, setEscrowLoading] = createSignal(false);
+  const [contractActionLoading, setContractActionLoading] = createSignal('');
+
+  // ── Block Explorer state ──
+  const [explorerData, setExplorerData] = createSignal<any>(null);
+  const [explorerBlocks, setExplorerBlocks] = createSignal<any[]>([]);
+  const [selectedBlock, setSelectedBlock] = createSignal<any>(null);
+  const [explorerLoading, setExplorerLoading] = createSignal(false);
+
+  const loadExplorer = async () => {
+    setExplorerLoading(true);
+    try {
+      const data = await tauriInvoke('bolh_explorer_summary');
+      setExplorerData(data);
+      setExplorerBlocks(data?.recent_blocks ?? []);
+    } catch (e) {
+      console.warn('[Explorer] load error:', e);
+    }
+    setExplorerLoading(false);
+  };
+
+  const loadBlock = async (height: number) => {
+    try {
+      const block = await tauriInvoke('bolh_get_block', { height });
+      setSelectedBlock(block?.error ? null : block);
+    } catch {}
+  };
+
+  const loadContracts = async () => {
+    try {
+      const addr = wallet()?.address;
+      if (!addr) return;
+      const [list, stats] = await Promise.all([
+        tauriInvoke('bolh_my_contracts', { address: addr }),
+        tauriInvoke('bolh_contract_stats'),
+      ]);
+      setMyContracts(list?.contracts ?? []);
+      setContractStats(stats);
+    } catch (e) {
+      console.warn('[Contracts] load error:', e);
+    }
+  };
+
+  const createEscrow = async () => {
+    const addr = wallet()?.address;
+    if (!addr || !escrowProvider() || !escrowAmount()) return;
+    setEscrowLoading(true);
+    setEscrowResult(null);
+    try {
+      const amount = BC.bolhToRaw(parseFloat(escrowAmount()));
+      const result = await tauriInvoke('bolh_create_escrow', {
+        clientAddr: addr,
+        providerAddr: escrowProvider(),
+        amount,
+        description: escrowDesc() || 'Service escrow',
+        deadline: 0,
+      });
+      setEscrowResult(result);
+      if (result?.success) {
+        // Auto-fund
+        await tauriInvoke('bolh_fund_contract', { contractId: result.contract_id });
+        setEscrowProvider('');
+        setEscrowAmount('');
+        setEscrowDesc('');
+        await loadContracts();
+      }
+    } catch (e: any) {
+      setEscrowResult({ success: false, message: e.message || String(e) });
+    }
+    setEscrowLoading(false);
+  };
+
+  const contractAction = async (contractId: string, action: 'confirm' | 'complete' | 'dispute' | 'cancel') => {
+    const addr = wallet()?.address;
+    if (!addr) return;
+    setContractActionLoading(contractId);
+    try {
+      switch (action) {
+        case 'confirm':
+          await tauriInvoke('bolh_confirm_contract', { contractId, clientAddr: addr });
+          break;
+        case 'complete':
+          await tauriInvoke('bolh_complete_service', { contractId, providerAddr: addr });
+          break;
+        case 'dispute':
+          await tauriInvoke('bolh_dispute_contract', { contractId, reason: 'User dispute' });
+          break;
+        case 'cancel':
+          await tauriInvoke('bolh_cancel_contract', { contractId });
+          break;
+      }
+      await loadContracts();
+    } catch (e) {
+      console.warn('[Contract] action error:', e);
+    }
+    setContractActionLoading('');
+  };
+
+  const contractStateBadge = (state: string) => {
+    const m: Record<string, { bg: string; text: string; label: string; labelEn: string }> = {
+      Pending: { bg: 'bg-yellow-100 dark:bg-yellow-900/30', text: 'text-yellow-700 dark:text-yellow-400', label: 'Ожидает', labelEn: 'Pending' },
+      Active: { bg: 'bg-slate-100 dark:bg-slate-800/60', text: 'text-slate-700 dark:text-slate-300', label: 'Активен', labelEn: 'Active' },
+      AwaitingConfirmation: { bg: 'bg-slate-100 dark:bg-slate-800/60', text: 'text-slate-700 dark:text-slate-300', label: 'Ждёт подтверждения', labelEn: 'Awaiting' },
+      Completed: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', label: 'Завершён', labelEn: 'Done' },
+      Cancelled: { bg: 'bg-gray-100 dark:bg-gray-800/50', text: 'text-gray-500', label: 'Отменён', labelEn: 'Cancelled' },
+      Disputed: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Спор', labelEn: 'Disputed' },
+      Expired: { bg: 'bg-gray-100 dark:bg-gray-800/50', text: 'text-gray-400', label: 'Истёк', labelEn: 'Expired' },
+    };
+    const s = m[state] || m.Pending;
+    return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${s.bg} ${s.text}">${currentLang() === 'en' ? s.labelEn : s.label}</span>`;
+  };
+
+  const startP2P = async () => {
+    setP2pLoading(true);
+    try {
+      const result = await tauriInvoke('bolh_p2p_start');
+      setP2pRunning(result?.success ?? false);
+    } catch (e: any) {
+      console.warn('[P2P] start error:', e);
+    }
+    setP2pLoading(false);
+  };
+
+  const stopP2P = async () => {
+    setP2pLoading(true);
+    try {
+      await tauriInvoke('bolh_p2p_stop');
+      setP2pRunning(false);
+      setP2pPeers([]);
+    } catch {}
+    setP2pLoading(false);
+  };
+
+  const connectPeer = async () => {
+    if (!p2pConnectAddr()) return;
+    setP2pLoading(true);
+    setP2pConnectResult(null);
+    try {
+      const result = await tauriInvoke('bolh_p2p_connect', { addr: p2pConnectAddr() });
+      setP2pConnectResult(result);
+      if (result?.success) {
+        setP2pConnectAddr('');
+        await refreshPeers();
+      }
+    } catch (e: any) {
+      setP2pConnectResult({ success: false, error: e.message || String(e) });
+    }
+    setP2pLoading(false);
+  };
+
+  const refreshPeers = async () => {
+    try {
+      const result = await tauriInvoke('bolh_p2p_peers');
+      setP2pPeers(result?.peers || []);
+    } catch {}
+  };
 
   return (
-    <div class="px-4 py-4 animate-fade-in">
-      {/* Header */}
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-            <span class="text-white font-bold text-lg">B</span>
+    <div class="min-h-screen animate-fade-in">
+      {/* Gradient header */}
+      <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 px-4 pt-3 pb-4" style="padding-top: max(env(safe-area-inset-top), 12px)">
+        <div class="flex items-center gap-3 mb-3">
+          <button type="button" class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm"
+            onClick={() => { playGlobalSound('swoosh'); props.onBack(); }}>
+            <Icon name="chevronLeft" class="text-white" size="sm" />
+          </button>
+          <div class="flex-1">
+            <p class="text-white/70 text-xs font-medium">{currentLang() === 'en' ? 'Blockchain' : 'Блокчейн'}</p>
+            <h1 class="text-white font-bold text-lg">BOLH Wallet</h1>
           </div>
-          <div>
-            <h2 class="text-lg font-bold">BOLH Wallet</h2>
-            <p class="text-xs text-gray-400">Blockchain + Кошелёк</p>
-          </div>
+          <button class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm" onClick={() => props.onNavigate?.('payments')}>
+            <Icon name="creditCard" class="text-white" size="sm" />
+          </button>
         </div>
-        <button class="p-2 rounded-xl bg-gray-100 touch-scale" onClick={() => props.onNavigate?.('payments')}>
-          <Icon name="creditCard" size="sm" />
-        </button>
+        {/* Tabs in header */}
+        <div class="flex bg-white/15 rounded-2xl p-1">
+          <button
+            class={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab() === 'balance' ? 'bg-white/25 text-white shadow-sm' : 'text-white/60'}`}
+            onClick={() => setActiveTab('balance')}
+          >
+            {currentLang() === 'en' ? 'Wallet' : 'Кошелёк'}
+          </button>
+          <button
+            class={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab() === 'chain' ? 'bg-white/25 text-white shadow-sm' : 'text-white/60'}`}
+            onClick={() => setActiveTab('chain')}
+          >
+            BOLH Chain
+          </button>
+          <button
+            class={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab() === 'network' ? 'bg-white/25 text-white shadow-sm' : 'text-white/60'}`}
+            onClick={() => setActiveTab('network')}
+          >
+            P2P
+          </button>
+          <button
+            class={`flex-1 py-2 rounded-xl text-xs font-bold transition-all ${activeTab() === 'explorer' ? 'bg-white/25 text-white shadow-sm' : 'text-white/60'}`}
+            onClick={() => { setActiveTab('explorer'); loadExplorer(); }}
+          >
+            Explorer
+          </button>
+        </div>
       </div>
 
-      {/* Tab switcher — 3 tabs */}
-      <div class="flex bg-gray-100 rounded-2xl p-1 mb-5">
-        <button
-          class={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${activeTab() === 'balance' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('balance')}
-        >
-          Кошелёк
-        </button>
-        <button
-          class={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${activeTab() === 'chain' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('chain')}
-        >
-          BOLH Chain
-        </button>
-        <button
-          class={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${activeTab() === 'network' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`}
-          onClick={() => setActiveTab('network')}
-        >
-          P2P Сеть
-        </button>
-      </div>
+      <div class="px-4 pt-4 pb-28">
 
-      {/* DEBUG STATUS BAR — remove after debugging */}
-      <div class="bg-gray-100 px-3 py-1 text-[10px] text-gray-400 font-mono text-center rounded-lg mb-2">{debugStatus()}</div>
+      {/* Debug removed */}
 
       <Show when={!loading()} fallback={<div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>}>
 
@@ -9461,19 +9110,19 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
                 if (wallet()?.address) navigator.clipboard?.writeText(wallet()?.address ?? '');
               }}>
                 <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                  <Icon name="plus" size="sm" class="text-green-600" />
+                  <Icon name="plus" size="sm" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <span class="text-xs text-gray-600 font-medium">Получить</span>
               </button>
               <button class="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass touch-scale" onClick={() => { setSendOpen(true); setSendResult(null); }}>
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Icon name="arrowRight" size="sm" class="text-blue-600" />
+                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Icon name="arrowRight" size="sm" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <span class="text-xs text-gray-600 font-medium">Перевод</span>
               </button>
               <button class="flex flex-col items-center gap-1.5 p-3 rounded-2xl glass touch-scale" onClick={() => props.onNavigate?.('referral')}>
-                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                  <Icon name="users" size="sm" class="text-purple-600" />
+                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Icon name="users" size="sm" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <span class="text-xs text-gray-600 font-medium">Реферал</span>
               </button>
@@ -9482,47 +9131,47 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
             {/* ── Send BOLH Modal ── */}
             <Show when={sendOpen()}>
               <div class="fixed inset-0 z-50 bg-black/60 flex items-end justify-center animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) setSendOpen(false); }}>
-                <div class="w-full max-w-md bg-white rounded-t-3xl p-6 animate-slide-up">
+                <div class={`w-full max-w-md rounded-t-3xl p-6 animate-slide-up ${isDark() ? 'bg-gray-900' : 'bg-white'}`}>
                   <div class="flex items-center justify-between mb-5">
-                    <h3 class="text-lg font-bold text-gray-800">Перевод BOLH</h3>
-                    <button class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center" onClick={() => setSendOpen(false)}>
-                      <Icon name="close" size="sm" class="text-gray-500" />
+                    <h3 class={`text-lg font-bold ${isDark() ? 'text-gray-100' : 'text-gray-800'}`}>{currentLang() === 'en' ? 'Send BOLH' : 'Перевод BOLH'}</h3>
+                    <button class={`w-8 h-8 rounded-full flex items-center justify-center ${isDark() ? 'bg-gray-800' : 'bg-gray-100'}`} onClick={() => setSendOpen(false)}>
+                      <Icon name="x" size="sm" class={isDark() ? 'text-gray-400' : 'text-gray-500'} />
                     </button>
                   </div>
                   <div class="space-y-4">
                     <div>
-                      <label class="text-xs text-gray-500 font-medium mb-1 block">Адрес получателя</label>
+                      <label class={`text-xs font-medium mb-1 block ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{currentLang() === 'en' ? 'Recipient address' : 'Адрес получателя'}</label>
                       <input
-                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-mono focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        class={`w-full px-4 py-3 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${isDark() ? 'bg-gray-800 border border-gray-700 text-gray-100' : 'bg-gray-50 border border-gray-200 text-gray-800'}`}
                         placeholder="bolh1..."
                         value={sendTo()}
                         onInput={(e) => setSendTo(e.currentTarget.value)}
                       />
                     </div>
                     <div>
-                      <label class="text-xs text-gray-500 font-medium mb-1 block">Сумма BOLH</label>
+                      <label class={`text-xs font-medium mb-1 block ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{currentLang() === 'en' ? 'Amount BOLH' : 'Сумма BOLH'}</label>
                       <input
-                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-mono focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        class={`w-full px-4 py-3 rounded-xl text-sm font-mono focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 ${isDark() ? 'bg-gray-800 border border-gray-700 text-gray-100' : 'bg-gray-50 border border-gray-200 text-gray-800'}`}
                         type="number"
                         placeholder="0.00"
                         value={sendAmount()}
                         onInput={(e) => setSendAmount(e.currentTarget.value)}
                       />
-                      <div class="text-xs text-gray-400 mt-1">
-                        Доступно: {BC.formatBOLH(wallet()?.balance ?? 0)} BOLH
+                      <div class={`text-xs mt-1 ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {currentLang() === 'en' ? 'Available' : 'Доступно'}: {BC.formatBOLH(wallet()?.balance ?? 0)} BOLH
                       </div>
                     </div>
                     <Show when={sendResult()}>
-                      <div class={`p-3 rounded-xl text-sm ${sendResult()?.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                      <div class={`p-3 rounded-xl text-sm ${sendResult()?.success ? (isDark() ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700') : (isDark() ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700')}`}>
                         {sendResult()?.success ? (
                           <div class="flex items-center gap-2">
-                            <Icon name="checkCircle" size="sm" class="text-green-600" />
-                            <span>Отправлено! TX: {BC.shortAddr(sendResult()?.txid || '')}</span>
+                            <Icon name="checkCircle" size="sm" class="text-emerald-600 dark:text-emerald-400" />
+                            <span>{currentLang() === 'en' ? 'Sent!' : 'Отправлено!'} TX: {BC.shortAddr(sendResult()?.txid || '')}</span>
                           </div>
                         ) : (
                           <div class="flex items-center gap-2">
-                            <Icon name="alertCircle" size="sm" class="text-red-600" />
-                            <span>{sendResult()?.error || 'Ошибка'}</span>
+                            <Icon name="alertCircle" size="sm" class="text-red-500" />
+                            <span>{sendResult()?.error || (currentLang() === 'en' ? 'Error' : 'Ошибка')}</span>
                           </div>
                         )}
                       </div>
@@ -9532,7 +9181,7 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
                       onClick={sendTransaction}
                       disabled={sendLoading() || !sendTo() || !sendAmount()}
                     >
-                      {sendLoading() ? 'Отправка...' : 'Отправить BOLH'}
+                      {sendLoading() ? '...' : (currentLang() === 'en' ? 'Send BOLH' : 'Отправить BOLH')}
                     </button>
                   </div>
                 </div>
@@ -9540,34 +9189,37 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
             </Show>
 
             {/* Transaction history */}
-            <div class="rounded-2xl glass overflow-hidden">
+            <div class={`rounded-2xl overflow-hidden ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
               <div class="px-4 py-3 flex items-center justify-between">
-                <span class="text-gray-600 font-semibold text-sm">{t('profile.history')}</span>
+                <span class={`font-semibold text-sm ${isDark() ? 'text-gray-200' : 'text-gray-600'}`}>{t('profile.history')}</span>
                 <span class="text-xs text-indigo-500 font-medium">Blockchain</span>
               </div>
               <For each={txHistory()}>
-                {(tx: any) => (
-                  <div class="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <div class={`w-8 h-8 rounded-full flex items-center justify-center ${tx.from === wallet()?.address ? 'bg-red-100' : 'bg-green-100'}`}>
-                        <Icon name={tx.from === wallet()?.address ? 'arrowRight' : 'plus'} size="xs" class={tx.from === wallet()?.address ? 'text-red-600' : 'text-green-600'} />
+                {(tx: any) => {
+                  const isSend = () => tx.from === wallet()?.address;
+                  return (
+                    <div class={`px-4 py-3 border-t flex items-center justify-between ${isDark() ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                      <div class="flex items-center gap-3">
+                        <div class={`w-9 h-9 rounded-full flex items-center justify-center ${isSend() ? (isDark() ? 'bg-red-900/30' : 'bg-red-50') : (isDark() ? 'bg-emerald-900/30' : 'bg-emerald-50')}`}>
+                          <Icon name={isSend() ? 'arrowRight' : 'plus'} size="xs" class={isSend() ? 'text-red-500 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'} />
+                        </div>
+                        <div>
+                          <div class={`text-sm font-medium ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{tx.type === 'transfer' ? (isSend() ? (currentLang() === 'en' ? 'Sent' : 'Отправлено') : (currentLang() === 'en' ? 'Received' : 'Получено')) : tx.type}</div>
+                          <div class={`text-xs font-mono ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>{BC.shortAddr(isSend() ? tx.to : tx.from)}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div class="text-sm font-medium text-gray-800">{tx.type}</div>
-                        <div class="text-xs text-gray-400 font-mono">{BC.shortAddr(tx.from === wallet()?.address ? tx.to : tx.from)}</div>
+                      <div class={`font-bold text-sm ${isSend() ? 'text-red-500' : 'text-green-500'}`}>
+                        {isSend() ? '-' : '+'}{BC.formatBOLH(tx.amount)}
                       </div>
                     </div>
-                    <div class={`font-bold ${tx.from === wallet()?.address ? 'text-red-600' : 'text-green-600'}`}>
-                      {tx.from === wallet()?.address ? '-' : '+'}{BC.formatBOLH(tx.amount)} BOLH
-                    </div>
-                  </div>
-                )}
+                  );
+                }}
               </For>
               <Show when={txHistory().length === 0}>
                 <div class="px-4 py-8 text-center">
-                  <Icon name="box" size="lg" class="text-gray-300 mx-auto mb-2" />
-                  <div class="text-gray-400 text-sm">Нет транзакций</div>
-                  <div class="text-gray-300 text-xs mt-1">Транзакции появятся после первого перевода</div>
+                  <div class="mb-2 flex justify-center"><Icon name="inbox" size="lg" class={isDark() ? 'text-gray-500' : 'text-gray-400'} /></div>
+                  <div class={`text-sm ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{currentLang() === 'en' ? 'No transactions yet' : 'Нет транзакций'}</div>
+                  <div class={`text-xs mt-1 ${isDark() ? 'text-gray-600' : 'text-gray-300'}`}>{currentLang() === 'en' ? 'Transactions appear after the first transfer' : 'Появятся после первого перевода'}</div>
                 </div>
               </Show>
             </div>
@@ -9656,7 +9308,7 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
               </div>
               <div class="flex items-center gap-2">
                 <div class="w-6 h-6 rounded-lg bg-green-100 flex items-center justify-center">
-                  <Icon name="lock" size="xs" class="text-green-600" />
+                  <Icon name="lock" size="xs" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <div>
                   <div class="text-gray-800 font-medium">SHA3-256</div>
@@ -9664,8 +9316,8 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center">
-                  <Icon name="activity" size="xs" class="text-purple-600" />
+                <div class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Icon name="activity" size="xs" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <div>
                   <div class="text-gray-800 font-medium">PoS-BFT</div>
@@ -9673,8 +9325,8 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Icon name="fileText" size="xs" class="text-blue-600" />
+                <div class="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center">
+                  <Icon name="fileText" size="xs" class="text-slate-500 dark:text-slate-400" />
                 </div>
                 <div>
                   <div class="text-gray-800 font-medium">Persisted</div>
@@ -9684,147 +9336,569 @@ function WalletPage(props: { onBack: () => void; onNavigate?: (page: string) => 
             </div>
           </div>
 
-          {/* Feature buttons */}
+          {/* Business Modules on Blockchain */}
+          <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+            <h3 class={`text-sm font-bold mb-3 ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{currentLang() === 'en' ? 'Blockchain Modules' : 'Бизнес-модули'}</h3>
+            <div class="grid grid-cols-2 gap-3">
+              {([
+                { icon: 'truck' as const, title: currentLang() === 'en' ? 'Delivery' : 'Доставка', desc: currentLang() === 'en' ? 'Multi-route delivery' : 'Мульти-маршрутная', color: 'from-blue-500 to-cyan-500', iconBg: 'bg-slate-100 dark:bg-slate-800/60', iconColor: 'text-slate-600 dark:text-slate-300' },
+                { icon: 'home' as const, title: currentLang() === 'en' ? 'Rental' : 'Аренда', desc: currentLang() === 'en' ? 'P2P rental marketplace' : 'P2P маркетплейс', color: 'from-emerald-500 to-green-500', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
+                { icon: 'graduationCap' as const, title: currentLang() === 'en' ? 'Internship' : 'Стажировки', desc: currentLang() === 'en' ? 'Find or offer' : 'Найти или предложить', color: 'from-orange-500 to-amber-500', iconBg: 'bg-slate-100 dark:bg-slate-800/60', iconColor: 'text-slate-600 dark:text-slate-300' },
+                { icon: 'eye' as const, title: currentLang() === 'en' ? 'Expert' : 'Эксперт', desc: currentLang() === 'en' ? 'Proxy missions' : 'Прокси-миссии', color: 'from-purple-500 to-fuchsia-500', iconBg: 'bg-slate-100 dark:bg-slate-800/60', iconColor: 'text-slate-600 dark:text-slate-300' },
+              ] as const).map(mod_ => (
+                <div class={`rounded-xl p-3 ${isDark() ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <div class={`w-7 h-7 rounded-lg ${isDark() ? 'bg-white/10' : mod_.iconBg} flex items-center justify-center`}>
+                      <Icon name={mod_.icon} size="xs" class={isDark() ? 'text-white' : mod_.iconColor} />
+                    </div>
+                    <span class={`text-xs font-bold ${isDark() ? 'text-gray-200' : 'text-gray-700'}`}>{mod_.title}</span>
+                  </div>
+                  <div class={`text-[10px] ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{mod_.desc}</div>
+                  <div class={`mt-2 h-1 rounded-full bg-gradient-to-r ${mod_.color} opacity-60`} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick links */}
           <div class="space-y-3">
-            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('referral')}>
+            <button class={`w-full rounded-2xl p-4 flex items-center gap-4 touch-scale text-left ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`} onClick={() => props.onNavigate?.('referral')}>
               <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                <Icon name="users" size="md" class="text-indigo-600" />
+                <Icon name="handshake" size="sm" class="text-indigo-600" />
               </div>
               <div class="flex-1">
-                <div class="font-semibold text-gray-800">Реферальная программа</div>
-                <div class="text-sm text-gray-500">Пригласи друга — оба получите BOLH</div>
+                <div class={`font-semibold ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{currentLang() === 'en' ? 'Referral Program' : 'Реферальная программа'}</div>
+                <div class={`text-sm ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{currentLang() === 'en' ? 'Invite friends — earn BOLH' : 'Пригласи друга — оба получите BOLH'}</div>
               </div>
-              <div class="flex items-center gap-1">
-                <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-xs font-bold">NEW</span>
-                <Icon name="chevronRight" size="sm" class="text-gray-400" />
+              <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-xs font-bold">LIVE</span>
+            </button>
+
+            <button class={`w-full rounded-2xl p-4 flex items-center gap-4 touch-scale text-left ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}
+              onClick={() => { setContractsOpen(!contractsOpen()); if (!contractsOpen()) loadContracts(); }}>
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-blue-100 flex items-center justify-center">
+                <Icon name="fileText" size="sm" class="text-indigo-600" />
+              </div>
+              <div class="flex-1">
+                <div class={`font-semibold ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>Smart Contracts</div>
+                <div class={`text-sm ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>Escrow, Bounty, Insurance</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-xs font-bold">LIVE</span>
+                <div class={`${contractsOpen() ? 'rotate-180' : ''} transition-transform`}><Icon name="chevronRight" size="xs" class={`rotate-90 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`} /></div>
               </div>
             </button>
 
-            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
-              <div class="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center">
-                <Icon name="shield" size="md" class="text-indigo-600" />
-              </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-800">Smart Contracts</div>
-                <div class="text-sm text-gray-500">Escrow, Bounty, Insurance</div>
-              </div>
-              <Icon name="chevronRight" size="sm" class="text-gray-400" />
-            </button>
+            {/* ── Smart Contracts Panel ── */}
+            <Show when={contractsOpen()}>
+              <div class={`rounded-2xl p-4 ${isDark() ? 'bg-gray-800/80 border border-gray-700/50' : 'bg-white/90 border border-gray-200/60'} space-y-4 animate-fade-in`}>
 
-            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
-              <div class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center">
-                <Icon name="lock" size="md" class="text-green-600" />
-              </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-800">Безопасность</div>
-                <div class="text-sm text-gray-500">Антифрод, rate-limit, защита</div>
-              </div>
-              <Icon name="chevronRight" size="sm" class="text-gray-400" />
-            </button>
+                {/* Stats row */}
+                <div class="grid grid-cols-4 gap-2">
+                  {([
+                    { v: contractStats()?.total_created ?? 0, l: currentLang() === 'en' ? 'Total' : 'Всего', icon: 'fileText' as const, iconColor: 'text-indigo-500' },
+                    { v: contractStats()?.active_count ?? 0, l: currentLang() === 'en' ? 'Active' : 'Активных', icon: 'circleDot' as const, iconColor: 'text-indigo-500 dark:text-indigo-400' },
+                    { v: BC.formatBOLH(contractStats()?.total_locked ?? 0), l: currentLang() === 'en' ? 'Locked' : 'Залочено', icon: 'lock' as const, iconColor: 'text-amber-500' },
+                    { v: BC.formatBOLH(contractStats()?.total_settled ?? 0), l: currentLang() === 'en' ? 'Settled' : 'Выполнено', icon: 'checkCircle' as const, iconColor: 'text-emerald-600 dark:text-emerald-400' },
+                  ] as const).map(s => (
+                    <div class={`rounded-xl p-2 text-center ${isDark() ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      <div class="flex justify-center mb-0.5"><Icon name={s.icon} size="xs" class={s.iconColor} /></div>
+                      <div class={`font-bold text-sm ${isDark() ? 'text-white' : 'text-gray-800'}`}>{s.v}</div>
+                      <div class={`text-[10px] ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{s.l}</div>
+                    </div>
+                  ))}
+                </div>
 
-            <button class="w-full glass rounded-2xl p-4 flex items-center gap-4 touch-scale text-left" onClick={() => props.onNavigate?.('blockchain')}>
-              <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
-                <Icon name="globe" size="md" class="text-blue-600" />
+                {/* Create Escrow button */}
+                <button
+                  class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm active:scale-[0.97] transition-transform flex items-center justify-center gap-2"
+                  onClick={() => setEscrowOpen(!escrowOpen())}
+                >
+                  <Icon name="shieldCheck" size="sm" class="text-white" /> {currentLang() === 'en' ? 'New Escrow Contract' : 'Новый Escrow контракт'}
+                </button>
+
+                {/* Escrow creation form */}
+                <Show when={escrowOpen()}>
+                  <div class={`rounded-xl p-4 space-y-3 ${isDark() ? 'bg-gray-700/60' : 'bg-indigo-50/80'}`}>
+                    <div class={`text-xs font-bold ${isDark() ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                      {currentLang() === 'en' ? 'Create Escrow — funds locked until both parties confirm' : 'Escrow — средства заблокированы до подтверждения'}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder={currentLang() === 'en' ? 'Provider address (bolh1...)' : 'Адрес исполнителя (bolh1...)'}
+                      class={`w-full px-3 py-2.5 rounded-xl text-sm ${isDark() ? 'bg-gray-800 text-white border-gray-600 placeholder:text-gray-500' : 'bg-white text-gray-800 border-gray-200 placeholder:text-gray-400'} border outline-none focus:ring-2 focus:ring-indigo-500/30`}
+                      value={escrowProvider()}
+                      onInput={(e) => setEscrowProvider(e.currentTarget.value)}
+                    />
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder={currentLang() === 'en' ? 'Amount (BOLH)' : 'Сумма (BOLH)'}
+                      class={`w-full px-3 py-2.5 rounded-xl text-sm ${isDark() ? 'bg-gray-800 text-white border-gray-600 placeholder:text-gray-500' : 'bg-white text-gray-800 border-gray-200 placeholder:text-gray-400'} border outline-none focus:ring-2 focus:ring-indigo-500/30`}
+                      value={escrowAmount()}
+                      onInput={(e) => setEscrowAmount(e.currentTarget.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder={currentLang() === 'en' ? 'Description (optional)' : 'Описание (необязательно)'}
+                      class={`w-full px-3 py-2.5 rounded-xl text-sm ${isDark() ? 'bg-gray-800 text-white border-gray-600 placeholder:text-gray-500' : 'bg-white text-gray-800 border-gray-200 placeholder:text-gray-400'} border outline-none focus:ring-2 focus:ring-indigo-500/30`}
+                      value={escrowDesc()}
+                      onInput={(e) => setEscrowDesc(e.currentTarget.value)}
+                    />
+                    <div class={`text-[10px] ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {currentLang() === 'en' ? 'Platform fee: 5%. Funds are locked on-chain and released only when you confirm the service.' : 'Комиссия платформы: 5%. Средства блокируются в блокчейне и выводятся только после вашего подтверждения.'}
+                    </div>
+                    <button
+                      class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-bold text-sm active:scale-[0.97] transition-transform disabled:opacity-50"
+                      onClick={createEscrow}
+                      disabled={escrowLoading() || !escrowProvider() || !escrowAmount()}
+                    >
+                      {escrowLoading() ? '...' : currentLang() === 'en' ? 'Lock Funds & Create' : 'Заблокировать и создать'}
+                    </button>
+                    <Show when={escrowResult()}>
+                      <div class={`text-xs p-2 rounded-lg flex items-center gap-1.5 ${escrowResult()?.success ? (isDark() ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-700') : (isDark() ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-700')}`}>
+                        {escrowResult()?.success ? <Icon name="checkCircle" size="xs" class="text-emerald-600 dark:text-emerald-400" /> : <Icon name="alertCircle" size="xs" class="text-red-500 dark:text-red-400" />}
+                        <span>{escrowResult()?.success ? `${escrowResult()?.message} (${escrowResult()?.contract_id})` : escrowResult()?.message}</span>
+                      </div>
+                    </Show>
+                  </div>
+                </Show>
+
+                {/* My Contracts list */}
+                <div>
+                  <div class={`text-xs font-bold mb-2 ${isDark() ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {currentLang() === 'en' ? `My Contracts (${myContracts().length})` : `Мои контракты (${myContracts().length})`}
+                  </div>
+                  <Show when={myContracts().length === 0}>
+                    <div class={`text-center py-6 ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>
+                      <div class="flex justify-center mb-1"><Icon name="fileText" size="lg" class={isDark() ? 'text-gray-500' : 'text-gray-400'} /></div>
+                      <div class="text-xs">{currentLang() === 'en' ? 'No contracts yet' : 'Контрактов пока нет'}</div>
+                    </div>
+                  </Show>
+                  <div class="space-y-2">
+                    <For each={myContracts()}>
+                      {(c) => {
+                        const isClient = c.client === wallet()?.address;
+                        const typeIcon = c.type === 'Escrow' ? 'shieldCheck' as const : c.type === 'Bounty' ? 'target' as const : c.type === 'Subscription' ? 'repeat' as const : 'shieldCheck' as const;
+                        const typeColor = 'text-slate-600 dark:text-slate-300';
+                        return (
+                          <div class={`rounded-xl p-3 ${isDark() ? 'bg-gray-700/50 border border-gray-600/30' : 'bg-gray-50 border border-gray-200/50'}`}>
+                            <div class="flex items-center justify-between mb-1.5">
+                              <div class="flex items-center gap-2">
+                                <Icon name={typeIcon} size="xs" class={typeColor} />
+                                <span class={`text-xs font-bold ${isDark() ? 'text-gray-200' : 'text-gray-700'}`}>{c.id}</span>
+                                <span class={`text-[10px] px-1.5 py-0.5 rounded font-medium ${isDark() ? 'bg-gray-600/50 text-gray-400' : 'bg-gray-200 text-gray-500'}`}>{c.type}</span>
+                              </div>
+                              <span innerHTML={contractStateBadge(c.state)} />
+                            </div>
+                            <div class={`text-xs mb-1.5 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {c.description || (currentLang() === 'en' ? 'No description' : 'Без описания')}
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                              <div class={`text-xs ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
+                                {isClient ? (currentLang() === 'en' ? 'To: ' : 'Кому: ') : (currentLang() === 'en' ? 'From: ' : 'От: ')}
+                                <span class="font-mono text-[10px]">{BC.shortAddr(isClient ? c.provider : c.client)}</span>
+                              </div>
+                              <span class={`font-bold text-sm ${isDark() ? 'text-white' : 'text-gray-800'}`}>{BC.formatBOLH(c.amount)} BOLH</span>
+                            </div>
+                            {/* Action buttons based on state and role */}
+                            <Show when={c.state === 'Active' && !isClient}>
+                              <button
+                                class="w-full py-2 rounded-lg bg-indigo-500/20 text-indigo-400 text-xs font-bold active:scale-[0.97] transition disabled:opacity-50"
+                                onClick={() => contractAction(c.id, 'complete')}
+                                disabled={contractActionLoading() === c.id}
+                              >
+                                {contractActionLoading() === c.id ? '...' : currentLang() === 'en' ? 'Mark Service Done' : 'Услуга выполнена'}
+                              </button>
+                            </Show>
+                            <Show when={c.state === 'AwaitingConfirmation' && isClient}>
+                              <div class="flex gap-2">
+                                <button
+                                  class="flex-1 py-2 rounded-lg bg-green-500/20 text-green-400 text-xs font-bold active:scale-[0.97] transition disabled:opacity-50"
+                                  onClick={() => contractAction(c.id, 'confirm')}
+                                  disabled={contractActionLoading() === c.id}
+                                >
+                                  {contractActionLoading() === c.id ? '...' : currentLang() === 'en' ? 'Confirm & Pay' : 'Подтвердить и оплатить'}
+                                </button>
+                                <button
+                                  class="flex-1 py-2 rounded-lg bg-red-500/20 text-red-400 text-xs font-bold active:scale-[0.97] transition disabled:opacity-50"
+                                  onClick={() => contractAction(c.id, 'dispute')}
+                                  disabled={contractActionLoading() === c.id}
+                                >
+                                  {currentLang() === 'en' ? 'Dispute' : 'Спор'}
+                                </button>
+                              </div>
+                            </Show>
+                            <Show when={c.state === 'Active' && isClient}>
+                              <button
+                                class="w-full py-2 rounded-lg bg-gray-500/20 text-gray-400 text-xs font-bold active:scale-[0.97] transition disabled:opacity-50"
+                                onClick={() => contractAction(c.id, 'cancel')}
+                                disabled={contractActionLoading() === c.id}
+                              >
+                                {contractActionLoading() === c.id ? '...' : currentLang() === 'en' ? 'Cancel & Refund' : 'Отменить и вернуть'}
+                              </button>
+                            </Show>
+                          </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </div>
+
+                {/* Contract types info */}
+                <div class={`rounded-xl p-3 ${isDark() ? 'bg-gray-700/40' : 'bg-gray-50'}`}>
+                  <div class={`text-[10px] space-y-2 ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <div class="flex items-start gap-1.5"><Icon name="shieldCheck" size="xs" class="text-indigo-500 mt-px shrink-0" /> <span><b>Escrow</b> — {currentLang() === 'en' ? 'Funds locked until service confirmed by both' : 'Средства заблокированы до подтверждения обеими сторонами'}</span></div>
+                    <div class="flex items-start gap-1.5"><Icon name="target" size="xs" class="text-slate-500 dark:text-slate-400 mt-px shrink-0" /> <span><b>Bounty</b> — {currentLang() === 'en' ? 'Reward paid on task completion' : 'Вознаграждение за выполнение задания'}</span></div>
+                    <div class="flex items-start gap-1.5"><Icon name="repeat" size="xs" class="text-slate-500 dark:text-slate-400 mt-px shrink-0" /> <span><b>Subscription</b> — {currentLang() === 'en' ? 'Recurring auto-payments' : 'Рекуррентные автоплатежи'}</span></div>
+                    <div class="flex items-start gap-1.5"><Icon name="shield" size="xs" class="text-slate-500 dark:text-slate-400 mt-px shrink-0" /> <span><b>Insurance</b> — {currentLang() === 'en' ? 'Automatic payout on verified claim' : 'Автовыплата по подтверждённому случаю'}</span></div>
+                  </div>
+                </div>
               </div>
-              <div class="flex-1">
-                <div class="font-semibold text-gray-800">Explorer</div>
-                <div class="text-sm text-gray-500">Блоки, транзакции, аккаунты</div>
-              </div>
-              <Icon name="chevronRight" size="sm" class="text-gray-400" />
-            </button>
+            </Show>
           </div>
         </Show>
 
         {/* ====== NETWORK TAB ====== */}
         <Show when={activeTab() === 'network'}>
-          {/* Node Status */}
+          {/* Node Status Hero */}
           <div class="rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #064e3b, #065f46)">
             <div class="p-5">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center">
-                  <Icon name="globe" size="md" class="text-emerald-400" />
-                </div>
-                <div>
-                  <div class="text-white font-bold text-lg">P2P Нода</div>
-                  <div class={`text-xs font-medium flex items-center gap-1 ${networkStatus()?.total_peers > 0 ? 'text-emerald-400' : 'text-yellow-400'}`}>
-                    <div class={`w-1.5 h-1.5 rounded-full ${networkStatus()?.total_peers > 0 ? 'bg-emerald-400' : 'bg-yellow-400'} animate-pulse`} />
-                    {networkStatus()?.total_peers > 0 ? 'Подключено' : 'Ожидание пиров'}
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-full bg-emerald-400/20 flex items-center justify-center">
+                    <Icon name="globe" size="lg" class="text-emerald-300" />
+                  </div>
+                  <div>
+                    <div class="text-white font-bold text-lg">P2P Node</div>
+                    <div class={`text-xs font-medium flex items-center gap-1 ${p2pRunning() ? 'text-emerald-400' : 'text-yellow-400'}`}>
+                      <div class={`w-1.5 h-1.5 rounded-full ${p2pRunning() ? 'bg-emerald-400' : 'bg-yellow-400'} animate-pulse`} />
+                      {p2pRunning() ? (currentLang() === 'en' ? 'Running' : 'Работает') : (currentLang() === 'en' ? 'Stopped' : 'Остановлен')}
+                    </div>
                   </div>
                 </div>
+                {/* Start/Stop button */}
+                <button
+                  class={`px-4 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 active:scale-95 transition ${
+                    p2pRunning()
+                      ? 'bg-red-500/30 text-red-300'
+                      : 'bg-emerald-500/30 text-emerald-300'
+                  }`}
+                  onClick={p2pRunning() ? stopP2P : startP2P}
+                  disabled={p2pLoading()}
+                >
+                  {p2pLoading() ? '...' : p2pRunning() ? (currentLang() === 'en' ? 'Stop' : 'Стоп') : (currentLang() === 'en' ? 'Start' : 'Старт')}
+                </button>
               </div>
 
               <div class="grid grid-cols-3 gap-3">
                 <div class="bg-white/10 rounded-xl p-3 text-center">
-                  <div class="text-white font-bold text-2xl">{networkStatus()?.total_peers ?? 0}</div>
-                  <div class="text-emerald-200 text-xs">Пиры</div>
+                  <div class="text-white font-bold text-2xl">{p2pPeers().length}</div>
+                  <div class="text-emerald-200 text-xs">{currentLang() === 'en' ? 'Peers' : 'Пиры'}</div>
                 </div>
                 <div class="bg-white/10 rounded-xl p-3 text-center">
-                  <div class="text-white font-bold text-2xl">{networkStatus()?.inbound_peers ?? 0}</div>
-                  <div class="text-emerald-200 text-xs">Входящие</div>
+                  <div class="text-white font-bold text-2xl">{networkStatus()?.known_peers ?? 0}</div>
+                  <div class="text-emerald-200 text-xs">{currentLang() === 'en' ? 'Known' : 'Известных'}</div>
                 </div>
                 <div class="bg-white/10 rounded-xl p-3 text-center">
-                  <div class="text-white font-bold text-2xl">{networkStatus()?.outbound_peers ?? 0}</div>
-                  <div class="text-emerald-200 text-xs">Исходящие</div>
+                  <div class="text-white font-bold text-2xl">{chainStats()?.height ?? 0}</div>
+                  <div class="text-emerald-200 text-xs">{currentLang() === 'en' ? 'Blocks' : 'Блоков'}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Network features */}
-          <div class="rounded-2xl glass p-4 mb-5">
-            <h3 class="text-sm font-bold text-gray-800 mb-3">Протокол BOLH P2P</h3>
-            <div class="space-y-3">
-              {[
-                { iconName: 'globe' as const, title: 'TCP-протокол', desc: 'Собственный бинарный протокол, лёгкий для мобильных' },
-                { iconName: 'radio' as const, title: 'Gossip', desc: 'Блоки и транзакции распространяются по сети автоматически' },
-                { iconName: 'repeat' as const, title: 'Синхронизация', desc: 'Автоматическая синхронизация цепи с пирами' },
-                { iconName: 'shield' as const, title: 'Handshake', desc: 'Проверка Genesis хеша при подключении к пиру' },
-                { iconName: 'hardDrive' as const, title: 'Персистентность', desc: 'Состояние цепи сохраняется на диск автоматически' },
-              ].map(item => (
-                <div class="flex items-start gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <Icon name={item.iconName} size="sm" class="text-emerald-600" />
+          {/* Connect to peer */}
+          <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+            <h3 class={`text-sm font-bold mb-3 ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{currentLang() === 'en' ? 'Connect to Peer' : 'Подключиться к пиру'}</h3>
+            <div class="flex gap-2">
+              <input
+                class={`flex-1 px-3 py-2.5 rounded-xl text-xs font-mono focus:outline-none ${isDark() ? 'bg-gray-900 border border-gray-700 text-gray-200' : 'bg-gray-50 border border-gray-200 text-gray-800'}`}
+                placeholder="192.168.1.100:30333"
+                value={p2pConnectAddr()}
+                onInput={(e) => setP2pConnectAddr(e.currentTarget.value)}
+              />
+              <button
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold active:scale-95 disabled:opacity-50"
+                onClick={connectPeer}
+                disabled={!p2pConnectAddr() || p2pLoading()}
+              >
+                {currentLang() === 'en' ? 'Connect' : 'Связать'}
+              </button>
+            </div>
+            <Show when={p2pConnectResult()}>
+              <div class={`mt-2 p-2 rounded-lg text-xs flex items-center gap-1.5 ${p2pConnectResult()?.success ? (isDark() ? 'bg-green-900/30 text-green-400' : 'bg-green-50 text-green-700') : (isDark() ? 'bg-red-900/30 text-red-400' : 'bg-red-50 text-red-700')}`}>
+                {p2pConnectResult()?.success ? <><Icon name="checkCircle" size="xs" class="text-emerald-600 dark:text-emerald-400" /> Connected!</> : <><Icon name="alertCircle" size="xs" class="text-red-500 dark:text-red-400" /> {p2pConnectResult()?.error || 'Error'}</>}
+              </div>
+            </Show>
+          </div>
+
+          {/* Connected Peers List */}
+          <div class={`rounded-2xl overflow-hidden mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+            <div class="px-4 py-3 flex items-center justify-between">
+              <span class={`font-semibold text-sm ${isDark() ? 'text-gray-200' : 'text-gray-700'}`}>{currentLang() === 'en' ? 'Connected Peers' : 'Подключённые пиры'}</span>
+              <button class="text-xs text-emerald-500 font-bold" onClick={refreshPeers}>↻</button>
+            </div>
+            <For each={p2pPeers()}>
+              {(peer: any) => (
+                <div class={`px-4 py-3 border-t flex items-center gap-3 ${isDark() ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                  <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-sm">🖥️</div>
+                  <div class="flex-1 min-w-0">
+                    <div class={`text-xs font-mono truncate ${isDark() ? 'text-gray-300' : 'text-gray-700'}`}>{peer.addr}</div>
+                    <div class={`text-[10px] ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>{peer.version} • H:{peer.best_height}</div>
+                  </div>
+                  <div class="w-2 h-2 rounded-full bg-emerald-400" />
+                </div>
+              )}
+            </For>
+            <Show when={p2pPeers().length === 0}>
+              <div class="px-4 py-8 text-center">
+                <div class="text-3xl mb-2">📡</div>
+                <div class={`text-sm ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{currentLang() === 'en' ? 'No peers connected' : 'Нет подключённых пиров'}</div>
+                <div class={`text-xs mt-1 ${isDark() ? 'text-gray-600' : 'text-gray-300'}`}>{currentLang() === 'en' ? 'Start the node and connect to a peer' : 'Запустите ноду и подключитесь'}</div>
+              </div>
+            </Show>
+          </div>
+
+          {/* Protocol Info */}
+          <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+            <h3 class={`text-sm font-bold mb-3 ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>BOLH P2P Protocol</h3>
+            <div class="space-y-2.5">
+              {([
+                { icon: 'plug' as const, title: 'TCP', desc: currentLang() === 'en' ? 'Pure TCP protocol, lightweight for mobile' : 'Чистый TCP-протокол, лёгкий для мобильных', color: 'text-slate-500 dark:text-slate-400' },
+                { icon: 'radio' as const, title: 'Gossip', desc: currentLang() === 'en' ? 'Blocks and transactions propagate automatically' : 'Блоки и транзакции распространяются автоматически', color: 'text-slate-500 dark:text-slate-400' },
+                { icon: 'refreshCw' as const, title: 'Sync', desc: currentLang() === 'en' ? 'Automatic chain sync with peers' : 'Автоматическая синхронизация цепи', color: 'text-slate-500 dark:text-slate-400' },
+                { icon: 'handshake' as const, title: 'Handshake', desc: currentLang() === 'en' ? 'Genesis hash verification on connect' : 'Проверка Genesis при подключении', color: 'text-slate-500 dark:text-slate-400' },
+              ] as const).map(item => (
+                <div class="flex items-start gap-2.5">
+                  <div class={`w-6 h-6 rounded-lg ${isDark() ? 'bg-white/10' : 'bg-gray-100'} flex items-center justify-center shrink-0`}>
+                    <Icon name={item.icon} size="xs" class={item.color} />
                   </div>
                   <div>
-                    <div class="text-sm font-medium text-gray-800">{item.title}</div>
-                    <div class="text-xs text-gray-500">{item.desc}</div>
+                    <div class={`text-xs font-medium ${isDark() ? 'text-gray-300' : 'text-gray-700'}`}>{item.title}</div>
+                    <div class={`text-[11px] ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>{item.desc}</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Node details */}
-          <div class="rounded-2xl glass p-4">
-            <h3 class="text-sm font-bold text-gray-800 mb-3">Конфигурация ноды</h3>
+          {/* Node Config */}
+          <div class={`rounded-2xl p-4 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+            <h3 class={`text-sm font-bold mb-3 ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{currentLang() === 'en' ? 'Node Config' : 'Конфигурация'}</h3>
             <div class="space-y-2 text-xs">
-              <div class="flex justify-between py-1.5 border-b border-gray-100">
-                <span class="text-gray-500">Node ID</span>
-                <span class="text-gray-800 font-mono">{BC.shortAddr(networkStatus()?.node_id ?? 'local')}</span>
-              </div>
-              <div class="flex justify-between py-1.5 border-b border-gray-100">
-                <span class="text-gray-500">Listen</span>
-                <span class="text-gray-800 font-mono">{networkStatus()?.listen_addr ?? '0.0.0.0:30333'}</span>
-              </div>
-              <div class="flex justify-between py-1.5 border-b border-gray-100">
-                <span class="text-gray-500">Протокол</span>
-                <span class="text-gray-800">BOLH P2P v1</span>
-              </div>
-              <div class="flex justify-between py-1.5 border-b border-gray-100">
-                <span class="text-gray-500">Макс. пиров</span>
-                <span class="text-gray-800">50</span>
-              </div>
-              <div class="flex justify-between py-1.5">
-                <span class="text-gray-500">Статус</span>
-                <span class={`font-medium ${networkStatus()?.total_peers > 0 ? 'text-green-600' : 'text-yellow-600'}`}>
-                  {networkStatus()?.total_peers > 0 ? 'Подключено' : 'Ожидание'}
-                </span>
-              </div>
+              {[
+                { label: 'Node ID', value: BC.shortAddr(networkStatus()?.node_id ?? 'local') },
+                { label: 'Listen', value: networkStatus()?.listen_addr ?? '0.0.0.0:30333' },
+                { label: currentLang() === 'en' ? 'Protocol' : 'Протокол', value: 'BOLH P2P v1' },
+                { label: currentLang() === 'en' ? 'Max peers' : 'Макс. пиров', value: '50' },
+              ].map(row => (
+                <div class={`flex justify-between py-1.5 border-b ${isDark() ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                  <span class={isDark() ? 'text-gray-400' : 'text-gray-500'}>{row.label}</span>
+                  <span class={`font-mono ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{row.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </Show>
 
+        {/* ====== EXPLORER TAB ====== */}
+        <Show when={activeTab() === 'explorer'}>
+          <Show when={explorerLoading()}>
+            <div class="flex items-center justify-center py-12"><div class="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>
+          </Show>
+          <Show when={!explorerLoading()}>
+            {/* Chain Overview Hero */}
+            <div class="rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #1e1b4b, #312e81)">
+              <div class="p-5">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-12 h-12 rounded-full bg-indigo-400/20 flex items-center justify-center">
+                    <Icon name="search" size="lg" class="text-indigo-300" />
+                  </div>
+                  <div>
+                    <div class="text-white font-bold text-lg">BOLH Explorer</div>
+                    <div class="text-indigo-300 text-xs font-medium">
+                      {currentLang() === 'en' ? 'On-chain data browser' : 'Обозреватель блокчейна'}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                  <div class="bg-white/10 rounded-xl p-3 text-center">
+                    <div class="text-white font-bold text-xl">{explorerData()?.chain?.height ?? 0}</div>
+                    <div class="text-indigo-200 text-[10px]">{currentLang() === 'en' ? 'Blocks' : 'Блоков'}</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-3 text-center">
+                    <div class="text-white font-bold text-xl">{explorerData()?.chain?.total_transactions ?? 0}</div>
+                    <div class="text-indigo-200 text-[10px]">{currentLang() === 'en' ? 'Transactions' : 'Транзакций'}</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-3 text-center">
+                    <div class="text-white font-bold text-xl">{explorerData()?.chain?.total_accounts ?? 0}</div>
+                    <div class="text-indigo-200 text-[10px]">{currentLang() === 'en' ? 'Accounts' : 'Аккаунтов'}</div>
+                  </div>
+                </div>
+
+                {/* Contracts overview */}
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="bg-white/10 rounded-xl p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                      <Icon name="fileText" size="xs" class="text-indigo-300" />
+                      <span class="text-indigo-200 text-[10px]">{currentLang() === 'en' ? 'Smart Contracts' : 'Контракты'}</span>
+                    </div>
+                    <div class="text-white font-bold">{explorerData()?.contracts?.total_created ?? 0}</div>
+                  </div>
+                  <div class="bg-white/10 rounded-xl p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                      <Icon name="lock" size="xs" class="text-indigo-300" />
+                      <span class="text-indigo-200 text-[10px]">{currentLang() === 'en' ? 'Value Locked' : 'Залочено'}</span>
+                    </div>
+                    <div class="text-white font-bold">{BC.formatBOLH(explorerData()?.contracts?.total_locked ?? 0)}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Genesis Hash */}
+            <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+              <div class={`text-xs font-bold mb-2 ${isDark() ? 'text-gray-300' : 'text-gray-700'}`}>Genesis Hash</div>
+              <div class={`font-mono text-[10px] break-all p-2 rounded-lg ${isDark() ? 'bg-gray-700/50 text-indigo-300' : 'bg-gray-100 text-indigo-600'}`}>
+                {explorerData()?.chain?.genesis_hash ?? '...'}
+              </div>
+            </div>
+
+            {/* Recent Blocks */}
+            <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class={`text-sm font-bold ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>
+                  {currentLang() === 'en' ? 'Recent Blocks' : 'Последние блоки'}
+                </h3>
+                <button class="text-xs text-indigo-500 font-bold active:scale-95" onClick={loadExplorer}>
+                  {currentLang() === 'en' ? 'Refresh' : 'Обновить'}
+                </button>
+              </div>
+              <Show when={explorerBlocks().length === 0}>
+                <div class={`text-center py-6 ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>
+                  <div class="flex justify-center mb-1"><Icon name="link" size="lg" class={isDark() ? 'text-gray-500' : 'text-gray-400'} /></div>
+                  <div class="text-xs">{currentLang() === 'en' ? 'Only genesis block exists' : 'Пока только генезис-блок'}</div>
+                </div>
+              </Show>
+              <div class="space-y-2">
+                <For each={explorerBlocks()}>
+                  {(block) => (
+                    <button
+                      class={`w-full rounded-xl p-3 text-left active:scale-[0.98] transition ${isDark() ? 'bg-gray-700/50 hover:bg-gray-700/80' : 'bg-gray-50 hover:bg-gray-100'}`}
+                      onClick={() => loadBlock(block.height)}
+                    >
+                      <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center gap-2">
+                          <div class={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${block.height === 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                            {block.height === 0 ? <Icon name="star" size="sm" class="text-amber-500 dark:text-amber-400" /> : `#${block.height}`}
+                          </div>
+                          <div>
+                            <div class={`text-xs font-bold ${isDark() ? 'text-gray-200' : 'text-gray-700'}`}>
+                              {block.height === 0 ? 'Genesis Block' : `Block #${block.height}`}
+                            </div>
+                            <div class={`font-mono text-[10px] ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {block.hash}...
+                            </div>
+                          </div>
+                        </div>
+                        <div class="text-right">
+                          <div class={`text-xs font-bold ${isDark() ? 'text-gray-300' : 'text-gray-600'}`}>
+                            {block.tx_count} tx
+                          </div>
+                        </div>
+                      </div>
+                      <div class={`text-[10px] ${isDark() ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {currentLang() === 'en' ? 'Validator: ' : 'Валидатор: '}
+                        <span class="font-mono">{BC.shortAddr(block.validator)}</span>
+                      </div>
+                    </button>
+                  )}
+                </For>
+              </div>
+            </div>
+
+            {/* Selected Block Detail */}
+            <Show when={selectedBlock()}>
+              <div class={`rounded-2xl p-4 mb-5 ${isDark() ? 'bg-indigo-900/30 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class={`text-sm font-bold ${isDark() ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                    Block #{selectedBlock()?.height}
+                  </h3>
+                  <button class="text-gray-400 active:scale-95" onClick={() => setSelectedBlock(null)}><Icon name="x" size="xs" /></button>
+                </div>
+                <div class="space-y-2 text-xs">
+                  {[
+                    { label: 'Hash', value: selectedBlock()?.hash?.slice(0, 24) + '...' },
+                    { label: 'Prev Hash', value: selectedBlock()?.prev_hash?.slice(0, 24) + '...' },
+                    { label: currentLang() === 'en' ? 'Validator' : 'Валидатор', value: BC.shortAddr(selectedBlock()?.validator ?? '') },
+                    { label: currentLang() === 'en' ? 'Transactions' : 'Транзакции', value: selectedBlock()?.tx_count ?? 0 },
+                    { label: currentLang() === 'en' ? 'Fees' : 'Комиссии', value: BC.formatBOLH(selectedBlock()?.total_fees ?? 0) + ' BOLH' },
+                    { label: 'State Root', value: selectedBlock()?.state_root?.slice(0, 24) + '...' },
+                  ].map(row => (
+                    <div class={`flex justify-between py-1.5 border-b ${isDark() ? 'border-indigo-700/30' : 'border-indigo-200/50'}`}>
+                      <span class={isDark() ? 'text-indigo-400' : 'text-indigo-500'}>{row.label}</span>
+                      <span class={`font-mono text-[10px] ${isDark() ? 'text-indigo-200' : 'text-indigo-700'}`}>{row.value}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Block Transactions */}
+                <Show when={selectedBlock()?.transactions?.length > 0}>
+                  <div class="mt-3 pt-3 border-t border-indigo-700/30">
+                    <div class={`text-xs font-bold mb-2 ${isDark() ? 'text-indigo-300' : 'text-indigo-700'}`}>
+                      {currentLang() === 'en' ? 'Transactions' : 'Транзакции'}
+                    </div>
+                    <div class="space-y-1.5">
+                      <For each={selectedBlock()?.transactions ?? []}>
+                        {(tx: any) => (
+                          <div class={`rounded-lg p-2 ${isDark() ? 'bg-indigo-800/30' : 'bg-indigo-100/60'}`}>
+                            <div class="flex items-center justify-between">
+                              <span class={`text-[10px] font-medium ${isDark() ? 'text-indigo-300' : 'text-indigo-600'}`}>{tx.tx_type}</span>
+                              <span class={`text-[10px] font-bold ${isDark() ? 'text-white' : 'text-indigo-800'}`}>{BC.formatBOLH(tx.amount)} BOLH</span>
+                            </div>
+                            <div class={`text-[9px] font-mono mt-0.5 ${isDark() ? 'text-indigo-400/70' : 'text-indigo-500/70'}`}>
+                              {BC.shortAddr(tx.from)} → {BC.shortAddr(tx.to)}
+                            </div>
+                          </div>
+                        )}
+                      </For>
+                    </div>
+                  </div>
+                </Show>
+              </div>
+            </Show>
+
+            {/* Blockchain Architecture */}
+            <div class={`rounded-2xl p-4 ${isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass'}`}>
+              <h3 class={`text-sm font-bold mb-3 ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>
+                {currentLang() === 'en' ? 'Architecture' : 'Архитектура'}
+              </h3>
+              <div class="space-y-2">
+                {([
+                  { icon: 'shieldCheck' as const, title: 'Security Pipeline', desc: currentLang() === 'en' ? 'Ed25519, nonce, replay, rate-limit' : 'Ed25519, nonce, replay, rate-limit', color: 'text-red-500', bg: 'bg-red-100' },
+                  { icon: 'scale' as const, title: 'PoS-BFT Consensus', desc: currentLang() === 'en' ? 'Stake-weighted voting, 2/3 finality' : 'Взвешенное голосование, 2/3 финалити', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/60' },
+                  { icon: 'box' as const, title: 'Mempool', desc: currentLang() === 'en' ? 'Fee-ordered, 10 tx/min per address' : 'По комиссии, 10 tx/мин на адрес', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/60' },
+                  { icon: 'repeat' as const, title: 'State Transition', desc: currentLang() === 'en' ? 'Deterministic, crash-safe execution' : 'Детерминированное, crash-safe исполнение', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/60' },
+                  { icon: 'fileText' as const, title: 'Smart Contracts', desc: currentLang() === 'en' ? 'Escrow, Bounty, Subscription, Insurance' : 'Escrow, Bounty, Подписки, Страхование', color: 'text-indigo-500', bg: 'bg-indigo-100' },
+                  { icon: 'hardDrive' as const, title: 'Persistence', desc: currentLang() === 'en' ? 'Snapshot + WAL recovery' : 'Снапшот + WAL восстановление', color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-100 dark:bg-slate-800/60' },
+                ] as const).map(item => (
+                  <div class="flex items-start gap-3 py-2">
+                    <div class={`w-8 h-8 rounded-lg ${isDark() ? 'bg-white/10' : item.bg} flex items-center justify-center shrink-0`}>
+                      <Icon name={item.icon} size="xs" class={item.color} />
+                    </div>
+                    <div>
+                      <div class={`text-xs font-bold ${isDark() ? 'text-gray-200' : 'text-gray-700'}`}>{item.title}</div>
+                      <div class={`text-[10px] ${isDark() ? 'text-gray-400' : 'text-gray-500'}`}>{item.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Show>
+        </Show>
+
       </Show>
+      </div>
     </div>
   );
 }
@@ -9850,10 +9924,10 @@ function ReferralPage(props: { onBack: () => void }) {
   const [applyLoading, setApplyLoading] = createSignal(false);
 
   const tiersList = [
-    { id: 1, label: 'Tier 1', range: '0 \u2014 1 000', reward: '10 000', color: 'from-yellow-400 to-amber-500', emoji: '\u{1F947}' },
-    { id: 2, label: 'Tier 2', range: '1 001 \u2014 10 000', reward: '2 500', color: 'from-gray-300 to-gray-400', emoji: '\u{1F948}' },
-    { id: 3, label: 'Tier 3', range: '10 001 \u2014 100 000', reward: '1 000', color: 'from-amber-600 to-amber-700', emoji: '\u{1F949}' },
-    { id: 4, label: 'Tier 4', range: '100 001+', reward: '500', color: 'from-indigo-400 to-indigo-500', emoji: '\u{1F3AF}' },
+    { id: 1, label: 'Tier 1', range: '0 — 1 000', reward: '10 000', color: 'from-slate-300 to-slate-400', icon: 'trophy' as const, iconColor: 'text-slate-500 dark:text-slate-400' },
+    { id: 2, label: 'Tier 2', range: '1 001 — 10 000', reward: '2 500', color: 'from-slate-400 to-slate-500', icon: 'award' as const, iconColor: 'text-slate-500 dark:text-slate-400' },
+    { id: 3, label: 'Tier 3', range: '10 001 — 100 000', reward: '1 000', color: 'from-slate-500 to-slate-600', icon: 'award' as const, iconColor: 'text-slate-600 dark:text-slate-300' },
+    { id: 4, label: 'Tier 4', range: '100 001+', reward: '500', color: 'from-indigo-400 to-indigo-500', icon: 'target' as const, iconColor: 'text-indigo-500 dark:text-indigo-400' },
   ];
 
   const walletName = () => localStorage.getItem('bolh_wallet_name') || 'default';
@@ -9867,19 +9941,23 @@ function ReferralPage(props: { onBack: () => void }) {
   const tierMax = () => currentTier() === 1 ? 1000 : currentTier() === 2 ? 10000 : currentTier() === 3 ? 100000 : 1000000;
   const tierMin = () => currentTier() === 1 ? 0 : currentTier() === 2 ? 1000 : currentTier() === 3 ? 10000 : 100000;
 
+  // Shorthand for dark-mode text
+  const txt = () => isDark() ? 'text-gray-100' : 'text-gray-900';
+  const txtSub = () => isDark() ? 'text-gray-400' : 'text-gray-500';
+  const txtMuted = () => isDark() ? 'text-gray-500' : 'text-gray-400';
+  const cardBg = () => isDark() ? 'bg-gray-800/60 border border-gray-700/50' : 'glass';
+  const inputBg = () => isDark() ? 'bg-gray-700 text-gray-100 placeholder:text-gray-500' : 'bg-gray-100 text-gray-800 placeholder:text-gray-400';
+
   const loadData = async () => {
     setLoading(true);
     try {
-      // 1. Get or generate referral code
       const codeRes = await invoke('bolh_get_referral_code', { walletName: walletName() });
       if (codeRes?.code) {
         setMyCode(codeRes.code);
         setMyStats({ referral_count: codeRes.referral_count || 0, total_earned: codeRes.total_earned || 0 });
       }
-      // 2. Get program stats
       const stats = await invoke('bolh_referral_stats');
       if (stats) setProgramStats(stats);
-      // 3. Get my referral history
       const hist = await invoke('bolh_referral_history', { walletName: walletName() });
       if (hist?.referrals) setReferralHistory(hist.referrals);
       if (hist?.invited_by) setInvitedBy(hist.invited_by);
@@ -9901,7 +9979,7 @@ function ReferralPage(props: { onBack: () => void }) {
   const shareLink = () => {
     const url = `https://bolh.app/join/${myCode()}`;
     if (navigator.share) {
-      navigator.share({ title: 'BOLH', text: `\u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0439\u0441\u044f \u0438 \u043f\u043e\u043b\u0443\u0447\u0438 ${rewardPerPerson()} BOLH!`, url });
+      navigator.share({ title: 'BOLH', text: `Регистрируйся и получи ${rewardPerPerson()} BOLH!`, url });
     } else {
       navigator.clipboard?.writeText(url);
       setCopied(true);
@@ -9918,324 +9996,353 @@ function ReferralPage(props: { onBack: () => void }) {
     try {
       const res = await invoke('bolh_apply_referral', { walletName: walletName(), referralCode: code });
       if (res?.success) {
-        setApplyStatus(`\u2705 ${res.message || '\u0423\u0441\u043f\u0435\u0448\u043d\u043e!'} +${formatBolh(res.invitee_reward || 0)} BOLH`);
+        setApplyStatus(`✅ ${res.message || 'Успешно!'} +${formatBolh(res.invitee_reward || 0)} BOLH`);
         haptic('success');
         setEnterCode('');
         loadData();
       } else {
-        setApplyStatus(`\u274C ${res?.message || '\u041E\u0448\u0438\u0431\u043A\u0430'}`);
+        setApplyStatus(`❌ ${res?.message || 'Ошибка'}`);
         haptic('error');
       }
     } catch (e: any) {
-      setApplyStatus(`\u274C ${e.message || '\u041E\u0448\u0438\u0431\u043A\u0430 \u0441\u0435\u0442\u0438'}`);
+      setApplyStatus(`❌ ${e.message || 'Ошибка сети'}`);
     }
     setApplyLoading(false);
   };
 
   return (
-    <div class="px-4 py-4 animate-fade-in pb-24">
-      {/* Header */}
-      <div class="flex items-center gap-3 mb-5">
-        <button class="p-2 rounded-xl bg-gray-100 touch-scale" onClick={props.onBack}>
-          <Icon name="chevronLeft" />
-        </button>
-        <h2 class="text-xl font-bold">\u0420\u0435\u0444\u0435\u0440\u0430\u043b\u044c\u043d\u0430\u044f \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0430</h2>
+    <div class="min-h-screen animate-fade-in">
+      {/* Gradient header */}
+      <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 px-4 pt-3 pb-5" style="padding-top: max(env(safe-area-inset-top), 12px)">
+        <div class="flex items-center gap-3 mb-4">
+          <button type="button" class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm"
+            onClick={() => { playGlobalSound('swoosh'); props.onBack(); }}>
+            <Icon name="chevronLeft" class="text-white" size="sm" />
+          </button>
+          <div class="flex-1">
+            <p class="text-white/70 text-xs font-medium">{currentLang() === 'en' ? 'Blockchain' : 'Блокчейн'}</p>
+            <h1 class="text-white font-bold text-lg">{currentLang() === 'en' ? 'Referral Program' : 'Реферальная программа'}</h1>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+            <Icon name="handshake" size="lg" class="text-white" />
+          </div>
+        </div>
+        {/* Mini stats in header */}
+        <div class="flex gap-2">
+          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+            <div class="text-white font-bold text-lg">{myStats().referral_count}</div>
+            <div class="text-white/60 text-[10px]">{currentLang() === 'en' ? 'Invited' : 'Приглашено'}</div>
+          </div>
+          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+            <div class="text-white font-bold text-lg">{formatBolh(myStats().total_earned)}</div>
+            <div class="text-white/60 text-[10px]">BOLH</div>
+          </div>
+          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+            <div class="text-white font-bold text-lg flex items-center justify-center gap-1"><Icon name={tiersList[currentTier() - 1]?.icon ?? 'trophy'} size="sm" class="text-white" /> T{currentTier()}</div>
+            <div class="text-white/60 text-[10px]">{currentLang() === 'en' ? 'Tier' : 'Тир'}</div>
+          </div>
+        </div>
       </div>
 
-      <Show when={loading()}>
-        <div class="text-center py-10 text-gray-400 text-sm">\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430...</div>
-      </Show>
+      <div class="px-4 pt-4 pb-28">
+        <Show when={loading()}>
+          <div class={`text-center py-10 text-sm ${txtSub()}`}>{currentLang() === 'en' ? 'Loading...' : 'Загрузка...'}</div>
+        </Show>
 
-      <Show when={!loading()}>
-        {/* Hero card */}
-        <div class="relative rounded-3xl overflow-hidden mb-5" style="background: linear-gradient(135deg, #6366f1, #8b5cf6, #c084fc)">
-          <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full border-2 border-white/10" />
-            <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full border-2 border-white/10" />
-          </div>
-          <div class="p-5 relative">
-            <div class="text-white/70 text-sm mb-1">\u0422\u0432\u043e\u0439 \u0440\u0435\u0444\u0435\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u043a\u043e\u0434</div>
+        <Show when={!loading()}>
+          {/* Referral code card */}
+          <div class={`${cardBg()} rounded-2xl p-4 mb-4`}>
+            <p class={`text-xs font-medium mb-2 ${txtSub()}`}>{currentLang() === 'en' ? 'Your referral code' : 'Твой реферальный код'}</p>
             <div class="flex items-center gap-2 mb-3">
-              <div class="text-2xl font-bold text-white tracking-wider font-mono">{myCode() || '\u2014'}</div>
+              <div class={`text-xl font-bold tracking-wider font-mono ${txt()}`}>{myCode() || '—'}</div>
               <Show when={myCode()}>
                 <button
-                  class={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${copied() ? 'bg-green-500 text-white' : 'bg-white/20 text-white'}`}
+                  class={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${copied() ? 'bg-green-500 text-white' : 'bg-indigo-500 text-white'}`}
                   onClick={copyCode}
                 >
-                  {copied() ? '\u2713' : 'Copy'}
+                  {copied() ? '✓' : (currentLang() === 'en' ? 'Copy' : 'Копировать')}
                 </button>
               </Show>
             </div>
-            <div class="text-white/80 text-sm mb-4">
-              \u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438 \u0434\u0440\u0443\u0433\u0430 \u2014 \u0432\u044b <span class="font-bold text-white">\u043e\u0431\u0430</span> \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u0435 <span class="font-bold text-white text-lg">{rewardPerPerson()} BOLH</span>
-            </div>
+            <p class={`text-xs mb-4 ${txtSub()}`}>
+              {currentLang() === 'en' ? 'Invite a friend — you' : 'Пригласи друга — вы'} <span class={`font-bold ${txt()}`}>{currentLang() === 'en' ? 'both' : 'оба'}</span> {currentLang() === 'en' ? 'get' : 'получите'} <span class="font-bold text-indigo-500 text-base">{rewardPerPerson()} BOLH</span>
+            </p>
             <div class="flex gap-2">
               <button
-                class="flex-1 py-3 rounded-2xl bg-white text-indigo-600 font-bold text-base active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale"
+                class="flex-1 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-sm active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale"
                 onClick={shareLink}
               >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                \u041f\u043e\u0434\u0435\u043b\u0438\u0442\u044c\u0441\u044f
+                <Icon name="share2" class="text-white" size="sm" />
+                {currentLang() === 'en' ? 'Share' : 'Поделиться'}
               </button>
               <Show when={!invitedBy()}>
                 <button
-                  class="py-3 px-4 rounded-2xl bg-white/20 text-white font-bold text-sm active:scale-[0.98] transition-all touch-scale"
+                  class={`py-3 px-4 rounded-2xl font-bold text-sm active:scale-[0.98] transition-all touch-scale ${isDark() ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-700'}`}
                   onClick={() => setActiveTab('enter')}
                 >
-                  \u0412\u0432\u0435\u0441\u0442\u0438 \u043a\u043e\u0434
+                  {currentLang() === 'en' ? 'Enter code' : 'Ввести код'}
                 </button>
               </Show>
             </div>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div class="grid grid-cols-3 gap-3 mb-5">
-          <div class="glass rounded-2xl p-3 text-center">
-            <div class="text-xl font-bold text-indigo-600">{myStats().referral_count}</div>
-            <div class="text-xs text-gray-500 mt-0.5">\u041f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u043e</div>
-          </div>
-          <div class="glass rounded-2xl p-3 text-center">
-            <div class="text-xl font-bold text-green-600">{formatBolh(myStats().total_earned)}</div>
-            <div class="text-xs text-gray-500 mt-0.5">BOLH</div>
-          </div>
-          <div class="glass rounded-2xl p-3 text-center">
-            <div class="text-xl font-bold text-amber-600">T{currentTier()}</div>
-            <div class="text-xs text-gray-500 mt-0.5">\u0422\u0438\u0440</div>
-          </div>
-        </div>
-
-        {/* Invited-by badge */}
-        <Show when={invitedBy()}>
-          <div class="glass rounded-2xl p-3 mb-5 flex items-center gap-2 border border-green-200/50 bg-green-50">
-            <span class="text-green-600 text-sm">\u2705</span>
-            <span class="text-xs text-green-700">\u0412\u044b \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u044b: <span class="font-mono text-[10px]">{invitedBy()?.substring(0, 16)}...</span></span>
-          </div>
-        </Show>
-
-        {/* Tabs */}
-        <div class="flex bg-gray-100 rounded-2xl p-1 mb-5">
-          <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'overview' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('overview')}>\u041e\u0431\u0437\u043e\u0440</button>
-          <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'friends' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('friends')}>\u0414\u0440\u0443\u0437\u044c\u044f ({myStats().referral_count})</button>
-          <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'tiers' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('tiers')}>\u0422\u0438\u0440\u044b</button>
-          <Show when={!invitedBy()}>
-            <button class={`flex-1 py-2 rounded-xl text-sm font-medium transition-all ${activeTab() === 'enter' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-500'}`} onClick={() => setActiveTab('enter')}>\u041a\u043e\u0434</button>
+          {/* Invited-by badge */}
+          <Show when={invitedBy()}>
+            <div class={`rounded-2xl p-3 mb-4 flex items-center gap-2 ${isDark() ? 'bg-slate-800/60 border border-slate-700/50' : 'bg-slate-50 border border-slate-200/50'}`}>
+              <Icon name="checkCircle" size="xs" class="text-emerald-600 dark:text-emerald-400" />
+              <span class={`text-xs ${isDark() ? 'text-slate-300' : 'text-slate-600'}`}>{currentLang() === 'en' ? 'Invited by' : 'Вы приглашены'}: <span class="font-mono text-[10px]">{invitedBy()?.substring(0, 16)}...</span></span>
+            </div>
           </Show>
-        </div>
 
-        {/* Enter referral code */}
-        <Show when={activeTab() === 'enter'}>
-          <div class="glass rounded-2xl p-5 mb-4">
-            <h3 class="font-bold text-gray-900 mb-3">\u0412\u0432\u0435\u0441\u0442\u0438 \u0440\u0435\u0444\u0435\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u043a\u043e\u0434</h3>
-            <div class="text-gray-500 text-xs mb-4">\u0415\u0441\u043b\u0438 \u0432\u0430\u0441 \u043f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u043b \u0434\u0440\u0443\u0433, \u0432\u0432\u0435\u0434\u0438\u0442\u0435 \u0435\u0433\u043e \u043a\u043e\u0434. \u0412\u044b \u043e\u0431\u0430 \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u0435 {rewardPerPerson()} BOLH.</div>
-            <div class="flex gap-2">
-              <input
-                type="text"
-                placeholder="BOLH-XXXXXXXX"
-                value={enterCode()}
-                onInput={(e) => setEnterCode(e.currentTarget.value)}
-                class="flex-1 px-4 py-3 rounded-xl bg-gray-100 border-0 outline-none text-gray-800 font-mono text-sm uppercase placeholder:text-gray-400"
-              />
+          {/* Tabs */}
+          <div class={`flex rounded-2xl p-1 mb-4 ${isDark() ? 'bg-gray-800' : 'bg-gray-100'}`}>
+            {([
+              { key: 'overview' as const, label: currentLang() === 'en' ? 'Overview' : 'Обзор' },
+              { key: 'friends' as const, label: currentLang() === 'en' ? 'Friends' : 'Друзья' },
+              { key: 'tiers' as const, label: currentLang() === 'en' ? 'Tiers' : 'Тиры' },
+              ...(!invitedBy() ? [{ key: 'enter' as const, label: currentLang() === 'en' ? 'Code' : 'Код' }] : []),
+            ]).map((tab) => (
               <button
-                class="px-5 py-3 rounded-xl bg-indigo-500 text-white font-bold text-sm active:scale-[0.97] transition-all disabled:opacity-50"
-                onClick={applyReferral}
-                disabled={applyLoading() || !enterCode().trim()}
+                class={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  activeTab() === tab.key
+                    ? (isDark() ? 'bg-gray-700 text-indigo-400 shadow-sm' : 'bg-white text-indigo-600 shadow-sm')
+                    : (isDark() ? 'text-gray-500' : 'text-gray-500')
+                }`}
+                onClick={() => setActiveTab(tab.key)}
               >
-                {applyLoading() ? '...' : '\u041f\u0440\u0438\u043c\u0435\u043d\u0438\u0442\u044c'}
+                {tab.label}
               </button>
-            </div>
-            <Show when={applyStatus()}>
-              <div class="mt-3 text-sm">{applyStatus()}</div>
-            </Show>
-          </div>
-        </Show>
-
-        {/* Overview */}
-        <Show when={activeTab() === 'overview'}>
-          {/* How it works */}
-          <div class="glass rounded-2xl p-5 mb-4">
-            <h3 class="font-bold text-gray-900 mb-4">\u041a\u0430\u043a \u044d\u0442\u043e \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442</h3>
-            <div class="space-y-4">
-              <div class="flex gap-3">
-                <div class="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0"><span class="text-indigo-600 font-bold text-sm">1</span></div>
-                <div><div class="font-semibold text-gray-800 text-sm">\u041f\u043e\u0434\u0435\u043b\u0438\u0441\u044c \u043a\u043e\u0434\u043e\u043c</div><div class="text-gray-500 text-xs">\u041e\u0442\u043f\u0440\u0430\u0432\u044c \u043a\u043e\u0434 \u0438\u043b\u0438 \u0441\u0441\u044b\u043b\u043a\u0443 \u0434\u0440\u0443\u0433\u0443</div></div>
-              </div>
-              <div class="flex gap-3">
-                <div class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"><span class="text-green-600 font-bold text-sm">2</span></div>
-                <div><div class="font-semibold text-gray-800 text-sm">\u0414\u0440\u0443\u0433 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442\u0441\u044f</div><div class="text-gray-500 text-xs">\u0412\u0432\u043e\u0434\u0438\u0442 \u043a\u043e\u0434 \u0432\u043e \u0432\u043a\u043b\u0430\u0434\u043a\u0435 \"\u041a\u043e\u0434\"</div></div>
-              </div>
-              <div class="flex gap-3">
-                <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0"><span class="text-amber-600 font-bold text-sm">3</span></div>
-                <div><div class="font-semibold text-gray-800 text-sm">\u041e\u0431\u0430 \u043f\u043e\u043b\u0443\u0447\u0430\u044e\u0442 \u043d\u0430\u0433\u0440\u0430\u0434\u0443</div><div class="text-gray-500 text-xs">\u041e\u0434\u0438\u043d\u0430\u043a\u043e\u0432\u0430\u044f \u0441\u0443\u043c\u043c\u0430 \u2014 \u0447\u0435\u0441\u0442\u043d\u043e!</div></div>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Fair badge */}
-          <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-4 mb-4 flex items-center gap-3 border border-green-200/50">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
-            </div>
-            <div>
-              <div class="font-bold text-green-800 text-sm">100% \u0447\u0435\u0441\u0442\u043d\u0430\u044f \u043f\u0440\u043e\u0433\u0440\u0430\u043c\u043c\u0430</div>
-              <div class="text-green-600 text-xs">\u0411\u0435\u0437 \u0441\u043a\u0440\u044b\u0442\u044b\u0445 \u043a\u043e\u043c\u0438\u0441\u0441\u0438\u0439. \u0420\u0430\u0432\u043d\u0430\u044f \u043d\u0430\u0433\u0440\u0430\u0434\u0430.</div>
-            </div>
-          </div>
-
-          {/* Pool */}
-          <div class="glass rounded-2xl p-5 mb-4">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-gray-900 text-sm">\u0420\u0435\u0444\u0435\u0440\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0443\u043b</h3>
-              <span class="text-xs text-gray-500">{poolPercent()}%</span>
-            </div>
-            <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-3">
-              <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" style={`width: ${Math.min(parseFloat(poolPercent()), 100)}%`} />
-            </div>
-            <div class="grid grid-cols-2 gap-3 text-center">
-              <div>
-                <div class="text-base font-bold text-gray-900">{formatBolh(poolRemaining())}</div>
-                <div class="text-xs text-gray-500">\u041e\u0441\u0442\u0430\u043b\u043e\u0441\u044c BOLH</div>
+          {/* ═══ Enter referral code ═══ */}
+          <Show when={activeTab() === 'enter'}>
+            <div class={`${cardBg()} rounded-2xl p-5 mb-4`}>
+              <h3 class={`font-bold mb-2 ${txt()}`}>{currentLang() === 'en' ? 'Enter referral code' : 'Ввести реферальный код'}</h3>
+              <p class={`text-xs mb-4 ${txtSub()}`}>
+                {currentLang() === 'en' ? `If a friend invited you, enter their code. You'll both get ${rewardPerPerson()} BOLH.` : `Если вас пригласил друг, введите его код. Вы оба получите ${rewardPerPerson()} BOLH.`}
+              </p>
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="BOLH-XXXXXXXX"
+                  value={enterCode()}
+                  onInput={(e) => setEnterCode(e.currentTarget.value)}
+                  class={`flex-1 px-4 py-3 rounded-xl border-0 outline-none font-mono text-sm uppercase ${inputBg()}`}
+                />
+                <button
+                  class="px-5 py-3 rounded-xl bg-indigo-500 text-white font-bold text-sm active:scale-[0.97] transition-all disabled:opacity-50"
+                  onClick={applyReferral}
+                  disabled={applyLoading() || !enterCode().trim()}
+                >
+                  {applyLoading() ? '...' : (currentLang() === 'en' ? 'Apply' : 'Применить')}
+                </button>
               </div>
-              <div>
-                <div class="text-base font-bold text-gray-900">{programStats()?.total_referrals?.toLocaleString() || '0'}</div>
-                <div class="text-xs text-gray-500">\u0420\u0435\u0444\u0435\u0440\u0430\u043b\u043e\u0432</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Current tier */}
-          <div class="glass rounded-2xl p-5">
-            <div class="flex items-center justify-between mb-2">
-              <h3 class="font-bold text-gray-900 text-sm">\u0422\u0435\u043a\u0443\u0449\u0438\u0439 \u0442\u0438\u0440</h3>
-              <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">{tiersList[currentTier() - 1]?.emoji} Tier {currentTier()}</span>
-            </div>
-            <div class="text-gray-500 text-xs mb-3">\u041d\u0430\u0433\u0440\u0430\u0434\u0430: <span class="font-bold text-indigo-600">{rewardPerPerson()} BOLH</span> \u043a\u0430\u0436\u0434\u043e\u043c\u0443</div>
-            <div class="flex items-center gap-2">
-              <div class="text-xs text-gray-400">{totalUsers()}</div>
-              <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-500" style={`width: ${Math.min(((totalUsers() - tierMin()) / (tierMax() - tierMin())) * 100, 100)}%`} />
-              </div>
-              <div class="text-xs text-gray-400">{tierMax().toLocaleString()}</div>
-            </div>
-            <div class="text-xs text-gray-400 text-center mt-1">\u0415\u0449\u0451 {Math.max(tierMax() - totalUsers(), 0).toLocaleString()} \u0434\u043e Tier {Math.min(currentTier() + 1, 4)}</div>
-          </div>
-
-          {/* Top referrers */}
-          <Show when={(programStats()?.top_referrers?.length || 0) > 0}>
-            <div class="glass rounded-2xl p-5 mt-4">
-              <h3 class="font-bold text-gray-900 text-sm mb-3">\u0422\u043e\u043f \u043f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u0432\u0448\u0438\u0445</h3>
-              <For each={programStats()?.top_referrers || []}>
-                {(r: any, i) => (
-                  <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">{i() + 1}</div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-xs font-mono text-gray-600 truncate">{r.code}</div>
-                    </div>
-                    <div class="text-right">
-                      <div class="text-sm font-bold text-indigo-600">{r.referral_count}</div>
-                      <div class="text-[10px] text-gray-400">{formatBolh(r.total_earned)} BOLH</div>
-                    </div>
-                  </div>
-                )}
-              </For>
+              <Show when={applyStatus()}>
+                <div class={`mt-3 text-sm ${txt()}`}>{applyStatus()}</div>
+              </Show>
             </div>
           </Show>
-        </Show>
 
-        {/* Friends */}
-        <Show when={activeTab() === 'friends'}>
-          <Show when={referralHistory().length > 0} fallback={
-            <div class="glass rounded-2xl p-8 text-center">
-              <div class="text-4xl mb-3">{'\u{1F465}'}</div>
-              <div class="text-gray-800 font-semibold mb-1">\u041f\u043e\u043a\u0430 \u043d\u0438\u043a\u043e\u0433\u043e</div>
-              <div class="text-gray-500 text-xs mb-4">\u041f\u043e\u0434\u0435\u043b\u0438\u0442\u0435\u0441\u044c \u043a\u043e\u0434\u043e\u043c \u0441 \u0434\u0440\u0443\u0437\u044c\u044f\u043c\u0438!</div>
-              <button class="px-5 py-2.5 rounded-xl bg-indigo-500 text-white font-bold text-sm touch-scale" onClick={shareLink}>\u041f\u043e\u0434\u0435\u043b\u0438\u0442\u044c\u0441\u044f \u043a\u043e\u0434\u043e\u043c</button>
-            </div>
-          }>
-            <div class="glass rounded-2xl overflow-hidden">
-              <div class="px-4 py-3 flex items-center justify-between border-b border-gray-100">
-                <span class="text-gray-800 font-semibold text-sm">\u041f\u0440\u0438\u0433\u043b\u0430\u0448\u0451\u043d\u043d\u044b\u0435 \u0434\u0440\u0443\u0437\u044c\u044f</span>
-                <span class="text-xs text-gray-500">{referralHistory().length}</span>
-              </div>
-              <For each={referralHistory()}>
-                {(f: any) => (
-                  <div class="px-4 py-3 border-b border-gray-50 last:border-0 flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0">
-                      <span class="text-white font-bold text-xs">T{f.tier}</span>
+          {/* ═══ Overview ═══ */}
+          <Show when={activeTab() === 'overview'}>
+            {/* How it works */}
+            <div class={`${cardBg()} rounded-2xl p-5 mb-4`}>
+              <h3 class={`font-bold mb-4 ${txt()}`}>{currentLang() === 'en' ? 'How it works' : 'Как это работает'}</h3>
+              <div class="space-y-4">
+                {[
+                  { n: '1', bg: 'bg-indigo-100 dark:bg-indigo-900/40', tc: 'text-indigo-600', title: currentLang() === 'en' ? 'Share your code' : 'Поделись кодом', desc: currentLang() === 'en' ? 'Send your code or link to a friend' : 'Отправь код или ссылку другу' },
+                  { n: '2', bg: 'bg-green-100 dark:bg-green-900/40', tc: 'text-green-600', title: currentLang() === 'en' ? 'Friend signs up' : 'Друг регистрируется', desc: currentLang() === 'en' ? 'Enters your code in the "Code" tab' : 'Вводит код во вкладке "Код"' },
+                  { n: '3', bg: 'bg-amber-100 dark:bg-amber-900/40', tc: 'text-amber-600', title: currentLang() === 'en' ? 'Both get rewarded' : 'Оба получают награду', desc: currentLang() === 'en' ? 'Equal reward — fair!' : 'Одинаковая сумма — честно!' },
+                ].map((step) => (
+                  <div class="flex gap-3">
+                    <div class={`w-9 h-9 rounded-full ${step.bg} flex items-center justify-center flex-shrink-0`}>
+                      <span class={`${step.tc} font-bold text-sm`}>{step.n}</span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                      <div class="text-sm font-medium text-gray-800 truncate font-mono">{f.invitee?.substring(0, 16)}...</div>
-                      <div class="text-xs text-gray-400">{new Date(f.timestamp).toLocaleDateString('ru-RU')}</div>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                      <div class="text-sm font-bold text-green-600">+{formatBolh(f.reward)}</div>
-                      <div class="text-xs text-green-500">{'\u2713'} \u041d\u0430\u0447\u0438\u0441\u043b\u0435\u043d\u043e</div>
+                    <div>
+                      <div class={`font-semibold text-sm ${txt()}`}>{step.title}</div>
+                      <div class={`text-xs ${txtSub()}`}>{step.desc}</div>
                     </div>
                   </div>
-                )}
-              </For>
+                ))}
+              </div>
             </div>
-          </Show>
-          <button class="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale" onClick={shareLink}>
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-            \u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438\u0442\u044c \u0435\u0449\u0451
-          </button>
-        </Show>
 
-        {/* Tiers */}
-        <Show when={activeTab() === 'tiers'}>
-          <div class="space-y-3">
-            <For each={tiersList}>
-              {(tier) => (
-                <div class={`rounded-2xl overflow-hidden shadow-sm ${tier.id === currentTier() ? 'ring-2 ring-indigo-500 ring-offset-2' : ''}`}>
-                  <div class={`bg-gradient-to-r ${tier.color} p-4`}>
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-3">
-                        <span class="text-2xl">{tier.emoji}</span>
-                        <div>
-                          <div class="text-white font-bold text-lg">{tier.label}</div>
-                          <div class="text-white/80 text-xs">{tier.range}</div>
-                        </div>
+            {/* Fair badge */}
+            <div class={`rounded-2xl p-4 mb-4 flex items-center gap-3 ${isDark() ? 'bg-green-900/20 border border-green-700/30' : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/50'}`}>
+              <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                <Icon name="shield" class="text-white" size="sm" />
+              </div>
+              <div>
+                <div class={`font-bold text-sm ${isDark() ? 'text-green-300' : 'text-green-800'}`}>100% {currentLang() === 'en' ? 'fair program' : 'честная программа'}</div>
+                <div class={`text-xs ${isDark() ? 'text-green-400' : 'text-green-600'}`}>{currentLang() === 'en' ? 'No hidden fees. Equal reward.' : 'Без скрытых комиссий. Равная награда.'}</div>
+              </div>
+            </div>
+
+            {/* Referral Pool */}
+            <div class={`${cardBg()} rounded-2xl p-5 mb-4`}>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class={`font-bold text-sm ${txt()}`}>{currentLang() === 'en' ? 'Referral Pool' : 'Реферальный пул'}</h3>
+                <span class={`text-xs ${txtSub()}`}>{poolPercent()}%</span>
+              </div>
+              <div class={`w-full h-3 rounded-full overflow-hidden mb-3 ${isDark() ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all" style={`width: ${Math.min(parseFloat(poolPercent()), 100)}%`} />
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-center">
+                <div>
+                  <div class={`text-base font-bold ${txt()}`}>{formatBolh(poolRemaining())}</div>
+                  <div class={`text-xs ${txtSub()}`}>{currentLang() === 'en' ? 'Remaining BOLH' : 'Осталось BOLH'}</div>
+                </div>
+                <div>
+                  <div class={`text-base font-bold ${txt()}`}>{programStats()?.total_referrals?.toLocaleString() || '0'}</div>
+                  <div class={`text-xs ${txtSub()}`}>{currentLang() === 'en' ? 'Referrals' : 'Рефералов'}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Current tier progress */}
+            <div class={`${cardBg()} rounded-2xl p-5`}>
+              <div class="flex items-center justify-between mb-2">
+                <h3 class={`font-bold text-sm ${txt()}`}>{currentLang() === 'en' ? 'Current tier' : 'Текущий тир'}</h3>
+                <span class={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 ${isDark() ? 'bg-slate-800/60 text-slate-300' : 'bg-slate-100 text-slate-600'}`}><Icon name={tiersList[currentTier() - 1]?.icon ?? 'trophy'} size="xs" /> Tier {currentTier()}</span>
+              </div>
+              <p class={`text-xs mb-3 ${txtSub()}`}>{currentLang() === 'en' ? 'Reward' : 'Награда'}: <span class="font-bold text-indigo-500">{rewardPerPerson()} BOLH</span> {currentLang() === 'en' ? 'each' : 'каждому'}</p>
+              <div class="flex items-center gap-2">
+                <div class={`text-xs ${txtMuted()}`}>{totalUsers()}</div>
+                <div class={`flex-1 h-2 rounded-full overflow-hidden ${isDark() ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <div class="h-full rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 transition-all" style={`width: ${Math.min(((totalUsers() - tierMin()) / (tierMax() - tierMin())) * 100, 100)}%`} />
+                </div>
+                <div class={`text-xs ${txtMuted()}`}>{tierMax().toLocaleString()}</div>
+              </div>
+              <p class={`text-xs text-center mt-1.5 ${txtMuted()}`}>{currentLang() === 'en' ? 'More' : 'Ещё'} {Math.max(tierMax() - totalUsers(), 0).toLocaleString()} {currentLang() === 'en' ? 'to' : 'до'} Tier {Math.min(currentTier() + 1, 4)}</p>
+            </div>
+
+            {/* Top referrers */}
+            <Show when={(programStats()?.top_referrers?.length || 0) > 0}>
+              <div class={`${cardBg()} rounded-2xl p-5 mt-4`}>
+                <h3 class={`font-bold text-sm mb-3 ${txt()}`}>{currentLang() === 'en' ? 'Top inviters' : 'Топ пригласивших'}</h3>
+                <For each={programStats()?.top_referrers || []}>
+                  {(r: any, i) => (
+                    <div class={`flex items-center gap-3 py-2 border-b last:border-0 ${isDark() ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">{i() + 1}</div>
+                      <div class="flex-1 min-w-0">
+                        <div class={`text-xs font-mono truncate ${isDark() ? 'text-gray-300' : 'text-gray-600'}`}>{r.code}</div>
                       </div>
                       <div class="text-right">
-                        <div class="text-white font-bold text-xl">{tier.reward}</div>
-                        <div class="text-white/70 text-xs">BOLH \u043a\u0430\u0436\u0434\u043e\u043c\u0443</div>
+                        <div class="text-sm font-bold text-indigo-500">{r.referral_count}</div>
+                        <div class={`text-[10px] ${txtMuted()}`}>{formatBolh(r.total_earned)} BOLH</div>
                       </div>
                     </div>
-                    <Show when={tier.id === currentTier()}>
-                      <div class="mt-3 bg-white/20 rounded-xl px-3 py-1.5 text-center">
-                        <span class="text-white text-xs font-bold">{'\u{1F4CD}'} \u0412\u0430\u0448 \u0442\u0435\u043a\u0443\u0449\u0438\u0439 \u0442\u0438\u0440</span>
-                      </div>
-                    </Show>
-                  </div>
-                </div>
-              )}
-            </For>
-          </div>
+                  )}
+                </For>
+              </div>
+            </Show>
+          </Show>
 
-          {/* Rules */}
-          <div class="glass rounded-2xl p-5 mt-4">
-            <h3 class="font-bold text-gray-900 mb-3 text-sm">\u041f\u0440\u0430\u0432\u0438\u043b\u0430</h3>
-            <div class="space-y-2">
-              {[
-                '\u041e\u0431\u0430 \u043f\u043e\u043b\u0443\u0447\u0430\u044e\u0442 \u043e\u0434\u0438\u043d\u0430\u043a\u043e\u0432\u0443\u044e \u043d\u0430\u0433\u0440\u0430\u0434\u0443',
-                '\u0411\u0435\u0437 \u0441\u043a\u0440\u044b\u0442\u044b\u0445 \u043a\u043e\u043c\u0438\u0441\u0441\u0438\u0439',
-                '\u041e\u0434\u0438\u043d \u0430\u043a\u043a\u0430\u0443\u043d\u0442 = \u043e\u0434\u043d\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u0435',
-                '\u041c\u0430\u043a\u0441. 50 \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u0439 \u0432 \u0434\u0435\u043d\u044c',
-                '\u041f\u0443\u043b: 2 \u043c\u043b\u0440\u0434 BOLH',
-                '\u0420\u0430\u043d\u043d\u0438\u0435 \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438 \u043f\u043e\u043b\u0443\u0447\u0430\u044e\u0442 \u0431\u043e\u043b\u044c\u0448\u0435',
-              ].map((rule) => (
-                <div class="flex items-center gap-2">
-                  <div class="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                    <svg class="w-2.5 h-2.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-                  </div>
-                  <span class="text-xs text-gray-600">{rule}</span>
+          {/* ═══ Friends ═══ */}
+          <Show when={activeTab() === 'friends'}>
+            <Show when={referralHistory().length > 0} fallback={
+              <div class={`${cardBg()} rounded-2xl p-8 text-center`}>
+                <div class="flex justify-center mb-3"><Icon name="users" size="xl" class={isDark() ? 'text-gray-500' : 'text-gray-400'} /></div>
+                <div class={`font-semibold mb-1 ${txt()}`}>{currentLang() === 'en' ? 'No one yet' : 'Пока никого'}</div>
+                <div class={`text-xs mb-4 ${txtSub()}`}>{currentLang() === 'en' ? 'Share your code with friends!' : 'Поделитесь кодом с друзьями!'}</div>
+                <button class="px-5 py-2.5 rounded-xl bg-indigo-500 text-white font-bold text-sm touch-scale" onClick={shareLink}>
+                  {currentLang() === 'en' ? 'Share code' : 'Поделиться кодом'}
+                </button>
+              </div>
+            }>
+              <div class={`${cardBg()} rounded-2xl overflow-hidden`}>
+                <div class={`px-4 py-3 flex items-center justify-between border-b ${isDark() ? 'border-gray-700/50' : 'border-gray-100'}`}>
+                  <span class={`font-semibold text-sm ${txt()}`}>{currentLang() === 'en' ? 'Invited friends' : 'Приглашённые друзья'}</span>
+                  <span class={`text-xs ${txtSub()}`}>{referralHistory().length}</span>
                 </div>
-              ))}
+                <For each={referralHistory()}>
+                  {(f: any) => (
+                    <div class={`px-4 py-3 border-b last:border-0 flex items-center gap-3 ${isDark() ? 'border-gray-700/30' : 'border-gray-50'}`}>
+                      <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center flex-shrink-0">
+                        <span class="text-white font-bold text-xs">T{f.tier}</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class={`text-sm font-medium truncate font-mono ${isDark() ? 'text-gray-200' : 'text-gray-800'}`}>{f.invitee?.substring(0, 16)}...</div>
+                        <div class={`text-xs ${txtMuted()}`}>{new Date(f.timestamp).toLocaleDateString('ru-RU')}</div>
+                      </div>
+                      <div class="text-right flex-shrink-0">
+                        <div class="text-sm font-bold text-green-500">+{formatBolh(f.reward)}</div>
+                        <div class="text-xs text-green-500">✓</div>
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
+            <button class="w-full mt-4 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg touch-scale" onClick={shareLink}>
+              <Icon name="plus" class="text-white" size="sm" />
+              {currentLang() === 'en' ? 'Invite more' : 'Пригласить ещё'}
+            </button>
+          </Show>
+
+          {/* ═══ Tiers ═══ */}
+          <Show when={activeTab() === 'tiers'}>
+            <div class="space-y-3">
+              <For each={tiersList}>
+                {(tier) => (
+                  <div class={`rounded-2xl overflow-hidden ${tier.id === currentTier() ? (isDark() ? 'ring-2 ring-indigo-400 ring-offset-2 ring-offset-gray-900' : 'ring-2 ring-indigo-500 ring-offset-2') : 'shadow-sm'}`}>
+                    <div class={`bg-gradient-to-r ${tier.color} p-4`}>
+                      <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center"><Icon name={tier.icon} size="sm" class="text-white" /></div>
+                          <div>
+                            <div class="text-white font-bold text-lg">{tier.label}</div>
+                            <div class="text-white/80 text-xs">{tier.range}</div>
+                          </div>
+                        </div>
+                        <div class="text-right">
+                          <div class="text-white font-bold text-xl">{tier.reward}</div>
+                          <div class="text-white/70 text-xs">BOLH {currentLang() === 'en' ? 'each' : 'каждому'}</div>
+                        </div>
+                      </div>
+                      <Show when={tier.id === currentTier()}>
+                        <div class="mt-3 bg-white/20 rounded-xl px-3 py-1.5 text-center">
+                          <span class="text-white text-xs font-bold flex items-center gap-1"><Icon name="location" size="xs" class="text-white" /> {currentLang() === 'en' ? 'Your current tier' : 'Ваш текущий тир'}</span>
+                        </div>
+                      </Show>
+                    </div>
+                  </div>
+                )}
+              </For>
             </div>
-          </div>
+
+            {/* Rules */}
+            <div class={`${cardBg()} rounded-2xl p-5 mt-4`}>
+              <h3 class={`font-bold mb-3 text-sm ${txt()}`}>{currentLang() === 'en' ? 'Rules' : 'Правила'}</h3>
+              <div class="space-y-2.5">
+                {(currentLang() === 'en' ? [
+                  'Both get equal reward',
+                  'No hidden fees',
+                  'One account = one invitation',
+                  'Max 50 invites per day',
+                  'Pool: 2 billion BOLH',
+                  'Early users get more',
+                ] : [
+                  'Оба получают одинаковую награду',
+                  'Без скрытых комиссий',
+                  'Один аккаунт = одно приглашение',
+                  'Макс. 50 приглашений в день',
+                  'Пул: 2 млрд BOLH',
+                  'Ранние участники получают больше',
+                ]).map((rule) => (
+                  <div class="flex items-center gap-2.5">
+                    <div class={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${isDark() ? 'bg-green-900/40' : 'bg-green-100'}`}>
+                      <Icon name="check" class="text-emerald-600 dark:text-emerald-400 w-3 h-3" />
+                    </div>
+                    <span class={`text-xs ${isDark() ? 'text-gray-300' : 'text-gray-600'}`}>{rule}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Show>
         </Show>
-      </Show>
+      </div>
     </div>
   );
 }
@@ -10273,7 +10380,7 @@ function PaymentsPage(props: { onBack: () => void }) {
                 <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">{t('payments.current')}</span>
               </Show>
             </div>
-            <div class="space-y-1"><For each={plan.features}>{(f) => (<div class="flex items-center gap-2 text-sm text-gray-600"><Icon name="check" size="xs" class="text-green-500" /><span>{t('payments.feat.' + f)}</span></div>)}</For></div>
+            <div class="space-y-1"><For each={plan.features}>{(f) => (<div class="flex items-center gap-2 text-sm text-gray-600"><Icon name="check" size="xs" class="text-emerald-600 dark:text-emerald-400" /><span>{t('payments.feat.' + f)}</span></div>)}</For></div>
           </div>
         )}</For>
       </div>
@@ -10316,13 +10423,13 @@ function AchievementsPage(props: { onBack: () => void }) {
       <div class="grid grid-cols-3 gap-3 mb-5">
         <div class="glass rounded-2xl p-3 text-center"><p class="text-2xl font-bold text-indigo-600">{achs.filter(a=>a.unlocked).length}</p><p class="text-xs text-gray-500">{t('achievements.unlocked')}</p></div>
         <div class="glass rounded-2xl p-3 text-center"><p class="text-2xl font-bold text-gray-600">{achs.length - achs.filter(a=>a.unlocked).length}</p><p class="text-xs text-gray-500">{t('achievements.locked')}</p></div>
-        <div class="glass rounded-2xl p-3 text-center"><p class="text-2xl font-bold text-purple-600">{totalPts}</p><p class="text-xs text-gray-500">{t('achievements.points')}</p></div>
+        <div class="glass rounded-2xl p-3 text-center"><p class="text-2xl font-bold text-slate-600 dark:text-slate-300">{totalPts}</p><p class="text-xs text-gray-500">{t('achievements.points')}</p></div>
       </div>
       <div class="space-y-3"><For each={achs}>{(a) => (
         <div class={`glass rounded-2xl p-4 flex items-center gap-4 ${a.unlocked ? '' : 'opacity-60'}`}>
           <div class={`w-14 h-14 rounded-xl bg-gradient-to-br ${rc[a.rarity]} flex items-center justify-center shadow-lg`}><Icon name={a.icon} size="lg" class="text-white" /></div>
           <div class="flex-1">
-            <div class="flex items-center gap-2"><p class="font-semibold text-gray-800">{t(a.titleKey)}</p><Show when={a.unlocked}><Icon name="check" size="xs" class="text-green-500" /></Show></div>
+            <div class="flex items-center gap-2"><p class="font-semibold text-gray-800">{t(a.titleKey)}</p><Show when={a.unlocked}><Icon name="check" size="xs" class="text-emerald-600 dark:text-emerald-400" /></Show></div>
             <p class="text-sm text-gray-500">{t(a.descKey)}</p>
             <Show when={!a.unlocked && a.progress > 0}><div class="mt-2"><div class="h-1.5 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-indigo-500 rounded-full" style={`width:${(a.progress/a.max)*100}%`} /></div><p class="text-xs text-gray-400 mt-1">{a.progress}/{a.max}</p></div></Show>
           </div>
@@ -10346,10 +10453,10 @@ function AnalyticsPage(props: { onBack: () => void }) {
         <p class="text-sm opacity-80">{t('analytics.totalEarnings')}</p><p class="text-3xl font-bold">{stats.totalEarnings.toLocaleString()} ₸</p><p class="text-sm opacity-80 mt-1">+{stats.thisMonth.toLocaleString()} ₸ {t('analytics.thisMonth')}</p>
       </div>
       <div class="grid grid-cols-2 gap-3 mb-5">
-        <div class="glass rounded-2xl p-4 text-center"><Icon name="shield" class="text-blue-500 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.completed}</p><p class="text-xs text-gray-500">{t('analytics.completedOrders')}</p></div>
+        <div class="glass rounded-2xl p-4 text-center"><Icon name="shield" class="text-slate-500 dark:text-slate-400 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.completed}</p><p class="text-xs text-gray-500">{t('analytics.completedOrders')}</p></div>
         <div class="glass rounded-2xl p-4 text-center"><Icon name="star" class="text-amber-500 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.rating}</p><p class="text-xs text-gray-500">{stats.reviews} {t('analytics.reviews')}</p></div>
-        <div class="glass rounded-2xl p-4 text-center"><Icon name="check" class="text-green-500 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.completionRate}%</p><p class="text-xs text-gray-500">{t('analytics.completionRate')}</p></div>
-        <div class="glass rounded-2xl p-4 text-center"><Icon name="clock" class="text-purple-500 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.onTimeRate}%</p><p class="text-xs text-gray-500">{t('analytics.onTimeRate')}</p></div>
+        <div class="glass rounded-2xl p-4 text-center"><Icon name="check" class="text-emerald-600 dark:text-emerald-400 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.completionRate}%</p><p class="text-xs text-gray-500">{t('analytics.completionRate')}</p></div>
+        <div class="glass rounded-2xl p-4 text-center"><Icon name="clock" class="text-slate-500 dark:text-slate-400 mx-auto mb-2" /><p class="text-2xl font-bold">{stats.onTimeRate}%</p><p class="text-xs text-gray-500">{t('analytics.onTimeRate')}</p></div>
       </div>
       <div class="glass rounded-2xl p-4 mb-5">
         <p class="font-semibold text-gray-800 mb-3">{t('analytics.thisWeek')}</p>
@@ -10358,7 +10465,7 @@ function AnalyticsPage(props: { onBack: () => void }) {
       </div>
       <div class="glass rounded-2xl overflow-hidden">
         <p class="px-4 py-3 font-semibold text-gray-800">{t('analytics.recentOrders')}</p>
-        <For each={recent}>{(o)=>(<div class="flex items-center justify-between px-4 py-3 border-t border-gray-100"><div><p class="font-medium text-gray-800">{o.svc}</p><p class="text-xs text-gray-500">{o.date}</p></div><div class="text-right"><p class="font-semibold text-green-600">+{o.earn.toLocaleString()} ₸</p><div class="flex items-center gap-1 justify-end"><Icon name="star" size="xs" class="text-amber-400"/><span class="text-xs text-gray-500">{o.r}</span></div></div></div>)}</For>
+        <For each={recent}>{(o)=>(<div class="flex items-center justify-between px-4 py-3 border-t border-gray-100"><div><p class="font-medium text-gray-800">{o.svc}</p><p class="text-xs text-gray-500">{o.date}</p></div><div class="text-right"><p class="font-semibold text-emerald-600 dark:text-emerald-400">+{o.earn.toLocaleString()} ₸</p><div class="flex items-center gap-1 justify-end"><Icon name="star" size="xs" class="text-amber-400"/><span class="text-xs text-gray-500">{o.r}</span></div></div></div>)}</For>
       </div>
     </div>
   );
