@@ -1085,8 +1085,8 @@ impl ChainState {
         let per_requester_key = format!("__reveal_req__:{requester_hash}");
 
         self.bump_reveal_rate_limit_key(global_key, now, self.config.reveal_rate_limit_per_minute)?;
-        // Per requester gets half of global capacity, but not less than 1.
-        let per_requester_limit = (self.config.reveal_rate_limit_per_minute / 2).max(1);
+        // Per requester limit mirrors the global limit to keep policy predictable.
+        let per_requester_limit = self.config.reveal_rate_limit_per_minute.max(1);
         self.bump_reveal_rate_limit_key(&per_requester_key, now, per_requester_limit)?;
         Ok(())
     }
