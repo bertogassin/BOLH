@@ -142,6 +142,125 @@ export interface Transaction {
   metadata: Record<string, unknown>;
 }
 
+export type PrivacyMode = "transparent" | "shielded" | "viewable";
+export type SignatureScheme = "hybrid_qr_v1" | "legacy_compat";
+
+export interface PrivacyOptions {
+  mode?: PrivacyMode;
+  revealKey?: string;
+  priority?: 0 | 1 | 2 | 3;
+  fast?: boolean;
+  signatureScheme?: SignatureScheme;
+}
+
+export interface FeePreview {
+  estimated_fee: number;
+  tier: "ultra_cheap" | "cheap" | "normal";
+  details: {
+    base: number;
+    io: number;
+    amount_component: number;
+    congestion_multiplier: number;
+  };
+}
+
+export interface RevealResult {
+  txid: string;
+  revealed: boolean;
+  mode: PrivacyMode;
+  commitment: string;
+  outputs: Array<{ address: string; amount: number }>;
+  fee: number;
+  status: string;
+  timestamp: number;
+  total_output: number;
+}
+
+export function buildQuantumPrivateTransaction(
+  tx: Transaction,
+  options: PrivacyOptions = {}
+): Transaction {
+  const mode = options.mode ?? "transparent";
+  const metadata: Record<string, unknown> = {
+    ...(tx.metadata ?? {}),
+    sig_scheme: options.signatureScheme ?? "hybrid_qr_v1",
+    privacy_mode: mode,
+    priority: options.priority ?? 1,
+    fast: options.fast ?? true,
+  };
+
+  if (mode === "viewable") {
+    if (!options.revealKey) {
+      throw new Error(
+        "buildQuantumPrivateTransaction: revealKey is required for viewable mode"
+      );
+    }
+    metadata.reveal_key = options.revealKey;
+  }
+
+  return {
+    ...tx,
+    metadata,
+  };
+}
+
+/**
+ * Client-side adaptive fee preview.
+ * The authoritative fee check is performed by Rust core.
+ */
+export function estimateAdaptiveFee(
+  tx: Transaction,
+  mempoolSizeHint: number = 0
+): FeePreview {
+  const outputTotal = tx.outputs.reduce((sum, out) => sum + Number(out.amount || 0), 0);
+  const base = 400;
+  const io = tx.inputs.length * 120 + tx.outputs.length * 80;
+  const amountComponent = Math.floor(outputTotal * 0.00015);
+  const congestionMultiplier =
+    mempoolSizeHint < 7000 ? 0.85 : mempoolSizeHint < 14000 ? 1.0 : 1.2;
+  const estimated = Math.max(
+    1,
+    Math.floor((base + io + amountComponent) * congestionMultiplier)
+  );
+  const tier: FeePreview["tier"] =
+    estimated < 1000 ? "ultra_cheap" : estimated < 3000 ? "cheap" : "normal";
+
+  return {
+    estimated_fee: estimated,
+    tier,
+    details: {
+      base,
+      io,
+      amount_component: amountComponent,
+      congestion_multiplier: congestionMultiplier,
+    },
+  };
+}
+
+export async function signAndSubmitQuantumTx(
+  tx: Transaction,
+  options: PrivacyOptions = {}
+): Promise<Record<string, unknown>> {
+  const prepared = buildQuantumPrivateTransaction(tx, options);
+  const signed = await signTransaction(JSON.stringify(prepared));
+  const submitResult = await submitTransaction(signed);
+  return parseOrThrow<Record<string, unknown>>(submitResult, "signAndSubmitQuantumTx");
+}
+
+/**
+ * Reveal a viewable private transaction.
+ * Transport is routed via bolh_get_utxos with special reveal prefix.
+ */
+export async function revealPrivateTransaction(
+  txid: string,
+  revealKey: string
+): Promise<RevealResult> {
+  const payload = await invoke<string>("bolh_get_utxos", {
+    addr: `reveal:${txid}:${revealKey}`,
+  });
+  return parseOrThrow<RevealResult>(payload, "revealPrivateTransaction");
+}
+
 export async function validateAndProcessTx(tx: Transaction): Promise<void> {
   const txJson = JSON.stringify(tx);
   const response = await invoke<string>("bolh_validate_and_process_tx", {
@@ -344,6 +463,12 @@ export function createBlockchainApi() {
       getAll: getUTXOs,
       validateAndProcess: validateAndProcessTx,
       persist: persistUTXOSet,
+      revealPrivate: revealPrivateTransaction,
+    },
+    tx: {
+      buildQuantumPrivate: buildQuantumPrivateTransaction,
+      estimateAdaptiveFee,
+      signAndSubmitQuantumTx,
     },
     consensus: {
       proposeBlock,

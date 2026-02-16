@@ -15,7 +15,7 @@ use std::path::PathBuf;
 use std::sync::{OnceLock, RwLock};
 use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
-const VERSION: &str = "0.2.0";
+const VERSION: &str = "0.3.0";
 const NETWORK: &str = "main";
 const CHAIN_ID: u64 = 0xB01A;
 
@@ -28,10 +28,101 @@ const MAX_TX_OUTPUTS: usize = 128;
 const MAX_TXS_PER_BLOCK: usize = 50_000;
 const MAX_TXS_PER_MINUTE: usize = 30;
 const MAX_TX_AMOUNT: u64 = 1_000_000_000_000_000;
+const MAX_PRIVATE_PAYLOAD_BYTES: usize = 4096;
 
 const BOOTSTRAP_VALIDATOR_POWER: u64 = 100;
 const DEFAULT_GENESIS_ALLOCATION: u64 = 100_000_000_000;
 const DEFAULT_WALLET_FAUCET: u64 = 100_000_000_000;
+const DEFAULT_TX_PRIORITY: u8 = 1;
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+enum SignatureScheme {
+    HybridQrV1,
+    LegacyCompat,
+}
+
+impl SignatureScheme {
+    fn as_str(self) -> &'static str {
+        match self {
+            SignatureScheme::HybridQrV1 => "hybrid_qr_v1",
+            SignatureScheme::LegacyCompat => "legacy_compat",
+        }
+    }
+
+    fn from_metadata(meta: &Value) -> Self {
+        match meta.get("sig_scheme").and_then(Value::as_str) {
+            Some("legacy_compat") => SignatureScheme::LegacyCompat,
+            _ => SignatureScheme::HybridQrV1,
+        }
+    }
+
+    fn requires_quantum_prefix(self) -> bool {
+        matches!(self, SignatureScheme::HybridQrV1)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+enum PrivacyMode {
+    Transparent,
+    Shielded,
+    Viewable,
+}
+
+impl PrivacyMode {
+    fn as_str(self) -> &'static str {
+        match self {
+            PrivacyMode::Transparent => "transparent",
+            PrivacyMode::Shielded => "shielded",
+            PrivacyMode::Viewable => "viewable",
+        }
+    }
+
+    fn from_metadata(meta: &Value) -> Self {
+        match meta.get("privacy_mode").and_then(Value::as_str) {
+            Some("shielded") => PrivacyMode::Shielded,
+            Some("viewable") => PrivacyMode::Viewable,
+            _ => PrivacyMode::Transparent,
+        }
+    }
+
+    fn is_private(self) -> bool {
+        !matches!(self, PrivacyMode::Transparent)
+    }
+}
+
+/// Runtime policy configuration for decoupled blockchain architecture.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ChainConfig {
+    base_fee: u64,
+    fee_per_input: u64,
+    fee_per_output: u64,
+    amount_fee_ppm: u64,
+    low_congestion_multiplier_bps: u64,
+    medium_congestion_multiplier_bps: u64,
+    high_congestion_multiplier_bps: u64,
+    instant_settlement_mempool_limit: usize,
+    min_quantum_sig_len: usize,
+    max_private_payload_bytes: usize,
+}
+
+impl Default for ChainConfig {
+    fn default() -> Self {
+        Self {
+            base_fee: 400,
+            fee_per_input: 120,
+            fee_per_output: 80,
+            amount_fee_ppm: 150,                    // 0.015%
+            low_congestion_multiplier_bps: 850,     // 0.85x
+            medium_congestion_multiplier_bps: 1000, // 1.0x
+            high_congestion_multiplier_bps: 1200,   // 1.2x
+            instant_settlement_mempool_limit: 2_000,
+            min_quantum_sig_len: 20,
+            max_private_payload_bytes: MAX_PRIVATE_PAYLOAD_BYTES,
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct WalletRecord {
@@ -111,6 +202,18 @@ struct FinalizedBlockRecord {
     no_votes: usize,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct PrivateTxRecord {
+    txid: String,
+    privacy_mode: String,
+    commitment: String,
+    reveal_hash: Option<String>,
+    created_at: i64,
+    from_hint: String,
+    output_count: usize,
+    amount_masked: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct MetricsState {
     tx_processed: u64,
@@ -141,7 +244,13 @@ struct PersistedState {
     validators: Vec<ValidatorRecord>,
     tx_history: Vec<TxRecord>,
     processed_txids: Vec<String>,
+    #[serde(default)]
+    used_signatures: Vec<String>,
+    #[serde(default)]
+    private_txs: Vec<PrivateTxRecord>,
     metrics: MetricsState,
+    #[serde(default)]
+    config: ChainConfig,
     tx_seq: u64,
     block_seq: u64,
 }
@@ -153,8 +262,11 @@ struct ChainState {
     round: u64,
     wallets: BTreeMap<String, WalletRecord>,
     wallet_by_address: HashMap<String, String>,
+    config: ChainConfig,
     utxos: Vec<UtxoRecord>,
     processed_txids: HashSet<String>,
+    used_signatures: HashSet<String>,
+    private_txs: BTreeMap<String, PrivateTxRecord>,
     mempool: BTreeMap<String, TxRecord>,
     tx_history: VecDeque<TxRecord>,
     validators: BTreeMap<String, ValidatorRecord>,
@@ -176,8 +288,11 @@ impl ChainState {
             round: 0,
             wallets: BTreeMap::new(),
             wallet_by_address: HashMap::new(),
+            config: ChainConfig::default(),
             utxos: Vec::new(),
             processed_txids: HashSet::new(),
+            used_signatures: HashSet::new(),
+            private_txs: BTreeMap::new(),
             mempool: BTreeMap::new(),
             tx_history: VecDeque::new(),
             validators: BTreeMap::new(),
@@ -221,7 +336,22 @@ impl ChainState {
                 "consensus": true,
                 "rate_limit": true,
                 "replay_protection": true,
-                "persistence": true
+                "signature_replay_protection": true,
+                "privacy_modes": ["transparent", "shielded", "viewable"],
+                "persistence": true,
+                "adaptive_fee": true,
+                "instant_settlement": true
+            },
+            "architecture": {
+                "signature_scheme": "hybrid_qr_v1",
+                "privacy_model": "shielded_with_view_key_reveal",
+                "consensus_model": "weighted_bft_pos",
+                "goal": {
+                    "fast": true,
+                    "cheap": true,
+                    "private": true,
+                    "revealable": true
+                }
             }
         })
     }
@@ -266,7 +396,10 @@ impl ChainState {
             validators: self.validators.values().cloned().collect(),
             tx_history: self.tx_history.iter().cloned().collect(),
             processed_txids: self.processed_txids.iter().cloned().collect(),
+            used_signatures: self.used_signatures.iter().cloned().collect(),
+            private_txs: self.private_txs.values().cloned().collect(),
             metrics: self.metrics.clone(),
+            config: self.config.clone(),
             tx_seq: self.tx_seq,
             block_seq: self.block_seq,
         }
@@ -294,7 +427,14 @@ impl ChainState {
             .collect();
         self.tx_history = persisted.tx_history.into_iter().collect();
         self.processed_txids = persisted.processed_txids.into_iter().collect();
+        self.used_signatures = persisted.used_signatures.into_iter().collect();
+        self.private_txs = persisted
+            .private_txs
+            .into_iter()
+            .map(|p| (p.txid.clone(), p))
+            .collect();
         self.metrics = persisted.metrics;
+        self.config = persisted.config;
         self.tx_seq = persisted.tx_seq;
         self.block_seq = persisted.block_seq;
         self.mempool.clear();
@@ -552,6 +692,8 @@ impl ChainState {
         self.finalized_blocks.clear();
         self.utxos.clear();
         self.processed_txids.clear();
+        self.used_signatures.clear();
+        self.private_txs.clear();
 
         let genesis_txid = self.next_tx_id("genesis");
         let mut total_allocated = 0u64;
@@ -632,6 +774,143 @@ impl ChainState {
         Ok(())
     }
 
+    fn parse_priority(meta: &Value) -> u8 {
+        let raw = meta
+            .get("priority")
+            .and_then(Value::as_u64)
+            .unwrap_or(DEFAULT_TX_PRIORITY as u64);
+        raw.min(3) as u8
+    }
+
+    fn estimate_required_fee(
+        &self,
+        input_count: usize,
+        output_count: usize,
+        output_total: u64,
+        priority: u8,
+    ) -> u64 {
+        let base = self.config.base_fee;
+        let io_fee = self
+            .config
+            .fee_per_input
+            .saturating_mul(input_count as u64)
+            .saturating_add(
+                self.config
+                    .fee_per_output
+                    .saturating_mul(output_count as u64),
+            );
+        let amount_fee = output_total.saturating_mul(self.config.amount_fee_ppm) / 1_000_000;
+        let priority_boost = match priority {
+            0 => 90,
+            1 => 100,
+            2 => 120,
+            _ => 150,
+        };
+
+        let congestion_ratio_bps = if self.mempool.len() < (MAX_MEMPOOL_TXS / 3) {
+            self.config.low_congestion_multiplier_bps
+        } else if self.mempool.len() < (MAX_MEMPOOL_TXS * 2 / 3) {
+            self.config.medium_congestion_multiplier_bps
+        } else {
+            self.config.high_congestion_multiplier_bps
+        };
+
+        let subtotal = base
+            .saturating_add(io_fee)
+            .saturating_add(amount_fee)
+            .saturating_mul(priority_boost as u64)
+            / 100;
+
+        subtotal.saturating_mul(congestion_ratio_bps) / 10_000
+    }
+
+    fn commitment_for_tx(
+        &self,
+        txid: &str,
+        sender: &str,
+        output_total: u64,
+        mode: PrivacyMode,
+        reveal_hash: Option<&str>,
+    ) -> String {
+        hash_hex(&format!(
+            "commit:{txid}:{sender}:{output_total}:{}:{}:{CHAIN_ID}",
+            mode.as_str(),
+            reveal_hash.unwrap_or("-")
+        ))
+    }
+
+    fn track_private_tx(
+        &mut self,
+        txid: &str,
+        sender: &str,
+        output_total: u64,
+        output_count: usize,
+        mode: PrivacyMode,
+        reveal_hash: Option<String>,
+        revealable: bool,
+    ) -> Value {
+        let commitment =
+            self.commitment_for_tx(txid, sender, output_total, mode, reveal_hash.as_deref());
+        if mode.is_private() {
+            let record = PrivateTxRecord {
+                txid: txid.to_string(),
+                privacy_mode: mode.as_str().to_string(),
+                commitment: commitment.clone(),
+                reveal_hash: reveal_hash.clone(),
+                created_at: Utc::now().timestamp_millis(),
+                from_hint: obfuscate_address(sender),
+                output_count,
+                amount_masked: mask_amount(output_total),
+            };
+            self.private_txs.insert(txid.to_string(), record);
+        }
+        json!({
+            "mode": mode.as_str(),
+            "private": mode.is_private(),
+            "revealable": revealable,
+            "commitment": commitment,
+            "reveal_hash": reveal_hash
+        })
+    }
+
+    fn reveal_private_tx(&self, txid: &str, reveal_key: &str) -> Result<Value, String> {
+        let record = self
+            .private_txs
+            .get(txid)
+            .ok_or_else(|| "private transaction not found".to_string())?;
+        if record.privacy_mode != "viewable" {
+            return Err("transaction is shielded-only and cannot be revealed".into());
+        }
+
+        let expected = record
+            .reveal_hash
+            .as_ref()
+            .ok_or_else(|| "transaction has no reveal key".to_string())?;
+        let provided = hash_hex(reveal_key);
+        if &provided != expected {
+            return Err("invalid reveal key".into());
+        }
+
+        let tx = self
+            .tx_history
+            .iter()
+            .find(|entry| entry.txid == txid)
+            .ok_or_else(|| "transaction payload not found".to_string())?;
+
+        let total_output: u64 = tx.outputs.iter().map(|o| o.amount).sum();
+        Ok(json!({
+            "txid": txid,
+            "revealed": true,
+            "mode": record.privacy_mode,
+            "commitment": record.commitment,
+            "outputs": tx.outputs,
+            "fee": tx.fee,
+            "status": tx.status,
+            "timestamp": tx.timestamp,
+            "total_output": total_output
+        }))
+    }
+
     fn parse_tx_value(&mut self, tx_value: &Value) -> Result<TxRecord, String> {
         let txid = tx_value
             .get("txid")
@@ -645,10 +924,27 @@ impl ChainState {
             .and_then(Value::as_i64)
             .unwrap_or_else(|| Utc::now().timestamp_millis());
 
-        let metadata = tx_value
+        let mut metadata = tx_value
             .get("metadata")
             .cloned()
             .unwrap_or_else(|| json!({}));
+        if metadata.to_string().len() > self.config.max_private_payload_bytes {
+            return Err("metadata payload is too large".into());
+        }
+        if !metadata.is_object() {
+            metadata = json!({});
+        }
+        if let Some(meta_obj) = metadata.as_object_mut() {
+            meta_obj.entry("sig_scheme").or_insert(Value::String(
+                SignatureScheme::HybridQrV1.as_str().to_string(),
+            ));
+            meta_obj
+                .entry("privacy_mode")
+                .or_insert(Value::String(PrivacyMode::Transparent.as_str().to_string()));
+            meta_obj
+                .entry("priority")
+                .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+        }
 
         let inputs: Vec<TxInputRecord> = tx_value
             .get("inputs")
@@ -717,6 +1013,18 @@ impl ChainState {
         let tx_val: Value =
             serde_json::from_str(tx_json).map_err(|e| format!("invalid tx JSON: {e}"))?;
         let mut tx = self.parse_tx_value(&tx_val)?;
+        let sig_scheme = SignatureScheme::from_metadata(&tx.metadata);
+        let privacy_mode = PrivacyMode::from_metadata(&tx.metadata);
+        let reveal_key = tx
+            .metadata
+            .get("reveal_key")
+            .and_then(Value::as_str)
+            .map(str::to_string);
+
+        if privacy_mode == PrivacyMode::Viewable && reveal_key.is_none() {
+            self.record_rejected_tx();
+            return Err("viewable transactions require metadata.reveal_key".into());
+        }
 
         if tx.inputs.is_empty() {
             self.record_rejected_tx();
@@ -734,15 +1042,23 @@ impl ChainState {
             self.record_rejected_tx();
             return Err(format!("too many outputs (max {MAX_TX_OUTPUTS})"));
         }
-        if self.processed_txids.contains(&tx.txid) || self.mempool.contains_key(&tx.txid) {
+        if self.processed_txids.contains(&tx.txid) {
             self.record_rejected_tx();
             return Err("transaction replay detected".into());
         }
+        if let Some(existing) = self.mempool.get(&tx.txid) {
+            if tx_io_fingerprint(existing) != tx_io_fingerprint(&tx) {
+                self.record_rejected_tx();
+                return Err("mempool transaction id collision".into());
+            }
+        }
+        self.mempool.remove(&tx.txid);
 
         let mut input_total: u64 = 0;
         let mut output_total: u64 = 0;
         let mut source_addresses: HashSet<String> = HashSet::new();
         let mut seen_inputs: HashSet<String> = HashSet::new();
+        let mut seen_signatures: HashSet<String> = HashSet::new();
         let mut consumed_indices: Vec<usize> = Vec::new();
 
         for input in &tx.inputs {
@@ -753,6 +1069,24 @@ impl ChainState {
             if input.signature.trim().len() < 8 {
                 self.record_rejected_tx();
                 return Err("input signature is too short".into());
+            }
+            if sig_scheme.requires_quantum_prefix() {
+                if !input.signature.starts_with("qsig_") {
+                    self.record_rejected_tx();
+                    return Err("quantum signature required (qsig_ prefix missing)".into());
+                }
+                if input.signature.len() < self.config.min_quantum_sig_len {
+                    self.record_rejected_tx();
+                    return Err("quantum signature payload too short".into());
+                }
+            }
+            if !seen_signatures.insert(input.signature.clone()) {
+                self.record_rejected_tx();
+                return Err("duplicate signature in transaction".into());
+            }
+            if self.used_signatures.contains(&input.signature) {
+                self.record_rejected_tx();
+                return Err("signature replay detected".into());
             }
 
             let key = format!("{}:{}", input.prev_txid, input.output_index);
@@ -794,10 +1128,18 @@ impl ChainState {
         }
         let sender = source_addresses.iter().next().cloned().unwrap_or_default();
 
-        self.check_rate_limit(&sender)?;
+        if let Err(rate_err) = self.check_rate_limit(&sender) {
+            self.record_rejected_tx();
+            return Err(rate_err);
+        }
 
         for output in &tx.outputs {
-            if !is_valid_address(&output.address) {
+            let is_valid_output = if privacy_mode.is_private() {
+                is_valid_address(&output.address) || output.address.starts_with("stealth_")
+            } else {
+                is_valid_address(&output.address)
+            };
+            if !is_valid_output {
                 self.record_rejected_tx();
                 return Err(format!("invalid output address: {}", output.address));
             }
@@ -821,6 +1163,15 @@ impl ChainState {
         }
 
         let fee = input_total.saturating_sub(output_total);
+        let priority = Self::parse_priority(&tx.metadata);
+        let required_fee =
+            self.estimate_required_fee(tx.inputs.len(), tx.outputs.len(), output_total, priority);
+        if fee < required_fee {
+            self.record_rejected_tx();
+            return Err(format!(
+                "fee too low: paid {fee}, required at least {required_fee}"
+            ));
+        }
 
         for idx in consumed_indices {
             if let Some(utxo) = self.utxos.get_mut(idx) {
@@ -843,10 +1194,26 @@ impl ChainState {
             self.ensure_validator(&output.address);
         }
 
+        for input in &tx.inputs {
+            self.used_signatures.insert(input.signature.clone());
+        }
         tx.fee = fee;
         tx.status = "confirmed".to_string();
         self.processed_txids.insert(tx.txid.clone());
-        self.mempool.remove(&tx.txid);
+        let reveal_hash = if privacy_mode == PrivacyMode::Viewable {
+            reveal_key.as_ref().map(|k| hash_hex(k))
+        } else {
+            None
+        };
+        let privacy_info = self.track_private_tx(
+            &tx.txid,
+            &sender,
+            output_total,
+            tx.outputs.len(),
+            privacy_mode,
+            reveal_hash.clone(),
+            privacy_mode == PrivacyMode::Viewable,
+        );
 
         self.tx_history.push_front(tx.clone());
         while self.tx_history.len() > MAX_TX_HISTORY {
@@ -857,6 +1224,19 @@ impl ChainState {
         self.record_tx_latency(start.elapsed().as_micros() as u64);
         self.bump_tps_counter();
 
+        let from_public = if privacy_mode.is_private() {
+            obfuscate_address(&sender)
+        } else {
+            sender.clone()
+        };
+        let fee_tier = if required_fee < 1_000 {
+            "ultra_cheap"
+        } else if required_fee < 3_000 {
+            "cheap"
+        } else {
+            "normal"
+        };
+
         Ok(json!({
             "valid": true,
             "txid": tx.txid,
@@ -864,26 +1244,67 @@ impl ChainState {
             "status": "accepted",
             "inputs": tx.inputs.len(),
             "outputs": tx.outputs.len(),
-            "from": sender,
+            "from": from_public,
             "new_balance": self.balance_of(&sender),
-            "height_hint": next_height
+            "height_hint": next_height,
+            "signature_scheme": sig_scheme.as_str(),
+            "privacy": privacy_info,
+            "fee_policy": {
+                "required_fee": required_fee,
+                "paid_fee": fee,
+                "priority": priority,
+                "tier": fee_tier
+            }
         }))
     }
 
     fn sign_tx_payload(&self, tx_raw: &str) -> Value {
-        let tx_hash = hash_hex(tx_raw);
-        let signature = format!(
-            "sig_{}",
-            hash_hex(&format!("{tx_raw}:{tx_hash}:{CHAIN_ID}:{}", now_ms()))
-        );
+        let mut tx_value = serde_json::from_str::<Value>(tx_raw).unwrap_or_else(|_| json!(tx_raw));
+        let mut metadata = tx_value
+            .get("metadata")
+            .cloned()
+            .unwrap_or_else(|| json!({}));
+        if !metadata.is_object() {
+            metadata = json!({});
+        }
+        if let Some(meta_obj) = metadata.as_object_mut() {
+            meta_obj.entry("sig_scheme").or_insert(Value::String(
+                SignatureScheme::HybridQrV1.as_str().to_string(),
+            ));
+            meta_obj
+                .entry("privacy_mode")
+                .or_insert(Value::String(PrivacyMode::Transparent.as_str().to_string()));
+            meta_obj
+                .entry("priority")
+                .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+        }
+        if let Some(tx_obj) = tx_value.as_object_mut() {
+            tx_obj.insert("metadata".to_string(), metadata.clone());
+        }
 
-        let tx_value = serde_json::from_str::<Value>(tx_raw).unwrap_or_else(|_| json!(tx_raw));
+        let sig_scheme = SignatureScheme::from_metadata(&metadata);
+        let tx_hash = hash_hex(&tx_value.to_string());
+        let signature_seed = hash_hex(&format!("{tx_raw}:{tx_hash}:{CHAIN_ID}:{}", now_ms()));
+        let signature = match sig_scheme {
+            SignatureScheme::HybridQrV1 => format!("qsig_{signature_seed}"),
+            SignatureScheme::LegacyCompat => format!("sig_{signature_seed}"),
+        };
+        let privacy_mode = PrivacyMode::from_metadata(&metadata);
+        let priority = Self::parse_priority(&metadata);
+
         json!({
             "signed": signature,
             "tx": tx_value,
             "tx_hash": tx_hash,
             "chain_id": CHAIN_ID,
-            "status": "signed"
+            "status": "signed",
+            "signature_bundle": {
+                "scheme": sig_scheme.as_str(),
+                "quantum_resistant": sig_scheme.requires_quantum_prefix(),
+                "chain_locked": true
+            },
+            "privacy_mode": privacy_mode.as_str(),
+            "priority": priority
         })
     }
 
@@ -899,7 +1320,65 @@ impl ChainState {
             return Err("signed payload is invalid".into());
         }
 
-        let tx_val = signed_val.get("tx").cloned().unwrap_or_else(|| json!({}));
+        let mut tx_val = signed_val.get("tx").cloned().unwrap_or_else(|| json!({}));
+        let sig_scheme = signed_val
+            .get("signature_bundle")
+            .and_then(|bundle| bundle.get("scheme"))
+            .and_then(Value::as_str)
+            .map(|s| match s {
+                "legacy_compat" => SignatureScheme::LegacyCompat,
+                _ => SignatureScheme::HybridQrV1,
+            })
+            .unwrap_or_else(|| {
+                let meta = tx_val.get("metadata").cloned().unwrap_or_else(|| json!({}));
+                SignatureScheme::from_metadata(&meta)
+            });
+        if sig_scheme.requires_quantum_prefix() {
+            if !signature.starts_with("qsig_") {
+                return Err("signed payload must use qsig_ prefix for hybrid_qr_v1".into());
+            }
+            if signature.len() < self.config.min_quantum_sig_len {
+                return Err("signed payload is too short for hybrid_qr_v1".into());
+            }
+        }
+
+        if let Some(tx_obj) = tx_val.as_object_mut() {
+            let mut metadata = tx_obj.get("metadata").cloned().unwrap_or_else(|| json!({}));
+            if !metadata.is_object() {
+                metadata = json!({});
+            }
+            if let Some(meta_obj) = metadata.as_object_mut() {
+                meta_obj
+                    .entry("sig_scheme")
+                    .or_insert(Value::String(sig_scheme.as_str().to_string()));
+                meta_obj
+                    .entry("privacy_mode")
+                    .or_insert(Value::String(PrivacyMode::Transparent.as_str().to_string()));
+                meta_obj
+                    .entry("priority")
+                    .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+            }
+            tx_obj.insert("metadata".to_string(), metadata);
+
+            if let Some(inputs) = tx_obj.get_mut("inputs").and_then(Value::as_array_mut) {
+                for (idx, input) in inputs.iter_mut().enumerate() {
+                    if let Some(input_obj) = input.as_object_mut() {
+                        let should_patch = input_obj
+                            .get("signature")
+                            .and_then(Value::as_str)
+                            .map(|s| s.trim().is_empty())
+                            .unwrap_or(true);
+                        if should_patch {
+                            input_obj.insert(
+                                "signature".to_string(),
+                                Value::String(format!("{signature}_{idx}")),
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         let tx_hash = signed_val
             .get("tx_hash")
             .and_then(Value::as_str)
@@ -928,13 +1407,57 @@ impl ChainState {
         let mut tx = self.parse_tx_value(&tx_val)?;
         tx.txid = txid.clone();
         tx.status = "pending".to_string();
+        let priority = Self::parse_priority(&tx.metadata);
+        let output_total: u64 = tx.outputs.iter().map(|o| o.amount).sum();
+        let recommended_fee =
+            self.estimate_required_fee(tx.inputs.len(), tx.outputs.len(), output_total, priority);
+        let fast_path_eligible = self.mempool.len() <= self.config.instant_settlement_mempool_limit;
+        let tx_backup = tx.clone();
         self.mempool.insert(txid.clone(), tx);
+
+        let use_fast_path = tx_backup
+            .metadata
+            .get("fast")
+            .and_then(Value::as_bool)
+            .unwrap_or(true);
+        if use_fast_path && fast_path_eligible {
+            let tx_json = serde_json::to_string(&tx_backup)
+                .map_err(|e| format!("failed to serialize tx for fast path: {e}"))?;
+            match self.validate_and_process_tx_json(&tx_json) {
+                Ok(processed) => {
+                    return Ok(json!({
+                        "txid": txid,
+                        "status": "confirmed_fast",
+                        "mempool": false,
+                        "pool_size": self.mempool.len(),
+                        "fast_path": true,
+                        "processed": processed
+                    }));
+                }
+                Err(_fast_err) => {
+                    self.mempool.entry(txid.clone()).or_insert(tx_backup);
+                }
+            }
+        }
+
+        let fee_tier = if recommended_fee < 1_000 {
+            "ultra_cheap"
+        } else if recommended_fee < 3_000 {
+            "cheap"
+        } else {
+            "normal"
+        };
 
         Ok(json!({
             "txid": txid,
             "status": "pending",
             "mempool": true,
-            "pool_size": self.mempool.len()
+            "pool_size": self.mempool.len(),
+            "fast_path": false,
+            "fast_path_eligible": fast_path_eligible,
+            "recommended_fee": recommended_fee,
+            "fee_tier": fee_tier,
+            "signature_scheme": sig_scheme.as_str()
         }))
     }
 
@@ -1245,6 +1768,16 @@ impl ChainState {
             "pending_blocks": self.pending_blocks.len(),
             "finalized_blocks": self.finalized_blocks.len(),
             "mempool_size": self.mempool.len(),
+            "privacy_pool_size": self.private_txs.len(),
+            "config": {
+                "base_fee": self.config.base_fee,
+                "fee_per_input": self.config.fee_per_input,
+                "fee_per_output": self.config.fee_per_output,
+                "amount_fee_ppm": self.config.amount_fee_ppm,
+                "instant_settlement_mempool_limit": self.config.instant_settlement_mempool_limit,
+                "signature_scheme": "hybrid_qr_v1",
+                "privacy_modes": ["transparent", "shielded", "viewable"]
+            },
             "metrics": {
                 "tx_processed": self.metrics.tx_processed,
                 "tx_rejected": self.metrics.tx_rejected,
@@ -1252,7 +1785,8 @@ impl ChainState {
                 "blocks_finalized": self.metrics.blocks_finalized,
                 "wallet_creations": self.metrics.wallet_creations,
                 "avg_tx_process_micros": self.metrics.avg_tx_process_micros,
-                "peak_tps": self.metrics.peak_tps
+                "peak_tps": self.metrics.peak_tps,
+                "signature_replays_blocked": self.used_signatures.len()
             }
         })
     }
@@ -1401,6 +1935,34 @@ fn parse_amount(value: &Value) -> Option<u64> {
         Value::String(s) => s.parse::<u64>().ok(),
         _ => None,
     }
+}
+
+fn tx_io_fingerprint(tx: &TxRecord) -> String {
+    let inputs = tx
+        .inputs
+        .iter()
+        .map(|i| format!("{}:{}:{}", i.prev_txid, i.output_index, i.signature))
+        .collect::<Vec<_>>()
+        .join("|");
+    let outputs = tx
+        .outputs
+        .iter()
+        .map(|o| format!("{}:{}", o.address, o.amount))
+        .collect::<Vec<_>>()
+        .join("|");
+    hash_hex(&format!("{inputs}>{outputs}"))
+}
+
+fn obfuscate_address(address: &str) -> String {
+    if address.len() <= 10 {
+        return "hidden".to_string();
+    }
+    format!("{}***{}", &address[..8], &address[address.len() - 4..])
+}
+
+fn mask_amount(amount: u64) -> String {
+    let salt = now_ms();
+    format!("mask_{}", hash_hex(&format!("{amount}:{salt}")))
 }
 
 fn cstr_to_rust(ptr: *const c_char, arg_name: &str) -> Result<String, String> {
@@ -1636,6 +2198,14 @@ pub extern "C" fn bolh_get_utxos(addr_ptr: *const c_char) -> *const c_char {
         Ok(v) => v,
         Err(e) => return value_to_c_ptr(json!({ "error": e })),
     };
+    if let Some(rest) = address.strip_prefix("reveal:") {
+        let mut parts = rest.splitn(2, ':');
+        let txid = parts.next().unwrap_or_default();
+        let reveal_key = parts.next().unwrap_or_default();
+        let result = with_state_read(|state| state.reveal_private_tx(txid, reveal_key));
+        return result_to_c_ptr(result);
+    }
+
     let value = with_state_read(|state| state.get_utxos_json(&address));
     value_to_c_ptr(value)
 }
@@ -1838,14 +2408,19 @@ mod tests {
                 {
                     "prev_txid": utxo.txid,
                     "output_index": utxo.output_index,
-                    "signature": "sig_valid_123456"
+                    "signature": "qsig_valid_1234567890"
                 }
             ],
             "outputs": [
                 { "address": to, "amount": 3000u64 },
                 { "address": from, "amount": 1900u64 }
             ],
-            "timestamp": Utc::now().timestamp_millis()
+            "timestamp": Utc::now().timestamp_millis(),
+            "metadata": {
+                "sig_scheme": "hybrid_qr_v1",
+                "privacy_mode": "transparent",
+                "priority": 1
+            }
         });
 
         let processed = state
@@ -1889,5 +2464,100 @@ mod tests {
             .expect("block should finalize");
         assert_eq!(finalized["finalized"], true);
         assert_eq!(state.height, 1);
+    }
+
+    #[test]
+    fn rejects_legacy_signature_when_quantum_scheme_required() {
+        let mut state = ChainState::new();
+        let from = dummy_address("sender-legacy");
+        let to = dummy_address("recipient-legacy");
+        let genesis = json!([{ "address": from, "amount": 9000u64 }]).to_string();
+        state
+            .init_genesis_from_json(&genesis)
+            .expect("genesis init should work");
+
+        let utxo = state
+            .utxos
+            .iter()
+            .find(|u| u.address == from && !u.spent)
+            .cloned()
+            .expect("sender utxo must exist");
+
+        let tx = json!({
+            "txid": "tx_legacy_sig",
+            "inputs": [
+                {
+                    "prev_txid": utxo.txid,
+                    "output_index": utxo.output_index,
+                    "signature": "sig_old_style_1234"
+                }
+            ],
+            "outputs": [
+                { "address": to, "amount": 7000u64 },
+                { "address": from, "amount": 1800u64 }
+            ],
+            "metadata": {
+                "sig_scheme": "hybrid_qr_v1",
+                "privacy_mode": "transparent",
+                "priority": 1
+            }
+        });
+
+        let err = state
+            .validate_and_process_tx_json(&tx.to_string())
+            .expect_err("legacy signature should be rejected");
+        assert!(err.contains("quantum signature"));
+    }
+
+    #[test]
+    fn viewable_private_tx_reveal_flow() {
+        let mut state = ChainState::new();
+        let from = dummy_address("sender-private");
+        let to = dummy_address("recipient-private");
+        let genesis = json!([{ "address": from, "amount": 12_000u64 }]).to_string();
+        state
+            .init_genesis_from_json(&genesis)
+            .expect("genesis init should work");
+
+        let utxo = state
+            .utxos
+            .iter()
+            .find(|u| u.address == from && !u.spent)
+            .cloned()
+            .expect("sender utxo must exist");
+        let reveal_key = "view-key-private-001";
+        let txid = "tx_viewable_1";
+        let tx = json!({
+            "txid": txid,
+            "inputs": [
+                {
+                    "prev_txid": utxo.txid,
+                    "output_index": utxo.output_index,
+                    "signature": "qsig_private_1234567890"
+                }
+            ],
+            "outputs": [
+                { "address": to, "amount": 8500u64 },
+                { "address": from, "amount": 2500u64 }
+            ],
+            "metadata": {
+                "sig_scheme": "hybrid_qr_v1",
+                "privacy_mode": "viewable",
+                "reveal_key": reveal_key,
+                "priority": 2
+            }
+        });
+
+        let processed = state
+            .validate_and_process_tx_json(&tx.to_string())
+            .expect("private viewable tx should process");
+        assert_eq!(processed["privacy"]["private"], true);
+        assert_eq!(processed["privacy"]["revealable"], true);
+
+        let revealed = state
+            .reveal_private_tx(txid, reveal_key)
+            .expect("reveal should work with valid key");
+        assert_eq!(revealed["revealed"], true);
+        assert_eq!(revealed["mode"], "viewable");
     }
 }
