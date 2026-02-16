@@ -1,4 +1,4 @@
-// Guardio UI Library
+// BOLH UI Library
 // Export all components, stores, and utilities
 
 // Atoms

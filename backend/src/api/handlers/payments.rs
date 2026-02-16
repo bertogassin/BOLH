@@ -6,7 +6,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::Deserialize;
-use guardio_core::payments::{Payment, PaymentMethod};
+use bolh_core::payments::{Payment, PaymentMethod};
 
 pub async fn list_payments() -> impl IntoResponse {
     // TODO: Fetch from database
@@ -63,7 +63,7 @@ pub struct AddCardRequest {
 
 pub async fn add_card(Json(req): Json<AddCardRequest>) -> impl IntoResponse {
     // Validate card number
-    if !guardio_core::ValidationService::validate_card(&req.number) {
+    if !bolh_core::ValidationService::validate_card(&req.number) {
         return (StatusCode::BAD_REQUEST, Json(serde_json::json!({
             "error": "Invalid card number"
         })));
@@ -95,7 +95,7 @@ pub async fn get_subscription() -> impl IntoResponse {
     (StatusCode::OK, Json(serde_json::json!({
         "plan": "free",
         "status": "active",
-        "features": ["Basic guard discovery", "5 orders per month"]
+        "features": ["Basic specialist discovery", "5 orders per month"]
     })))
 }
 

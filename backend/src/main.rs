@@ -1,4 +1,4 @@
-//! Guardio Backend Server
+//! BOLH Backend Server
 //! 
 //! REST API + WebSocket server built with Axum
 
@@ -30,16 +30,16 @@ use ws::notifications::NotificationWsManager;
 async fn main() {
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(
-            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,guardio_backend=debug".into()),
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "info,bolh_backend=debug".into()),
         ))
         .with(tracing_subscriber::fmt::layer())
         .init();
 
     dotenvy::dotenv().ok();
 
-    guardio_core::init();
+    bolh_core::init();
 
-    tracing::info!("Starting Guardio Backend v{}", env!("CARGO_PKG_VERSION"));
+    tracing::info!("Starting BOLH Backend v{}", env!("CARGO_PKG_VERSION"));
 
     let cors = CorsLayer::new()
         .allow_origin(Any)

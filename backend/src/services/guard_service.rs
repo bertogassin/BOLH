@@ -1,7 +1,7 @@
 //! Guard service
 
 use sqlx::postgres::PgPool;
-use guardio_core::geo::GeoService;
+use bolh_core::geo::GeoService;
 
 pub struct GuardService {
     pool: PgPool,

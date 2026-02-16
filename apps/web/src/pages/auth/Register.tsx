@@ -1,8 +1,8 @@
 import { createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Button, Input, Icon } from '@guardio/ui';
+import { Button, Input, Icon } from '@bolh/ui';
 
-type Role = 'client' | 'guard';
+type Role = 'client' | 'specialist';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -71,16 +71,16 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <h3 class="font-semibold text-gray-900">I need security</h3>
-                  <p class="text-sm text-gray-500">Book guards for your protection</p>
+                  <p class="text-sm text-gray-500">Book specialists for your needs</p>
                 </div>
               </div>
             </button>
 
             <button
-              onClick={() => { setRole('guard'); setStep(2); }}
+              onClick={() => { setRole('specialist'); setStep(2); }}
               class={`
                 w-full p-4 rounded-xl border-2 text-left transition-all
-                ${role() === 'guard' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}
+                ${role() === 'specialist' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}
               `}
             >
               <div class="flex items-center gap-4">
@@ -88,7 +88,7 @@ export default function RegisterPage() {
                   <Icon name="shield" size="lg" class="text-green-600" />
                 </div>
                 <div>
-                  <h3 class="font-semibold text-gray-900">I am a guard</h3>
+                  <h3 class="font-semibold text-gray-900">I am a specialist</h3>
                   <p class="text-sm text-gray-500">Provide security services</p>
                 </div>
               </div>

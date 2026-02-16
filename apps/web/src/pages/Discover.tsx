@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
-import { SearchBar, GuardCard, Badge, Button, Icon } from '@guardio/ui';
+import { SearchBar, GuardCard, Badge, Button, Icon } from '@bolh/ui';
 
 // Mock data
 const guards = [

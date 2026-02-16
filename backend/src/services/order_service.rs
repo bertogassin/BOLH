@@ -2,7 +2,7 @@
 
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
-use guardio_core::orders::{OrderStatus, ServiceType, PricingConfig};
+use bolh_core::orders::{OrderStatus, ServiceType, PricingConfig};
 
 pub struct OrderService {
     pool: PgPool,

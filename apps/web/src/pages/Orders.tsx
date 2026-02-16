@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { OrderCard, Button, Icon, Badge } from '@guardio/ui';
+import { OrderCard, Button, Icon, Badge } from '@bolh/ui';
 
 const tabs = ['Активные', 'Завершённые', 'Все'];
 

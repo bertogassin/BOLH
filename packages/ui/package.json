@@ -1,5 +1,5 @@
 {
-  "name": "@guardio/ui",
+  "name": "@bolh/ui",
   "version": "2.0.0",
   "type": "module",
   "main": "./src/index.ts",

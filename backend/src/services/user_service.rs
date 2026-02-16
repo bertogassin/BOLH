@@ -1,7 +1,7 @@
 //! User service
 
 use sqlx::postgres::PgPool;
-use guardio_core::{auth::UserRole, CryptoService};
+use bolh_core::{auth::UserRole, CryptoService};
 
 pub struct UserService {
     pool: PgPool,

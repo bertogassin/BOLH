@@ -1,6 +1,6 @@
 import { useNavigate } from '@solidjs/router';
-import { Card, ListItem, Icon, Button } from '@guardio/ui';
-import { themeStore } from '@guardio/ui/stores/theme';
+import { Card, ListItem, Icon, Button } from '@bolh/ui';
+import { themeStore } from '@bolh/ui/stores/theme';
 
 export default function SettingsPage() {
   const navigate = useNavigate();

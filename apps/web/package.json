@@ -1,5 +1,5 @@
 {
-  "name": "@guardio/web",
+  "name": "@bolh/web",
   "version": "2.0.0",
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@guardio/ui": "workspace:*",
+    "@bolh/ui": "workspace:*",
     "@solidjs/router": "0.11.4",
     "@types/leaflet": "^1.9.21",
     "leaflet": "^1.9.4",

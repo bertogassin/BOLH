@@ -1,6 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { SearchBar, Card, Badge, Button, Icon } from '@guardio/ui';
+import { SearchBar, Card, Badge, Button, Icon } from '@bolh/ui';
 
 interface Product {
   id: number;

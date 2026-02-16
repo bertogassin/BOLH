@@ -1,8 +1,8 @@
 import { JSX, createSignal, onMount, Show } from 'solid-js';
 import { useNavigate, useLocation } from '@solidjs/router';
-import { Header, BottomNav, type NavItem } from '@guardio/ui';
-import { authStore } from '@guardio/ui/stores/auth';
-import { themeStore } from '@guardio/ui/stores/theme';
+import { Header, BottomNav, type NavItem } from '@bolh/ui';
+import { authStore } from '@bolh/ui/stores/auth';
+import { themeStore } from '@bolh/ui/stores/theme';
 
 // Swipe-back threshold in pixels
 const SWIPE_THRESHOLD = 60;

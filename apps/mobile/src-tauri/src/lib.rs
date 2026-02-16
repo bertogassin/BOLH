@@ -1,7 +1,7 @@
 // Guardio Mobile App - Tauri Backend Library
 // Provides native APIs and Rust core integration
 
-use guardio_core::{
+use bolh_core::{
     crypto::CryptoService,
     geo::GeoService,
     validation::ValidationService,

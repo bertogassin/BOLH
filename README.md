@@ -1,6 +1,6 @@
-# Guardio v2.0
+# BOLH
 
-Professional Security Guard Platform - Rebuilt with modern technologies for maximum performance and maintainability.
+Platform for specialists and clients — modern stack for performance and maintainability.
 
 ## Technology Stack
 
@@ -16,7 +16,7 @@ Professional Security Guard Platform - Rebuilt with modern technologies for maxi
 ## Project Structure
 
 ```
-guardio-v2/
+bolh/
 ├── apps/
 │   ├── mobile/          # Tauri 2.0 mobile app (Android/iOS)
 │   │   ├── src-tauri/   # Rust backend for Tauri
@@ -47,8 +47,8 @@ guardio-v2/
 
 ```bash
 # Clone the repository
-git clone https://github.com/guardio/guardio-v2.git
-cd guardio-v2
+git clone https://github.com/bertogassin/BOLH.git
+cd BOLH
 
 # Install dependencies
 pnpm install
@@ -84,10 +84,10 @@ cd backend && cargo run
 pnpm build
 
 # Build mobile APK
-pnpm --filter @guardio/mobile tauri android build
+pnpm --filter @bolh/mobile tauri android build
 
 # Build iOS
-pnpm --filter @guardio/mobile tauri ios build
+pnpm --filter @bolh/mobile tauri ios build
 
 # Build backend (release)
 cd backend && cargo build --release
@@ -167,9 +167,9 @@ docker run -p 8080:8080 --env-file .env guardio-backend
 ### Mobile (App Store / Play Store)
 
 1. Update version in `apps/mobile/src-tauri/tauri.conf.json`
-2. Build release: `pnpm --filter @guardio/mobile tauri android build --release`
+2. Build release: `pnpm --filter @bolh/mobile tauri android build --release`
 3. Sign APK and upload to Play Console
 
 ## License
 
-MIT License - Guardio Team 2026
+MIT License - BOLH Team 2026

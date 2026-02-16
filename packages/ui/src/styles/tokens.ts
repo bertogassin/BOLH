@@ -1,4 +1,4 @@
-// Design tokens for Guardio UI
+// Design tokens for BOLH UI
 
 export const colors = {
   // Primary - Security blue

@@ -6,7 +6,7 @@ export interface User {
   phone: string;
   name: string;
   email?: string;
-  role: 'client' | 'guard' | 'admin';
+  role: 'client' | 'specialist' | 'admin';
   avatarUrl?: string;
   rating?: number;
   verifiedLevel?: number;

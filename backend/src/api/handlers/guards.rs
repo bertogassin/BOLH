@@ -7,7 +7,7 @@ use axum::{
     Json,
 };
 use serde::Deserialize;
-use guardio_core::geo::GeoService;
+use bolh_core::geo::GeoService;
 
 #[derive(Debug, Deserialize)]
 pub struct ListGuardsQuery {
@@ -21,7 +21,7 @@ pub async fn list_guards(Query(q): Query<ListGuardsQuery>) -> impl IntoResponse 
 
     // TODO: Fetch from database
     (StatusCode::OK, Json(serde_json::json!({
-        "guards": [],
+        "specialists": [],
         "total": 0,
         "page": page,
         "limit": limit
@@ -47,7 +47,7 @@ pub async fn nearby_guards(Query(q): Query<NearbyGuardsQuery>) -> impl IntoRespo
     // Then filter by exact distance and rank them
 
     (StatusCode::OK, Json(serde_json::json!({
-        "guards": [],
+        "specialists": [],
         "center": {
             "latitude": q.latitude,
             "longitude": q.longitude
@@ -73,7 +73,7 @@ pub struct SearchGuardsQuery {
 pub async fn search_guards(Query(_q): Query<SearchGuardsQuery>) -> impl IntoResponse {
     // TODO: Search guards
     (StatusCode::OK, Json(serde_json::json!({
-        "guards": [],
+        "specialists": [],
         "total": 0
     })))
 }
@@ -96,7 +96,7 @@ pub async fn get_guard(Path(id): Path<i64>) -> impl IntoResponse {
 pub async fn get_availability(Path(id): Path<i64>) -> impl IntoResponse {
     // TODO: Fetch availability schedule
     (StatusCode::OK, Json(serde_json::json!({
-        "guard_id": id,
+        "specialist_id": id,
         "schedule": [
             {"day": 0, "start": 9, "end": 18, "available": true},
             {"day": 1, "start": 9, "end": 18, "available": true},
@@ -110,7 +110,7 @@ pub async fn get_availability(Path(id): Path<i64>) -> impl IntoResponse {
 pub async fn get_reviews(Path(id): Path<i64>) -> impl IntoResponse {
     // TODO: Fetch reviews
     (StatusCode::OK, Json(serde_json::json!({
-        "guard_id": id,
+        "specialist_id": id,
         "reviews": [],
         "average_rating": 4.8,
         "total": 0

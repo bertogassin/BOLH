@@ -4,6 +4,7 @@ members = [
     "packages/core",
     "backend",
     "apps/mobile/src-tauri",
+    "apps/desktop/src-tauri",
     "blockchain/core", "blockchain/bolh-ffi", "blockchain-service",
     "elina/core",
 ]
@@ -12,7 +13,7 @@ members = [
 version = "2.0.0"
 edition = "2021"
 license = "MIT"
-authors = ["Guardio Team"]
+authors = ["BOLH Team"]
 
 [workspace.dependencies]
 # Async runtime

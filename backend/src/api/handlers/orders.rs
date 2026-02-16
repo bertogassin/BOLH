@@ -6,7 +6,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::Deserialize;
-use guardio_core::orders::{Order, ServiceType, PricingConfig};
+use bolh_core::orders::{Order, ServiceType, PricingConfig};
 
 #[derive(Debug, Deserialize)]
 pub struct ListOrdersQuery {

@@ -118,12 +118,12 @@ impl SubscriptionPlan {
     pub fn features(&self) -> Vec<&'static str> {
         match self {
             SubscriptionPlan::Free => vec![
-                "Basic guard discovery",
+                "Basic specialist discovery",
                 "5 orders per month",
                 "Standard support",
             ],
             SubscriptionPlan::Basic => vec![
-                "Unlimited guard discovery",
+                "Unlimited specialist discovery",
                 "20 orders per month",
                 "Priority support",
                 "Order history",
@@ -131,7 +131,7 @@ impl SubscriptionPlan {
             SubscriptionPlan::Premium => vec![
                 "All Basic features",
                 "Unlimited orders",
-                "Preferred guards",
+                "Preferred specialists",
                 "Real-time tracking",
                 "24/7 support",
             ],

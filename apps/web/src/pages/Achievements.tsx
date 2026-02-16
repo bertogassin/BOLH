@@ -1,6 +1,6 @@
 import { For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Card, Badge, Icon } from '@guardio/ui';
+import { Card, Badge, Icon } from '@bolh/ui';
 
 interface Achievement {
   id: string;

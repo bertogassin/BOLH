@@ -1,5 +1,5 @@
-// Guardio API Client
-// Type-safe HTTP client for Guardio backend
+// BOLH API Client
+// Type-safe HTTP client for BOLH backend
 
 import ky, { type KyInstance, type Options } from 'ky';
 
@@ -14,7 +14,7 @@ export interface User {
   phone: string;
   name: string;
   email?: string;
-  role: 'client' | 'guard' | 'admin';
+  role: 'client' | 'specialist' | 'admin';
   avatarUrl?: string;
   rating?: number;
   verifiedLevel?: number;
@@ -41,7 +41,7 @@ export interface Guard {
 export interface Order {
   id: string;
   clientId: number;
-  guardId?: number;
+  specialistId?: number;
   serviceType: string;
   status: 'new' | 'accepted' | 'in_progress' | 'completed' | 'cancelled';
   address: string;
@@ -108,7 +108,7 @@ class ApiClient {
     phone: string;
     password: string;
     name: string;
-    role: 'client' | 'guard';
+    role: 'client' | 'specialist';
   }): Promise<AuthResponse> {
     return this.client.post('auth/register', { json: data }).json();
   }
@@ -143,7 +143,7 @@ class ApiClient {
     page?: number;
     limit?: number;
   }): Promise<PaginatedResponse<Guard>> {
-    return this.client.get('guards', { searchParams: params }).json();
+    return this.client.get('specialists', { searchParams: params }).json();
   }
 
   async nearbyGuards(params: {
@@ -152,12 +152,12 @@ class ApiClient {
     radiusKm?: number;
     limit?: number;
   }): Promise<Guard[]> {
-    const response = await this.client.get('guards/nearby', { searchParams: params }).json<{ guards: Guard[] }>();
-    return response.guards;
+    const response = await this.client.get('specialists/nearby', { searchParams: params }).json<{ specialists: Guard[] }>();
+    return response.specialists;
   }
 
   async getGuard(id: number): Promise<Guard> {
-    return this.client.get(`guards/${id}`).json();
+    return this.client.get(`specialists/${id}`).json();
   }
 
   // Order endpoints

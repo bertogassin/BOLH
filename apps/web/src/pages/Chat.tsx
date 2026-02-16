@@ -1,6 +1,6 @@
 import { createSignal, For, onMount, onCleanup } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
-import { Avatar, Icon, Input, Button } from '@guardio/ui';
+import { Avatar, Icon, Input, Button } from '@bolh/ui';
 
 interface Message {
   id: string;

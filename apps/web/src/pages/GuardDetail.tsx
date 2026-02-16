@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from '@solidjs/router';
-import { Avatar, Badge, Button, Card, Rating, Icon } from '@guardio/ui';
+import { Avatar, Badge, Button, Card, Rating, Icon } from '@bolh/ui';
 
 // Mock data
 const guard = {

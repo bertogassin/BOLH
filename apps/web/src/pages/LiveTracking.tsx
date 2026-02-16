@@ -1,6 +1,6 @@
 import { createSignal, onMount, onCleanup, Show } from 'solid-js';
 import { useParams, useNavigate } from '@solidjs/router';
-import { Avatar, Badge, Button, Icon } from '@guardio/ui';
+import { Avatar, Badge, Button, Icon } from '@bolh/ui';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 

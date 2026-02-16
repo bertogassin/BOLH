@@ -1,7 +1,7 @@
-// Shared TypeScript types for Guardio
+// Shared TypeScript types for BOLH
 
 // User types
-export type UserRole = 'client' | 'guard' | 'admin';
+export type UserRole = 'client' | 'specialist' | 'admin';
 
 export interface User {
   id: number;
@@ -58,7 +58,7 @@ export type Specialization =
 export interface Order {
   id: string;
   clientId: number;
-  guardId?: number;
+  specialistId?: number;
   serviceType: ServiceType;
   status: OrderStatus;
   address: string;
@@ -230,7 +230,7 @@ export interface ErrorResponse {
 
 // WebSocket event types
 export type WsEventType =
-  | 'guard:location'
+  | 'specialist:location'
   | 'order:status'
   | 'chat:message'
   | 'sos:alert'

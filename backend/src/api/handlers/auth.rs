@@ -6,7 +6,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::{Deserialize, Serialize};
-use guardio_core::{auth::UserRole, CryptoService, ValidationService};
+use bolh_core::{auth::UserRole, CryptoService, ValidationService};
 
 #[derive(Debug, Deserialize)]
 pub struct RegisterRequest {

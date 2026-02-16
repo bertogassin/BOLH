@@ -1,5 +1,5 @@
 import { useNavigate } from '@solidjs/router';
-import { Icon } from '@guardio/ui';
+import { Icon } from '@bolh/ui';
 
 // This page links to the existing professions/Discover system
 // The "Работа" tab serves as a shortcut to professional services

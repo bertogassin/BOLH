@@ -1,6 +1,6 @@
-//! Guardio Core Library
-//! 
-//! Shared business logic, cryptography, and utilities for all Guardio platforms.
+//! BOLH Core Library
+//!
+//! Shared business logic, cryptography, and utilities for all BOLH platforms.
 
 pub mod auth;
 pub mod crypto;
@@ -23,7 +23,7 @@ pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Initialize the core library
 pub fn init() {
-    tracing::info!("Guardio Core v{} initialized", VERSION);
+    tracing::info!("BOLH Core v{} initialized", VERSION);
 }
 
 #[cfg(test)]

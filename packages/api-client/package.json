@@ -1,5 +1,5 @@
 {
-  "name": "@guardio/api-client",
+  "name": "@bolh/api-client",
   "version": "2.0.0",
   "type": "module",
   "main": "./src/index.ts",

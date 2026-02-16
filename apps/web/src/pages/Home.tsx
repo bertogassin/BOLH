@@ -1,6 +1,6 @@
 import { createSignal, onMount, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Card, Button, GuardCard, Icon, SearchBar } from '@guardio/ui';
+import { Card, Button, GuardCard, Icon, SearchBar } from '@bolh/ui';
 import Elina from '../components/Elina';
 
 interface QuickAction {

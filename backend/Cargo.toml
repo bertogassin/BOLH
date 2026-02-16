@@ -1,15 +1,15 @@
 [package]
-name = "guardio-backend"
+name = "bolh-backend"
 version.workspace = true
 edition.workspace = true
 
 [[bin]]
-name = "guardio-server"
+name = "bolh-server"
 path = "src/main.rs"
 
 [dependencies]
 # Core library
-guardio-core = { path = "../packages/core" }
+bolh-core = { path = "../packages/core" }
 
 # Async runtime
 tokio = { workspace = true }

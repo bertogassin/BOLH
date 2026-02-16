@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { useNavigate, useParams } from '@solidjs/router';
-import { Card, Button, Input, Icon, Badge } from '@guardio/ui';
+import { Card, Button, Input, Icon, Badge } from '@bolh/ui';
 
 const incidentTypes = [
   { id: 'suspicious_activity', label: 'Suspicious Activity', icon: 'search' },

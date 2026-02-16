@@ -1,6 +1,6 @@
 import { createSignal, onMount, Show, For } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Card, Button, Icon, Badge } from '@guardio/ui';
+import { Card, Button, Icon, Badge } from '@bolh/ui';
 
 // Mock data
 const mockBalance = { balance: 1250, locked: 300 };

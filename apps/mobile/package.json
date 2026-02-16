@@ -1,5 +1,5 @@
 {
-  "name": "@guardio/mobile",
+  "name": "@bolh/mobile",
   "version": "2.0.0",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
     "ios:build": "tauri ios build"
   },
   "dependencies": {
-    "@guardio/ui": "workspace:*",
+    "@bolh/ui": "workspace:*",
     "@solidjs/router": "0.11.4",
     "@tauri-apps/api": "^2.0.0",
     "@types/leaflet": "^1.9.21",

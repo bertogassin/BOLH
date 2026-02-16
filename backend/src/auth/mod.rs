@@ -1,7 +1,7 @@
 //! Backend authentication service
 
 use jsonwebtoken::{encode, decode, Header, EncodingKey, DecodingKey, Validation, Algorithm};
-use guardio_core::auth::{Claims, RefreshClaims, AuthTokens, UserRole};
+use bolh_core::auth::{Claims, RefreshClaims, AuthTokens, UserRole};
 
 pub struct AuthService {
     jwt_secret: String,

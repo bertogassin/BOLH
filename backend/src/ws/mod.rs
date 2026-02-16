@@ -65,7 +65,7 @@ impl Default for WsManager {
 #[serde(tag = "type", content = "data")]
 pub enum WsMessage {
     /// Guard location update
-    #[serde(rename = "guard:location")]
+    #[serde(rename = "specialist:location")]
     GuardLocation {
         guard_id: i64,
         latitude: f64,

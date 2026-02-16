@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@guardio/ui': path.resolve(__dirname, '../../packages/ui/src'),
+      '@bolh/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },
   clearScreen: false,

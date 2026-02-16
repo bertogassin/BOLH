@@ -1,13 +1,13 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Card, Button, Icon, Badge, ListItem } from '@guardio/ui';
+import { Card, Button, Icon, Badge, ListItem } from '@bolh/ui';
 
 const plans = [
   {
     id: 'free',
     name: 'Free',
     price: 0,
-    features: ['Basic guard discovery', '5 orders per month', 'Standard support'],
+    features: ['Basic specialist discovery', '5 orders per month', 'Standard support'],
     isCurrent: true,
   },
   {
@@ -21,7 +21,7 @@ const plans = [
     id: 'premium',
     name: 'Premium',
     price: 9990,
-    features: ['All Basic features', 'Unlimited orders', 'Preferred guards', 'Real-time tracking', '24/7 support'],
+    features: ['All Basic features', 'Unlimited orders', 'Preferred specialists', 'Real-time tracking', '24/7 support'],
     recommended: true,
   },
 ];

@@ -13,7 +13,7 @@
     "noEmit": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@guardio/ui": ["../../packages/ui/src"],
+      "@bolh/ui": ["../../packages/ui/src"],
       "@guardio/ui/*": ["../../packages/ui/src/*"]
     }
   },

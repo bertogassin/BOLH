@@ -1,7 +1,7 @@
 import { createSignal, For, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Avatar, Card, ListItem, Icon, Button, Badge } from '@guardio/ui';
-import { authStore } from '@guardio/ui/stores/auth';
+import { Avatar, Card, ListItem, Icon, Button, Badge } from '@bolh/ui';
+import { authStore } from '@bolh/ui/stores/auth';
 
 type UserRole = 'client' | 'worker';
 type VisibilityMode = 'on_map' | 'online_hidden' | 'offline';
@@ -455,7 +455,7 @@ export default function ProfilePage() {
 
       {/* App version */}
       <p class="text-center text-xs text-gray-400">
-        Guardio v2.0.0
+        BOLH v2.0.0
       </p>
     </div>
   );

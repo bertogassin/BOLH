@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Button, Input, Icon } from '@guardio/ui';
-import { authStore } from '@guardio/ui/stores/auth';
+import { Button, Input, Icon } from '@bolh/ui';
+import { authStore } from '@bolh/ui/stores/auth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function LoginPage() {
           <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
             <Icon name="shield" size="xl" class="text-white" />
           </div>
-          <h1 class="text-2xl font-bold text-gray-900">Welcome to Guardio</h1>
+          <h1 class="text-2xl font-bold text-gray-900">Welcome to BOLH</h1>
           <p class="text-gray-500 mt-2">Sign in to continue</p>
         </div>
 

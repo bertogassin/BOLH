@@ -11,7 +11,7 @@ use uuid::Uuid;
 #[serde(rename_all = "lowercase")]
 pub enum UserRole {
     Client,
-    Guard,
+    Specialist,
     Admin,
 }
 
@@ -19,7 +19,7 @@ impl std::fmt::Display for UserRole {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             UserRole::Client => write!(f, "client"),
-            UserRole::Guard => write!(f, "guard"),
+            UserRole::Specialist => write!(f, "specialist"),
             UserRole::Admin => write!(f, "admin"),
         }
     }
@@ -148,15 +148,15 @@ impl Permissions {
     }
 
     pub fn can_accept_order(role: UserRole) -> bool {
-        matches!(role, UserRole::Guard | UserRole::Admin)
+        matches!(role, UserRole::Specialist | UserRole::Admin)
     }
 
-    pub fn can_manage_guards(role: UserRole) -> bool {
+    pub fn can_manage_specialists(role: UserRole) -> bool {
         matches!(role, UserRole::Admin)
     }
 
     pub fn can_view_analytics(role: UserRole) -> bool {
-        matches!(role, UserRole::Guard | UserRole::Admin)
+        matches!(role, UserRole::Specialist | UserRole::Admin)
     }
 
     pub fn can_process_payments(role: UserRole) -> bool {
@@ -174,9 +174,9 @@ mod tests {
 
     #[test]
     fn test_claims_creation() {
-        let claims = Claims::new(123, UserRole::Guard, 24);
+        let claims = Claims::new(123, UserRole::Specialist, 24);
         assert_eq!(claims.user_id(), Some(123));
-        assert_eq!(claims.role, UserRole::Guard);
+        assert_eq!(claims.role, UserRole::Specialist);
         assert!(!claims.is_expired());
     }
 
@@ -184,7 +184,7 @@ mod tests {
     fn test_permissions() {
         assert!(Permissions::can_create_order(UserRole::Client));
         assert!(!Permissions::can_accept_order(UserRole::Client));
-        assert!(Permissions::can_accept_order(UserRole::Guard));
+        assert!(Permissions::can_accept_order(UserRole::Specialist));
         assert!(Permissions::can_access_admin_panel(UserRole::Admin));
     }
 }

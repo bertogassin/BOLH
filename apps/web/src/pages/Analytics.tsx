@@ -1,6 +1,6 @@
 import { For } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Card, Icon, Badge } from '@guardio/ui';
+import { Card, Icon, Badge } from '@bolh/ui';
 
 // Mock data for guard analytics
 const stats = {

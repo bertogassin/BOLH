@@ -262,7 +262,7 @@ mod tests {
     #[test]
     fn test_aes256_roundtrip() {
         let key = CryptoService::generate_key();
-        let plaintext = "Hello, Guardio!";
+        let plaintext = "Hello, BOLH!";
         
         let encrypted = CryptoService::encrypt_aes256(plaintext, &key).unwrap();
         let decrypted = CryptoService::decrypt_aes256(&encrypted, &key).unwrap();

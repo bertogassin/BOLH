@@ -8,7 +8,7 @@ use axum::{
     response::Response,
 };
 use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
-use guardio_core::auth::Claims;
+use bolh_core::auth::Claims;
 
 /// Extract and validate JWT token
 pub async fn auth_middleware(
@@ -47,6 +47,6 @@ pub async fn rate_limit_middleware(
     request: Request<Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
-    // TODO: Implement rate limiting using guardio_core
+    // TODO: Implement rate limiting using bolh_core
     Ok(next.run(request).await)
 }

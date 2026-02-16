@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { useNavigate, useSearchParams } from '@solidjs/router';
-import { Button, Input, Card, Icon, Badge } from '@guardio/ui';
+import { Button, Input, Card, Icon, Badge } from '@bolh/ui';
 
 const serviceTypes = [
   { id: 'bodyguard', label: 'Bodyguard', icon: 'shield', price: 5000 },

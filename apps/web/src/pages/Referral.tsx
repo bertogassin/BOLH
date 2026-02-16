@@ -1,6 +1,6 @@
 import { createSignal, For, Show, onMount } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { Icon, Button } from '@guardio/ui';
+import { Icon, Button } from '@bolh/ui';
 
 // Referral tier info
 const tiers = [

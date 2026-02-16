@@ -24,7 +24,7 @@ impl SecureStorage {
 
     /// Initialize storage with a master key
     pub fn initialize(&mut self, master_key: &str) -> Result<(), StorageError> {
-        let key_hash = CryptoService::sha256(&format!("{}:guardio_salt_v2", master_key));
+        let key_hash = CryptoService::sha256(&format!("{}:bolh_salt_v2", master_key));
         self.master_key = Some(key_hash[..32].to_string());
         self.is_unlocked = true;
         Ok(())

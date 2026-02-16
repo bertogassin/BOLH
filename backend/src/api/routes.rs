@@ -18,7 +18,7 @@ pub fn api_routes(pool: PgPool, blockchain_ws: Arc<BlockchainWsManager>, notific
     Router::new()
         .nest("/auth", auth_routes())
         .nest("/users", user_routes())
-        .nest("/guards", guard_routes())
+        .nest("/specialists", specialist_routes())
         .nest("/orders", order_routes())
         .nest("/payments", payment_routes())
         .nest("/chat", chat_routes())
@@ -44,7 +44,7 @@ fn user_routes() -> Router {
         .route("/:id", get(handlers::users::get_user_by_id))
 }
 
-fn guard_routes() -> Router {
+fn specialist_routes() -> Router {
     Router::new()
         .route("/", get(handlers::guards::list_guards))
         .route("/nearby", get(handlers::guards::nearby_guards))
