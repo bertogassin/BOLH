@@ -24,8 +24,8 @@
   --text-muted: #94a3b8;
   --border: #475569;
   --glow: rgba(99, 102, 241, 0.3);
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(148, 163, 184, 0.45);
   --input-bg: rgba(241, 245, 249, 0.8);
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
 }
@@ -38,8 +38,8 @@
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --border-color: rgba(148, 163, 184, 0.1);
-  --glass-bg: rgba(30, 41, 59, 0.88);
-  --glass-border: rgba(148, 163, 184, 0.12);
+  --glass-bg: rgba(30, 41, 59, 0.92);
+  --glass-border: rgba(148, 163, 184, 0.16);
   --input-bg: rgba(51, 65, 85, 0.5);
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.15);
 }
@@ -75,8 +75,8 @@ body {
 /* ========== GLASSMORPHISM (Optimized) ========== */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid var(--glass-border);
   box-shadow: var(--card-shadow);
   will-change: transform;
@@ -620,9 +620,15 @@ body {
 
 /* ========== NAV BAR EFFECTS ========== */
 nav.glass {
-  backdrop-filter: blur(30px) saturate(200%);
-  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
+
+/* ========== DESIGN TIGHTENING: SHARPER CORNERS ========== */
+.rounded-3xl { border-radius: 1.1rem; }
+.rounded-2xl { border-radius: 0.95rem; }
+.rounded-xl { border-radius: 0.8rem; }
+.rounded-lg { border-radius: 0.65rem; }
 
 /* ========== SELECTION ========== */
 ::selection {
