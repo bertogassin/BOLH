@@ -14,8 +14,8 @@ function LikeBadge(props: { likeKey: string; compact?: boolean }) {
   return (
     <button
       type="button"
-      class={`absolute ${compact() ? 'top-0.5 left-0.5 px-0.5 py-[1px] rounded-md gap-[1px]' : 'top-1 left-1 px-1 py-0.5 rounded-lg gap-0.5'} font-bold flex items-center backdrop-blur-md z-10 text-white/90`}
-      style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); background: rgba(0,0,0,0.2);"
+      class={`absolute ${compact() ? 'top-0.5 left-0.5 px-0.5 py-[1px] rounded-md gap-[1px]' : 'top-1 left-1 px-1 py-0.5 rounded-lg gap-0.5'} font-bold flex items-center z-10 text-white/90`}
+      style="background: rgba(0,0,0,0.45);"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -75,6 +75,14 @@ function SwipeBack(props: { onBack: () => void; children: any }) {
   let swiping = false;
   let el: HTMLDivElement | undefined;
 
+  const resetEl = () => {
+    if (!el) return;
+    el.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
+    el.style.transform = 'translate3d(0,0,0)';
+    el.style.opacity = '1';
+    el.style.willChange = 'auto';
+  };
+
   const onTouchStart = (e: TouchEvent) => {
     const touch = e.touches[0];
     if (touch.clientX > 60) return;
@@ -82,7 +90,10 @@ function SwipeBack(props: { onBack: () => void; children: any }) {
     startY = touch.clientY;
     currentX = 0;
     swiping = true;
-    if (el) el.style.transition = 'none';
+    if (el) {
+      el.style.willChange = 'transform, opacity';
+      el.style.transition = 'none';
+    }
   };
 
   const onTouchMove = (e: TouchEvent) => {
@@ -90,7 +101,7 @@ function SwipeBack(props: { onBack: () => void; children: any }) {
     const touch = e.touches[0];
     const dx = touch.clientX - startX;
     const dy = touch.clientY - startY;
-    if (Math.abs(dy) > Math.abs(dx) && currentX < 10) { swiping = false; return; }
+    if (Math.abs(dy) > Math.abs(dx) && currentX < 10) { swiping = false; resetEl(); return; }
     if (dx < 0) return;
     currentX = dx;
     if (el) {
@@ -101,7 +112,7 @@ function SwipeBack(props: { onBack: () => void; children: any }) {
   };
 
   const onTouchEnd = () => {
-    if (!swiping) return;
+    if (!swiping) { return; }
     swiping = false;
     if (currentX > window.innerWidth * 0.3) {
       if (el) {
@@ -113,21 +124,23 @@ function SwipeBack(props: { onBack: () => void; children: any }) {
       playGlobalSound('swoosh');
       setTimeout(() => props.onBack(), 200);
     } else {
-      if (el) {
-        el.style.transition = 'transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease';
-        el.style.transform = 'translate3d(0,0,0)';
-        el.style.opacity = '1';
-      }
+      resetEl();
     }
+  };
+
+  const onTouchCancel = () => {
+    swiping = false;
+    resetEl();
   };
 
   return (
     <div
       ref={el}
-      style="will-change: transform; min-height: 100vh;"
+      style="min-height: 100vh;"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchCancel}
     >
       {props.children}
     </div>

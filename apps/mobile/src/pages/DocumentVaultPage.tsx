@@ -365,7 +365,7 @@ export default function DocumentVaultPage(props: { onBack: () => void }) {
       <Show when={previewDoc()}>
         {(doc) => (
           <div
-            class="fixed inset-0 z-50 flex flex-col bg-black/80 backdrop-blur-md animate-fade-in"
+            class="fixed inset-0 z-50 flex flex-col bg-black/90 animate-fade-in"
             onClick={() => setPreviewDoc(null)}
           >
             <div class="p-4 flex items-center justify-between border-b border-white/10">
@@ -407,7 +407,7 @@ export default function DocumentVaultPage(props: { onBack: () => void }) {
 
       {/* Section 8: Upload Flow */}
       <Show when={showUpload()}>
-        <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => !uploading() && setShowUpload(false)}>
+        <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/65 animate-fade-in" onClick={() => !uploading() && setShowUpload(false)}>
           <div class="w-full max-w-lg rounded-t-3xl glass border-t border-white/20 p-6 pb-10 animate-slide-up" onClick={e => e.stopPropagation()}>
             <Switch>
               <Match when={uploadSuccess()}>
@@ -457,7 +457,7 @@ export default function DocumentVaultPage(props: { onBack: () => void }) {
       {/* Section 10: Sharing Controls */}
       <Show when={showShare() && shareDoc()}>
         {(doc) => (
-          <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm animate-fade-in" onClick={() => setShowShare(false)}>
+          <div class="fixed inset-0 z-50 flex items-end justify-center bg-black/65 animate-fade-in" onClick={() => setShowShare(false)}>
             <div class="w-full max-w-lg rounded-t-3xl glass border-t border-white/20 p-6 pb-10 animate-slide-up" onClick={e => e.stopPropagation()}>
               <p class="text-white font-semibold mb-4">{t('docs.share')}: {docName(doc())}</p>
               <div class="space-y-3">

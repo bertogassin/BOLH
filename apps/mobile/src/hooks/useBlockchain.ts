@@ -3,7 +3,7 @@
  * Manages wallet, balance, transactions, and consensus state
  */
 
-import { createSignal, createEffect, onMount, Accessor } from "solid-js";
+import { createSignal, createEffect, onMount, onCleanup, Accessor } from "solid-js";
 import { createBlockchainApi } from "../api/blockchain";
 import type {
   WalletInfo,
@@ -286,9 +286,8 @@ export function useBlockchain(): BlockchainStore {
   // Auto-refresh on mount
   onMount(() => {
     init();
-    const consensusInterval = setInterval(refreshConsensus, 5000); // Every 5s
+    const consensusInterval = setInterval(refreshConsensus, 5000);
     
-    // Auto-refresh balance every 10 seconds
     const balanceInterval = setInterval(() => {
       if (currentWallet() && !balanceLoading()) {
         setIsAutoRefreshing(true);
@@ -296,10 +295,10 @@ export function useBlockchain(): BlockchainStore {
       }
     }, 10000);
     
-    return () => {
+    onCleanup(() => {
       clearInterval(consensusInterval);
       clearInterval(balanceInterval);
-    };
+    });
   });
 
   return {

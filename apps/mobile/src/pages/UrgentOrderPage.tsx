@@ -67,6 +67,8 @@ export default function UrgentOrderPage(props: { onBack: () => void }) {
         });
       }, 1000);
 
+      onCleanup(() => { clearInterval(radiusTimer); clearInterval(timer); });
+
       // Guard 1: Accepts your price
       setTimeout(() => {
         setOffers(prev => [...prev, {

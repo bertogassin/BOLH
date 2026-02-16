@@ -51,7 +51,7 @@ export default function IncidentReportPage(props: { onBack: () => void }) {
       <textarea value={desc()} onInput={(e)=>setDesc(e.currentTarget.value)} placeholder={t('incident.descPlaceholder')} rows={4} class="w-full px-4 py-3 glass rounded-2xl text-sm outline-none resize-none mb-5"/>
       <p class="text-sm font-medium text-gray-700 mb-3">{t('incident.photos')}</p>
       <div class="flex gap-3 mb-6"><button onClick={()=>{setPhotos(photos()+1);haptic('light');}} class="w-20 h-20 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center touch-scale"><Icon name="camera" class="text-gray-400"/></button><For each={Array(photos())}>{(_,i)=>(<div class="w-20 h-20 bg-gray-200 rounded-xl flex items-center justify-center"><span class="text-sm text-gray-500">#{i()+1}</span></div>)}</For></div>
-      <div class="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-white/80 backdrop-blur-lg" style="z-index:50">
+      <div class="fixed bottom-0 left-0 right-0 p-4 safe-area-bottom bg-white/95" style="z-index:50">
         <button class="w-full py-4 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-2xl font-bold text-lg touch-scale disabled:opacity-50 flex items-center justify-center gap-2" disabled={!selType()||!desc()||submitting()} onClick={submit}>
           <Show when={submitting()} fallback={<><Icon name="send" class="text-white" size="sm"/>{t('incident.submit')}</>}><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"/></Show>
         </button>

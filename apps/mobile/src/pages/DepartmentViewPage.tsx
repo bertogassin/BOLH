@@ -84,7 +84,7 @@ export default function DepartmentViewPage(props: { onNavigate: (page: string) =
         <div class="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           <For each={dept()?.skills || []}>
             {(skill) => (
-              <span class="px-3 py-1.5 bg-white/20 backdrop-blur rounded-full text-white text-xs font-medium whitespace-nowrap flex items-center gap-1">
+              <span class="px-3 py-1.5 bg-white/35 rounded-full text-white text-xs font-medium whitespace-nowrap flex items-center gap-1">
                 <span>{skill.icon}</span>
                 <span>{currentLang() === 'en' ? skill.nameEn : skill.name}</span>
                 <Show when={skill.isExpert}>

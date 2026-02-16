@@ -362,7 +362,7 @@ export default function MyBoardPage(props: { onNavigate: (page: string) => void 
       {/* Onboarding overlay */}
       <Show when={showOnboard()}>
         <div
-          style="position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);"
+          style="position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(0,0,0,0.85);"
           onClick={(e) => { if (e.target === e.currentTarget) dismissOnboard(); }}
         >
           <div style="max-width: 340px; width: 100%; border-radius: 28px; overflow: hidden; background: linear-gradient(145deg, #1e1b4b, #312e81); box-shadow: 0 20px 60px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);">

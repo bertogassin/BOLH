@@ -60,7 +60,7 @@ export default function WorkerDetailPage(props: { onBack: () => void; onNavigate
         </button>
       </div>
       {/* Profile card */}
-      <div style="margin: -48px 16px 0; background: rgba(255,255,255,0.08); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(20px); text-align: center; position: relative;">
+      <div style="margin: -48px 16px 0; background: rgba(255,255,255,0.15); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; position: relative;">
         <div style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; margin: -56px auto 12px; border: 4px solid #1a1a2e; box-shadow: 0 4px 20px rgba(99,102,241,0.4);">
           <span style="font-size: 32px; color: #fff; font-weight: 700;">А</span>
         </div>
@@ -139,7 +139,7 @@ export default function WorkerDetailPage(props: { onBack: () => void; onNavigate
         </Show>
       </div>
       {/* Bottom actions */}
-      <div style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; background: rgba(10,10,20,0.9); backdrop-filter: blur(20px); z-index: 50; display: flex; gap: 12px;">
+      <div style="position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; background: rgba(10,10,20,0.95); z-index: 50; display: flex; gap: 12px;">
         <button style="flex: 1; padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onClick={() => props.onNavigate('chat')}>💬 {isEn()?'Message':'Написать'}</button>
         <button style="flex: 1; padding: 14px; border-radius: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 14px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(99,102,241,0.4); display: flex; align-items: center; justify-content: center; gap: 6px;" onClick={() => props.onNavigate('createorder')}>⚡ {isEn()?'Book Now':'Заказать'}</button>
       </div>

@@ -394,7 +394,7 @@ export default function WalletPage(props: { onBack: () => void; onNavigate?: (pa
       {/* Gradient header */}
       <div class="bg-gradient-to-br from-indigo-600 via-purple-600 to-violet-700 px-4 pt-3 pb-4" style="padding-top: max(env(safe-area-inset-top), 12px)">
         <div class="flex items-center gap-3 mb-3">
-          <button type="button" class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm"
+          <button type="button" class="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center touch-press"
             onClick={() => { playGlobalSound('swoosh'); props.onBack(); }}>
             <Icon name="chevronLeft" class="text-white" size="sm" />
           </button>
@@ -402,7 +402,7 @@ export default function WalletPage(props: { onBack: () => void; onNavigate?: (pa
             <p class="text-white/90 text-xs font-medium">{currentLang() === 'en' ? 'Blockchain' : 'Блокчейн'}</p>
             <h1 class="text-white font-bold text-lg">BOLH Wallet</h1>
           </div>
-          <button class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm" onClick={() => props.onNavigate?.('payments')}>
+          <button class="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center touch-press" onClick={() => props.onNavigate?.('payments')}>
             <Icon name="creditCard" class="text-white" size="sm" />
           </button>
         </div>

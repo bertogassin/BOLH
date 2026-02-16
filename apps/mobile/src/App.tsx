@@ -163,8 +163,8 @@ export default function App() {
 
       <Show when={showNav()}>
         <nav class="fixed bottom-0 left-0 right-0 safe-area-bottom" style="z-index: 100">
-          <div class="absolute inset-0 backdrop-blur-2xl bg-black/60 border-t border-white/[0.06]" style="-webkit-backdrop-filter: blur(40px) saturate(180%); backdrop-filter: blur(40px) saturate(180%);" />
-          <div class="relative flex items-end justify-around px-2 pt-2 pb-3">
+          <div class="absolute inset-0 bg-[#0a0a12]/90 border-t border-white/[0.06] pointer-events-none" />
+          <div class="relative flex items-end justify-around px-2 pt-2 pb-3" style="z-index: 1">
             <For each={NAV_ITEMS}>
               {(item) => {
                 const isActive = () => currentPage() === item.id;

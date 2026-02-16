@@ -128,7 +128,7 @@ export default function ChatPage(props: { onBack: () => void }) {
   return (
     <div class="h-screen flex flex-col animate-fade-in bg-gradient-to-b from-slate-900/20 to-transparent">
       {/* Header */}
-      <div class={`flex items-center gap-3 p-4 safe-area-top ${isDark() ? 'bg-black/90' : 'bg-white/80'} backdrop-blur-xl border-b border-gray-200/50 shadow-sm`}>
+      <div class={`flex items-center gap-3 p-4 safe-area-top ${isDark() ? 'bg-black/95' : 'bg-white/95'} border-b border-gray-200/50 shadow-sm`}>
         <button onClick={props.onBack} class="w-10 h-10 rounded-full flex items-center justify-center touch-scale active:opacity-70">
           <Icon name="chevronLeft" class={isDark() ? 'text-white' : 'text-gray-700'} size="sm" />
         </button>
@@ -193,7 +193,7 @@ export default function ChatPage(props: { onBack: () => void }) {
       </div>
 
       {/* Input bar */}
-      <div class={`p-3 safe-area-bottom ${isDark() ? 'bg-black/95' : 'bg-white/90'} backdrop-blur-xl border-t border-gray-200/50`}>
+      <div class={`p-3 safe-area-bottom ${isDark() ? 'bg-black/98' : 'bg-white/95'} border-t border-gray-200/50`}>
         <div class="flex items-center gap-2 glass rounded-2xl pl-4 pr-2 py-2">
           <input
             type="text"

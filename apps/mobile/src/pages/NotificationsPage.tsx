@@ -150,7 +150,7 @@ export default function NotificationsPage(props: { onBack: () => void }) {
   return (
     <div style={`min-height: 100vh; ${isDark() ? 'background: #0a0a0f;' : 'background: #f8f9fa;'}`}>
       {/* ── Header ── */}
-      <div style={`display: flex; align-items: center; justify-content: space-between; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); ${isDark() ? 'background: rgba(0,0,0,0.95);' : 'background: rgba(255,255,255,0.95);'} backdrop-filter: blur(20px); border-bottom: 1px solid ${isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06);'}`}>
+      <div style={`display: flex; align-items: center; justify-content: space-between; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); ${isDark() ? 'background: rgba(0,0,0,0.98);' : 'background: rgba(255,255,255,0.98);'} border-bottom: 1px solid ${isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06);'}`}>
         <div style="display: flex; align-items: center; gap: 12px;">
           <button onClick={props.onBack} style={`width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ${isDark() ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'}; border: none; cursor: pointer;`}>
             <span style={`font-size: 18px; color: ${isDark() ? '#fff' : '#333'};`}>←</span>

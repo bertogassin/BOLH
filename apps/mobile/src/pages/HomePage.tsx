@@ -198,9 +198,7 @@ export default function HomePage(props: { onNavigate: (page: string) => void }) 
 
               return (
                 <div class="absolute inset-0 rounded-2xl overflow-hidden animate-fade-in" style={{
-                  background: `linear-gradient(145deg, ${dept()?.colorFrom}18, rgba(0,0,0,0.6))`,
-                  'backdrop-filter': 'blur(8px)',
-                  '-webkit-backdrop-filter': 'blur(8px)',
+                  background: `linear-gradient(145deg, ${dept()?.colorFrom}30, rgba(0,0,0,0.85))`,
                 }}>
                   <div class="h-full flex flex-col p-3">
                     {/* Header — adapts to current depth */}

@@ -199,8 +199,6 @@ function MobileElina(props: { size?: number }) {
 
   const onTap = (e: MouseEvent | TouchEvent) => {
     if (isDragging()) return;
-    e.preventDefault();
-    e.stopPropagation();
 
     const now = Date.now();
     if (now - lastTapMs() <= 500) { setTapCnt(x => x + 1); } else { setTapCnt(1); }
@@ -320,7 +318,7 @@ function MobileElina(props: { size?: number }) {
   return (
     <div
       class="relative inline-flex items-center justify-center"
-      style={{ width: `${sz() * 1.2}px`, height: `${sz() * 1.2}px`, 'touch-action': 'none', ...posStyle() }}
+      style={{ width: `${sz() * 1.2}px`, height: `${sz() * 1.2}px`, 'touch-action': isDragging() ? 'none' : 'auto', ...posStyle() }}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}

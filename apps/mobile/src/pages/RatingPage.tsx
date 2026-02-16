@@ -97,13 +97,13 @@ export default function RatingPage(props: { onBack: () => void }) {
           <div class="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 opacity-90" />
           <div class="absolute inset-0 bg-black/20" />
           <div class="relative flex items-center gap-4">
-            <button onClick={props.onBack} class="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center touch-scale">
+            <button onClick={props.onBack} class="w-10 h-10 rounded-full bg-white/30 flex items-center justify-center touch-scale">
               <Icon name="chevronLeft" class="text-white" size="sm" />
             </button>
             <h1 class="text-xl font-bold text-white">{t('rating.title')}</h1>
           </div>
           <div class="relative mt-6 flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-white/30 backdrop-blur flex items-center justify-center text-3xl shadow-lg">
+            <div class="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center text-3xl shadow-lg">
               {worker.avatar}
             </div>
             <div>

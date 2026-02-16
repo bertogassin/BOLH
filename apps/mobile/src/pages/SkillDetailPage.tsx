@@ -74,7 +74,7 @@ export default function SkillDetailPage(props: { onBack: () => void }) {
       {/* Заголовок с градиентом */}
       <div class={`bg-gradient-to-br ${dept()?.color || 'from-indigo-500 to-purple-600'} px-4 pt-3 pb-5`} style="padding-top: max(env(safe-area-inset-top), 12px)">
         <div class="flex items-center gap-3 mb-4">
-          <button type="button" class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm"
+          <button type="button" class="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center touch-press"
             onClick={() => { playGlobalSound('swoosh'); props.onBack(); }}>
             <Icon name="chevronLeft" class="text-white" size="sm" />
           </button>
@@ -82,7 +82,7 @@ export default function SkillDetailPage(props: { onBack: () => void }) {
             <p class="text-white/90 text-xs font-medium">{isWorkerMode() ? t('profile.myProfessions') : (currentLang() === 'en' ? 'Services I Need' : 'Нужные услуги')}</p>
             <h1 class="text-white font-bold text-lg">{dName()}</h1>
           </div>
-          <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+          <div class="w-14 h-14 rounded-2xl bg-white/30 flex items-center justify-center">
             <SkillIcon icon={dept()?.icon || ''} class="text-white" size="lg" />
           </div>
         </div>

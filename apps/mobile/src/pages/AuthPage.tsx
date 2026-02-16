@@ -205,7 +205,7 @@ export default function AuthPage(props: { onComplete: () => void }) {
 
       {/* Language picker dropdown */}
       <Show when={showLangPicker()}>
-        <div style="position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);" onClick={() => setShowLangPicker(false)}>
+        <div style="position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8);" onClick={() => setShowLangPicker(false)}>
           <div style="width: 90%; max-width: 340px; max-height: 70vh; background: linear-gradient(160deg, #1a1040, #0f0a2e); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.5);" onClick={(e) => e.stopPropagation()}>
             <div style="padding: 18px 20px 12px; border-bottom: 1px solid rgba(255,255,255,0.08);">
               <p style="color: #fff; font-size: 16px; font-weight: 700; margin: 0;">🌍 Choose Language</p>

@@ -116,7 +116,7 @@ export default function PaymentsPage(props: { onBack: () => void }) {
         </div>
 
         {/* Balance Card */}
-        <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.2);">
+        <div style="background: rgba(255,255,255,0.25); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.2);">
           <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0 0 4px;">{isEn() ? 'Available Balance' : 'Доступный баланс'}</p>
           <p style="color: #fff; font-size: 36px; font-weight: 800; margin: 0; letter-spacing: -1px;">{balance().toLocaleString()} <span style="font-size: 18px; font-weight: 400; opacity: 0.8;">₸</span></p>
           <Show when={frozenBalance() > 0}>
@@ -287,7 +287,7 @@ export default function PaymentsPage(props: { onBack: () => void }) {
 
       {/* ══════ Deposit Modal ══════ */}
       <Show when={showDeposit()}>
-        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowDeposit(false)}>
+        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.78); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowDeposit(false)}>
           <div style={`width: 100%; max-width: 420px; border-radius: 24px 24px 0 0; padding: 24px; padding-bottom: max(24px, env(safe-area-inset-bottom)); ${isDark() ? 'background: #1a1a2e;' : 'background: #fff;'} animation: slideUp 0.3s ease-out;`} onClick={(e: any) => e.stopPropagation()}>
             <div style="width: 40px; height: 4px; border-radius: 2px; background: rgba(128,128,128,0.3); margin: 0 auto 16px;" />
             <h3 style={`font-size: 20px; font-weight: 800; margin: 0 0 16px; color: ${isDark() ? '#fff' : '#111'};`}>💰 {isEn() ? 'Top Up Balance' : 'Пополнить баланс'}</h3>
@@ -315,7 +315,7 @@ export default function PaymentsPage(props: { onBack: () => void }) {
 
       {/* ══════ Withdraw Modal ══════ */}
       <Show when={showWithdraw()}>
-        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowWithdraw(false)}>
+        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.78); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowWithdraw(false)}>
           <div style={`width: 100%; max-width: 420px; border-radius: 24px 24px 0 0; padding: 24px; padding-bottom: max(24px, env(safe-area-inset-bottom)); ${isDark() ? 'background: #1a1a2e;' : 'background: #fff;'} animation: slideUp 0.3s ease-out;`} onClick={(e: any) => e.stopPropagation()}>
             <div style="width: 40px; height: 4px; border-radius: 2px; background: rgba(128,128,128,0.3); margin: 0 auto 16px;" />
             <h3 style={`font-size: 20px; font-weight: 800; margin: 0 0 6px; color: ${isDark() ? '#fff' : '#111'};`}>📤 {isEn() ? 'Withdraw' : 'Вывод средств'}</h3>
@@ -340,7 +340,7 @@ export default function PaymentsPage(props: { onBack: () => void }) {
 
       {/* ══════ Add Card Modal ══════ */}
       <Show when={showAddCard()}>
-        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowAddCard(false)}>
+        <div style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.78); display: flex; align-items: flex-end; justify-content: center;" onClick={() => setShowAddCard(false)}>
           <div style={`width: 100%; max-width: 420px; border-radius: 24px 24px 0 0; padding: 24px; padding-bottom: max(24px, env(safe-area-inset-bottom)); ${isDark() ? 'background: #1a1a2e;' : 'background: #fff;'} animation: slideUp 0.3s ease-out;`} onClick={(e: any) => e.stopPropagation()}>
             <div style="width: 40px; height: 4px; border-radius: 2px; background: rgba(128,128,128,0.3); margin: 0 auto 16px;" />
             <h3 style={`font-size: 20px; font-weight: 800; margin: 0 0 16px; color: ${isDark() ? '#fff' : '#111'};`}>💳 {isEn() ? 'Add Card' : 'Добавить карту'}</h3>

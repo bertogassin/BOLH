@@ -142,7 +142,7 @@ export default function ReferralPage(props: { onBack: () => void }) {
       {/* Gradient header */}
       <div class="bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 px-4 pt-3 pb-5" style="padding-top: max(env(safe-area-inset-top), 12px)">
         <div class="flex items-center gap-3 mb-4">
-          <button type="button" class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center touch-press backdrop-blur-sm"
+          <button type="button" class="w-10 h-10 rounded-2xl bg-white/30 flex items-center justify-center touch-press"
             onClick={() => { playGlobalSound('swoosh'); props.onBack(); }}>
             <Icon name="chevronLeft" class="text-white" size="sm" />
           </button>
@@ -150,21 +150,21 @@ export default function ReferralPage(props: { onBack: () => void }) {
             <p class="text-white/90 text-xs font-medium">{currentLang() === 'en' ? 'Blockchain' : 'Блокчейн'}</p>
             <h1 class="text-white font-bold text-lg">{currentLang() === 'en' ? 'Referral Program' : 'Реферальная программа'}</h1>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+          <div class="w-12 h-12 rounded-2xl bg-white/30 flex items-center justify-center">
             <Icon name="handshake" size="lg" class="text-white" />
           </div>
         </div>
         {/* Mini stats in header */}
         <div class="flex gap-2">
-          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+          <div class="flex-1 rounded-xl bg-white/25 px-3 py-2 text-center">
             <div class="text-white font-bold text-lg">{myStats().referral_count}</div>
             <div class="text-white/90 text-[10px]">{currentLang() === 'en' ? 'Invited' : 'Приглашено'}</div>
           </div>
-          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+          <div class="flex-1 rounded-xl bg-white/25 px-3 py-2 text-center">
             <div class="text-white font-bold text-lg">{formatBolh(myStats().total_earned)}</div>
             <div class="text-white/90 text-[10px]">BOLH</div>
           </div>
-          <div class="flex-1 rounded-xl bg-white/15 backdrop-blur-sm px-3 py-2 text-center">
+          <div class="flex-1 rounded-xl bg-white/25 px-3 py-2 text-center">
             <div class="text-white font-bold text-lg flex items-center justify-center gap-1"><Icon name={tiersList[currentTier() - 1]?.icon ?? 'trophy'} size="sm" class="text-white" /> T{currentTier()}</div>
             <div class="text-white/90 text-[10px]">{currentLang() === 'en' ? 'Tier' : 'Тир'}</div>
           </div>
