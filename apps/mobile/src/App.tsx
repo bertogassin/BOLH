@@ -1228,6 +1228,8 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
 
   return (
     <div class="p-4 animate-fade-in">
+      <p class="text-white text-sm font-medium mb-3">да я могу тут написать</p>
+
       {/* Header with Elina */}
       <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-3">
