@@ -32,6 +32,8 @@ struct LoadedLib {
     get_utxos: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     reveal_private_tx: Symbol<'static, unsafe extern "C" fn(CStrPtr, CStrPtr) -> CStrPtr>,
     get_reveal_audit: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
+    policy_snapshot: Symbol<'static, unsafe extern "C" fn() -> CStrPtr>,
+    export_audit_signed: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     validate_and_process_tx: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     utxo_persist: Symbol<'static, unsafe extern "C" fn() -> CStrPtr>,
 
@@ -130,6 +132,12 @@ impl LoadedLib {
                 get_reveal_audit: lib
                     .get(b"bolh_get_reveal_audit\0")
                     .map_err(|e| format!("bolh_get_reveal_audit: {}", e))?,
+                policy_snapshot: lib
+                    .get(b"bolh_policy_snapshot\0")
+                    .map_err(|e| format!("bolh_policy_snapshot: {}", e))?,
+                export_audit_signed: lib
+                    .get(b"bolh_export_audit_signed\0")
+                    .map_err(|e| format!("bolh_export_audit_signed: {}", e))?,
                 validate_and_process_tx: lib
                     .get(b"bolh_validate_and_process_tx\0")
                     .map_err(|e| format!("bolh_validate_and_process_tx: {}", e))?,
@@ -330,6 +338,25 @@ pub fn bolh_get_reveal_audit(limit: Option<u32>) -> Result<String, String> {
     let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
     let c_limit = CString::new(limit.unwrap_or(20).to_string()).map_err(|e| e.to_string())?;
     let r = unsafe { (lib.get_reveal_audit)(c_limit.as_ptr()) };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_policy_snapshot() -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let r = unsafe { (lib.policy_snapshot)() };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_export_audit_signed(limit: Option<u32>) -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let c_limit = CString::new(limit.unwrap_or(100).to_string()).map_err(|e| e.to_string())?;
+    let r = unsafe { (lib.export_audit_signed)(c_limit.as_ptr()) };
     let s = cstr_to_string(r);
     free_cstr(r);
     Ok(s)

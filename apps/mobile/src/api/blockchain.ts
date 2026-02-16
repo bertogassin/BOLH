@@ -186,6 +186,27 @@ export interface RevealAuditRecord {
   timestamp: number;
 }
 
+export interface PolicySnapshot {
+  version: string;
+  network: string;
+  chain_id: number;
+  height: number;
+  mempool_size: number;
+  fee_policy: Record<string, unknown>;
+  ring_policy: Record<string, unknown>;
+  reveal_policy: Record<string, unknown>;
+  signature_policy: Record<string, unknown>;
+}
+
+export interface SignedAuditEnvelope {
+  algorithm: string;
+  payload_hash: string;
+  pubkey: string;
+  signature: string;
+  verified_locally: boolean;
+  payload: Record<string, unknown>;
+}
+
 export function buildQuantumPrivateTransaction(
   tx: Transaction,
   options: PrivacyOptions = {}
@@ -281,6 +302,18 @@ export async function getRevealAudit(
 ): Promise<RevealAuditRecord[]> {
   const payload = await invoke<string>("bolh_get_reveal_audit", { limit });
   return parseOrThrow<RevealAuditRecord[]>(payload, "getRevealAudit");
+}
+
+export async function getPolicySnapshot(): Promise<PolicySnapshot> {
+  const payload = await invoke<string>("bolh_policy_snapshot");
+  return parseOrThrow<PolicySnapshot>(payload, "getPolicySnapshot");
+}
+
+export async function exportSignedAudit(
+  limit: number = 100
+): Promise<SignedAuditEnvelope> {
+  const payload = await invoke<string>("bolh_export_audit_signed", { limit });
+  return parseOrThrow<SignedAuditEnvelope>(payload, "exportSignedAudit");
 }
 
 export async function validateAndProcessTx(tx: Transaction): Promise<void> {
@@ -487,6 +520,10 @@ export function createBlockchainApi() {
       persist: persistUTXOSet,
       revealPrivate: revealPrivateTransaction,
       getRevealAudit,
+    },
+    audit: {
+      getPolicySnapshot,
+      exportSigned: exportSignedAudit,
     },
     tx: {
       buildQuantumPrivate: buildQuantumPrivateTransaction,

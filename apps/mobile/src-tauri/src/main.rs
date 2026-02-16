@@ -27,6 +27,8 @@ fn main() {
             bolh_bridge::bolh_get_utxos,
             bolh_bridge::bolh_reveal_private_tx,
             bolh_bridge::bolh_get_reveal_audit,
+            bolh_bridge::bolh_policy_snapshot,
+            bolh_bridge::bolh_export_audit_signed,
             bolh_bridge::bolh_validate_and_process_tx,
             bolh_bridge::bolh_utxo_persist,
             // Consensus API
