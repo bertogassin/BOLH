@@ -4,9 +4,12 @@ members = [
     "packages/core",
     "backend",
     "apps/mobile/src-tauri",
-    "blockchain/core", "blockchain/bolh-ffi", "blockchain-service",
+    "blockchain/core",
     "elina/core",
 ]
+# Removed from workspace (unused, no dependents):
+# "blockchain/bolh-ffi"  — bolh-chain already has src/ffi.rs
+# "blockchain-service"   — standalone, not used by any app
 
 [workspace.package]
 version = "2.0.0"

@@ -1,6 +1,6 @@
-// BOLH Translations — en
-export default {
-    'greeting.morning': 'Good morning',
+// en translations
+const en: Record<string, string> = {
+'greeting.morning': 'Good morning',
     'greeting.afternoon': 'Good afternoon',
     'greeting.evening': 'Good evening',
     'greeting.night': 'Good night',
@@ -9,8 +9,8 @@ export default {
     'nav.search': 'Search',
     'nav.map': 'Map',
     'nav.orders': 'Orders',
-    'nav.myboard': 'My Board',
     'nav.wallet': 'Wallet',
+    'nav.myboard': 'Board',
     'nav.profile': 'Profile',
     'nav.tracking': 'Tracking',
     'map.searchHere': 'Search this area',
@@ -267,15 +267,6 @@ export default {
     
     'contracts.title': 'Contracts',
     'contracts.new': 'New Contract',
-    'contracts.amount': 'Amount',
-    'contracts.call': 'Call',
-    'contracts.done': 'Done',
-    'contracts.finished': 'Finished',
-    'contracts.hoursShort': 'hrs',
-    'contracts.message': 'Message',
-    'contracts.secureEscrow': 'Secure Escrow',
-    'contracts.secureEscrowDesc': 'Money held safely until job is done',
-    'contracts.stages': 'Stages',
     'contracts.active': 'Active',
     'contracts.paid': '₸ paid',
     'contracts.inEscrow': '₸ in escrow',
@@ -318,15 +309,15 @@ export default {
     'contracts.contractWord': 'Contract',
     'contracts.contractNumber': 'Contract #',
     'contracts.rate': 'Rate',
-    'contracts.amount': 'Contract amount',
+    'contracts.amount': 'Amount',
     'contracts.call': 'Call',
+    'contracts.done': 'Done',
+    'contracts.finished': 'Finished',
+    'contracts.hoursShort': 'hrs',
     'contracts.message': 'Message',
-    'contracts.done': 'done',
-    'contracts.finished': 'Completed',
-    'contracts.hoursShort': 'h',
-    'contracts.stages': 'Execution stages:',
-    'contracts.secureEscrow': 'Secure escrow',
-    'contracts.secureEscrowDesc': 'Money is held until service completion. Worker receives payment only after work is done.',
+    'contracts.secureEscrow': 'Secure Escrow',
+    'contracts.secureEscrowDesc': 'Money held until work is done. Worker gets paid only after completion.',
+    'contracts.stages': 'Stages',
     'rating.title': 'Rate Service',
     'rating.howWas': 'How was the service?',
     'rating.terrible': 'Terrible',
@@ -715,4 +706,5 @@ export default {
     'elearn.54.tr': 'Asking opinion', 'elearn.54.ex': 'Here\'s my plan. What do you think?', 'elearn.54.tip': '"I think" = My opinion is',
     'elearn.55.tr': 'Comparing things', 'elearn.55.ex': 'This is faster. This is more expensive.', 'elearn.55.tip': 'Short words + -er, long words use more',
     'elearn.56.tr': 'Agreeing / approving', 'elearn.56.ex': 'Your plan sounds good. Let\'s do it!', 'elearn.56.tip': 'Popular way to agree',
-} as Record<string, string>;
+};
+export default en;

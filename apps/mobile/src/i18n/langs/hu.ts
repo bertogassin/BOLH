@@ -1,6 +1,6 @@
-// BOLH Translations — hu
-export default {
-    'greeting.morning': 'Jó reggelt',
+// hu translations
+const hu: Record<string, string> = {
+'greeting.morning': 'Jó reggelt',
     'greeting.afternoon': 'Jó napot',
     'greeting.evening': 'Jó estét',
     'greeting.night': 'Jó éjszakát',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Keresés',
     'nav.map': 'Térkép',
     'nav.orders': 'Rendelések',
-    'nav.myboard': 'Tábla',
     'nav.profile': 'Profil',
     'nav.tracking': 'Követés',
     'map.searchHere': 'Keresés ezen a területen',
@@ -521,4 +520,5 @@ export default {
     'settings.resetDesc': 'Minden beállítás alapértelmezettre áll vissza',
     'settings.resetConfirm': 'Visszaállítás',
     'settings.cancel': 'Mégse',
-} as Record<string, string>;
+};
+export default hu;

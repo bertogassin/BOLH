@@ -1,6 +1,6 @@
-// BOLH Translations — fil
-export default {
-    'greeting.morning': 'Magandang umaga',
+// fil translations
+const fil: Record<string, string> = {
+'greeting.morning': 'Magandang umaga',
     'greeting.afternoon': 'Magandang hapon',
     'greeting.evening': 'Magandang gabi',
     'greeting.night': 'Magandang gabi',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Maghanap',
     'nav.map': 'Mapa',
     'nav.orders': 'Mga Order',
-    'nav.myboard': 'My Board',
     'nav.profile': 'Profile',
     
     'home.activeOrder': 'Aktibong Order',
@@ -469,4 +468,5 @@ export default {
     'settings.resetDesc': 'Lahat ng setting ay ibabalik sa default',
     'settings.resetConfirm': 'I-reset',
     'settings.cancel': 'Kanselahin',
-} as Record<string, string>;
+};
+export default fil;

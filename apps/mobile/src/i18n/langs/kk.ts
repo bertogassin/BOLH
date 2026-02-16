@@ -1,6 +1,6 @@
-// BOLH Translations — kk
-export default {
-    'greeting.morning': 'Қайырлы таң',
+// kk translations
+const kk: Record<string, string> = {
+'greeting.morning': 'Қайырлы таң',
     'greeting.afternoon': 'Қайырлы күн',
     'greeting.evening': 'Қайырлы кеш',
     'greeting.night': 'Қайырлы түн',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Іздеу',
     'nav.map': 'Карта',
     'nav.orders': 'Тапсырыстар',
-    'nav.myboard': 'Менің тақтам',
     'nav.profile': 'Профиль',
     'nav.tracking': 'Қадағалау',
     'map.searchHere': 'Осы аймақта іздеу',
@@ -464,4 +463,5 @@ export default {
     'settings.resetDesc': 'Барлық баптаулар әдепкіге қайтарылады',
     'settings.resetConfirm': 'Қалпына келтіру',
     'settings.cancel': 'Бас тарту',
-} as Record<string, string>;
+};
+export default kk;

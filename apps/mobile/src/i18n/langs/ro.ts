@@ -1,6 +1,6 @@
-// BOLH Translations — ro
-export default {
-    'greeting.morning': 'Bună dimineața',
+// ro translations
+const ro: Record<string, string> = {
+'greeting.morning': 'Bună dimineața',
     'greeting.afternoon': 'Bună ziua',
     'greeting.evening': 'Bună seara',
     'greeting.night': 'Noapte bună',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Căutare',
     'nav.map': 'Hartă',
     'nav.orders': 'Comenzi',
-    'nav.myboard': 'Panoul meu',
     'nav.profile': 'Profil',
     'nav.tracking': 'Urmărire',
     'map.searchHere': 'Caută în această zonă',
@@ -521,4 +520,5 @@ export default {
     'settings.resetDesc': 'Toate setările vor fi restaurate la valorile implicite',
     'settings.resetConfirm': 'Resetează',
     'settings.cancel': 'Anulare',
-} as Record<string, string>;
+};
+export default ro;

@@ -1,6 +1,6 @@
-// BOLH Translations — az
-export default {
-    'greeting.morning': 'Sabahınız xeyir',
+// az translations
+const az: Record<string, string> = {
+'greeting.morning': 'Sabahınız xeyir',
     'greeting.afternoon': 'Günortanız xeyir',
     'greeting.evening': 'Axşamınız xeyir',
     'greeting.night': 'Gecəniz xeyir',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Axtarış',
     'nav.map': 'Xəritə',
     'nav.orders': 'Sifarişlər',
-    'nav.myboard': 'Mənim lövhəm',
     'nav.profile': 'Profil',
     'nav.tracking': 'İzləmə',
     'map.searchHere': 'Bu ərazidə axtar',
@@ -474,4 +473,5 @@ export default {
     'settings.resetDesc': 'Bütün parametrlər standarta qaytarılacaq',
     'settings.resetConfirm': 'Sıfırla',
     'settings.cancel': 'Ləğv et',
-} as Record<string, string>;
+};
+export default az;

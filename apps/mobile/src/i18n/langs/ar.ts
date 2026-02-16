@@ -1,6 +1,6 @@
-// BOLH Translations — ar
-export default {
-    'greeting.morning': 'صباح الخير',
+// ar translations
+const ar: Record<string, string> = {
+'greeting.morning': 'صباح الخير',
     'greeting.afternoon': 'مساء الخير',
     'greeting.evening': 'مساء الخير',
     'greeting.night': 'تصبح على خير',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'بحث',
     'nav.map': 'الخريطة',
     'nav.orders': 'الطلبات',
-    'nav.myboard': 'لوحتي',
     'nav.profile': 'الملف',
     'nav.tracking': 'التتبع',
     'map.searchHere': 'البحث في هذه المنطقة',
@@ -524,4 +523,5 @@ export default {
     'settings.resetDesc': 'ستتم استعادة جميع الإعدادات إلى الافتراضية',
     'settings.resetConfirm': 'إعادة تعيين',
     'settings.cancel': 'إلغاء',
-} as Record<string, string>;
+};
+export default ar;

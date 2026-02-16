@@ -1,37 +1,64 @@
 # ===========================================
-# Guardio Rapidos - Root .gitignore
+# BOLH — Root .gitignore
 # ===========================================
 
-# IDE
+# ── Dependencies ──
+node_modules/
+.pnpm-store/
+
+# ── Build outputs ──
+dist/
+build/
+target/
+*.dll
+*.so
+*.dylib
+*.wasm
+
+# ── Tauri / Android generated ──
+gen/
+
+# ── IDE ──
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# OS
+# ── OS ──
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Environment
+# ── Environment ──
 .env
 .env.local
 .env.*.local
 *.env
 
-# Logs
+# ── Database files ──
+*.db
+*.sqlite
+*.sqlite3
+
+# ── Logs ──
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Docker
+# ── Docker ──
 docker-compose.override.yml
 
-# Temporary files
+# ── Temporary / artifacts ──
 tmp/
 temp/
 *.tmp
 *.temp
+Root/
+architecture_report.json
+
+# ── Test / coverage ──
+coverage/
+.nyc_output/

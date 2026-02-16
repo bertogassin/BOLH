@@ -1,6 +1,6 @@
-// BOLH Translations — no
-export default {
-    'greeting.morning': 'God morgen',
+// no translations
+const no: Record<string, string> = {
+'greeting.morning': 'God morgen',
     'greeting.afternoon': 'God dag',
     'greeting.evening': 'God kveld',
     'greeting.night': 'God natt',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Søk',
     'nav.map': 'Kart',
     'nav.orders': 'Bestillinger',
-    'nav.myboard': 'Mitt brett',
     'nav.profile': 'Profil',
     
     'home.activeOrder': 'Aktiv bestilling',
@@ -469,4 +468,5 @@ export default {
     'settings.resetDesc': 'Alle innstillinger vil bli tilbakestilt til standard',
     'settings.resetConfirm': 'Tilbakestill',
     'settings.cancel': 'Avbryt',
-} as Record<string, string>;
+};
+export default no;

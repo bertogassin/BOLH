@@ -1,6 +1,6 @@
-// BOLH Translations — ru
-export default {
-    // Greetings
+// ru translations
+const ru: Record<string, string> = {
+// Greetings
     'greeting.morning': 'Доброе утро',
     'greeting.afternoon': 'Добрый день',
     'greeting.evening': 'Добрый вечер',
@@ -11,16 +11,15 @@ export default {
     'nav.search': 'Поиск',
     'nav.map': 'Карта',
     'nav.orders': 'Заказы',
-    'nav.myboard': 'Моё',
     'nav.wallet': 'Кошелёк',
+    'nav.myboard': 'Панель',
     'nav.profile': 'Профиль',
-    'nav.tracking': 'Отслеживание',
-
+    
     // Map
     'map.searchHere': 'Поиск в этом районе',
     'map.myLocation': 'Моё местоположение',
     'map.nearby': 'Рядом',
-    'map.available': 'Доступен',
+    'map.available': 'Свободен',
     'map.busy': 'Занят',
     'map.fromYou': 'от вас',
     
@@ -702,4 +701,5 @@ export default {
     'elearn.54.tr': 'Что думаете?', 'elearn.54.ex': 'Вот мой план. Что думаете?', 'elearn.54.tip': '"I think" — Я думаю',
     'elearn.55.tr': 'Сравнения: -er / more', 'elearn.55.ex': 'Это быстрее. Это дороже.', 'elearn.55.tip': 'Короткие слова + -er, длинные — more',
     'elearn.56.tr': 'Звучит хорошо!', 'elearn.56.ex': 'Ваш план звучит хорошо. Давайте!', 'elearn.56.tip': 'Популярное одобрение в разговоре',
-} as Record<string, string>;
+};
+export default ru;

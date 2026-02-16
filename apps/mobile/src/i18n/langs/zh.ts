@@ -1,6 +1,6 @@
-// BOLH Translations — zh
-export default {
-    'greeting.morning': '早上好',
+// zh translations
+const zh: Record<string, string> = {
+'greeting.morning': '早上好',
     'greeting.afternoon': '下午好',
     'greeting.evening': '晚上好',
     'greeting.night': '晚安',
@@ -9,7 +9,6 @@ export default {
     'nav.search': '搜索',
     'nav.map': '地图',
     'nav.orders': '订单',
-    'nav.myboard': '我的面板',
     'nav.profile': '我的',
     'nav.tracking': '跟踪',
     'map.searchHere': '在此区域搜索',
@@ -480,4 +479,5 @@ export default {
     'settings.resetDesc': '所有设置将恢复为默认值',
     'settings.resetConfirm': '重置',
     'settings.cancel': '取消',
-} as Record<string, string>;
+};
+export default zh;

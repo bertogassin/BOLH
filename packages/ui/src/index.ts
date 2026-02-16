@@ -28,3 +28,30 @@ export { locationStore, useLocation } from './stores/location';
 
 // Styles
 export { colors, spacing, typography, shadows } from './styles/tokens';
+
+// ── Blockchain Components (shared between mobile & web) ──
+export { WalletManager } from './components/blockchain/WalletManager';
+export { BalanceDisplay } from './components/blockchain/BalanceDisplay';
+export { TransactionForm } from './components/blockchain/TransactionForm';
+export { ConsensusMonitor } from './components/blockchain/ConsensusMonitor';
+export { TransactionHistory } from './components/blockchain/TransactionHistory';
+export { Statistics } from './components/blockchain/Statistics';
+export { BlockchainExplorer } from './components/blockchain/BlockchainExplorer';
+export { BlockchainScreen } from './components/blockchain/BlockchainScreen';
+export { ToastContainer, showToast } from './components/blockchain/Toast';
+export type { ToastType } from './components/blockchain/Toast';
+export { Spinner as BlockchainSpinner, LoadingOverlay, SkeletonLoader } from './components/blockchain/Spinner';
+export { QRModal, QRButton } from './components/blockchain/QRModal';
+export { PasswordPrompt } from './components/blockchain/PasswordPrompt';
+export { BackupRestore } from './components/blockchain/BackupRestore';
+
+// ── Shared Utilities ──
+export { copyToClipboard } from './utils/clipboard';
+export { encryptPrivateKey, decryptPrivateKey, isEncrypted } from './utils/keyEncryption';
+export { generateSeedPhrase, validateSeedPhrase, seedToPrivateKey } from './utils/seedphrase';
+export { estimateFees, formatFee, getFeeDescription } from './api/fees';
+
+// ── Shared Types ──
+export type { BlockchainStore } from './hooks/useBlockchain';
+export type { WalletInfo, UTXO, ConsensusState, Transaction, TxRecord, TxResult, NetworkInfo, ChainStats, SmokeTestResult, SmokeTestStep } from './api/blockchain';
+export type { FeeEstimate } from './api/fees';

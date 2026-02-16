@@ -1,6 +1,6 @@
-// BOLH Translations — uz
-export default {
-    'greeting.morning': 'Xayrli tong',
+// uz translations
+const uz: Record<string, string> = {
+'greeting.morning': 'Xayrli tong',
     'greeting.afternoon': 'Xayrli kun',
     'greeting.evening': 'Xayrli kech',
     'greeting.night': 'Xayrli tun',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Qidirish',
     'nav.map': 'Xarita',
     'nav.orders': 'Buyurtmalar',
-    'nav.myboard': 'Mening taxtam',
     'nav.profile': 'Profil',
     'nav.tracking': 'Kuzatuv',
     'map.searchHere': 'Bu hududda qidirish',
@@ -476,4 +475,5 @@ export default {
     'settings.resetDesc': 'Barcha sozlamalar standartga qaytariladi',
     'settings.resetConfirm': 'Tiklash',
     'settings.cancel': 'Bekor qilish',
-} as Record<string, string>;
+};
+export default uz;

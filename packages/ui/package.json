@@ -16,7 +16,9 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "solid-js": "^1.8.11"
+    "solid-js": "^1.8.11",
+    "chart.js": "^4.4.0",
+    "qrcode": "^1.5.3"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",

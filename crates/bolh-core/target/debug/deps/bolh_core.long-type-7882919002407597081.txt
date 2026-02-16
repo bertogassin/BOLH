@@ -1,1 +1,0 @@
-Result<std::option::Option<std::string::String>, std::string::String>

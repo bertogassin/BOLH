@@ -1,6 +1,6 @@
-// BOLH Translations — ce
-export default {
-    'greeting.morning': '1уьйре дика хуьлда',
+// ce translations
+const ce: Record<string, string> = {
+'greeting.morning': '1уьйре дика хуьлда',
     'greeting.afternoon': 'Де дика хуьлда',
     'greeting.evening': 'Суьйре дика хуьлда',
     'greeting.night': 'Буьйса дика хуьлда',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Лаха',
     'nav.map': 'Карта',
     'nav.orders': 'Заказаш',
-    'nav.myboard': 'Сан хаам',
     'nav.profile': 'Профиль',
     'nav.tracking': 'Отслеживание',
     'map.searchHere': 'Лахар дуьнен тӀехь',
@@ -441,4 +440,5 @@ export default {
     'settings.resetDesc': 'Массо гlирс стандартни хиллал дуьйцур ду',
     'settings.resetConfirm': 'Юхадаккха',
     'settings.cancel': 'Цаоьшу',
-} as Record<string, string>;
+};
+export default ce;

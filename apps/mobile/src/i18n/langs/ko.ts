@@ -1,6 +1,6 @@
-// BOLH Translations — ko
-export default {
-    'greeting.morning': '좋은 아침이에요',
+// ko translations
+const ko: Record<string, string> = {
+'greeting.morning': '좋은 아침이에요',
     'greeting.afternoon': '안녕하세요',
     'greeting.evening': '안녕하세요',
     'greeting.night': '안녕히 주무세요',
@@ -9,7 +9,6 @@ export default {
     'nav.search': '검색',
     'nav.map': '지도',
     'nav.orders': '주문',
-    'nav.myboard': '내 보드',
     'nav.profile': '프로필',
     'nav.tracking': '추적',
     'map.searchHere': '이 지역 검색',
@@ -476,4 +475,5 @@ export default {
     'settings.resetDesc': '모든 설정이 기본값으로 복원됩니다',
     'settings.resetConfirm': '초기화',
     'settings.cancel': '취소',
-} as Record<string, string>;
+};
+export default ko;

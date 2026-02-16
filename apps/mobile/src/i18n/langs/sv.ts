@@ -1,6 +1,6 @@
-// BOLH Translations — sv
-export default {
-    'greeting.morning': 'God morgon',
+// sv translations
+const sv: Record<string, string> = {
+'greeting.morning': 'God morgon',
     'greeting.afternoon': 'God eftermiddag',
     'greeting.evening': 'God kväll',
     'greeting.night': 'God natt',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Sök',
     'nav.map': 'Karta',
     'nav.orders': 'Beställningar',
-    'nav.myboard': 'Min tavla',
     'nav.profile': 'Profil',
     'nav.tracking': 'Spårning',
     'map.searchHere': 'Sök i detta område',
@@ -521,4 +520,5 @@ export default {
     'settings.resetDesc': 'Alla inställningar återställs till standard',
     'settings.resetConfirm': 'Återställ',
     'settings.cancel': 'Avbryt',
-} as Record<string, string>;
+};
+export default sv;

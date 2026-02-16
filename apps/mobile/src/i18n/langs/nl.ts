@@ -1,6 +1,6 @@
-// BOLH Translations — nl
-export default {
-    'greeting.morning': 'Goedemorgen',
+// nl translations
+const nl: Record<string, string> = {
+'greeting.morning': 'Goedemorgen',
     'greeting.afternoon': 'Goedemiddag',
     'greeting.evening': 'Goedenavond',
     'greeting.night': 'Goedenacht',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Zoeken',
     'nav.map': 'Kaart',
     'nav.orders': 'Bestellingen',
-    'nav.myboard': 'Mijn bord',
     'nav.profile': 'Profiel',
     'nav.tracking': 'Volgen',
     'map.searchHere': 'Zoek in dit gebied',
@@ -521,4 +520,5 @@ export default {
     'settings.resetDesc': 'Alle instellingen worden teruggezet naar standaard',
     'settings.resetConfirm': 'Resetten',
     'settings.cancel': 'Annuleren',
-} as Record<string, string>;
+};
+export default nl;

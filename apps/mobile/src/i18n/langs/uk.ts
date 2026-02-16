@@ -1,6 +1,6 @@
-// BOLH Translations — uk
-export default {
-    'greeting.morning': 'Доброго ранку',
+// uk translations
+const uk: Record<string, string> = {
+'greeting.morning': 'Доброго ранку',
     'greeting.afternoon': 'Добрий день',
     'greeting.evening': 'Добрий вечір',
     'greeting.night': 'Доброї ночі',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Пошук',
     'nav.map': 'Карта',
     'nav.orders': 'Замовлення',
-    'nav.myboard': 'Моя дошка',
     'nav.profile': 'Профіль',
     'nav.tracking': 'Відстеження',
     'map.searchHere': 'Пошук у цьому районі',
@@ -476,4 +475,5 @@ export default {
     'settings.resetDesc': 'Усі налаштування будуть відновлені за замовчуванням',
     'settings.resetConfirm': 'Скинути',
     'settings.cancel': 'Скасувати',
-} as Record<string, string>;
+};
+export default uk;

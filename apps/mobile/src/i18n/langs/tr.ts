@@ -1,6 +1,6 @@
-// BOLH Translations — tr
-export default {
-    'greeting.morning': 'Günaydın',
+// tr translations
+const tr: Record<string, string> = {
+'greeting.morning': 'Günaydın',
     'greeting.afternoon': 'İyi günler',
     'greeting.evening': 'İyi akşamlar',
     'greeting.night': 'İyi geceler',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'Ara',
     'nav.map': 'Harita',
     'nav.orders': 'Siparişler',
-    'nav.myboard': 'Panelim',
     'nav.profile': 'Profil',
     'nav.tracking': 'Takip',
     'map.searchHere': 'Bu bölgede ara',
@@ -472,4 +471,5 @@ export default {
     'settings.resetDesc': 'Tüm ayarlar varsayılana döndürülecek',
     'settings.resetConfirm': 'Sıfırla',
     'settings.cancel': 'İptal',
-} as Record<string, string>;
+};
+export default tr;

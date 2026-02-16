@@ -1,6 +1,6 @@
-// BOLH Translations — hi
-export default {
-    'greeting.morning': 'सुप्रभात',
+// hi translations
+const hi: Record<string, string> = {
+'greeting.morning': 'सुप्रभात',
     'greeting.afternoon': 'नमस्ते',
     'greeting.evening': 'शुभ संध्या',
     'greeting.night': 'शुभ रात्रि',
@@ -9,7 +9,6 @@ export default {
     'nav.search': 'खोजें',
     'nav.map': 'मानचित्र',
     'nav.orders': 'ऑर्डर',
-    'nav.myboard': 'मेरा बोर्ड',
     'nav.profile': 'प्रोफ़ाइल',
     
     'home.activeOrder': 'सक्रिय ऑर्डर',
@@ -408,4 +407,5 @@ export default {
     'settings.resetDesc': 'सभी सेटिंग्स डिफ़ॉल्ट पर वापस आ जाएँगी',
     'settings.resetConfirm': 'रीसेट',
     'settings.cancel': 'रद्द करें',
-} as Record<string, string>;
+};
+export default hi;

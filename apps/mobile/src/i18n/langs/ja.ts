@@ -1,6 +1,6 @@
-// BOLH Translations — ja
-export default {
-    'greeting.morning': 'おはようございます',
+// ja translations
+const ja: Record<string, string> = {
+'greeting.morning': 'おはようございます',
     'greeting.afternoon': 'こんにちは',
     'greeting.evening': 'こんばんは',
     'greeting.night': 'おやすみなさい',
@@ -9,7 +9,6 @@ export default {
     'nav.search': '検索',
     'nav.map': 'マップ',
     'nav.orders': '注文',
-    'nav.myboard': 'マイボード',
     'nav.profile': 'プロフィール',
     'nav.tracking': '追跡',
     'map.searchHere': 'このエリアを検索',
@@ -415,4 +414,5 @@ export default {
     'settings.resetDesc': 'すべての設定がデフォルトに戻ります',
     'settings.resetConfirm': 'リセット',
     'settings.cancel': 'キャンセル',
-} as Record<string, string>;
+};
+export default ja;
