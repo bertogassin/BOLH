@@ -5,21 +5,49 @@
 
 import { invoke } from "@tauri-apps/api/core";
 
+function parseOrThrow<T>(raw: string, op: string): T {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    throw new Error(`${op}: invalid JSON response (${msg})`);
+  }
+
+  if (parsed && typeof parsed === "object" && "error" in parsed) {
+    const errVal = (parsed as Record<string, unknown>).error;
+    throw new Error(`${op}: ${String(errVal)}`);
+  }
+  return parsed as T;
+}
+
+function assertNoErrorEnvelope(raw: string, op: string): void {
+  parseOrThrow<Record<string, unknown>>(raw, op);
+}
+
 // Core initialization and crypto
 export async function blockchainInit(): Promise<string> {
-  return invoke("bolh_init");
+  const response = await invoke<string>("bolh_init");
+  assertNoErrorEnvelope(response, "blockchainInit");
+  return response;
 }
 
 export async function createKey(): Promise<string> {
-  return invoke("bolh_create_key");
+  const response = await invoke<string>("bolh_create_key");
+  assertNoErrorEnvelope(response, "createKey");
+  return response;
 }
 
 export async function signTransaction(tx: string): Promise<string> {
-  return invoke("bolh_sign_tx", { tx });
+  const response = await invoke<string>("bolh_sign_tx", { tx });
+  assertNoErrorEnvelope(response, "signTransaction");
+  return response;
 }
 
 export async function submitTransaction(signed: string): Promise<string> {
-  return invoke("bolh_submit_tx", { signed });
+  const response = await invoke<string>("bolh_submit_tx", { signed });
+  assertNoErrorEnvelope(response, "submitTransaction");
+  return response;
 }
 
 export async function getBalance(addr: string): Promise<number> {
@@ -37,12 +65,12 @@ export interface WalletInfo {
 
 export async function createWallet(name: string): Promise<WalletInfo> {
   const info = await invoke<string>("bolh_create_wallet", { name });
-  return JSON.parse(info);
+  return parseOrThrow<WalletInfo>(info, "createWallet");
 }
 
 export async function getWalletInfo(name: string): Promise<WalletInfo> {
   const info = await invoke<string>("bolh_get_wallet_info", { name });
-  return JSON.parse(info);
+  return parseOrThrow<WalletInfo>(info, "getWalletInfo");
 }
 
 export async function getWalletBalance(name: string): Promise<number> {
@@ -51,11 +79,12 @@ export async function getWalletBalance(name: string): Promise<number> {
 
 export async function listWallets(): Promise<WalletInfo[]> {
   const list = await invoke<string>("bolh_list_wallets");
-  return JSON.parse(list);
+  return parseOrThrow<WalletInfo[]>(list, "listWallets");
 }
 
 export async function deleteWallet(name: string): Promise<void> {
-  await invoke("bolh_delete_wallet", { name });
+  const response = await invoke<string>("bolh_delete_wallet", { name });
+  assertNoErrorEnvelope(response, "deleteWallet");
 }
 
 export async function importWallet(
@@ -68,7 +97,7 @@ export async function importWallet(
     pubkey,
     seckey,
   });
-  return JSON.parse(info);
+  return parseOrThrow<WalletInfo>(info, "importWallet");
 }
 
 // UTXO API
@@ -83,7 +112,10 @@ export interface UTXO {
 
 export async function initGenesis(accounts: string[]): Promise<void> {
   const accountsJson = JSON.stringify(accounts);
-  await invoke("bolh_init_genesis", { accounts: accountsJson });
+  const response = await invoke<string>("bolh_init_genesis", {
+    accounts: accountsJson,
+  });
+  assertNoErrorEnvelope(response, "initGenesis");
 }
 
 export async function getUTXOBalance(addr: string): Promise<number> {
@@ -92,7 +124,7 @@ export async function getUTXOBalance(addr: string): Promise<number> {
 
 export async function getUTXOs(addr: string): Promise<UTXO[]> {
   const utxos = await invoke<string>("bolh_get_utxos", { addr });
-  return JSON.parse(utxos);
+  return parseOrThrow<UTXO[]>(utxos, "getUTXOs");
 }
 
 export interface Transaction {
@@ -112,11 +144,15 @@ export interface Transaction {
 
 export async function validateAndProcessTx(tx: Transaction): Promise<void> {
   const txJson = JSON.stringify(tx);
-  await invoke("bolh_validate_and_process_tx", { tx_json: txJson });
+  const response = await invoke<string>("bolh_validate_and_process_tx", {
+    tx_json: txJson,
+  });
+  assertNoErrorEnvelope(response, "validateAndProcessTx");
 }
 
 export async function persistUTXOSet(): Promise<void> {
-  await invoke("bolh_utxo_persist");
+  const response = await invoke<string>("bolh_utxo_persist");
+  assertNoErrorEnvelope(response, "persistUTXOSet");
 }
 
 // Consensus API
@@ -136,7 +172,7 @@ export async function proposeBlock(
     proposer,
     txs_json: txsJson,
   });
-  return JSON.parse(block);
+  return parseOrThrow<BlockProposal>(block, "proposeBlock");
 }
 
 export interface VoteResult {
@@ -156,7 +192,7 @@ export async function voteOnBlock(
     block_id: blockId,
     approved,
   });
-  return JSON.parse(result);
+  return parseOrThrow<VoteResult>(result, "voteOnBlock");
 }
 
 export async function canFinalize(blockId: string): Promise<boolean> {
@@ -174,7 +210,7 @@ export async function finalizeBlock(
   const block = await invoke<string>("bolh_finalize_block", {
     block_id: blockId,
   });
-  return JSON.parse(block);
+  return parseOrThrow<FinalizedBlock>(block, "finalizeBlock");
 }
 
 export interface ConsensusState {
@@ -189,7 +225,7 @@ export interface ConsensusState {
 
 export async function getConsensusState(): Promise<ConsensusState> {
   const state = await invoke<string>("bolh_consensus_state");
-  return JSON.parse(state);
+  return parseOrThrow<ConsensusState>(state, "getConsensusState");
 }
 
 export interface VotingStatus {
@@ -203,7 +239,7 @@ export async function getVotingStatus(blockId: string): Promise<VotingStatus> {
   const status = await invoke<string>("bolh_voting_status", {
     block_id: blockId,
   });
-  return JSON.parse(status);
+  return parseOrThrow<VotingStatus>(status, "getVotingStatus");
 }
 
 export interface SmokeTestStep {
