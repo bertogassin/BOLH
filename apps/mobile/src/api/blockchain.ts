@@ -255,8 +255,9 @@ export async function revealPrivateTransaction(
   txid: string,
   revealKey: string
 ): Promise<RevealResult> {
-  const payload = await invoke<string>("bolh_get_utxos", {
-    addr: `reveal:${txid}:${revealKey}`,
+  const payload = await invoke<string>("bolh_reveal_private_tx", {
+    txid,
+    reveal_key: revealKey,
   });
   return parseOrThrow<RevealResult>(payload, "revealPrivateTransaction");
 }

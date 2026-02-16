@@ -2,7 +2,12 @@
 //! Exports stateful blockchain functions as C-callable APIs for Tauri.
 
 use chrono::Utc;
-use rand::RngCore;
+use pqcrypto_dilithium::dilithium2::{
+    detached_sign as pq_detached_sign, keypair as pq_keypair,
+    verify_detached_signature as pq_verify, DetachedSignature as DilithiumSignature,
+    PublicKey as DilithiumPublicKey, SecretKey as DilithiumSecretKey,
+};
+use pqcrypto_traits::sign::{DetachedSignature as _, PublicKey as _, SecretKey as _};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::hash_map::DefaultHasher;
@@ -28,7 +33,9 @@ const MAX_TX_OUTPUTS: usize = 128;
 const MAX_TXS_PER_BLOCK: usize = 50_000;
 const MAX_TXS_PER_MINUTE: usize = 30;
 const MAX_TX_AMOUNT: u64 = 1_000_000_000_000_000;
-const MAX_PRIVATE_PAYLOAD_BYTES: usize = 4096;
+const MAX_PRIVATE_PAYLOAD_BYTES: usize = 16_384;
+const MIN_RING_SIZE: usize = 3;
+const MAX_RING_SIZE: usize = 32;
 
 const BOOTSTRAP_VALIDATOR_POWER: u64 = 100;
 const DEFAULT_GENESIS_ALLOCATION: u64 = 100_000_000_000;
@@ -248,6 +255,8 @@ struct PersistedState {
     used_signatures: Vec<String>,
     #[serde(default)]
     private_txs: Vec<PrivateTxRecord>,
+    #[serde(default)]
+    stealth_owner: HashMap<String, String>,
     metrics: MetricsState,
     #[serde(default)]
     config: ChainConfig,
@@ -264,6 +273,7 @@ struct ChainState {
     wallet_by_address: HashMap<String, String>,
     config: ChainConfig,
     utxos: Vec<UtxoRecord>,
+    stealth_owner: HashMap<String, String>,
     processed_txids: HashSet<String>,
     used_signatures: HashSet<String>,
     private_txs: BTreeMap<String, PrivateTxRecord>,
@@ -290,6 +300,7 @@ impl ChainState {
             wallet_by_address: HashMap::new(),
             config: ChainConfig::default(),
             utxos: Vec::new(),
+            stealth_owner: HashMap::new(),
             processed_txids: HashSet::new(),
             used_signatures: HashSet::new(),
             private_txs: BTreeMap::new(),
@@ -398,6 +409,7 @@ impl ChainState {
             processed_txids: self.processed_txids.iter().cloned().collect(),
             used_signatures: self.used_signatures.iter().cloned().collect(),
             private_txs: self.private_txs.values().cloned().collect(),
+            stealth_owner: self.stealth_owner.clone(),
             metrics: self.metrics.clone(),
             config: self.config.clone(),
             tx_seq: self.tx_seq,
@@ -433,6 +445,7 @@ impl ChainState {
             .into_iter()
             .map(|p| (p.txid.clone(), p))
             .collect();
+        self.stealth_owner = persisted.stealth_owner;
         self.metrics = persisted.metrics;
         self.config = persisted.config;
         self.tx_seq = persisted.tx_seq;
@@ -691,6 +704,7 @@ impl ChainState {
         self.pending_blocks.clear();
         self.finalized_blocks.clear();
         self.utxos.clear();
+        self.stealth_owner.clear();
         self.processed_txids.clear();
         self.used_signatures.clear();
         self.private_txs.clear();
@@ -720,26 +734,53 @@ impl ChainState {
         }))
     }
 
+    fn resolve_owner_address(&self, address: &str) -> String {
+        self.stealth_owner
+            .get(address)
+            .cloned()
+            .unwrap_or_else(|| address.to_string())
+    }
+
+    fn owned_by(&self, owner: &str, utxo_addr: &str) -> bool {
+        if utxo_addr == owner {
+            return true;
+        }
+        self.stealth_owner
+            .get(utxo_addr)
+            .map(|mapped| mapped == owner)
+            .unwrap_or(false)
+    }
+
+    fn derive_stealth_address(&self, owner: &str, txid: &str, output_index: usize) -> String {
+        let digest = hash_hex(&format!("stealth:{owner}:{txid}:{output_index}:{CHAIN_ID}"));
+        format!("stealth_{}", &digest[..24])
+    }
+
     fn balance_of(&self, address: &str) -> u64 {
         self.utxos
             .iter()
-            .filter(|u| u.address == address && !u.spent)
+            .filter(|u| self.owned_by(address, &u.address) && !u.spent)
             .map(|u| u.amount)
             .sum()
     }
 
     fn get_utxos_json(&self, address: &str) -> Value {
-        let mut list: Vec<&UtxoRecord> =
-            self.utxos.iter().filter(|u| u.address == address).collect();
+        let mut list: Vec<&UtxoRecord> = self
+            .utxos
+            .iter()
+            .filter(|u| self.owned_by(address, &u.address))
+            .collect();
         list.sort_by_key(|u| (u.spent, u.block_height, u.output_index));
 
         let result: Vec<Value> = list
             .into_iter()
             .map(|u| {
+                let owner = self.resolve_owner_address(&u.address);
                 json!({
                     "txid": u.txid,
                     "output_index": u.output_index,
                     "address": u.address,
+                    "owner_hint": if owner == u.address { Value::Null } else { Value::String(owner) },
                     "amount": u.amount,
                     "block_height": u.block_height,
                     "spent": u.spent
@@ -782,6 +823,11 @@ impl ChainState {
         raw.min(3) as u8
     }
 
+    fn parse_ring_size(meta: &Value) -> usize {
+        let raw = meta.get("ring_size").and_then(Value::as_u64).unwrap_or(8) as usize;
+        raw.clamp(MIN_RING_SIZE, MAX_RING_SIZE)
+    }
+
     fn estimate_required_fee(
         &self,
         input_count: usize,
@@ -822,6 +868,31 @@ impl ChainState {
             / 100;
 
         subtotal.saturating_mul(congestion_ratio_bps) / 10_000
+    }
+
+    fn select_decoy_inputs(
+        &self,
+        consumed_indices: &[usize],
+        sender_owner: &str,
+        target_decoys: usize,
+    ) -> Vec<String> {
+        if target_decoys == 0 {
+            return Vec::new();
+        }
+        let consumed: HashSet<usize> = consumed_indices.iter().copied().collect();
+        let mut refs: Vec<String> = self
+            .utxos
+            .iter()
+            .enumerate()
+            .filter(|(idx, utxo)| {
+                !utxo.spent
+                    && !consumed.contains(idx)
+                    && self.resolve_owner_address(&utxo.address) != sender_owner
+            })
+            .map(|(_, utxo)| format!("{}:{}", utxo.txid, utxo.output_index))
+            .collect();
+        refs.sort();
+        refs.into_iter().take(target_decoys).collect()
     }
 
     fn commitment_for_tx(
@@ -944,6 +1015,7 @@ impl ChainState {
             meta_obj
                 .entry("priority")
                 .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+            meta_obj.entry("ring_size").or_insert(Value::from(8u64));
         }
 
         let inputs: Vec<TxInputRecord> = tx_value
@@ -1008,6 +1080,153 @@ impl ChainState {
         })
     }
 
+    fn tx_signing_material_from_value(tx_value: &Value) -> String {
+        let inputs = tx_value
+            .get("inputs")
+            .and_then(Value::as_array)
+            .cloned()
+            .unwrap_or_default();
+        let outputs = tx_value
+            .get("outputs")
+            .and_then(Value::as_array)
+            .cloned()
+            .unwrap_or_default();
+        let timestamp = tx_value
+            .get("timestamp")
+            .and_then(Value::as_i64)
+            .unwrap_or(0);
+        let metadata = tx_value
+            .get("metadata")
+            .cloned()
+            .unwrap_or_else(|| json!({}));
+        let privacy_mode = metadata
+            .get("privacy_mode")
+            .and_then(Value::as_str)
+            .unwrap_or("transparent");
+        let priority = metadata
+            .get("priority")
+            .and_then(Value::as_u64)
+            .unwrap_or(DEFAULT_TX_PRIORITY as u64);
+        let sender = metadata
+            .get("sender")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+
+        let input_material = inputs
+            .iter()
+            .map(|entry| {
+                let prev = entry
+                    .get("prev_txid")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default();
+                let idx = entry
+                    .get("output_index")
+                    .and_then(Value::as_u64)
+                    .unwrap_or_default();
+                format!("{prev}:{idx}")
+            })
+            .collect::<Vec<_>>()
+            .join("|");
+        let output_material = outputs
+            .iter()
+            .map(|entry| {
+                let addr = entry
+                    .get("address")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default();
+                let amount = entry
+                    .get("amount")
+                    .and_then(parse_amount)
+                    .unwrap_or_default();
+                format!("{addr}:{amount}")
+            })
+            .collect::<Vec<_>>()
+            .join("|");
+
+        hash_hex(&format!(
+            "txmat:{input_material}>{output_material}:{timestamp}:{privacy_mode}:{priority}:{sender}:{CHAIN_ID}"
+        ))
+    }
+
+    fn tx_signing_material_from_record(tx: &TxRecord) -> String {
+        let input_material = tx
+            .inputs
+            .iter()
+            .map(|entry| format!("{}:{}", entry.prev_txid, entry.output_index))
+            .collect::<Vec<_>>()
+            .join("|");
+        let output_material = tx
+            .outputs
+            .iter()
+            .map(|entry| format!("{}:{}", entry.address, entry.amount))
+            .collect::<Vec<_>>()
+            .join("|");
+        let privacy_mode = tx
+            .metadata
+            .get("privacy_mode")
+            .and_then(Value::as_str)
+            .unwrap_or("transparent");
+        let priority = tx
+            .metadata
+            .get("priority")
+            .and_then(Value::as_u64)
+            .unwrap_or(DEFAULT_TX_PRIORITY as u64);
+        let sender = tx
+            .metadata
+            .get("sender")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+
+        hash_hex(&format!(
+            "txmat:{input_material}>{output_material}:{}:{privacy_mode}:{priority}:{sender}:{CHAIN_ID}",
+            tx.timestamp
+        ))
+    }
+
+    fn resolve_signing_keypair(
+        &self,
+        metadata: &Value,
+        tx_value: &Value,
+    ) -> (String, String, String) {
+        let from_metadata = metadata
+            .get("signing_pubkey")
+            .and_then(Value::as_str)
+            .zip(metadata.get("signing_seckey").and_then(Value::as_str))
+            .map(|(pk, sk)| (pk.to_string(), sk.to_string(), "metadata"));
+        if let Some((pk, sk, src)) = from_metadata {
+            return (pk, sk, src.to_string());
+        }
+
+        if let Some(sender_name) = metadata.get("sender").and_then(Value::as_str) {
+            if let Some(wallet) = self.wallets.get(sender_name) {
+                return (
+                    wallet.pubkey.clone(),
+                    wallet.seckey.clone(),
+                    "wallet_sender".to_string(),
+                );
+            }
+        }
+
+        let from_address = tx_value
+            .get("from")
+            .and_then(Value::as_str)
+            .or_else(|| metadata.get("sender_address").and_then(Value::as_str));
+        if let Some(address) = from_address {
+            if let Some(wallet_name) = self.wallet_by_address.get(address) {
+                if let Some(wallet) = self.wallets.get(wallet_name) {
+                    return (
+                        wallet.pubkey.clone(),
+                        wallet.seckey.clone(),
+                        "wallet_address".to_string(),
+                    );
+                }
+            }
+        }
+
+        let (pk, sk) = generate_keypair_hex();
+        (pk, sk, "ephemeral".to_string())
+    }
+
     fn validate_and_process_tx_json(&mut self, tx_json: &str) -> Result<Value, String> {
         let start = Instant::now();
         let tx_val: Value =
@@ -1020,6 +1239,43 @@ impl ChainState {
             .get("reveal_key")
             .and_then(Value::as_str)
             .map(str::to_string);
+        let signing_material = Self::tx_signing_material_from_record(&tx);
+
+        if let Some(declared_material) = tx.metadata.get("signed_material").and_then(Value::as_str)
+        {
+            if declared_material != signing_material {
+                self.record_rejected_tx();
+                return Err("signed material mismatch (tampered transaction payload)".into());
+            }
+        }
+
+        if sig_scheme == SignatureScheme::HybridQrV1 {
+            let pq_pubkey = tx
+                .metadata
+                .get("pq_pubkey")
+                .and_then(Value::as_str)
+                .ok_or_else(|| {
+                    self.record_rejected_tx();
+                    "missing pq_pubkey in metadata".to_string()
+                })?;
+            let pq_signature = tx
+                .metadata
+                .get("pq_signature")
+                .and_then(Value::as_str)
+                .ok_or_else(|| {
+                    self.record_rejected_tx();
+                    "missing pq_signature in metadata".to_string()
+                })?;
+            let verified = pq_verify_bytes(signing_material.as_bytes(), pq_signature, pq_pubkey)
+                .map_err(|err| {
+                    self.record_rejected_tx();
+                    format!("post-quantum verify error: {err}")
+                })?;
+            if !verified {
+                self.record_rejected_tx();
+                return Err("post-quantum signature verification failed".into());
+            }
+        }
 
         if privacy_mode == PrivacyMode::Viewable && reveal_key.is_none() {
             self.record_rejected_tx();
@@ -1118,7 +1374,7 @@ impl ChainState {
                     self.record_rejected_tx();
                     "input total overflow".to_string()
                 })?;
-            source_addresses.insert(self.utxos[idx].address.clone());
+            source_addresses.insert(self.resolve_owner_address(&self.utxos[idx].address));
             consumed_indices.push(idx);
         }
 
@@ -1164,6 +1420,14 @@ impl ChainState {
 
         let fee = input_total.saturating_sub(output_total);
         let priority = Self::parse_priority(&tx.metadata);
+        let ring_size_requested = Self::parse_ring_size(&tx.metadata);
+        let target_decoys = ring_size_requested.saturating_sub(tx.inputs.len());
+        let decoys = if privacy_mode.is_private() {
+            self.select_decoy_inputs(&consumed_indices, &sender, target_decoys)
+        } else {
+            Vec::new()
+        };
+        let ring_size_effective = tx.inputs.len() + decoys.len();
         let required_fee =
             self.estimate_required_fee(tx.inputs.len(), tx.outputs.len(), output_total, priority);
         if fee < required_fee {
@@ -1181,17 +1445,27 @@ impl ChainState {
         }
 
         let next_height = self.height.saturating_add(1);
+        let mut issued_addresses: Vec<String> = Vec::with_capacity(tx.outputs.len());
         for (i, output) in tx.outputs.iter().enumerate() {
+            let mut ledger_address = output.address.clone();
+            if privacy_mode.is_private() && is_valid_address(&output.address) {
+                let stealth = self.derive_stealth_address(&output.address, &tx.txid, i);
+                self.stealth_owner
+                    .insert(stealth.clone(), output.address.clone());
+                ledger_address = stealth;
+            }
             self.utxos.push(UtxoRecord {
                 txid: tx.txid.clone(),
                 output_index: i as u32,
-                address: output.address.clone(),
+                address: ledger_address.clone(),
                 amount: output.amount,
                 block_height: next_height,
                 spent: false,
                 spent_at: None,
             });
-            self.ensure_validator(&output.address);
+            let validator_addr = self.resolve_owner_address(&ledger_address);
+            self.ensure_validator(&validator_addr);
+            issued_addresses.push(ledger_address);
         }
 
         for input in &tx.inputs {
@@ -1199,13 +1473,24 @@ impl ChainState {
         }
         tx.fee = fee;
         tx.status = "confirmed".to_string();
+        if privacy_mode.is_private() {
+            if let Some(meta_obj) = tx.metadata.as_object_mut() {
+                meta_obj.insert(
+                    "amount_commitment".to_string(),
+                    Value::String(hash_hex(&format!(
+                        "amt:{}:{}:{}",
+                        output_total, tx.txid, CHAIN_ID
+                    ))),
+                );
+            }
+        }
         self.processed_txids.insert(tx.txid.clone());
         let reveal_hash = if privacy_mode == PrivacyMode::Viewable {
             reveal_key.as_ref().map(|k| hash_hex(k))
         } else {
             None
         };
-        let privacy_info = self.track_private_tx(
+        let mut privacy_info = self.track_private_tx(
             &tx.txid,
             &sender,
             output_total,
@@ -1214,6 +1499,36 @@ impl ChainState {
             reveal_hash.clone(),
             privacy_mode == PrivacyMode::Viewable,
         );
+        if let Some(obj) = privacy_info.as_object_mut() {
+            obj.insert(
+                "ring_size_requested".to_string(),
+                Value::from(ring_size_requested),
+            );
+            obj.insert(
+                "ring_size_effective".to_string(),
+                Value::from(ring_size_effective),
+            );
+            obj.insert("decoy_count".to_string(), Value::from(decoys.len() as u64));
+            obj.insert(
+                "decoy_inputs".to_string(),
+                Value::Array(decoys.into_iter().map(Value::String).collect()),
+            );
+            obj.insert(
+                "stealth_outputs".to_string(),
+                Value::Array(
+                    issued_addresses
+                        .iter()
+                        .map(|addr| {
+                            if privacy_mode.is_private() {
+                                Value::String(obfuscate_address(addr))
+                            } else {
+                                Value::String(addr.clone())
+                            }
+                        })
+                        .collect(),
+                ),
+            );
+        }
 
         self.tx_history.push_front(tx.clone());
         while self.tx_history.len() > MAX_TX_HISTORY {
@@ -1260,6 +1575,9 @@ impl ChainState {
 
     fn sign_tx_payload(&self, tx_raw: &str) -> Value {
         let mut tx_value = serde_json::from_str::<Value>(tx_raw).unwrap_or_else(|_| json!(tx_raw));
+        if !tx_value.is_object() {
+            return json!({ "error": "transaction payload must be a JSON object" });
+        }
         let mut metadata = tx_value
             .get("metadata")
             .cloned()
@@ -1277,20 +1595,57 @@ impl ChainState {
             meta_obj
                 .entry("priority")
                 .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+            meta_obj.entry("ring_size").or_insert(Value::from(8u64));
         }
         if let Some(tx_obj) = tx_value.as_object_mut() {
             tx_obj.insert("metadata".to_string(), metadata.clone());
         }
 
         let sig_scheme = SignatureScheme::from_metadata(&metadata);
-        let tx_hash = hash_hex(&tx_value.to_string());
-        let signature_seed = hash_hex(&format!("{tx_raw}:{tx_hash}:{CHAIN_ID}:{}", now_ms()));
-        let signature = match sig_scheme {
-            SignatureScheme::HybridQrV1 => format!("qsig_{signature_seed}"),
-            SignatureScheme::LegacyCompat => format!("sig_{signature_seed}"),
+        let signing_material = Self::tx_signing_material_from_value(&tx_value);
+        let tx_hash = signing_material.clone();
+        let (pq_pubkey, pq_seckey, key_source) = self.resolve_signing_keypair(&metadata, &tx_value);
+
+        let (signature, pq_signature, local_verify_ok) = match sig_scheme {
+            SignatureScheme::HybridQrV1 => {
+                let pq_signature = match pq_sign_bytes(signing_material.as_bytes(), &pq_seckey) {
+                    Ok(sig) => sig,
+                    Err(err) => {
+                        return json!({
+                            "error": format!("quantum signing failed: {err}")
+                        });
+                    }
+                };
+                let verify_ok =
+                    pq_verify_bytes(signing_material.as_bytes(), &pq_signature, &pq_pubkey)
+                        .unwrap_or(false);
+                let marker = format!("qsig_{}", &hash_hex(&pq_signature)[..32]);
+                (marker, Some(pq_signature), verify_ok)
+            }
+            SignatureScheme::LegacyCompat => {
+                let signature_seed =
+                    hash_hex(&format!("{tx_raw}:{tx_hash}:{CHAIN_ID}:{}", now_ms()));
+                (format!("sig_{signature_seed}"), None, true)
+            }
         };
+
         let privacy_mode = PrivacyMode::from_metadata(&metadata);
         let priority = Self::parse_priority(&metadata);
+        if let Some(tx_obj) = tx_value.as_object_mut() {
+            if let Some(meta_obj) = tx_obj.get_mut("metadata").and_then(Value::as_object_mut) {
+                meta_obj.insert(
+                    "signed_material".to_string(),
+                    Value::String(signing_material.clone()),
+                );
+                meta_obj.insert("tx_hash".to_string(), Value::String(tx_hash.clone()));
+                if sig_scheme == SignatureScheme::HybridQrV1 {
+                    meta_obj.insert("pq_pubkey".to_string(), Value::String(pq_pubkey.clone()));
+                    if let Some(pq_sig) = &pq_signature {
+                        meta_obj.insert("pq_signature".to_string(), Value::String(pq_sig.clone()));
+                    }
+                }
+            }
+        }
 
         json!({
             "signed": signature,
@@ -1301,7 +1656,12 @@ impl ChainState {
             "signature_bundle": {
                 "scheme": sig_scheme.as_str(),
                 "quantum_resistant": sig_scheme.requires_quantum_prefix(),
-                "chain_locked": true
+                "chain_locked": true,
+                "key_source": key_source,
+                "pq_pubkey": pq_pubkey,
+                "pq_signature": pq_signature,
+                "signed_material": signing_material,
+                "verified_locally": local_verify_ok
             },
             "privacy_mode": privacy_mode.as_str(),
             "priority": priority
@@ -1311,6 +1671,7 @@ impl ChainState {
     fn submit_signed_tx(&mut self, signed_raw: &str) -> Result<Value, String> {
         let signed_val: Value =
             serde_json::from_str(signed_raw).unwrap_or_else(|_| json!({ "raw": signed_raw }));
+        let signature_bundle = signed_val.get("signature_bundle");
         let signature = signed_val
             .get("signed")
             .and_then(Value::as_str)
@@ -1357,6 +1718,29 @@ impl ChainState {
                 meta_obj
                     .entry("priority")
                     .or_insert(Value::from(DEFAULT_TX_PRIORITY));
+                meta_obj.entry("ring_size").or_insert(Value::from(8u64));
+                if let Some(bundle) = signature_bundle {
+                    if let Some(pubkey) = bundle.get("pq_pubkey").and_then(Value::as_str) {
+                        meta_obj
+                            .entry("pq_pubkey".to_string())
+                            .or_insert(Value::String(pubkey.to_string()));
+                    }
+                    if let Some(sig) = bundle.get("pq_signature").and_then(Value::as_str) {
+                        meta_obj
+                            .entry("pq_signature".to_string())
+                            .or_insert(Value::String(sig.to_string()));
+                    }
+                    if let Some(mat) = bundle.get("signed_material").and_then(Value::as_str) {
+                        meta_obj
+                            .entry("signed_material".to_string())
+                            .or_insert(Value::String(mat.to_string()));
+                    }
+                }
+                if let Some(tx_hash) = signed_val.get("tx_hash").and_then(Value::as_str) {
+                    meta_obj
+                        .entry("tx_hash".to_string())
+                        .or_insert(Value::String(tx_hash.to_string()));
+                }
             }
             tx_obj.insert("metadata".to_string(), metadata);
 
@@ -1894,12 +2278,8 @@ fn derive_address(pubkey_hex: &str) -> String {
 }
 
 fn generate_keypair_hex() -> (String, String) {
-    let mut rng = rand::thread_rng();
-    let mut sk = [0u8; 32];
-    let mut pk = [0u8; 32];
-    rng.fill_bytes(&mut sk);
-    rng.fill_bytes(&mut pk);
-    (hex::encode(pk), hex::encode(sk))
+    let (pk, sk) = pq_keypair();
+    (hex::encode(pk.as_bytes()), hex::encode(sk.as_bytes()))
 }
 
 fn validate_wallet_name(name: &str) -> Result<(), String> {
@@ -1963,6 +2343,27 @@ fn obfuscate_address(address: &str) -> String {
 fn mask_amount(amount: u64) -> String {
     let salt = now_ms();
     format!("mask_{}", hash_hex(&format!("{amount}:{salt}")))
+}
+
+fn pq_sign_bytes(payload: &[u8], seckey_hex: &str) -> Result<String, String> {
+    let seckey_raw = hex::decode(seckey_hex).map_err(|_| "invalid secret key hex".to_string())?;
+    let seckey = DilithiumSecretKey::from_bytes(&seckey_raw)
+        .map_err(|_| "invalid dilithium secret key bytes".to_string())?;
+    let sig = pq_detached_sign(payload, &seckey);
+    Ok(hex::encode(sig.as_bytes()))
+}
+
+fn pq_verify_bytes(payload: &[u8], signature_hex: &str, pubkey_hex: &str) -> Result<bool, String> {
+    let sig_raw = hex::decode(signature_hex).map_err(|_| "invalid pq signature hex".to_string())?;
+    let pubkey_raw =
+        hex::decode(pubkey_hex).map_err(|_| "invalid pq public key hex".to_string())?;
+
+    let sig = DilithiumSignature::from_bytes(&sig_raw)
+        .map_err(|_| "invalid dilithium signature bytes".to_string())?;
+    let pubkey = DilithiumPublicKey::from_bytes(&pubkey_raw)
+        .map_err(|_| "invalid dilithium public key bytes".to_string())?;
+
+    Ok(pq_verify(&sig, payload, &pubkey).is_ok())
 }
 
 fn cstr_to_rust(ptr: *const c_char, arg_name: &str) -> Result<String, String> {
@@ -2198,16 +2599,26 @@ pub extern "C" fn bolh_get_utxos(addr_ptr: *const c_char) -> *const c_char {
         Ok(v) => v,
         Err(e) => return value_to_c_ptr(json!({ "error": e })),
     };
-    if let Some(rest) = address.strip_prefix("reveal:") {
-        let mut parts = rest.splitn(2, ':');
-        let txid = parts.next().unwrap_or_default();
-        let reveal_key = parts.next().unwrap_or_default();
-        let result = with_state_read(|state| state.reveal_private_tx(txid, reveal_key));
-        return result_to_c_ptr(result);
-    }
-
     let value = with_state_read(|state| state.get_utxos_json(&address));
     value_to_c_ptr(value)
+}
+
+/// Reveal a viewable private transaction.
+#[no_mangle]
+pub extern "C" fn bolh_reveal_private_tx(
+    txid_ptr: *const c_char,
+    reveal_key_ptr: *const c_char,
+) -> *const c_char {
+    let txid = match cstr_to_rust(txid_ptr, "txid") {
+        Ok(v) => v,
+        Err(e) => return value_to_c_ptr(json!({ "error": e })),
+    };
+    let reveal_key = match cstr_to_rust(reveal_key_ptr, "reveal_key") {
+        Ok(v) => v,
+        Err(e) => return value_to_c_ptr(json!({ "error": e })),
+    };
+    let result = with_state_read(|state| state.reveal_private_tx(&txid, &reveal_key));
+    result_to_c_ptr(result)
 }
 
 /// Validate and process transaction.
@@ -2350,6 +2761,36 @@ mod tests {
         derive_address(&hash_hex(tag))
     }
 
+    fn attach_quantum_proof(tx: &mut Value) {
+        let material = ChainState::tx_signing_material_from_value(tx);
+        let (pubkey, seckey) = generate_keypair_hex();
+        let signature = pq_sign_bytes(material.as_bytes(), &seckey).expect("pq sign");
+        let marker = format!("qsig_{}", &hash_hex(&signature)[..32]);
+
+        if let Some(inputs) = tx.get_mut("inputs").and_then(Value::as_array_mut) {
+            for (idx, input) in inputs.iter_mut().enumerate() {
+                if let Some(obj) = input.as_object_mut() {
+                    obj.insert(
+                        "signature".to_string(),
+                        Value::String(format!("{marker}_{idx}")),
+                    );
+                }
+            }
+        }
+
+        let metadata = tx
+            .get_mut("metadata")
+            .and_then(Value::as_object_mut)
+            .expect("metadata object");
+        metadata.insert(
+            "sig_scheme".to_string(),
+            Value::String("hybrid_qr_v1".to_string()),
+        );
+        metadata.insert("pq_pubkey".to_string(), Value::String(pubkey));
+        metadata.insert("pq_signature".to_string(), Value::String(signature));
+        metadata.insert("signed_material".to_string(), Value::String(material));
+    }
+
     #[test]
     fn wallet_create_list_delete_flow() {
         let mut state = ChainState::new();
@@ -2402,13 +2843,13 @@ mod tests {
             .cloned()
             .expect("sender utxo must exist");
 
-        let tx = json!({
+        let mut tx = json!({
             "txid": "tx_manual_1",
             "inputs": [
                 {
                     "prev_txid": utxo.txid,
                     "output_index": utxo.output_index,
-                    "signature": "qsig_valid_1234567890"
+                    "signature": ""
                 }
             ],
             "outputs": [
@@ -2422,6 +2863,7 @@ mod tests {
                 "priority": 1
             }
         });
+        attach_quantum_proof(&mut tx);
 
         let processed = state
             .validate_and_process_tx_json(&tx.to_string())
@@ -2527,13 +2969,13 @@ mod tests {
             .expect("sender utxo must exist");
         let reveal_key = "view-key-private-001";
         let txid = "tx_viewable_1";
-        let tx = json!({
+        let mut tx = json!({
             "txid": txid,
             "inputs": [
                 {
                     "prev_txid": utxo.txid,
                     "output_index": utxo.output_index,
-                    "signature": "qsig_private_1234567890"
+                    "signature": ""
                 }
             ],
             "outputs": [
@@ -2547,6 +2989,7 @@ mod tests {
                 "priority": 2
             }
         });
+        attach_quantum_proof(&mut tx);
 
         let processed = state
             .validate_and_process_tx_json(&tx.to_string())

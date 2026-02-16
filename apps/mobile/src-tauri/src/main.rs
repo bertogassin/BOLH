@@ -27,6 +27,7 @@ fn main() {
             bolh_bridge::bolh_init_genesis,
             bolh_bridge::bolh_get_utxo_balance,
             bolh_bridge::bolh_get_utxos,
+            bolh_bridge::bolh_reveal_private_tx,
             bolh_bridge::bolh_validate_and_process_tx,
             bolh_bridge::bolh_utxo_persist,
             // Consensus API
