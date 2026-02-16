@@ -204,7 +204,29 @@ export interface SignedAuditEnvelope {
   pubkey: string;
   signature: string;
   verified_locally: boolean;
+  canonical?: boolean;
+  audit_key_generation?: number;
   payload: Record<string, unknown>;
+}
+
+export interface AuditEnvelopeVerification {
+  valid: boolean;
+  hash_ok: boolean;
+  signature_ok: boolean;
+  expected_payload_hash: string;
+  computed_payload_hash: string;
+  algorithm: string;
+}
+
+export interface AuditKeyRotationRecord {
+  generation: number;
+  rotated_at: number;
+  reason: string;
+  old_pubkey: string;
+  new_pubkey: string;
+  rotation_payload_hash: string;
+  rotation_signature: string;
+  verified_locally: boolean;
 }
 
 export function buildQuantumPrivateTransaction(
@@ -314,6 +336,33 @@ export async function exportSignedAudit(
 ): Promise<SignedAuditEnvelope> {
   const payload = await invoke<string>("bolh_export_audit_signed", { limit });
   return parseOrThrow<SignedAuditEnvelope>(payload, "exportSignedAudit");
+}
+
+export async function verifySignedAuditEnvelope(
+  envelope: SignedAuditEnvelope | Record<string, unknown>
+): Promise<AuditEnvelopeVerification> {
+  const envelopeJson = JSON.stringify(envelope);
+  const payload = await invoke<string>("bolh_verify_audit_export", {
+    envelope_json: envelopeJson,
+  });
+  return parseOrThrow<AuditEnvelopeVerification>(
+    payload,
+    "verifySignedAuditEnvelope"
+  );
+}
+
+export async function rotateAuditKey(
+  reason: string = "manual"
+): Promise<Record<string, unknown>> {
+  const payload = await invoke<string>("bolh_rotate_audit_key", { reason });
+  return parseOrThrow<Record<string, unknown>>(payload, "rotateAuditKey");
+}
+
+export async function getAuditKeyHistory(
+  limit: number = 20
+): Promise<AuditKeyRotationRecord[]> {
+  const payload = await invoke<string>("bolh_get_audit_key_history", { limit });
+  return parseOrThrow<AuditKeyRotationRecord[]>(payload, "getAuditKeyHistory");
 }
 
 export async function validateAndProcessTx(tx: Transaction): Promise<void> {
@@ -524,6 +573,9 @@ export function createBlockchainApi() {
     audit: {
       getPolicySnapshot,
       exportSigned: exportSignedAudit,
+      verifySigned: verifySignedAuditEnvelope,
+      rotateKey: rotateAuditKey,
+      getKeyHistory: getAuditKeyHistory,
     },
     tx: {
       buildQuantumPrivate: buildQuantumPrivateTransaction,

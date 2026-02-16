@@ -34,6 +34,9 @@ struct LoadedLib {
     get_reveal_audit: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     policy_snapshot: Symbol<'static, unsafe extern "C" fn() -> CStrPtr>,
     export_audit_signed: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
+    verify_audit_export: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
+    rotate_audit_key: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
+    get_audit_key_history: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     validate_and_process_tx: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     utxo_persist: Symbol<'static, unsafe extern "C" fn() -> CStrPtr>,
 
@@ -138,6 +141,15 @@ impl LoadedLib {
                 export_audit_signed: lib
                     .get(b"bolh_export_audit_signed\0")
                     .map_err(|e| format!("bolh_export_audit_signed: {}", e))?,
+                verify_audit_export: lib
+                    .get(b"bolh_verify_audit_export\0")
+                    .map_err(|e| format!("bolh_verify_audit_export: {}", e))?,
+                rotate_audit_key: lib
+                    .get(b"bolh_rotate_audit_key\0")
+                    .map_err(|e| format!("bolh_rotate_audit_key: {}", e))?,
+                get_audit_key_history: lib
+                    .get(b"bolh_get_audit_key_history\0")
+                    .map_err(|e| format!("bolh_get_audit_key_history: {}", e))?,
                 validate_and_process_tx: lib
                     .get(b"bolh_validate_and_process_tx\0")
                     .map_err(|e| format!("bolh_validate_and_process_tx: {}", e))?,
@@ -357,6 +369,37 @@ pub fn bolh_export_audit_signed(limit: Option<u32>) -> Result<String, String> {
     let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
     let c_limit = CString::new(limit.unwrap_or(100).to_string()).map_err(|e| e.to_string())?;
     let r = unsafe { (lib.export_audit_signed)(c_limit.as_ptr()) };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_verify_audit_export(envelope_json: String) -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let c_payload = CString::new(envelope_json).map_err(|e| e.to_string())?;
+    let r = unsafe { (lib.verify_audit_export)(c_payload.as_ptr()) };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_rotate_audit_key(reason: Option<String>) -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let reason_text = reason.unwrap_or_else(|| "manual".to_string());
+    let c_reason = CString::new(reason_text).map_err(|e| e.to_string())?;
+    let r = unsafe { (lib.rotate_audit_key)(c_reason.as_ptr()) };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_get_audit_key_history(limit: Option<u32>) -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let c_limit = CString::new(limit.unwrap_or(20).to_string()).map_err(|e| e.to_string())?;
+    let r = unsafe { (lib.get_audit_key_history)(c_limit.as_ptr()) };
     let s = cstr_to_string(r);
     free_cstr(r);
     Ok(s)

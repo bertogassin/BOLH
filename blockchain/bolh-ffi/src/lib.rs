@@ -250,6 +250,18 @@ struct RevealAuditRecord {
     timestamp: i64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct AuditKeyRotationRecord {
+    generation: u64,
+    rotated_at: i64,
+    reason: String,
+    old_pubkey: String,
+    new_pubkey: String,
+    rotation_payload_hash: String,
+    rotation_signature: String,
+    verified_locally: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct MetricsState {
     tx_processed: u64,
@@ -288,6 +300,8 @@ struct PersistedState {
     stealth_owner: HashMap<String, String>,
     #[serde(default)]
     reveal_audit: Vec<RevealAuditRecord>,
+    #[serde(default)]
+    audit_key_history: Vec<AuditKeyRotationRecord>,
     metrics: MetricsState,
     #[serde(default)]
     config: ChainConfig,
@@ -295,6 +309,8 @@ struct PersistedState {
     audit_sign_pubkey: String,
     #[serde(default)]
     audit_sign_seckey: String,
+    #[serde(default)]
+    audit_key_generation: u64,
     tx_seq: u64,
     block_seq: u64,
 }
@@ -314,6 +330,7 @@ struct ChainState {
     private_txs: BTreeMap<String, PrivateTxRecord>,
     reveal_audit: VecDeque<RevealAuditRecord>,
     reveal_rate_limits: HashMap<String, RateLimitState>,
+    audit_key_history: VecDeque<AuditKeyRotationRecord>,
     mempool: BTreeMap<String, TxRecord>,
     tx_history: VecDeque<TxRecord>,
     validators: BTreeMap<String, ValidatorRecord>,
@@ -323,6 +340,7 @@ struct ChainState {
     rate_limits: HashMap<String, RateLimitState>,
     audit_sign_pubkey: String,
     audit_sign_seckey: String,
+    audit_key_generation: u64,
     tx_seq: u64,
     block_seq: u64,
 }
@@ -346,6 +364,7 @@ impl ChainState {
             private_txs: BTreeMap::new(),
             reveal_audit: VecDeque::new(),
             reveal_rate_limits: HashMap::new(),
+            audit_key_history: VecDeque::new(),
             mempool: BTreeMap::new(),
             tx_history: VecDeque::new(),
             validators: BTreeMap::new(),
@@ -358,6 +377,7 @@ impl ChainState {
             rate_limits: HashMap::new(),
             audit_sign_pubkey,
             audit_sign_seckey,
+            audit_key_generation: 1,
             tx_seq: 0,
             block_seq: 0,
         };
@@ -396,7 +416,9 @@ impl ChainState {
                 "privacy_modes": ["transparent", "shielded", "viewable"],
                 "persistence": true,
                 "adaptive_fee": true,
-                "instant_settlement": true
+                "instant_settlement": true,
+                "signed_audit_export": true,
+                "audit_key_rotation": true
             },
             "architecture": {
                 "signature_scheme": "hybrid_qr_v1",
@@ -461,10 +483,12 @@ impl ChainState {
             private_txs: self.private_txs.values().cloned().collect(),
             stealth_owner: self.stealth_owner.clone(),
             reveal_audit: self.reveal_audit.iter().cloned().collect(),
+            audit_key_history: self.audit_key_history.iter().cloned().collect(),
             metrics: self.metrics.clone(),
             config: self.config.clone(),
             audit_sign_pubkey: self.audit_sign_pubkey.clone(),
             audit_sign_seckey: self.audit_sign_seckey.clone(),
+            audit_key_generation: self.audit_key_generation,
             tx_seq: self.tx_seq,
             block_seq: self.block_seq,
         }
@@ -500,15 +524,18 @@ impl ChainState {
             .collect();
         self.stealth_owner = persisted.stealth_owner;
         self.reveal_audit = persisted.reveal_audit.into_iter().collect();
+        self.audit_key_history = persisted.audit_key_history.into_iter().collect();
         self.metrics = persisted.metrics;
         self.config = persisted.config;
         self.normalize_config();
         self.audit_sign_pubkey = persisted.audit_sign_pubkey;
         self.audit_sign_seckey = persisted.audit_sign_seckey;
+        self.audit_key_generation = persisted.audit_key_generation.max(1);
         if self.audit_sign_pubkey.is_empty() || self.audit_sign_seckey.is_empty() {
             let (pk, sk) = generate_keypair_hex();
             self.audit_sign_pubkey = pk;
             self.audit_sign_seckey = sk;
+            self.audit_key_generation = 1;
         }
         self.tx_seq = persisted.tx_seq;
         self.block_seq = persisted.block_seq;
@@ -580,6 +607,7 @@ impl ChainState {
         self.config.reveal_rate_limit_per_minute = self.config.reveal_rate_limit_per_minute.max(1);
         self.config.audit_export_max_records =
             self.config.audit_export_max_records.clamp(10, 20_000);
+        self.audit_key_generation = self.audit_key_generation.max(1);
     }
 
     fn ensure_bootstrap_validators(&mut self) {
@@ -1053,24 +1081,37 @@ impl ChainState {
 
     fn check_reveal_rate_limit(&mut self, requester_hash: &str) -> Result<(), String> {
         let now = now_ms();
+        let global_key = "__reveal_global__";
+        let per_requester_key = format!("__reveal_req__:{requester_hash}");
+
+        self.bump_reveal_rate_limit_key(global_key, now, self.config.reveal_rate_limit_per_minute)?;
+        // Per requester gets half of global capacity, but not less than 1.
+        let per_requester_limit = (self.config.reveal_rate_limit_per_minute / 2).max(1);
+        self.bump_reveal_rate_limit_key(&per_requester_key, now, per_requester_limit)?;
+        Ok(())
+    }
+
+    fn bump_reveal_rate_limit_key(
+        &mut self,
+        key: &str,
+        now_ms: u64,
+        limit: usize,
+    ) -> Result<(), String> {
         let entry = self
             .reveal_rate_limits
-            .entry(requester_hash.to_string())
+            .entry(key.to_string())
             .or_insert(RateLimitState {
-                window_start_ms: now,
+                window_start_ms: now_ms,
                 count: 0,
             });
 
-        if now.saturating_sub(entry.window_start_ms) >= 60_000 {
-            entry.window_start_ms = now;
+        if now_ms.saturating_sub(entry.window_start_ms) >= 60_000 {
+            entry.window_start_ms = now_ms;
             entry.count = 0;
         }
 
-        if entry.count >= self.config.reveal_rate_limit_per_minute {
-            return Err(format!(
-                "reveal rate limit exceeded (max {}/min)",
-                self.config.reveal_rate_limit_per_minute
-            ));
+        if entry.count >= limit {
+            return Err(format!("reveal rate limit exceeded (max {limit}/min)"));
         }
         entry.count += 1;
         Ok(())
@@ -1108,12 +1149,15 @@ impl ChainState {
             "reveal_policy": {
                 "rate_limit_per_minute": self.config.reveal_rate_limit_per_minute,
                 "audit_retention": self.config.reveal_audit_retention,
-                "audit_events": self.reveal_audit.len()
+                "audit_events": self.reveal_audit.len(),
+                "audit_export_max_records": self.config.audit_export_max_records
             },
             "signature_policy": {
                 "scheme": "hybrid_qr_v1",
                 "min_quantum_sig_len": self.config.min_quantum_sig_len,
-                "audit_sign_pubkey": self.audit_sign_pubkey
+                "audit_sign_pubkey": self.audit_sign_pubkey,
+                "audit_key_generation": self.audit_key_generation,
+                "audit_key_history_size": self.audit_key_history.len()
             }
         })
     }
@@ -1125,6 +1169,7 @@ impl ChainState {
             "network": self.network,
             "height": self.height,
             "round": self.round,
+            "audit_key_generation": self.audit_key_generation,
             "metrics": {
                 "tx_processed": self.metrics.tx_processed,
                 "tx_rejected": self.metrics.tx_rejected,
@@ -1136,7 +1181,7 @@ impl ChainState {
             "reveal_audit": self.reveal_audit_json(capped_limit)
         });
 
-        let payload_text = payload.to_string();
+        let payload_text = canonical_json_string(&payload);
         let payload_hash = hash_hex(&payload_text);
         let signature = pq_sign_bytes(payload_text.as_bytes(), &self.audit_sign_seckey)?;
         let verified_locally =
@@ -1149,7 +1194,142 @@ impl ChainState {
             "pubkey": self.audit_sign_pubkey,
             "signature": signature,
             "verified_locally": verified_locally,
+            "canonical": true,
+            "audit_key_generation": self.audit_key_generation,
             "payload": payload
+        }))
+    }
+
+    fn verify_audit_export_json(&self, envelope_json: &str) -> Result<Value, String> {
+        let envelope: Value = serde_json::from_str(envelope_json)
+            .map_err(|e| format!("invalid envelope JSON: {e}"))?;
+        let payload = envelope
+            .get("payload")
+            .ok_or_else(|| "envelope missing payload".to_string())?;
+        let signature = envelope
+            .get("signature")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "envelope missing signature".to_string())?;
+        let pubkey = envelope
+            .get("pubkey")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "envelope missing pubkey".to_string())?;
+        let expected_hash = envelope
+            .get("payload_hash")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "envelope missing payload_hash".to_string())?;
+
+        let payload_text = canonical_json_string(payload);
+        let computed_hash = hash_hex(&payload_text);
+        let hash_ok = computed_hash == expected_hash;
+        let signature_ok = pq_verify_bytes(payload_text.as_bytes(), signature, pubkey)
+            .map_err(|e| format!("signature verification error: {e}"))?;
+        let valid = hash_ok && signature_ok;
+
+        Ok(json!({
+            "valid": valid,
+            "hash_ok": hash_ok,
+            "signature_ok": signature_ok,
+            "expected_payload_hash": expected_hash,
+            "computed_payload_hash": computed_hash,
+            "algorithm": envelope.get("algorithm").cloned().unwrap_or_else(|| Value::String("unknown".to_string()))
+        }))
+    }
+
+    fn audit_key_history_json(&self, limit: usize) -> Value {
+        let cap = limit.clamp(1, 500);
+        Value::Array(
+            self.audit_key_history
+                .iter()
+                .take(cap)
+                .map(|e| {
+                    json!({
+                        "generation": e.generation,
+                        "rotated_at": e.rotated_at,
+                        "reason": e.reason,
+                        "old_pubkey": e.old_pubkey,
+                        "new_pubkey": e.new_pubkey,
+                        "rotation_payload_hash": e.rotation_payload_hash,
+                        "rotation_signature": e.rotation_signature,
+                        "verified_locally": e.verified_locally
+                    })
+                })
+                .collect(),
+        )
+    }
+
+    fn rotate_audit_sign_key(&mut self, reason: &str) -> Result<Value, String> {
+        let clean_reason = {
+            let trimmed = reason.trim();
+            if trimmed.is_empty() {
+                "manual".to_string()
+            } else {
+                trimmed.chars().take(160).collect()
+            }
+        };
+
+        if self.audit_sign_pubkey.is_empty() || self.audit_sign_seckey.is_empty() {
+            let (pk, sk) = generate_keypair_hex();
+            self.audit_sign_pubkey = pk;
+            self.audit_sign_seckey = sk;
+            self.audit_key_generation = self.audit_key_generation.max(1);
+        }
+
+        let old_pubkey = self.audit_sign_pubkey.clone();
+        let old_seckey = self.audit_sign_seckey.clone();
+        let (new_pubkey, new_seckey) = generate_keypair_hex();
+        let rotated_at = Utc::now().timestamp_millis();
+        let next_generation = self.audit_key_generation.saturating_add(1);
+
+        let rotation_payload = json!({
+            "type": "audit_key_rotation",
+            "network": self.network,
+            "height": self.height,
+            "round": self.round,
+            "old_pubkey": old_pubkey,
+            "new_pubkey": new_pubkey,
+            "generation": next_generation,
+            "reason": clean_reason,
+            "rotated_at": rotated_at
+        });
+        let rotation_payload_text = canonical_json_string(&rotation_payload);
+        let rotation_payload_hash = hash_hex(&rotation_payload_text);
+        let rotation_signature = pq_sign_bytes(rotation_payload_text.as_bytes(), &old_seckey)?;
+        let verified_locally = pq_verify_bytes(
+            rotation_payload_text.as_bytes(),
+            &rotation_signature,
+            &old_pubkey,
+        )
+        .unwrap_or(false);
+
+        self.audit_sign_pubkey = new_pubkey.clone();
+        self.audit_sign_seckey = new_seckey;
+        self.audit_key_generation = next_generation;
+
+        self.audit_key_history.push_front(AuditKeyRotationRecord {
+            generation: next_generation,
+            rotated_at,
+            reason: clean_reason.clone(),
+            old_pubkey: old_pubkey.clone(),
+            new_pubkey: new_pubkey.clone(),
+            rotation_payload_hash: rotation_payload_hash.clone(),
+            rotation_signature: rotation_signature.clone(),
+            verified_locally,
+        });
+        let cap = self.config.audit_export_max_records.clamp(10, 20_000);
+        while self.audit_key_history.len() > cap {
+            self.audit_key_history.pop_back();
+        }
+
+        Ok(json!({
+            "status": "rotated",
+            "generation": self.audit_key_generation,
+            "reason": clean_reason,
+            "old_pubkey": old_pubkey,
+            "new_pubkey": new_pubkey,
+            "rotation_payload_hash": rotation_payload_hash,
+            "rotation_signature": rotation_signature,
+            "verified_locally": verified_locally
         }))
     }
 
@@ -2567,6 +2747,7 @@ impl ChainState {
                 "reveal_audit_retention": self.config.reveal_audit_retention,
                 "reveal_rate_limit_per_minute": self.config.reveal_rate_limit_per_minute,
                 "audit_export_max_records": self.config.audit_export_max_records,
+                "audit_key_generation": self.audit_key_generation,
                 "signature_scheme": "hybrid_qr_v1",
                 "privacy_modes": ["transparent", "shielded", "viewable"]
             },
@@ -2578,7 +2759,8 @@ impl ChainState {
                 "wallet_creations": self.metrics.wallet_creations,
                 "avg_tx_process_micros": self.metrics.avg_tx_process_micros,
                 "peak_tps": self.metrics.peak_tps,
-                "signature_replays_blocked": self.used_signatures.len()
+                "signature_replays_blocked": self.used_signatures.len(),
+                "audit_key_rotations": self.audit_key_history.len()
             }
         })
     }
@@ -2751,6 +2933,43 @@ fn obfuscate_address(address: &str) -> String {
 fn mask_amount(amount: u64) -> String {
     let salt = now_ms();
     format!("mask_{}", hash_hex(&format!("{amount}:{salt}")))
+}
+
+fn canonical_json_string(value: &Value) -> String {
+    match value {
+        Value::Null => "null".to_string(),
+        Value::Bool(v) => {
+            if *v {
+                "true".to_string()
+            } else {
+                "false".to_string()
+            }
+        }
+        Value::Number(n) => n.to_string(),
+        Value::String(s) => serde_json::to_string(s).unwrap_or_else(|_| "\"\"".to_string()),
+        Value::Array(arr) => {
+            let inner = arr
+                .iter()
+                .map(canonical_json_string)
+                .collect::<Vec<_>>()
+                .join(",");
+            format!("[{inner}]")
+        }
+        Value::Object(map) => {
+            let mut keys: Vec<&String> = map.keys().collect();
+            keys.sort();
+            let inner = keys
+                .iter()
+                .map(|k| {
+                    let key_json = serde_json::to_string(k).unwrap_or_else(|_| "\"\"".to_string());
+                    let val_json = canonical_json_string(&map[*k]);
+                    format!("{key_json}:{val_json}")
+                })
+                .collect::<Vec<_>>()
+                .join(",");
+            format!("{{{inner}}}")
+        }
+    }
 }
 
 fn pq_sign_bytes(payload: &[u8], seckey_hex: &str) -> Result<String, String> {
@@ -3056,6 +3275,38 @@ pub extern "C" fn bolh_export_audit_signed(limit_ptr: *const c_char) -> *const c
     let limit = limit_raw.trim().parse::<usize>().unwrap_or(100);
     let result = with_state_read(|state| state.export_audit_signed_json(limit));
     result_to_c_ptr(result)
+}
+
+/// Verify signed audit envelope integrity and signature.
+#[no_mangle]
+pub extern "C" fn bolh_verify_audit_export(envelope_ptr: *const c_char) -> *const c_char {
+    let envelope_json = match cstr_to_rust(envelope_ptr, "envelope_json") {
+        Ok(v) => v,
+        Err(e) => return value_to_c_ptr(json!({ "error": e })),
+    };
+    let result = with_state_read(|state| state.verify_audit_export_json(&envelope_json));
+    result_to_c_ptr(result)
+}
+
+/// Rotate current audit signing key.
+#[no_mangle]
+pub extern "C" fn bolh_rotate_audit_key(reason_ptr: *const c_char) -> *const c_char {
+    let reason = cstr_to_rust(reason_ptr, "reason").unwrap_or_else(|_| "manual".to_string());
+    let result = with_state_write(|state| {
+        let out = state.rotate_audit_sign_key(&reason);
+        state.maybe_autopersist();
+        out
+    });
+    result_to_c_ptr(result)
+}
+
+/// Get recent audit signing key rotation history.
+#[no_mangle]
+pub extern "C" fn bolh_get_audit_key_history(limit_ptr: *const c_char) -> *const c_char {
+    let limit_raw = cstr_to_rust(limit_ptr, "limit").unwrap_or_else(|_| "20".to_string());
+    let limit = limit_raw.trim().parse::<usize>().unwrap_or(20);
+    let value = with_state_read(|state| state.audit_key_history_json(limit));
+    value_to_c_ptr(value)
 }
 
 /// Validate and process transaction.
@@ -3624,13 +3875,19 @@ mod tests {
             .expect("signed export should succeed");
         assert_eq!(envelope["algorithm"], "dilithium2");
         assert_eq!(envelope["verified_locally"], true);
+        assert_eq!(envelope["canonical"], true);
 
-        let payload_text = envelope["payload"].to_string();
+        let payload_text = canonical_json_string(&envelope["payload"]);
         let signature = envelope["signature"].as_str().expect("signature field");
         let pubkey = envelope["pubkey"].as_str().expect("pubkey field");
         let verified = pq_verify_bytes(payload_text.as_bytes(), signature, pubkey)
             .expect("verification call should succeed");
         assert!(verified, "export signature should verify");
+
+        let verify_result = state
+            .verify_audit_export_json(&envelope.to_string())
+            .expect("verify endpoint should parse envelope");
+        assert_eq!(verify_result["valid"], true);
     }
 
     #[test]
@@ -3650,5 +3907,31 @@ mod tests {
             snapshot["signature_policy"]["scheme"],
             SignatureScheme::HybridQrV1.as_str()
         );
+        assert_eq!(
+            snapshot["signature_policy"]["audit_key_generation"],
+            state.audit_key_generation
+        );
+    }
+
+    #[test]
+    fn audit_key_rotation_produces_history_record() {
+        let mut state = ChainState::new();
+        let original_pubkey = state.audit_sign_pubkey.clone();
+        let original_generation = state.audit_key_generation;
+
+        let rotated = state
+            .rotate_audit_sign_key("scheduled_rotation")
+            .expect("rotation should succeed");
+        assert_eq!(rotated["status"], "rotated");
+        assert_eq!(state.audit_key_generation, original_generation + 1);
+        assert_ne!(state.audit_sign_pubkey, original_pubkey);
+
+        let history = state.audit_key_history_json(10);
+        let events = history.as_array().expect("history array");
+        assert!(!events.is_empty(), "history should include rotation");
+        assert_eq!(events[0]["reason"], "scheduled_rotation");
+        assert_eq!(events[0]["old_pubkey"], original_pubkey);
+        assert_eq!(events[0]["new_pubkey"], state.audit_sign_pubkey);
+        assert_eq!(events[0]["verified_locally"], true);
     }
 }
