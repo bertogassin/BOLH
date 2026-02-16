@@ -1227,21 +1227,23 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
   const deptDesc = (dept: Department) => currentLang() === 'en' ? dept.descriptionEn : dept.description;
 
   return (
-    <div class="p-4 animate-fade-in">
+    <div class="p-4 animate-fade-in home-screen">
+      <p class="text-gray-700 text-sm font-semibold mb-3">да я могу тут написать</p>
+
       {/* Header with Elina */}
       <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-3">
           {/* Elina — living mascot */}
           <MobileElina size={48} />
           <div>
-            <p class="text-white/70 text-sm">{greeting()}</p>
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">BOLH</h1>
+            <p class="text-gray-500 text-sm">{greeting()}</p>
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-500 bg-clip-text text-transparent">BOLH</h1>
           </div>
         </div>
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="w-12 h-12 rounded-full glass flex items-center justify-center text-white touch-scale"
+            class="w-12 h-12 rounded-2xl glass border border-slate-200/70 flex items-center justify-center text-gray-700 touch-scale"
             onClick={() => props.onNavigate('notifications')}
             aria-label={t('notifications.title')}
           >
@@ -1262,9 +1264,9 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
         style="animation-delay: 0.05s"
         onClick={() => props.onNavigate('urgent')}
       >
-        <div class="relative overflow-hidden glass rounded-3xl p-5 flex items-center gap-4 border-2 border-amber-400/50">
+        <div class="relative overflow-hidden glass rounded-2xl p-5 flex items-center gap-4 border border-amber-300/60">
           <div class="absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full blur-2xl" />
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-xl">
+          <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-xl">
             <Icon name="zap" class="text-white" size="lg" />
           </div>
           <div class="text-left flex-1">
@@ -1276,15 +1278,15 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
       </button>
 
       {/* Department Section with Toggle */}
-      <div class="glass rounded-3xl p-4 mb-6 animate-slide-up" style="animation-delay: 0.1s">
+      <div class="glass rounded-2xl p-4 mb-6 animate-slide-up border border-slate-200/60" style="animation-delay: 0.1s">
         {/* Toggle: Найти мастера ↔ Я мастер */}
-        <div class="flex bg-white/10 rounded-2xl p-1 mb-4">
+        <div class="flex bg-slate-100/80 rounded-xl p-1 mb-4">
           <button
             type="button"
-            class={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+            class={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
               homeMode() === 'search'
                 ? 'bg-white text-indigo-700 shadow-md'
-                : 'text-white/60'
+                : 'text-gray-500'
             }`}
             onClick={() => { setHomeMode('search'); setHomeExpandedDept(null); }}
           >
@@ -1292,10 +1294,10 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
           </button>
           <button
             type="button"
-            class={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
+            class={`flex-1 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
               homeMode() === 'order'
                 ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md'
-                : 'text-white/60'
+                : 'text-gray-500'
             }`}
             onClick={() => { setHomeMode('order'); setHomeExpandedDept(null); }}
           >
@@ -1304,7 +1306,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
         </div>
 
         {/* Info line */}
-        <p class="text-white/40 text-[10px] mb-3 px-1">
+        <p class="text-gray-500 text-[10px] mb-3 px-1">
           {homeMode() === 'search'
             ? (currentLang() === 'en' ? 'Tap a department → pick ONE service you need' : 'Нажми отдел → выбери ОДНУ услугу')
             : (currentLang() === 'en' ? 'Tap a department → select all skills you offer' : 'Нажми отдел → выбери все навыки')
@@ -1323,15 +1325,15 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
               const isExpanded = () => homeExpandedDept() === dept.id;
               return (
                 <div
-                  class={`relative rounded-2xl p-2.5 touch-scale animate-slide-up flex flex-col items-center text-center transition-all cursor-pointer ${
+                  class={`relative rounded-xl p-2.5 touch-scale animate-slide-up flex flex-col items-center text-center transition-all cursor-pointer ${
                     isExpanded() ? 'col-span-3 !p-3' : ''
                   }`}
                   style={`animation-delay: ${0.1 + i() * 0.03}s; ${
                     isExpanded()
-                      ? `background: linear-gradient(135deg, ${dept.colorFrom}20, ${dept.colorTo}12); border: 2px solid ${dept.colorFrom}40`
+                      ? `background: linear-gradient(135deg, ${dept.colorFrom}14, ${dept.colorTo}0D); border: 1.5px solid ${dept.colorFrom}35`
                       : count() > 0
-                      ? `background: linear-gradient(135deg, ${dept.colorFrom}12, ${dept.colorTo}08); border: 2px solid ${dept.colorFrom}25`
-                      : 'background: rgba(255,255,255,0.08); border: 2px solid transparent'
+                      ? `background: linear-gradient(135deg, ${dept.colorFrom}10, ${dept.colorTo}08); border: 1.5px solid ${dept.colorFrom}25`
+                      : 'background: rgba(248,250,252,0.92); border: 1.5px solid rgba(148,163,184,0.22)'
                   }`}
                 >
                   {/* Department header — always shown */}
@@ -1339,20 +1341,20 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
                     class={`flex ${isExpanded() ? 'items-center gap-3 w-full' : 'flex-col items-center'}`}
                     onClick={() => setHomeExpandedDept(isExpanded() ? null : dept.id)}
                   >
-                    <div class={`${isExpanded() ? 'w-11 h-11' : 'w-14 h-14 mb-2'} rounded-2xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow-lg shrink-0`}>
+                    <div class={`${isExpanded() ? 'w-11 h-11' : 'w-14 h-14 mb-2'} rounded-xl bg-gradient-to-br ${dept.color} flex items-center justify-center shadow-lg shrink-0`}>
                       <span class={isExpanded() ? 'text-xl' : 'text-2xl'}>{dept.icon}</span>
                     </div>
                     <Show when={isExpanded()}>
                       <div class="flex-1 text-left">
-                        <p class="font-bold text-white text-sm">{deptName(dept)}</p>
-                        <p class="text-white/50 text-[10px]">
+                        <p class="font-bold text-gray-800 text-sm">{deptName(dept)}</p>
+                        <p class="text-gray-500 text-[10px]">
                           {count()} {currentLang() === 'en' ? 'selected' : 'выбрано'} • {dept.skills.length} {currentLang() === 'en' ? 'total' : 'всего'}
                         </p>
                       </div>
-                      <Icon name="chevronUp" class="text-white/40" size="sm" />
+                      <Icon name="chevronUp" class="text-gray-400" size="sm" />
                     </Show>
                     <Show when={!isExpanded()}>
-                      <p class="font-semibold text-white text-xs leading-tight">{deptName(dept)}</p>
+                      <p class="font-semibold text-gray-700 text-xs leading-tight">{deptName(dept)}</p>
                     </Show>
                   </div>
 
@@ -1366,7 +1368,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
 
                   {/* Inline expanded skills list */}
                   <Show when={isExpanded()}>
-                    <div class="w-full mt-3 pt-3 border-t border-white/10 space-y-1.5">
+                    <div class="w-full mt-3 pt-3 border-t border-slate-200/70 space-y-1.5">
                       <For each={dept.skills}>
                         {(skill) => {
                           const sel = () => isClient()
@@ -1398,37 +1400,37 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
                           return (
                             <button
                               type="button"
-                              class="w-full flex items-center gap-3 p-2.5 rounded-xl transition-all text-left touch-scale"
+                              class="w-full flex items-center gap-3 p-2.5 rounded-lg transition-all text-left touch-scale"
                               style={sel()
-                                ? `background: linear-gradient(135deg, ${dept.colorFrom}28, ${dept.colorTo}18); border: 1.5px solid ${dept.colorFrom}40`
-                                : 'background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.04)'
+                                ? `background: linear-gradient(135deg, ${dept.colorFrom}16, ${dept.colorTo}10); border: 1.5px solid ${dept.colorFrom}35`
+                                : 'background: rgba(248,250,252,0.92); border: 1.5px solid rgba(148,163,184,0.22)'
                               }
                               onClick={onSkillClick}
                             >
                               <div class={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                                 sel()
                                   ? 'bg-gradient-to-br ' + dept.color + ' shadow'
-                                  : 'bg-white/8'
+                                  : 'bg-slate-200/80'
                               }`}>
                                 <span class="text-sm">{skill.icon}</span>
                               </div>
                               <div class="flex-1 min-w-0">
-                                <p class={`text-[11px] font-semibold ${sel() ? 'text-white' : 'text-white/50'}`}>
+                                <p class={`text-[11px] font-semibold ${sel() ? 'text-gray-800' : 'text-gray-500'}`}>
                                   {currentLang() === 'en' ? skill.nameEn : skill.name}
                                 </p>
                                 <div class="flex gap-1 mt-0.5 flex-wrap">
                                   <Show when={skill.isExpert}>
-                                    <span class="px-1.5 py-0.5 bg-yellow-400/20 text-yellow-300 text-[7px] font-bold rounded-full">EXP</span>
+                                    <span class="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[7px] font-bold rounded-full">EXP</span>
                                   </Show>
                                   <Show when={skill.urgent}>
-                                    <span class="px-1.5 py-0.5 bg-red-400/20 text-red-300 text-[7px] font-bold rounded-full">⚡</span>
+                                    <span class="px-1.5 py-0.5 bg-red-100 text-red-600 text-[7px] font-bold rounded-full">⚡</span>
                                   </Show>
                                 </div>
                               </div>
                               <div class={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${
                                 sel()
                                   ? (isClient() ? 'border-amber-400 bg-amber-500' : 'border-green-400 bg-green-500')
-                                  : 'border-white/15'
+                                  : 'border-slate-300'
                               }`}>
                                 <Show when={sel()}>
                                   <Icon name="check" class="text-white w-2.5 h-2.5" />
@@ -1448,7 +1450,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
       </div>
 
       {/* Active Order Card */}
-      <div class="glass rounded-3xl p-5 animate-slide-up" style="animation-delay: 0.5s">
+      <div class="glass rounded-2xl p-5 animate-slide-up border border-slate-200/60" style="animation-delay: 0.5s">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
             <Icon name="shield" class="text-white" size="sm" />
@@ -1465,7 +1467,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
         </div>
         
         <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300">
+          <div class="w-14 h-14 rounded-xl overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300">
             <div class="w-full h-full flex items-center justify-center text-2xl">👤</div>
           </div>
           <div class="flex-1">
@@ -1476,7 +1478,7 @@ function HomePage(props: { onNavigate: (page: string) => void }) {
             </div>
           </div>
           <button 
-            class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg touch-scale"
+            class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg touch-scale"
             onClick={() => props.onNavigate('tracking')}
           >
             <Icon name="location" class="text-white" size="sm" />
@@ -8129,7 +8131,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setCurrentPage(item.id)}
-                    class={`flex flex-col items-center justify-center px-4 py-2 rounded-2xl transition-all duration-300 touch-scale ${
+                    class={`flex flex-col items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 touch-scale ${
                       isActive() 
                         ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg' 
                         : ''

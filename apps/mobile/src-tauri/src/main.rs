@@ -5,8 +5,6 @@
 
 mod bolh_bridge;
 
-use tauri::Manager;
-
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -27,6 +25,13 @@ fn main() {
             bolh_bridge::bolh_init_genesis,
             bolh_bridge::bolh_get_utxo_balance,
             bolh_bridge::bolh_get_utxos,
+            bolh_bridge::bolh_reveal_private_tx,
+            bolh_bridge::bolh_get_reveal_audit,
+            bolh_bridge::bolh_policy_snapshot,
+            bolh_bridge::bolh_export_audit_signed,
+            bolh_bridge::bolh_verify_audit_export,
+            bolh_bridge::bolh_rotate_audit_key,
+            bolh_bridge::bolh_get_audit_key_history,
             bolh_bridge::bolh_validate_and_process_tx,
             bolh_bridge::bolh_utxo_persist,
             // Consensus API
