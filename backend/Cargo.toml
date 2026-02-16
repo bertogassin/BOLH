@@ -11,6 +11,9 @@ path = "src/main.rs"
 # Core library
 guardio-core = { path = "../packages/core" }
 
+# Blockchain
+bolh-chain = { path = "../blockchain/core" }
+
 # Async runtime
 tokio = { workspace = true }
 async-trait = { workspace = true }

@@ -3,7 +3,7 @@
  * Import from shared components
  */
 
-import { BlockchainScreen } from '../components/BlockchainScreen';
+import { BlockchainScreen } from '@guardio/ui';
 
 export default function BlockchainPage() {
   return <BlockchainScreen />;

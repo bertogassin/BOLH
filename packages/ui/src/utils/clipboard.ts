@@ -2,7 +2,7 @@
  * Clipboard utility for copying text
  */
 
-import { showToast } from "../components/Toast";
+import { showToast } from "../components/blockchain/Toast";
 
 export async function copyToClipboard(text: string, successMessage = "Copied to clipboard!") {
   try {

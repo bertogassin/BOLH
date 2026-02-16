@@ -1908,6 +1908,7 @@ dependencies = [
  "anyhow",
  "async-trait",
  "axum",
+ "bolh-chain",
  "chrono",
  "dotenvy",
  "guardio-core",

@@ -637,6 +637,137 @@ async fn bolh_create_bounty(
     }).await.map_err(|e| e.to_string())?
 }
 
+// ============= Consensus API =============
+
+#[tauri::command]
+async fn bolh_consensus_state() -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(|| {
+        let chain = global_chain();
+        let stats = chain.stats();
+        let vals = chain.active_validators();
+        let proposer = chain.current_proposer().map(|a| a.to_bech32()).unwrap_or_default();
+        serde_json::json!({
+            "height": stats.height,
+            "round": 0,
+            "validators": vals.iter().map(|v| serde_json::json!({
+                "address": v.address.to_bech32(),
+                "voting_power": v.stake,
+                "active": v.is_active,
+                "jailed_until": v.jailed_until
+            })).collect::<Vec<_>>(),
+            "current_proposer": proposer,
+            "epoch": chain.epoch(),
+            "consensus": "PoS-BFT",
+            "status": "active"
+        })
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_propose_block(proposer: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        match global_chain().propose_block(&proposer) {
+            Ok(block_id) => serde_json::json!({
+                "block_id": block_id,
+                "height": global_chain().height() + 1,
+                "status": "proposed"
+            }),
+            Err(e) => serde_json::json!({"error": e, "status": "failed"}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_vote_on_block(voter: String, block_id: String, approved: bool) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        match global_chain().vote_on_block(&voter, &block_id, approved) {
+            Ok(()) => serde_json::json!({
+                "vote": if approved { "yes" } else { "no" },
+                "status": "recorded"
+            }),
+            Err(e) => serde_json::json!({"error": e, "status": "failed"}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_can_finalize(block_id: String) -> Result<bool, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        global_chain().can_finalize(&block_id).unwrap_or(false)
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_finalize_block(block_id: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        match global_chain().finalize_block(&block_id) {
+            Ok(height) => {
+                let _ = save_global_chain();
+                serde_json::json!({
+                    "status": "finalized",
+                    "height": height,
+                })
+            }
+            Err(e) => serde_json::json!({"error": e, "status": "failed"}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_voting_status(block_id: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let chain = global_chain();
+        match chain.get_voting_status(&block_id) {
+            Ok((yes_count, no_count, pending, passed)) => {
+                serde_json::json!({
+                    "yes_votes": yes_count,
+                    "no_votes": no_count,
+                    "pending": pending,
+                    "status": if passed { "passed" } else { "pending" }
+                })
+            }
+            Err(e) => serde_json::json!({"error": e}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+// ============= Wallet Import + UTXO Compat =============
+
+#[tauri::command]
+async fn bolh_import_wallet(name: String, seckey: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        match global_chain().import_wallet(&name, &seckey) {
+            Ok(info) => {
+                let _ = save_global_chain();
+                serde_json::json!({
+                    "name": info.name,
+                    "address": info.address,
+                    "status": "imported"
+                })
+            }
+            Err(e) => serde_json::json!({"error": e}),
+        }
+    }).await.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn bolh_get_utxos(address: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let Ok(addr) = Address::from_bech32(&address) else {
+            return serde_json::json!([]);
+        };
+        let chain = global_chain();
+        let account = chain.get_account(&addr);
+        serde_json::json!([{
+            "address": address,
+            "balance": account.balance,
+            "nonce": account.nonce,
+            "staked": account.staked,
+            "is_validator": account.is_validator
+        }])
+    }).await.map_err(|e| e.to_string())
+}
+
 // ============= Business Module Stats =============
 
 #[tauri::command]
@@ -966,6 +1097,16 @@ pub fn run() {
             bolh_contract_stats,
             bolh_create_subscription,
             bolh_create_bounty,
+            // Consensus
+            bolh_consensus_state,
+            bolh_propose_block,
+            bolh_vote_on_block,
+            bolh_can_finalize,
+            bolh_finalize_block,
+            bolh_voting_status,
+            // Wallet Import + UTXO
+            bolh_import_wallet,
+            bolh_get_utxos,
             // Business modules
             bolh_delivery_stats,
             bolh_rental_stats,

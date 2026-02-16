@@ -11,23 +11,37 @@ export function Statistics(props: StatisticsProps) {
   const [supplyChart, setSupplyChart] = createSignal<Chart | null>(null);
   const [txChart, setTxChart] = createSignal<Chart | null>(null);
 
-  // Mock data - in production, this would come from blockchain
-  const totalSupply = 10_000_000_000;
-  const circulatingSupply = 2_500_000_000;
-  const stakedSupply = 750_000_000;
-  const reserveSupply = totalSupply - circulatingSupply - stakedSupply;
+  // Real data from blockchain via props (falls back to defaults if not yet loaded)
+  const consensus = () => props.blockchain.consensusState();
+  const totalSupply = () => consensus()?.height !== undefined ? 10_000_000_000 : 10_000_000_000;
+  const balance = () => props.blockchain.balance() || 0;
+  const circulatingSupply = () => {
+    const c = consensus();
+    return c ? (c.validators?.reduce((s: number, v: any) => s + (v.voting_power || 0), 0) || 0) + balance() : 2_500_000_000;
+  };
+  const stakedSupply = () => {
+    const c = consensus();
+    return c ? c.validators?.reduce((s: number, v: any) => s + (v.voting_power || 0), 0) || 0 : 750_000_000;
+  };
+  const reserveSupply = () => totalSupply() - circulatingSupply() - stakedSupply();
 
-  const transactionStats = {
-    confirmed: 1245,
-    pending: 47,
-    failed: 12,
+  const transactionStats = () => {
+    const utxos = props.blockchain.utxos();
+    return {
+      confirmed: utxos?.length || 0,
+      pending: 0,
+      failed: 0,
+    };
   };
 
-  const validatorStats = {
-    active: 2,
-    totalStaked: stakedSupply,
-    blockHeight: 12847,
-    networkHash: "A7F3E2C9...",
+  const validatorStats = () => {
+    const c = consensus();
+    return {
+      active: c?.validators?.length || 0,
+      totalStaked: stakedSupply(),
+      blockHeight: c?.height || 0,
+      networkHash: c?.current_proposer?.slice(0, 12) || "...",
+    };
   };
 
   onMount(() => {
@@ -42,7 +56,7 @@ export function Statistics(props: StatisticsProps) {
             labels: ["Circulating", "Staked", "Reserve"],
             datasets: [
               {
-                data: [circulatingSupply, stakedSupply, reserveSupply],
+                data: [circulatingSupply(), stakedSupply(), reserveSupply()],
                 backgroundColor: [
                   "rgba(99, 102, 241, 0.8)",
                   "rgba(16, 185, 129, 0.8)",
@@ -82,7 +96,7 @@ export function Statistics(props: StatisticsProps) {
                 callbacks: {
                   label: function (context) {
                     const value = context.parsed as number;
-                    const percentage = ((value / totalSupply) * 100).toFixed(1);
+                    const percentage = ((value / totalSupply()) * 100).toFixed(1);
                     const formatted = (value / 1_000_000_000).toFixed(2);
                     return `${context.label}: ${formatted}B BOLH (${percentage}%)`;
                   },
@@ -110,9 +124,9 @@ export function Statistics(props: StatisticsProps) {
               {
                 label: "Transactions",
                 data: [
-                  transactionStats.confirmed,
-                  transactionStats.pending,
-                  transactionStats.failed,
+                  transactionStats().confirmed,
+                  transactionStats().pending,
+                  transactionStats().failed,
                 ],
                 backgroundColor: [
                   "rgba(16, 185, 129, 0.8)",
@@ -187,7 +201,7 @@ export function Statistics(props: StatisticsProps) {
         <div class="stat-card chart-card">
           <div class="card-header">
             <h3>💰 Распределение BOLH</h3>
-            <span class="total-supply">{(totalSupply / 1_000_000_000).toFixed(0)}B BOLH</span>
+            <span class="total-supply">{(totalSupply() / 1_000_000_000).toFixed(0)}B BOLH</span>
           </div>
           <div class="chart-wrapper">
             <canvas id="supplyChart" width="200" height="200"></canvas>
@@ -199,7 +213,7 @@ export function Statistics(props: StatisticsProps) {
           <div class="card-header">
             <h3>📈 Статус транзакций</h3>
             <span class="total-tx">
-              Всего: {transactionStats.confirmed + transactionStats.pending + transactionStats.failed}
+              Всего: {transactionStats().confirmed + transactionStats().pending + transactionStats().failed}
             </span>
           </div>
           <div class="chart-wrapper">
@@ -215,15 +229,15 @@ export function Statistics(props: StatisticsProps) {
           <div class="metric-grid">
             <div class="metric-item">
               <div class="metric-label">Активные валидаторы</div>
-              <div class="metric-value">{validatorStats.active}</div>
+              <div class="metric-value">{validatorStats().active}</div>
             </div>
             <div class="metric-item">
               <div class="metric-label">Всего заблокировано</div>
-              <div class="metric-value">{(validatorStats.totalStaked / 1_000_000_000).toFixed(2)}B</div>
+              <div class="metric-value">{(validatorStats().totalStaked / 1_000_000_000).toFixed(2)}B</div>
             </div>
             <div class="metric-item">
               <div class="metric-label">Высота блока</div>
-              <div class="metric-value">{validatorStats.blockHeight.toLocaleString()}</div>
+              <div class="metric-value">{validatorStats().blockHeight.toLocaleString()}</div>
             </div>
           </div>
         </div>
@@ -236,15 +250,15 @@ export function Statistics(props: StatisticsProps) {
           <div class="metric-grid">
             <div class="metric-item">
               <div class="metric-label">Подтвержденные TX</div>
-              <div class="metric-value">{transactionStats.confirmed.toLocaleString()}</div>
+              <div class="metric-value">{transactionStats().confirmed.toLocaleString()}</div>
             </div>
             <div class="metric-item">
               <div class="metric-label">Ожидающие TX</div>
-              <div class="metric-value pending">{transactionStats.pending}</div>
+              <div class="metric-value pending">{transactionStats().pending}</div>
             </div>
             <div class="metric-item">
               <div class="metric-label">Хэш сети</div>
-              <div class="metric-value hash">{validatorStats.networkHash}</div>
+              <div class="metric-value hash">{validatorStats().networkHash}</div>
             </div>
           </div>
         </div>
@@ -266,8 +280,8 @@ export function Statistics(props: StatisticsProps) {
             <div class="table-cell">
               <span class="category circulating">Циркулирующие</span>
             </div>
-            <div class="table-cell">{(circulatingSupply / 1_000_000_000).toFixed(2)}B</div>
-            <div class="table-cell">{((circulatingSupply / totalSupply) * 100).toFixed(1)}%</div>
+            <div class="table-cell">{(circulatingSupply() / 1_000_000_000).toFixed(2)}B</div>
+            <div class="table-cell">{((circulatingSupply() / totalSupply()) * 100).toFixed(1)}%</div>
             <div class="table-cell">
               <span class="status active">✓ Активны</span>
             </div>
@@ -276,8 +290,8 @@ export function Statistics(props: StatisticsProps) {
             <div class="table-cell">
               <span class="category staked">Заблокированные</span>
             </div>
-            <div class="table-cell">{(stakedSupply / 1_000_000_000).toFixed(2)}B</div>
-            <div class="table-cell">{((stakedSupply / totalSupply) * 100).toFixed(1)}%</div>
+            <div class="table-cell">{(stakedSupply() / 1_000_000_000).toFixed(2)}B</div>
+            <div class="table-cell">{((stakedSupply() / totalSupply()) * 100).toFixed(1)}%</div>
             <div class="table-cell">
               <span class="status locked">🔒 Заблокированы</span>
             </div>
@@ -286,8 +300,8 @@ export function Statistics(props: StatisticsProps) {
             <div class="table-cell">
               <span class="category reserve">Резерв</span>
             </div>
-            <div class="table-cell">{(reserveSupply / 1_000_000_000).toFixed(2)}B</div>
-            <div class="table-cell">{((reserveSupply / totalSupply) * 100).toFixed(1)}%</div>
+            <div class="table-cell">{(reserveSupply() / 1_000_000_000).toFixed(2)}B</div>
+            <div class="table-cell">{((reserveSupply() / totalSupply()) * 100).toFixed(1)}%</div>
             <div class="table-cell">
               <span class="status reserved">⏳ Резервные</span>
             </div>

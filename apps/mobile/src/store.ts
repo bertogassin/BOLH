@@ -136,7 +136,27 @@ export const clearAuth = () => {
 };
 
 export const registerUser = async (data: { phone: string; password: string; name: string; role: string }) => {
-  // For now: create local auth, will be replaced with API call
+  // Try backend API first, fall back to local auth for offline mode
+  try {
+    const resp = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (resp.ok) {
+      const result = await resp.json();
+      const user: AuthUser = {
+        id: result.id || crypto.randomUUID?.() || Date.now().toString(),
+        name: result.name || data.name,
+        phone: result.phone || data.phone,
+      };
+      setAuthUser(user);
+      saveAuth();
+      return user;
+    }
+  } catch {
+    // Backend unavailable — create local auth (offline-first)
+  }
   const user: AuthUser = {
     id: crypto.randomUUID?.() || Date.now().toString(),
     name: data.name,

@@ -188,14 +188,63 @@ export async function runBlockchainSmokeTest(): Promise<SmokeTestResult> {
   return { ok: steps.every((s) => s.ok), steps };
 }
 
-// ── Convenience API object (includes legacy compat for useBlockchain hook) ──
+// ── Additional Tauri commands (consensus, UTXO, wallet management) ──
+
+export async function signTransaction(txJson: string): Promise<string> {
+  const req = JSON.parse(txJson);
+  const result = await sendTransaction(req.wallet || 'default', req.to || '', req.amount || 0);
+  return JSON.stringify(result);
+}
+
+export async function submitTransaction(signedJson: string): Promise<string> {
+  const req = JSON.parse(signedJson);
+  const result = await sendTransaction(req.wallet || 'default', req.to || '', req.amount || 0);
+  return JSON.stringify(result);
+}
+
+export async function deleteWallet(name: string): Promise<any> {
+  return tauriInvoke('bolh_delete_wallet', { name });
+}
+
+export async function importWallet(name: string, _pubkey: string, seckey: string): Promise<WalletInfo> {
+  return tauriInvoke('bolh_import_wallet', { name, seckey });
+}
+
+export async function getUTXOs(address: string): Promise<UTXO[]> {
+  return tauriInvoke('bolh_get_utxos', { address });
+}
+
+export async function getConsensusState(): Promise<ConsensusState> {
+  return tauriInvoke('bolh_consensus_state');
+}
+
+export async function proposeBlock(proposer: string): Promise<any> {
+  return tauriInvoke('bolh_propose_block', { proposer });
+}
+
+export async function voteOnBlock(voter: string, blockId: string, approved: boolean): Promise<any> {
+  return tauriInvoke('bolh_vote_on_block', { voter, blockId, approved });
+}
+
+export async function canFinalizeBlock(blockId: string): Promise<boolean> {
+  return tauriInvoke('bolh_can_finalize', { blockId });
+}
+
+export async function finalizeBlock(blockId: string): Promise<any> {
+  return tauriInvoke('bolh_finalize_block', { blockId });
+}
+
+export async function getVotingStatus(blockId: string): Promise<any> {
+  return tauriInvoke('bolh_voting_status', { blockId });
+}
+
+// ── Convenience API object (used by useBlockchain hook) ──
 export function createBlockchainApi() {
   return {
     init: blockchainInit,
     stats: getChainStats,
-    // Legacy signTransaction/submitTransaction
-    signTransaction: async (_tx: string) => '{}',
-    submitTransaction: async (_signed: string) => '{}',
+    signTransaction,
+    submitTransaction,
     wallet: {
       create: createWallet,
       get: getWallet,
@@ -205,8 +254,8 @@ export function createBlockchainApi() {
         return w?.balance ?? 0;
       },
       list: listWallets,
-      delete: async (_name: string) => {},
-      import: async (_name: string, _pub: string, _sec: string) => ({ name: _name, address: '', balance: 0, status: 'imported' } as WalletInfo),
+      delete: deleteWallet,
+      import: importWallet,
     },
     balance: getBalance,
     tx: {
@@ -214,19 +263,19 @@ export function createBlockchainApi() {
       history: getTxHistory,
     },
     utxo: {
-      initGenesis: async () => {},
+      initGenesis: blockchainInit,
       getBalance: getBalance,
-      getAll: async (_addr: string): Promise<UTXO[]> => [],
-      validateAndProcess: async () => {},
-      persist: async () => {},
+      getAll: getUTXOs,
+      validateAndProcess: async (txJson: string) => submitTransaction(txJson),
+      persist: saveChain,
     },
     consensus: {
-      proposeBlock: async () => ({}),
-      voteOnBlock: async () => ({}),
-      canFinalize: async () => true,
-      finalizeBlock: async () => ({}),
-      getState: async (): Promise<ConsensusState> => ({ height: 0, round: 0, validators: [], current_proposer: '' }),
-      getVotingStatus: async () => ({}),
+      proposeBlock,
+      voteOnBlock: async (voter: string, blockId: string) => voteOnBlock(voter, blockId, true),
+      canFinalize: canFinalizeBlock,
+      finalizeBlock,
+      getState: getConsensusState,
+      getVotingStatus,
     },
     network: getNetworkInfo,
     save: saveChain,

@@ -471,6 +471,25 @@ impl BolhChain {
         Ok((yes_stake as f64) >= (total_stake as f64 * cfg.finality_threshold))
     }
 
+    /// Get voting status for a pending block proposal (safe external API).
+    pub fn get_voting_status(&self, block_id: &str) -> Result<(i64, i64, i64, bool), String> {
+        let rt = self.consensus.read();
+        let prop = rt
+            .proposals
+            .get(block_id)
+            .ok_or_else(|| "Proposal not found".to_string())?;
+        let yes_count = prop.yes.len() as i64;
+        let no_count = prop.no.len() as i64;
+        drop(rt);
+
+        let vals = self.active_validators();
+        let total_active = vals.iter().filter(|v| v.is_active).count() as i64;
+        let pending = (total_active - yes_count - no_count).max(0);
+        let passed = self.can_finalize(block_id).unwrap_or(false);
+
+        Ok((yes_count, no_count, pending, passed))
+    }
+
     /// Finalize a block proposal and apply it to chain state (deterministic).
     pub fn finalize_block(&self, block_id: &str) -> Result<u64, String> {
         if !self.can_finalize(block_id)? {
