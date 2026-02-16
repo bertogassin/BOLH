@@ -31,6 +31,7 @@ struct LoadedLib {
     get_utxo_balance: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> c_ulong>,
     get_utxos: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     reveal_private_tx: Symbol<'static, unsafe extern "C" fn(CStrPtr, CStrPtr) -> CStrPtr>,
+    get_reveal_audit: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     validate_and_process_tx: Symbol<'static, unsafe extern "C" fn(CStrPtr) -> CStrPtr>,
     utxo_persist: Symbol<'static, unsafe extern "C" fn() -> CStrPtr>,
 
@@ -126,6 +127,9 @@ impl LoadedLib {
                 reveal_private_tx: lib
                     .get(b"bolh_reveal_private_tx\0")
                     .map_err(|e| format!("bolh_reveal_private_tx: {}", e))?,
+                get_reveal_audit: lib
+                    .get(b"bolh_get_reveal_audit\0")
+                    .map_err(|e| format!("bolh_get_reveal_audit: {}", e))?,
                 validate_and_process_tx: lib
                     .get(b"bolh_validate_and_process_tx\0")
                     .map_err(|e| format!("bolh_validate_and_process_tx: {}", e))?,
@@ -316,6 +320,16 @@ pub fn bolh_reveal_private_tx(txid: String, reveal_key: String) -> Result<String
     let c_txid = CString::new(txid).map_err(|e| e.to_string())?;
     let c_reveal = CString::new(reveal_key).map_err(|e| e.to_string())?;
     let r = unsafe { (lib.reveal_private_tx)(c_txid.as_ptr(), c_reveal.as_ptr()) };
+    let s = cstr_to_string(r);
+    free_cstr(r);
+    Ok(s)
+}
+
+#[tauri::command]
+pub fn bolh_get_reveal_audit(limit: Option<u32>) -> Result<String, String> {
+    let lib = BOLH_LIB.as_ref().map_err(|e| e.clone())?;
+    let c_limit = CString::new(limit.unwrap_or(20).to_string()).map_err(|e| e.to_string())?;
+    let r = unsafe { (lib.get_reveal_audit)(c_limit.as_ptr()) };
     let s = cstr_to_string(r);
     free_cstr(r);
     Ok(s)

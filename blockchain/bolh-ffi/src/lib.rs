@@ -36,6 +36,7 @@ const MAX_TX_AMOUNT: u64 = 1_000_000_000_000_000;
 const MAX_PRIVATE_PAYLOAD_BYTES: usize = 16_384;
 const MIN_RING_SIZE: usize = 3;
 const MAX_RING_SIZE: usize = 32;
+const MAX_REVEAL_AUDIT_EVENTS: usize = 10_000;
 
 const BOOTSTRAP_VALIDATOR_POWER: u64 = 100;
 const DEFAULT_GENESIS_ALLOCATION: u64 = 100_000_000_000;
@@ -101,6 +102,7 @@ impl PrivacyMode {
 
 /// Runtime policy configuration for decoupled blockchain architecture.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 struct ChainConfig {
     base_fee: u64,
     fee_per_input: u64,
@@ -112,6 +114,13 @@ struct ChainConfig {
     instant_settlement_mempool_limit: usize,
     min_quantum_sig_len: usize,
     max_private_payload_bytes: usize,
+    low_load_ring_min: usize,
+    medium_load_ring_min: usize,
+    high_load_ring_min: usize,
+    low_load_ring_max: usize,
+    medium_load_ring_max: usize,
+    high_load_ring_max: usize,
+    reveal_audit_retention: usize,
 }
 
 impl Default for ChainConfig {
@@ -127,6 +136,13 @@ impl Default for ChainConfig {
             instant_settlement_mempool_limit: 2_000,
             min_quantum_sig_len: 20,
             max_private_payload_bytes: MAX_PRIVATE_PAYLOAD_BYTES,
+            low_load_ring_min: 6,
+            medium_load_ring_min: 10,
+            high_load_ring_min: 14,
+            low_load_ring_max: MAX_RING_SIZE,
+            medium_load_ring_max: 28,
+            high_load_ring_max: 24,
+            reveal_audit_retention: 4_000,
         }
     }
 }
@@ -221,6 +237,15 @@ struct PrivateTxRecord {
     amount_masked: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RevealAuditRecord {
+    txid: String,
+    requester_hash: String,
+    result: String,
+    reason: Option<String>,
+    timestamp: i64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct MetricsState {
     tx_processed: u64,
@@ -257,6 +282,8 @@ struct PersistedState {
     private_txs: Vec<PrivateTxRecord>,
     #[serde(default)]
     stealth_owner: HashMap<String, String>,
+    #[serde(default)]
+    reveal_audit: Vec<RevealAuditRecord>,
     metrics: MetricsState,
     #[serde(default)]
     config: ChainConfig,
@@ -277,6 +304,7 @@ struct ChainState {
     processed_txids: HashSet<String>,
     used_signatures: HashSet<String>,
     private_txs: BTreeMap<String, PrivateTxRecord>,
+    reveal_audit: VecDeque<RevealAuditRecord>,
     mempool: BTreeMap<String, TxRecord>,
     tx_history: VecDeque<TxRecord>,
     validators: BTreeMap<String, ValidatorRecord>,
@@ -304,6 +332,7 @@ impl ChainState {
             processed_txids: HashSet::new(),
             used_signatures: HashSet::new(),
             private_txs: BTreeMap::new(),
+            reveal_audit: VecDeque::new(),
             mempool: BTreeMap::new(),
             tx_history: VecDeque::new(),
             validators: BTreeMap::new(),
@@ -357,6 +386,11 @@ impl ChainState {
                 "signature_scheme": "hybrid_qr_v1",
                 "privacy_model": "shielded_with_view_key_reveal",
                 "consensus_model": "weighted_bft_pos",
+                "ring_policy": {
+                    "low": {"min": self.config.low_load_ring_min, "max": self.config.low_load_ring_max},
+                    "medium": {"min": self.config.medium_load_ring_min, "max": self.config.medium_load_ring_max},
+                    "high": {"min": self.config.high_load_ring_min, "max": self.config.high_load_ring_max}
+                },
                 "goal": {
                     "fast": true,
                     "cheap": true,
@@ -398,7 +432,7 @@ impl ChainState {
 
     fn to_persisted(&self) -> PersistedState {
         PersistedState {
-            version: 2,
+            version: 3,
             network: self.network.clone(),
             height: self.height,
             round: self.round,
@@ -410,6 +444,7 @@ impl ChainState {
             used_signatures: self.used_signatures.iter().cloned().collect(),
             private_txs: self.private_txs.values().cloned().collect(),
             stealth_owner: self.stealth_owner.clone(),
+            reveal_audit: self.reveal_audit.iter().cloned().collect(),
             metrics: self.metrics.clone(),
             config: self.config.clone(),
             tx_seq: self.tx_seq,
@@ -446,6 +481,7 @@ impl ChainState {
             .map(|p| (p.txid.clone(), p))
             .collect();
         self.stealth_owner = persisted.stealth_owner;
+        self.reveal_audit = persisted.reveal_audit.into_iter().collect();
         self.metrics = persisted.metrics;
         self.config = persisted.config;
         self.tx_seq = persisted.tx_seq;
@@ -708,6 +744,7 @@ impl ChainState {
         self.processed_txids.clear();
         self.used_signatures.clear();
         self.private_txs.clear();
+        self.reveal_audit.clear();
 
         let genesis_txid = self.next_tx_id("genesis");
         let mut total_allocated = 0u64;
@@ -828,6 +865,109 @@ impl ChainState {
         raw.clamp(MIN_RING_SIZE, MAX_RING_SIZE)
     }
 
+    fn dynamic_ring_policy(&self) -> (&'static str, usize, usize) {
+        let load_ratio = if MAX_MEMPOOL_TXS == 0 {
+            0.0
+        } else {
+            self.mempool.len() as f64 / MAX_MEMPOOL_TXS as f64
+        };
+
+        if load_ratio < 0.40 {
+            (
+                "low",
+                self.config.low_load_ring_min.max(MIN_RING_SIZE),
+                self.config
+                    .low_load_ring_max
+                    .clamp(MIN_RING_SIZE, MAX_RING_SIZE),
+            )
+        } else if load_ratio < 0.75 {
+            (
+                "medium",
+                self.config.medium_load_ring_min.max(MIN_RING_SIZE),
+                self.config
+                    .medium_load_ring_max
+                    .clamp(MIN_RING_SIZE, MAX_RING_SIZE),
+            )
+        } else {
+            (
+                "high",
+                self.config.high_load_ring_min.max(MIN_RING_SIZE),
+                self.config
+                    .high_load_ring_max
+                    .clamp(MIN_RING_SIZE, MAX_RING_SIZE),
+            )
+        }
+    }
+
+    fn enforce_ring_policy(
+        &self,
+        requested: usize,
+        input_count: usize,
+    ) -> Result<(usize, usize, usize, String), String> {
+        let requested = requested
+            .max(input_count)
+            .clamp(MIN_RING_SIZE, MAX_RING_SIZE);
+        let (band, mut min_ring, mut max_ring) = self.dynamic_ring_policy();
+
+        if min_ring > max_ring {
+            std::mem::swap(&mut min_ring, &mut max_ring);
+        }
+
+        if requested < min_ring {
+            return Err(format!(
+                "ring_size {} below dynamic minimum {} for {} network load",
+                requested, min_ring, band
+            ));
+        }
+
+        let effective = requested.clamp(min_ring, max_ring);
+        Ok((min_ring, max_ring, effective, band.to_string()))
+    }
+
+    fn record_reveal_audit(
+        &mut self,
+        txid: &str,
+        reveal_key: &str,
+        result: &str,
+        reason: Option<&str>,
+    ) {
+        let event = RevealAuditRecord {
+            txid: txid.to_string(),
+            requester_hash: hash_hex(reveal_key),
+            result: result.to_string(),
+            reason: reason.map(str::to_string),
+            timestamp: Utc::now().timestamp_millis(),
+        };
+        self.reveal_audit.push_front(event);
+
+        let cap = self
+            .config
+            .reveal_audit_retention
+            .clamp(50, MAX_REVEAL_AUDIT_EVENTS);
+        while self.reveal_audit.len() > cap {
+            self.reveal_audit.pop_back();
+        }
+    }
+
+    fn reveal_audit_json(&self, limit: usize) -> Value {
+        let cap = limit.clamp(1, 500);
+        Value::Array(
+            self.reveal_audit
+                .iter()
+                .take(cap)
+                .map(|e| {
+                    json!({
+                        "txid": e.txid,
+                        "requester_hash": e.requester_hash,
+                        "result": e.result,
+                        "reason": e.reason,
+                        "timestamp": e.timestamp
+                    })
+                })
+                .collect(),
+        )
+    }
+
     fn estimate_required_fee(
         &self,
         input_count: usize,
@@ -944,30 +1084,63 @@ impl ChainState {
         })
     }
 
-    fn reveal_private_tx(&self, txid: &str, reveal_key: &str) -> Result<Value, String> {
-        let record = self
-            .private_txs
-            .get(txid)
-            .ok_or_else(|| "private transaction not found".to_string())?;
+    fn reveal_private_tx(&mut self, txid: &str, reveal_key: &str) -> Result<Value, String> {
+        let record = match self.private_txs.get(txid).cloned() {
+            Some(record) => record,
+            None => {
+                self.record_reveal_audit(
+                    txid,
+                    reveal_key,
+                    "denied",
+                    Some("private transaction not found"),
+                );
+                return Err("private transaction not found".into());
+            }
+        };
+
         if record.privacy_mode != "viewable" {
+            self.record_reveal_audit(
+                txid,
+                reveal_key,
+                "denied",
+                Some("transaction is shielded-only"),
+            );
             return Err("transaction is shielded-only and cannot be revealed".into());
         }
 
-        let expected = record
-            .reveal_hash
-            .as_ref()
-            .ok_or_else(|| "transaction has no reveal key".to_string())?;
+        let expected = match record.reveal_hash.as_ref() {
+            Some(v) => v,
+            None => {
+                self.record_reveal_audit(txid, reveal_key, "denied", Some("missing reveal hash"));
+                return Err("transaction has no reveal key".into());
+            }
+        };
+
         let provided = hash_hex(reveal_key);
         if &provided != expected {
+            self.record_reveal_audit(txid, reveal_key, "denied", Some("invalid reveal key"));
             return Err("invalid reveal key".into());
         }
 
-        let tx = self
+        let tx = match self
             .tx_history
             .iter()
             .find(|entry| entry.txid == txid)
-            .ok_or_else(|| "transaction payload not found".to_string())?;
+            .cloned()
+        {
+            Some(tx) => tx,
+            None => {
+                self.record_reveal_audit(
+                    txid,
+                    reveal_key,
+                    "denied",
+                    Some("transaction payload not found"),
+                );
+                return Err("transaction payload not found".into());
+            }
+        };
 
+        self.record_reveal_audit(txid, reveal_key, "success", None);
         let total_output: u64 = tx.outputs.iter().map(|o| o.amount).sum();
         Ok(json!({
             "txid": txid,
@@ -1421,9 +1594,28 @@ impl ChainState {
         let fee = input_total.saturating_sub(output_total);
         let priority = Self::parse_priority(&tx.metadata);
         let ring_size_requested = Self::parse_ring_size(&tx.metadata);
-        let target_decoys = ring_size_requested.saturating_sub(tx.inputs.len());
+        let (ring_min, ring_max, ring_size_target, ring_load_band) = if privacy_mode.is_private() {
+            match self.enforce_ring_policy(ring_size_requested, tx.inputs.len()) {
+                Ok(v) => v,
+                Err(err) => {
+                    self.record_rejected_tx();
+                    return Err(err);
+                }
+            }
+        } else {
+            (
+                tx.inputs.len(),
+                tx.inputs.len(),
+                tx.inputs.len(),
+                "transparent".to_string(),
+            )
+        };
         let decoys = if privacy_mode.is_private() {
-            self.select_decoy_inputs(&consumed_indices, &sender, target_decoys)
+            self.select_decoy_inputs(
+                &consumed_indices,
+                &sender,
+                ring_size_target.saturating_sub(tx.inputs.len()),
+            )
         } else {
             Vec::new()
         };
@@ -1507,6 +1699,12 @@ impl ChainState {
             obj.insert(
                 "ring_size_effective".to_string(),
                 Value::from(ring_size_effective),
+            );
+            obj.insert("ring_policy_min".to_string(), Value::from(ring_min as u64));
+            obj.insert("ring_policy_max".to_string(), Value::from(ring_max as u64));
+            obj.insert(
+                "ring_load_band".to_string(),
+                Value::String(ring_load_band.clone()),
             );
             obj.insert("decoy_count".to_string(), Value::from(decoys.len() as u64));
             obj.insert(
@@ -2153,12 +2351,19 @@ impl ChainState {
             "finalized_blocks": self.finalized_blocks.len(),
             "mempool_size": self.mempool.len(),
             "privacy_pool_size": self.private_txs.len(),
+            "reveal_audit_events": self.reveal_audit.len(),
             "config": {
                 "base_fee": self.config.base_fee,
                 "fee_per_input": self.config.fee_per_input,
                 "fee_per_output": self.config.fee_per_output,
                 "amount_fee_ppm": self.config.amount_fee_ppm,
                 "instant_settlement_mempool_limit": self.config.instant_settlement_mempool_limit,
+                "ring_policy": {
+                    "low": {"min": self.config.low_load_ring_min, "max": self.config.low_load_ring_max},
+                    "medium": {"min": self.config.medium_load_ring_min, "max": self.config.medium_load_ring_max},
+                    "high": {"min": self.config.high_load_ring_min, "max": self.config.high_load_ring_max}
+                },
+                "reveal_audit_retention": self.config.reveal_audit_retention,
                 "signature_scheme": "hybrid_qr_v1",
                 "privacy_modes": ["transparent", "shielded", "viewable"]
             },
@@ -2617,8 +2822,21 @@ pub extern "C" fn bolh_reveal_private_tx(
         Ok(v) => v,
         Err(e) => return value_to_c_ptr(json!({ "error": e })),
     };
-    let result = with_state_read(|state| state.reveal_private_tx(&txid, &reveal_key));
+    let result = with_state_write(|state| {
+        let out = state.reveal_private_tx(&txid, &reveal_key);
+        state.maybe_autopersist();
+        out
+    });
     result_to_c_ptr(result)
+}
+
+/// Get reveal audit trail.
+#[no_mangle]
+pub extern "C" fn bolh_get_reveal_audit(limit_ptr: *const c_char) -> *const c_char {
+    let limit_raw = cstr_to_rust(limit_ptr, "limit").unwrap_or_else(|_| "20".to_string());
+    let limit = limit_raw.trim().parse::<usize>().unwrap_or(20);
+    let value = with_state_read(|state| state.reveal_audit_json(limit));
+    value_to_c_ptr(value)
 }
 
 /// Validate and process transaction.
@@ -3009,10 +3227,109 @@ mod tests {
         assert_eq!(processed["privacy"]["private"], true);
         assert_eq!(processed["privacy"]["revealable"], true);
 
+        let denied = state.reveal_private_tx(txid, "wrong-key");
+        assert!(denied.is_err());
+
         let revealed = state
             .reveal_private_tx(txid, reveal_key)
             .expect("reveal should work with valid key");
         assert_eq!(revealed["revealed"], true);
         assert_eq!(revealed["mode"], "viewable");
+
+        let audit = state.reveal_audit_json(10);
+        let events = audit.as_array().expect("audit array");
+        assert!(events.iter().any(|e| e["result"] == "success"));
+        assert!(events.iter().any(|e| e["result"] == "denied"));
+    }
+
+    #[test]
+    fn ring_policy_hardens_under_high_load() {
+        let mut state = ChainState::new();
+        let filler = TxRecord {
+            txid: "filler".to_string(),
+            inputs: Vec::new(),
+            outputs: Vec::new(),
+            fee: 0,
+            status: "pending".to_string(),
+            timestamp: Utc::now().timestamp_millis(),
+            metadata: json!({}),
+        };
+        for i in 0..(MAX_MEMPOOL_TXS * 8 / 10) {
+            let mut item = filler.clone();
+            item.txid = format!("mempool_fill_{i}");
+            state.mempool.insert(item.txid.clone(), item);
+        }
+
+        let err = state
+            .enforce_ring_policy(8, 1)
+            .expect_err("ring should be stricter under high load");
+        assert!(err.contains("dynamic minimum"));
+
+        let (_, max_ring, effective, band) = state
+            .enforce_ring_policy(18, 1)
+            .expect("larger ring should pass");
+        assert_eq!(band, "high");
+        assert!(effective <= max_ring);
+    }
+
+    #[test]
+    fn benchmark_fee_and_latency_guard() {
+        let mut state = ChainState::new();
+        let from = dummy_address("bench-from");
+        let genesis = json!([{ "address": from, "amount": 2_000_000u64 }]).to_string();
+        state
+            .init_genesis_from_json(&genesis)
+            .expect("genesis should initialize");
+
+        let mut sample_fees = Vec::new();
+        for i in 0..10 {
+            let utxo = state
+                .utxos
+                .iter()
+                .find(|u| state.owned_by(&from, &u.address) && !u.spent)
+                .cloned()
+                .expect("unspent output should exist");
+            let send_amount = utxo.amount.saturating_sub(2_000);
+            assert!(send_amount > 0, "insufficient amount for fee sample");
+
+            let mut tx = json!({
+                "txid": format!("bench_tx_{i}"),
+                "inputs": [{
+                    "prev_txid": utxo.txid,
+                    "output_index": utxo.output_index,
+                    "signature": ""
+                }],
+                "outputs": [{
+                    "address": from,
+                    "amount": send_amount
+                }],
+                "metadata": {
+                    "sig_scheme": "hybrid_qr_v1",
+                    "privacy_mode": "transparent",
+                    "priority": 1
+                },
+                "timestamp": Utc::now().timestamp_millis()
+            });
+            attach_quantum_proof(&mut tx);
+
+            let result = state
+                .validate_and_process_tx_json(&tx.to_string())
+                .expect("benchmark tx should pass");
+            let required = result
+                .get("fee_policy")
+                .and_then(|v| v.get("required_fee"))
+                .and_then(Value::as_u64)
+                .expect("required_fee must be present");
+            sample_fees.push(required);
+        }
+
+        assert!(sample_fees.iter().all(|v| *v > 0));
+        assert_eq!(state.metrics.tx_processed, sample_fees.len() as u64);
+        assert!(state.metrics.avg_tx_process_micros > 0);
+        assert!(
+            state.metrics.avg_tx_process_micros < 2_000_000,
+            "unexpectedly slow avg latency: {}us",
+            state.metrics.avg_tx_process_micros
+        );
     }
 }

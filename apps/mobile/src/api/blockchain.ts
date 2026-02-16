@@ -148,6 +148,7 @@ export type SignatureScheme = "hybrid_qr_v1" | "legacy_compat";
 export interface PrivacyOptions {
   mode?: PrivacyMode;
   revealKey?: string;
+  ringSize?: number;
   priority?: 0 | 1 | 2 | 3;
   fast?: boolean;
   signatureScheme?: SignatureScheme;
@@ -160,6 +161,7 @@ export interface FeePreview {
     base: number;
     io: number;
     amount_component: number;
+    ring_component: number;
     congestion_multiplier: number;
   };
 }
@@ -176,6 +178,14 @@ export interface RevealResult {
   total_output: number;
 }
 
+export interface RevealAuditRecord {
+  txid: string;
+  requester_hash: string;
+  result: "success" | "denied" | string;
+  reason?: string | null;
+  timestamp: number;
+}
+
 export function buildQuantumPrivateTransaction(
   tx: Transaction,
   options: PrivacyOptions = {}
@@ -185,6 +195,7 @@ export function buildQuantumPrivateTransaction(
     ...(tx.metadata ?? {}),
     sig_scheme: options.signatureScheme ?? "hybrid_qr_v1",
     privacy_mode: mode,
+    ring_size: options.ringSize ?? 8,
     priority: options.priority ?? 1,
     fast: options.fast ?? true,
   };
@@ -213,14 +224,19 @@ export function estimateAdaptiveFee(
   mempoolSizeHint: number = 0
 ): FeePreview {
   const outputTotal = tx.outputs.reduce((sum, out) => sum + Number(out.amount || 0), 0);
+  const mode = String((tx.metadata ?? {}).privacy_mode ?? "transparent");
+  const ringSizeRaw = Number((tx.metadata ?? {}).ring_size ?? 8);
+  const ringSize = Number.isFinite(ringSizeRaw) ? Math.max(3, Math.min(32, ringSizeRaw)) : 8;
   const base = 400;
   const io = tx.inputs.length * 120 + tx.outputs.length * 80;
   const amountComponent = Math.floor(outputTotal * 0.00015);
+  const ringComponent =
+    mode === "transparent" ? 0 : Math.max(0, Math.floor((ringSize - 4) * 25));
   const congestionMultiplier =
     mempoolSizeHint < 7000 ? 0.85 : mempoolSizeHint < 14000 ? 1.0 : 1.2;
   const estimated = Math.max(
     1,
-    Math.floor((base + io + amountComponent) * congestionMultiplier)
+    Math.floor((base + io + amountComponent + ringComponent) * congestionMultiplier)
   );
   const tier: FeePreview["tier"] =
     estimated < 1000 ? "ultra_cheap" : estimated < 3000 ? "cheap" : "normal";
@@ -232,6 +248,7 @@ export function estimateAdaptiveFee(
       base,
       io,
       amount_component: amountComponent,
+      ring_component: ringComponent,
       congestion_multiplier: congestionMultiplier,
     },
   };
@@ -247,10 +264,7 @@ export async function signAndSubmitQuantumTx(
   return parseOrThrow<Record<string, unknown>>(submitResult, "signAndSubmitQuantumTx");
 }
 
-/**
- * Reveal a viewable private transaction.
- * Transport is routed via bolh_get_utxos with special reveal prefix.
- */
+/** Reveal a viewable private transaction. */
 export async function revealPrivateTransaction(
   txid: string,
   revealKey: string
@@ -260,6 +274,13 @@ export async function revealPrivateTransaction(
     reveal_key: revealKey,
   });
   return parseOrThrow<RevealResult>(payload, "revealPrivateTransaction");
+}
+
+export async function getRevealAudit(
+  limit: number = 20
+): Promise<RevealAuditRecord[]> {
+  const payload = await invoke<string>("bolh_get_reveal_audit", { limit });
+  return parseOrThrow<RevealAuditRecord[]>(payload, "getRevealAudit");
 }
 
 export async function validateAndProcessTx(tx: Transaction): Promise<void> {
@@ -465,6 +486,7 @@ export function createBlockchainApi() {
       validateAndProcess: validateAndProcessTx,
       persist: persistUTXOSet,
       revealPrivate: revealPrivateTransaction,
+      getRevealAudit,
     },
     tx: {
       buildQuantumPrivate: buildQuantumPrivateTransaction,
