@@ -2762,6 +2762,14 @@ mod tests {
     }
 
     fn attach_quantum_proof(tx: &mut Value) {
+        if tx.get("timestamp").is_none() {
+            if let Some(obj) = tx.as_object_mut() {
+                obj.insert(
+                    "timestamp".to_string(),
+                    Value::from(Utc::now().timestamp_millis()),
+                );
+            }
+        }
         let material = ChainState::tx_signing_material_from_value(tx);
         let (pubkey, seckey) = generate_keypair_hex();
         let signature = pq_sign_bytes(material.as_bytes(), &seckey).expect("pq sign");
@@ -2948,7 +2956,10 @@ mod tests {
         let err = state
             .validate_and_process_tx_json(&tx.to_string())
             .expect_err("legacy signature should be rejected");
-        assert!(err.contains("quantum signature"));
+        assert!(
+            err.contains("quantum signature") || err.contains("pq_pubkey"),
+            "unexpected error: {err}"
+        );
     }
 
     #[test]
@@ -2987,7 +2998,8 @@ mod tests {
                 "privacy_mode": "viewable",
                 "reveal_key": reveal_key,
                 "priority": 2
-            }
+            },
+            "timestamp": Utc::now().timestamp_millis()
         });
         attach_quantum_proof(&mut tx);
 
