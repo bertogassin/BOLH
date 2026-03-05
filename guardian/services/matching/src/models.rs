@@ -1,4 +1,4 @@
-// События и кандидаты для Matching Engine.
+// Events and candidate models for Matching Engine.
 
 use domain::{Bid, BidId, BidderType, GuardId, Match, Order, OrderId};
 use std::sync::Arc;

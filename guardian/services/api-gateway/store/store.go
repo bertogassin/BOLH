@@ -111,7 +111,7 @@ type Store interface {
 	DeletePlanTask(taskID, planID, userID string) bool
 }
 
-// Plan — профессиональный план: себе или рабочим.
+// Plan - professional plan for self or team members.
 type Plan struct {
 	ID          string    `json:"id"`
 	OwnerID     string    `json:"owner_id"`
@@ -121,7 +121,7 @@ type Plan struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-// PlanTask — задача в плане; assignee_id: себе или сотруднику.
+// PlanTask - task in a plan; assignee_id can be self or a teammate.
 type PlanTask struct {
 	ID          string     `json:"id"`
 	PlanID      string     `json:"plan_id"`
@@ -135,7 +135,7 @@ type PlanTask struct {
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
-// PluginTeamMember — v2: участник команды плагина (owner, admin, editor, reviewer, viewer).
+// PluginTeamMember - v2 plugin team member (owner, admin, editor, reviewer, viewer).
 type PluginTeamMember struct {
 	PluginID string    `json:"plugin_id"`
 	UserID   string    `json:"user_id"`
@@ -144,7 +144,7 @@ type PluginTeamMember struct {
 	AddedAt  time.Time `json:"added_at"`
 }
 
-// PluginComment — v2: комментарий/ревью к плагину.
+// PluginComment - v2 comment/review for a plugin.
 type PluginComment struct {
 	ID        string    `json:"id"`
 	PluginID  string    `json:"plugin_id"`
@@ -196,7 +196,7 @@ type PaymentCard struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// Document — BOLH Document Hub: личные документы, контракты, чеки, отчёты.
+// Document - BOLH Document Hub: personal docs, contracts, receipts, reports.
 type Document struct {
 	ID            string     `json:"id"`
 	UserID        string     `json:"user_id"`
@@ -223,7 +223,7 @@ type Document struct {
 	IsFavorite    bool       `json:"is_favorite"`
 }
 
-// Plugin — конструктор плагинов: для фирм и агентов.
+// Plugin - plugin builder for firms and agents.
 type Plugin struct {
 	ID          string                   `json:"id"`
 	UserID      string                   `json:"user_id"`

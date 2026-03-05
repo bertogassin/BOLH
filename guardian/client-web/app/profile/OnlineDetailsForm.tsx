@@ -52,7 +52,7 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
           }`}
         >
           {details.online ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
-          {details.online ? 'Online actif' : 'Passer en Online'}
+          {details.online ? 'Online active' : 'Switch to online'}
         </button>
 
         <div className="grid grid-cols-1 gap-2">
@@ -132,7 +132,7 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
           <Save className="h-4 w-4" />
           {detailsSaving ? 'Saving...' : detailsSaved ? 'Saved' : 'Save details'}
         </button>
-        <p className="text-xs text-white/60">Данные сохраняются для вашего аккаунта и автоматически подставляются в следующий раз.</p>
+        <p className="text-xs text-white/60">Details are saved to your account and reused automatically next time.</p>
       </div>
       ) : null}
     </section>

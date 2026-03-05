@@ -2,11 +2,11 @@ import { BarChart3, FileCheck, FileText, FolderOpen, Receipt } from 'lucide-reac
 import type { Document } from '@/lib/api'
 
 export const CATEGORIES = [
-  { id: 'all', label: 'Все', icon: FolderOpen, docType: '' },
-  { id: 'personal', label: 'Личные', icon: FileText, docType: 'passport' },
-  { id: 'contracts', label: 'Контракты', icon: FileCheck, docType: 'contract' },
-  { id: 'financial', label: 'Финансы', icon: Receipt, docType: 'receipt' },
-  { id: 'reports', label: 'Отчёты', icon: BarChart3, docType: 'daily_report' },
+  { id: 'all', labelKey: 'documents_hub.category_all', icon: FolderOpen, docType: '' },
+  { id: 'personal', labelKey: 'documents_hub.category_personal', icon: FileText, docType: 'passport' },
+  { id: 'contracts', labelKey: 'documents_hub.category_contracts', icon: FileCheck, docType: 'contract' },
+  { id: 'financial', labelKey: 'documents_hub.category_financial', icon: Receipt, docType: 'receipt' },
+  { id: 'reports', labelKey: 'documents_hub.category_reports', icon: BarChart3, docType: 'daily_report' },
 ] as const
 
 const DOC_TYPE_STYLE: Record<string, { icon: typeof FileText; bg: string; border: string; iconColor: string }> = {
@@ -32,7 +32,7 @@ export function formatSize(bytes: number): string {
 export function formatDate(s?: string, locale?: string): string {
   if (!s) return '—'
   try {
-    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : 'en-US'
+    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US'
     return new Date(s).toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' })
   } catch {
     return s
@@ -45,10 +45,12 @@ export function formatRelativeDate(s?: string, locale?: string): string {
   if (!Number.isFinite(ts)) return '—'
   const diffMs = Date.now() - ts
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  if (diffHours < 1) return 'только что'
-  if (diffHours < 24) return `${diffHours} ч назад`
+  const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US'
+  const rtf = new Intl.RelativeTimeFormat(loc, { numeric: 'auto' })
+  if (diffHours < 1) return rtf.format(0, 'hour')
+  if (diffHours < 24) return rtf.format(-diffHours, 'hour')
   const diffDays = Math.floor(diffHours / 24)
-  if (diffDays <= 7) return `${diffDays} д назад`
+  if (diffDays <= 7) return rtf.format(-diffDays, 'day')
   return formatDate(s, locale)
 }
 

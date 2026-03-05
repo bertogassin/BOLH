@@ -1,4 +1,4 @@
-// Настраиваемые параметры алгоритма подбора.
+// Configurable parameters for the matching algorithm.
 
 use std::time::Duration;
 

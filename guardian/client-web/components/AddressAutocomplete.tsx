@@ -83,7 +83,7 @@ export function AddressAutocomplete({
   value,
   onChange,
   onSelect,
-  placeholder = 'Adresse',
+  placeholder = 'Address',
   className = '',
   showHistoryPanel = true,
   hasError = false,

@@ -119,7 +119,7 @@ export default function SettingsPage() {
             {saved ? <span className="text-xs text-green-300">Saved</span> : null}
           </div>
           <p className="text-xs text-white/60">
-            Все параметры сохраняются автоматически.
+            All settings are saved automatically.
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export default function SettingsPage() {
           <Link href="/profile/change-password" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
             <span className="flex items-center gap-2 text-sm">
               <KeyRound className="h-4 w-4 text-violet-300" />
-              Changer le mot de passe
+              Change password
             </span>
             <span className="text-white/40">›</span>
           </Link>

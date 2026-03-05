@@ -1,4 +1,4 @@
-// Защита API: rate limiting, CORS, security headers.
+// API protection: rate limiting, CORS, security headers.
 
 package middleware
 
@@ -17,14 +17,14 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// RateLimit — защита от DDoS. requests в per (например 100 в time.Minute).
+// RateLimit protects against DDoS. requests per duration (for example 100 per time.Minute).
 func RateLimit(requests int, per time.Duration) gin.HandlerFunc {
 	return rateLimitByKey(requests, per, func(c *gin.Context) string {
 		return c.ClientIP()
 	})
 }
 
-// RateLimitByKey — лимитирует запросы по произвольному ключу (например ip+email).
+// RateLimitByKey limits requests by a custom key (for example ip+email).
 func RateLimitByKey(requests int, per time.Duration, keyFn func(c *gin.Context) string) gin.HandlerFunc {
 	if keyFn == nil {
 		keyFn = func(c *gin.Context) string { return c.ClientIP() }
@@ -83,7 +83,7 @@ func rateLimitByKey(requests int, per time.Duration, keyFn func(c *gin.Context) 
 	}
 }
 
-// Cors — строгие правила. allowedOrigins задаётся снаружи.
+// Cors applies strict rules. allowedOrigins is provided from outside.
 func Cors(allowedOrigins map[string]bool) gin.HandlerFunc {
 	if allowedOrigins == nil {
 		allowedOrigins = map[string]bool{}
@@ -108,7 +108,7 @@ func Cors(allowedOrigins map[string]bool) gin.HandlerFunc {
 	}
 }
 
-// SecurityHeaders — заголовки безопасности.
+// SecurityHeaders applies security headers.
 func SecurityHeaders() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("X-Content-Type-Options", "nosniff")

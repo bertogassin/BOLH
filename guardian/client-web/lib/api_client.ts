@@ -113,7 +113,7 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     res = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials: 'include' })
   } catch (e) {
     if (isNetworkError(e)) {
-      throw new Error('Сервер недоступен. Запустите API Gateway на порту 8080.')
+      throw new Error('Server unavailable. Start API Gateway on port 8080.')
     }
     throw e
   }

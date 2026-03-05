@@ -22,13 +22,13 @@ enum class OrderStatus {
 
     val displayName: String
         get() = when (this) {
-            OPEN -> "Открыт"
-            MATCHING -> "Подбор"
-            MATCHED -> "Исполнитель найден"
-            ACCEPTED -> "Подтвержден"
-            IN_PROGRESS -> "В работе"
-            COMPLETED -> "Завершен"
-            CANCELLED -> "Отменен"
+            OPEN -> "Open"
+            MATCHING -> "Matching"
+            MATCHED -> "Guard assigned"
+            ACCEPTED -> "Accepted"
+            IN_PROGRESS -> "In progress"
+            COMPLETED -> "Completed"
+            CANCELLED -> "Cancelled"
         }
 }
 

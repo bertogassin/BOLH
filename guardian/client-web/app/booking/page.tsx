@@ -92,13 +92,13 @@ function isExpiryValid(expiry: string): boolean {
 
 function detectPlaceType(address: string): string {
   const v = address.toLowerCase()
-  if (/villa|вилла|maison|house/.test(v)) return 'вилла/частный дом'
-  if (/apartment|flat|квартира|residence|résidence/.test(v)) return 'жилое место'
-  if (/shop|store|magasin|market|boutique|магазин|супермаркет/.test(v)) return 'магазин/коммерция'
-  if (/office|bureau|business|company|ofis|офис/.test(v)) return 'офис/бизнес-объект'
-  if (/hotel|otel|отель/.test(v)) return 'отель'
-  if (/warehouse|склад|entrep[oô]t/.test(v)) return 'склад'
-  return 'объект по адресу'
+  if (/villa|maison|house/.test(v)) return 'villa_house'
+  if (/apartment|flat|residence/.test(v)) return 'residential'
+  if (/shop|store|market|boutique|supermarket/.test(v)) return 'store_commercial'
+  if (/office|business|company/.test(v)) return 'office_business'
+  if (/hotel|otel/.test(v)) return 'hotel'
+  if (/warehouse/.test(v)) return 'warehouse'
+  return 'generic'
 }
 
 export default function BookingPage() {
@@ -154,13 +154,14 @@ export default function BookingPage() {
   const bookingDraftKey = `guardian_booking_form_draft_${user?.id || 'guest'}`
   const lastOrderTemplateKey = `guardian_booking_last_order_${user?.id || 'guest'}`
   const missionDateLabel = `${String(safeDay).padStart(2, '0')} ${MONTHS[month]}`
+  const placeType = t(`booking.place_type_${detectPlaceType(address)}`)
   const autoMissionDescription = [
-    `Миссия: ${selectedServiceLabel}.`,
-    `Тип места: ${detectPlaceType(address)}.`,
-    `Адрес: ${address.trim() || 'будет уточнен'}.`,
-    `Период: ${missionDateLabel}, с ${fromTime} до ${toTime}.`,
-    'Задача: обеспечить порядок на объекте, контроль входа/выхода, наблюдение за периметром и оперативное реагирование на инциденты.',
-    'Дополнительно: можно дописать детали ниже (контакты, доступ, особые условия, приоритетные зоны).',
+    `${t('booking.mission_prefix')}: ${selectedServiceLabel}.`,
+    `${t('booking.place_type_short')}: ${placeType}.`,
+    `${t('booking.address')}: ${address.trim() || t('booking.address_pending')}.`,
+    `${t('booking.period')}: ${missionDateLabel}, ${t('booking.from')} ${fromTime} ${t('booking.to')} ${toTime}.`,
+    t('booking.mission_task_default'),
+    t('booking.mission_additional_default'),
   ].join(' ')
   const canUseOneTimeCard =
     isLuhnValid(cardDigits) &&
@@ -469,7 +470,7 @@ export default function BookingPage() {
       }
       if (end <= start) end = new Date(end.getTime() + 24 * 60 * 60 * 1000)
       await createOrder({
-        title: `${SERVICES.find(s => s.id === service)?.label || 'Gardien'} · ${address.slice(0, 30)}`,
+        title: `${SERVICES.find(s => s.id === service)?.label || 'Guardian'} · ${address.slice(0, 30)}`,
         description: missionDescription.trim() || autoMissionDescription,
         budget_min: p,
         budget_max: p,
@@ -506,7 +507,7 @@ export default function BookingPage() {
       router.push('/orders')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : 'Error')
     } finally {
       setLoading(false)
     }
@@ -569,11 +570,11 @@ export default function BookingPage() {
   if (!user) {
     return (
       <div className="min-h-dvh bg-black p-4 flex flex-col items-center justify-center gap-4 pb-32">
-        <p className="text-white/60 text-center">Войдите, чтобы оформить заказ на охрану.</p>
+        <p className="text-white/60 text-center">Log in to create a security order.</p>
         <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
-          Войти
+          Log in
         </Link>
-        <Link href="/register" className="text-sm text-white/50 hover:text-white/80">Создать аккаунт</Link>
+        <Link href="/register" className="text-sm text-white/50 hover:text-white/80">Create account</Link>
       </div>
     )
   }
@@ -609,7 +610,7 @@ export default function BookingPage() {
               {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
               {isOnline ? 'Online' : 'Offline'}
             </button>
-            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="BOLH AI — чат">
+            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="BOLH AI chat">
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>
           </div>
@@ -631,21 +632,21 @@ export default function BookingPage() {
               onClick={applyLastOrderTemplate}
               className="w-full rounded-lg border border-violet-400 bg-black px-3 py-2 text-sm text-white/85 hover:bg-white/5"
             >
-              Повторить прошлый заказ
+              Repeat last order
             </button>
           )}
           {error && (
             <div ref={errorRef} role="alert" className="rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-200 flex items-center justify-between gap-2">
               <span>{error}</span>
-              <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label="Fermer">×</button>
+              <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label="Close">×</button>
             </div>
           )}
           {activeOrder && (
             <div className="rounded-xl border border-violet-400 bg-black px-3 py-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-white/60 uppercase tracking-wide">Активный заказ</span>
+                <span className="text-xs text-white/60 uppercase tracking-wide">Active order</span>
                 <span className="rounded-full border border-violet-400/80 bg-white/5 px-2 py-0.5 text-[11px] text-white/85">
-                  {statusLabel(activeOrder.status)}
+                  {statusLabel(activeOrder.status, t)}
                 </span>
               </div>
               <p className="mt-1 truncate text-sm text-white/90">{activeOrder.title}</p>
@@ -654,19 +655,19 @@ export default function BookingPage() {
                   href={`/orders/${activeOrder.id}`}
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Детали
+                  Details
                 </Link>
                 <Link
                   href={`/orders/${activeOrder.id}/chat`}
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Чат
+                  Chat
                 </Link>
                 <Link
                   href="/map"
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Карта
+                  Map
                 </Link>
               </div>
             </div>
@@ -706,8 +707,8 @@ export default function BookingPage() {
                 onNext={() => setDay((d) => Math.min(maxDay, d + 1))}
                 disablePrev={safeDay <= minDay}
                 disableNext={safeDay >= maxDay}
-                ariaLabelPrev="Jour precedent"
-                ariaLabelNext="Jour suivant"
+                ariaLabelPrev="Previous day"
+                ariaLabelNext="Next day"
                 panelClass={PANEL_CLASS}
               />
               <Selector
@@ -717,8 +718,8 @@ export default function BookingPage() {
                 onNext={() => setMonth((m) => Math.min(11, m + 1))}
                 disablePrev={month <= currentMonth}
                 disableNext={month >= 11}
-                ariaLabelPrev="Mois precedent"
-                ariaLabelNext="Mois suivant"
+                ariaLabelPrev="Previous month"
+                ariaLabelNext="Next month"
                 panelClass={PANEL_CLASS}
               />
             </div>
@@ -744,7 +745,7 @@ export default function BookingPage() {
             <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/75">
               <span className="inline-flex items-center gap-1.5 text-left text-white/85">
                 <Shield className="h-3.5 w-3.5" />
-                Миссия
+                Mission
               </span>
               <span className="text-[10px] text-white/50">{missionDescription.length}/2500</span>
             </div>
@@ -753,7 +754,7 @@ export default function BookingPage() {
               onClick={() => setShowMissionSheet((v) => !v)}
               className={`w-full border-t ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'} px-3 py-1.5 text-[11px] text-white/70 flex items-center justify-between hover:bg-white/5`}
             >
-              <span className="truncate">{missionDescription ? 'Описание миссии' : 'Добавить описание миссии'}</span>
+              <span className="truncate">{missionDescription ? t('booking.mission_description') : t('booking.mission_add_description')}</span>
               <span className="inline-flex items-center gap-1">
                 {missionDescription.length}
                 {showMissionSheet ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -779,7 +780,7 @@ export default function BookingPage() {
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Свернуть
+                    Collapse
                   </button>
                 </div>
                 <div className="mb-1 flex items-center gap-1">
@@ -791,7 +792,7 @@ export default function BookingPage() {
                     }}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
                   >
-                    Авто
+                    Auto
                   </button>
                   <button
                     type="button"
@@ -799,14 +800,14 @@ export default function BookingPage() {
                     disabled={!hasMissionDraft}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10 disabled:opacity-40"
                   >
-                    Восстановить
+                    Restore
                   </button>
                   <button
                     type="button"
                     onClick={clearMissionText}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
                   >
-                    Очистить
+                    Clear
                   </button>
                 </div>
               <textarea
@@ -817,11 +818,11 @@ export default function BookingPage() {
                 }}
                 maxLength={2500}
                 rows={4}
-                placeholder="Коротко опишите миссию. Можно оставить авто-текст или добавить детали."
+                placeholder={t('booking.mission_placeholder')}
                 className="w-full resize-y rounded-lg bg-black border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
               />
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/45">
-                <span>Можно оставить как есть или дописать детали. Черновик сохраняется автоматически.</span>
+                <span>You can keep this text or add details. Draft is saved automatically.</span>
                 <span>{missionDescription.length}/2500</span>
               </div>
             </div>
@@ -840,7 +841,7 @@ export default function BookingPage() {
                 inputMode="decimal"
                 aria-label={t('booking.your_price')}
               />
-              <span className="text-white/60 text-[11px] shrink-0">/ час</span>
+              <span className="text-white/60 text-[11px] shrink-0">/ hour</span>
             </div>
             <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/75`}>
               <button
@@ -852,7 +853,7 @@ export default function BookingPage() {
                 className="inline-flex items-center gap-1.5 text-white/85 hover:text-white"
               >
                 <CreditCard className="h-3 w-3" />
-                Карта для оплаты
+                Payment card
               </button>
               <div className="inline-flex items-center gap-1.5">
                 <span className="tabular-nums text-white/70">{paymentPreview}</span>
@@ -865,7 +866,7 @@ export default function BookingPage() {
                   className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] text-white/90 hover:bg-white/10 ${
                     paymentValidationError ? 'border-red-500/80' : 'border-violet-400/70'
                   }`}
-                  aria-label="Выбрать сохраненную карту"
+                  aria-label={t('booking.select_saved_card_aria')}
                 >
                   {showPaymentSheet ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                 </button>
@@ -881,18 +882,18 @@ export default function BookingPage() {
                 style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 8}px` } : undefined}
               >
                 <div className="mb-1 flex items-center justify-between rounded-md border border-white/10 bg-white/5 px-2 py-1">
-                  <span className="text-[11px] text-white/70">Сохраненные карты</span>
+                  <span className="text-[11px] text-white/70">Saved cards</span>
                   <button
                     type="button"
                     onClick={() => setShowPaymentSheet(false)}
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Свернуть
+                    Collapse
                   </button>
                 </div>
                 {savedCards.length === 0 ? (
-                  <p className="mt-1 text-[11px] text-white/50">Нет сохраненных карт</p>
+                  <p className="mt-1 text-[11px] text-white/50">No saved cards</p>
                 ) : (
                   <div className="mt-1 flex gap-1.5 overflow-x-auto pb-0.5">
                     {savedCards.map((card) => (
@@ -934,7 +935,7 @@ export default function BookingPage() {
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Свернуть
+                    Collapse
                   </button>
                 </div>
                 <div className="mt-1 grid grid-cols-1 gap-1.5">
@@ -949,7 +950,7 @@ export default function BookingPage() {
                       setOneTimeCardNumber(grouped)
                       setOneTimeCard(null)
                     }}
-                    placeholder="Номер карты"
+                    placeholder={t('booking.card_number')}
                     className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
                       submitAttempted && oneTimeCardNumber.trim().length > 0 && !isLuhnValid(cardDigits)
                         ? 'border-red-500/80 focus:border-red-500/80'
@@ -999,7 +1000,7 @@ export default function BookingPage() {
                       setOneTimeCardHolder(e.target.value)
                       setOneTimeCard(null)
                     }}
-                    placeholder="Nom du titulaire"
+                    placeholder="Cardholder name"
                     className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
                       submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
                         ? 'border-red-500/80 focus:border-red-500/80'
@@ -1018,7 +1019,7 @@ export default function BookingPage() {
                     disabled={!canUseOneTimeCard}
                     className="w-full rounded-lg bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
                   >
-                    Использовать эту карту
+                    Use this card
                   </button>
                 </div>
               </div>
@@ -1084,7 +1085,7 @@ function TimeSelector({ label, value, onChange, panelClass }: { label: string; v
 
   return (
     <div className={panelClass || PANEL_CLASS}>
-      <button type="button" onClick={() => onChange(minutesToTime(prevMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Heure précédente"><ChevronLeft className="h-4 w-4 text-white/70" /></button>
+      <button type="button" onClick={() => onChange(minutesToTime(prevMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Previous time"><ChevronLeft className="h-4 w-4 text-white/70" /></button>
       <div className="text-center min-w-0 flex-1 leading-tight">
         <p className="h-3 flex items-center justify-center text-xs text-white/50">{label}</p>
         <input
@@ -1106,7 +1107,7 @@ function TimeSelector({ label, value, onChange, panelClass }: { label: string; v
           className="mt-1 h-7 w-full bg-transparent text-center text-[17px] font-semibold tabular-nums tracking-wide outline-none"
         />
       </div>
-      <button type="button" onClick={() => onChange(minutesToTime(nextMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Heure suivante"><ChevronRight className="h-4 w-4 text-white/70" /></button>
+      <button type="button" onClick={() => onChange(minutesToTime(nextMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Next time"><ChevronRight className="h-4 w-4 text-white/70" /></button>
     </div>
   )
 }

@@ -154,16 +154,16 @@ export default function MapPage() {
               type="button"
               onClick={toggleMapTheme}
               className="px-3 py-2 rounded-lg border border-violet-400 hover:bg-white/10 min-h-[44px] text-xs font-medium inline-flex items-center gap-1.5"
-              aria-label="Toggle map tiles"
+              aria-label={t('map.toggle_tiles')}
             >
               {mapTileTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {mapTileTheme === 'dark' ? 'Light map' : 'Dark map'}
+              {mapTileTheme === 'dark' ? t('map.light_map') : t('map.dark_map')}
             </button>
             <button
               type="button"
               onClick={openChat}
               className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="BOLH AI — чат"
+              aria-label="BOLH AI chat"
             >
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>

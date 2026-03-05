@@ -27,8 +27,8 @@ async function fetchUsers(params: { search: string; filter: string }): Promise<U
     return [
       {
         id: '1',
-        firstName: 'Иван',
-        lastName: 'Петров',
+        firstName: 'Ivan',
+        lastName: 'Petrov',
         email: 'ivan@example.com',
         userType: 'client',
         verified: true,
@@ -39,8 +39,8 @@ async function fetchUsers(params: { search: string; filter: string }): Promise<U
       },
       {
         id: '2',
-        firstName: 'Алексей',
-        lastName: 'Сидоров',
+        firstName: 'Alexey',
+        lastName: 'Sidorov',
         email: 'alex@example.com',
         userType: 'guard',
         verified: true,
@@ -66,9 +66,9 @@ export default function UsersPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Пользователи</h1>
+        <h1 className="text-3xl font-bold">Users</h1>
         <button className="rounded-lg border border-gray-300 px-4 py-2 text-sm dark:border-gray-600">
-          Экспорт CSV
+          Export CSV
         </button>
       </div>
 
@@ -76,7 +76,7 @@ export default function UsersPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <input
-            placeholder="Поиск по email, имени, телефону..."
+            placeholder="Search by email, name, phone..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 dark:border-gray-600 dark:bg-gray-800"
@@ -87,12 +87,12 @@ export default function UsersPage() {
           onChange={(e) => setFilter(e.target.value)}
           className="rounded-lg border border-gray-300 px-4 py-2 dark:border-gray-600 dark:bg-gray-800"
         >
-          <option value="all">Все</option>
-          <option value="client">Клиенты</option>
-          <option value="guard">Охранники</option>
-          <option value="agency">Агентства</option>
-          <option value="verified">Верифицированные</option>
-          <option value="blocked">Заблокированные</option>
+          <option value="all">All</option>
+          <option value="client">Clients</option>
+          <option value="guard">Guards</option>
+          <option value="agency">Agencies</option>
+          <option value="verified">Verified</option>
+          <option value="blocked">Blocked</option>
         </select>
       </div>
 
@@ -100,12 +100,12 @@ export default function UsersPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b dark:border-gray-700">
-              <th className="p-4 text-left text-sm font-medium">Пользователь</th>
-              <th className="p-4 text-left text-sm font-medium">Тип</th>
-              <th className="p-4 text-left text-sm font-medium">Статус</th>
-              <th className="p-4 text-left text-sm font-medium">Рейтинг</th>
-              <th className="p-4 text-left text-sm font-medium">Заказы</th>
-              <th className="p-4 text-left text-sm font-medium">Регистрация</th>
+              <th className="p-4 text-left text-sm font-medium">User</th>
+              <th className="p-4 text-left text-sm font-medium">Type</th>
+              <th className="p-4 text-left text-sm font-medium">Status</th>
+              <th className="p-4 text-left text-sm font-medium">Rating</th>
+              <th className="p-4 text-left text-sm font-medium">Orders</th>
+              <th className="p-4 text-left text-sm font-medium">Registered</th>
               <th className="w-[50px] p-4"></th>
             </tr>
           </thead>
@@ -140,24 +140,24 @@ export default function UsersPage() {
                     }`}
                   >
                     {user.userType === 'client'
-                      ? 'Клиент'
+                      ? 'Client'
                       : user.userType === 'guard'
-                      ? 'Охранник'
-                      : 'Агентство'}
+                      ? 'Guard'
+                      : 'Agency'}
                   </span>
                 </TableCell>
                 <TableCell>
                   {user.verified ? (
                     <span className="rounded-full bg-green-500/10 px-2 py-1 text-xs text-green-600">
-                      Верифицирован
+                      Verified
                     </span>
                   ) : user.blocked ? (
                     <span className="rounded-full bg-red-500/10 px-2 py-1 text-xs text-red-600">
-                      Заблокирован
+                      Blocked
                     </span>
                   ) : (
                     <span className="rounded-full border px-2 py-1 text-xs">
-                      Не верифицирован
+                      Unverified
                     </span>
                   )}
                 </TableCell>
@@ -166,7 +166,7 @@ export default function UsersPage() {
                 </TableCell>
                 <TableCell>{user.completedOrders}</TableCell>
                 <TableCell>
-                  {new Date(user.createdAt).toLocaleDateString('ru-RU')}
+                  {new Date(user.createdAt).toLocaleDateString('en-US')}
                 </TableCell>
                 <TableCell>
                   <button className="rounded p-1 hover:bg-gray-100 dark:hover:bg-gray-700">

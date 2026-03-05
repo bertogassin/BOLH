@@ -1,5 +1,5 @@
 // services/matching/src/main.rs
-// Matching Engine - Rust, in-memory, микросекундные задержки
+// Matching Engine - Rust, in-memory, microsecond-level latency.
 
 use dashmap::DashMap;
 use std::collections::HashSet;

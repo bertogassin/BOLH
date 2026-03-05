@@ -2,10 +2,10 @@ import Link from 'next/link'
 import { LayoutDashboard, Users, BarChart3, Settings } from 'lucide-react'
 
 const nav = [
-  { href: '/dashboard', label: 'Дашборд', icon: LayoutDashboard },
-  { href: '/dashboard/users', label: 'Пользователи', icon: Users },
-  { href: '/dashboard/analytics', label: 'Аналитика', icon: BarChart3 },
-  { href: '/settings', label: 'Настройки', icon: Settings },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard/users', label: 'Users', icon: Users },
+  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export default function DashboardLayout({

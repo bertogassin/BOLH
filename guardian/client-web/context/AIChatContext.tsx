@@ -42,115 +42,101 @@ function buildReply(
   const add = (content: string, path: string) =>
     suggestions.push({ type: 'suggestion', content, payload: { action: 'navigate', path } })
 
-  if (
-    /заказ|резерв|order|réserver|бронир|book|охрана|gardien|guard/.test(lower)
-  ) {
-    add('Перейти к бронированию', '/booking')
+  if (/order|reserve|book|security|guard|reservation|booking/.test(lower)) {
+    add('Go to booking', '/booking')
     return {
-      text: 'Создать заказ на охрану можно на главной: дата, время, адрес, количество охранников. Система подберёт исполнителя по геолокации, лицензиям и ML-скорингу.',
+      text: 'Create a security order from the booking screen: date, time, address, and guard count. The system matches guards by location, licenses, and ranking score.',
       generated: suggestions,
     }
   }
-  if (/карт|map|carte|где заказ|мои заказы на карте/.test(lower)) {
-    add('Открыть карту', '/map')
+  if (/map|location|where|tracker/.test(lower)) {
+    add('Open map', '/map')
     return {
-      text: 'На карте отображаются ваши заказы и доступные охранники (Violet = gardien, Vert = réservation). Раздел «Carte» в нижнем меню.',
+      text: 'The map shows your orders and available guards. Open the map from the bottom navigation.',
       generated: suggestions,
     }
   }
-  if (/документ|document|подпис|sign|истекаю|expir|файл/.test(lower)) {
-    add('Документы', '/documents')
+  if (/document|sign|signature|expire|file/.test(lower)) {
+    add('Documents', '/documents')
     return {
-      text: 'В разделе «Документы»: загрузка, подпись, хранение, скачивание и отправка документов.',
+      text: 'In Documents you can upload, sign, store, download, and share files.',
       generated: suggestions,
     }
   }
-  if (/профиль|profil|account|счёт|настройки|settings/.test(lower)) {
-    add('Профиль', '/profile')
+  if (/profile|account|settings/.test(lower)) {
+    add('Profile', '/profile')
     return {
-      text: 'В профиле: заказы, матчи, карты оплаты, уровень и рейтинг. Редактирование — кнопка с карандашом.',
+      text: 'Profile includes account info, payment cards, and settings. Use the edit action to update details.',
       generated: suggestions,
     }
   }
-  if (/оплат|payment|карта оплаты|card|payer/.test(lower)) {
-    add('Профиль (карты)', '/profile')
+  if (/payment|card|billing/.test(lower)) {
+    add('Profile (cards)', '/profile')
     return {
-      text: 'Карты оплаты управляются в профиле. Добавление и удаление карт — в блоке с иконкой кредитной карты.',
+      text: 'Payment cards are managed in profile. You can add and remove cards in the cards section.',
       generated: suggestions,
     }
   }
-  if (
-    /привет|bonjour|hello|salut|здравствуй|добрый день|hi/.test(lower)
-  ) {
-    add('Создать заказ', '/booking')
-    add('Карта', '/map')
-    add('Документы', '/documents')
+  if (/hello|hi|hey/.test(lower)) {
+    add('Create order', '/booking')
+    add('Map', '/map')
+    add('Documents', '/documents')
     return {
-      text: 'Привет! Я BOLH AI 1.0. Могу подсказать по заказам, карте, документам и аналитике. Напишите вопрос или нажмите кнопку ниже.',
+      text: 'Hello! I am BOLH AI. I can help with booking, map, documents, and profile actions. Ask a question or pick a quick action.',
       generated: suggestions,
     }
   }
-  if (
-    /помощь|help|aide|что умеешь|возможности|как пользоваться/.test(lower)
-  ) {
-    add('Бронирование', '/booking')
-    add('Карта', '/map')
-    add('Документы', '/documents')
-    add('Профиль', '/profile')
+  if (/help|features|what can you do/.test(lower)) {
+    add('Booking', '/booking')
+    add('Map', '/map')
+    add('Documents', '/documents')
+    add('Profile', '/profile')
     return {
-      text: 'BOLH AI: Matching Engine (подбор охраны), антифрод, прогнозы, мультиязычность, аналитика, AGI-модули, Purifier. Спросите: заказ, карта, документы, прогноз, профиль — или нажмите кнопку.',
+      text: 'BOLH AI can guide booking, map, documents, profile, and core workflow actions.',
       generated: suggestions,
     }
   }
-  if (
-    /прогноз|forecast|спрос|demand|аналитик|analytics|ltv|cac|когорт/.test(lower)
-  ) {
+  if (/forecast|demand|analytics|ltv|cac|cohort/.test(lower)) {
     return {
-      text: 'Модуль аналитики: прогноз спроса (время, локация), LTV/CAC, когортный анализ, Prophet по выручке. Данные подтягиваются из заказов и матчей. В приложении основные метрики — в профиле и заказах.',
-      generated: [{ type: 'suggestion', content: 'Открыть заказы', payload: { action: 'navigate', path: '/orders' } }],
+      text: 'Analytics module includes demand forecasting, conversion metrics, and order trend analysis. Main metrics are visible in orders and profile.',
+      generated: [{ type: 'suggestion', content: 'Open orders', payload: { action: 'navigate', path: '/orders' } }],
     }
   }
-  if (
-    /антифрод|fraud|мошенник|безопасность|security|верификац|verify/.test(lower)
-  ) {
+  if (/fraud|security|verification|verify|risk/.test(lower)) {
     return {
-      text: 'Антифрод: оценка риска по поведению (Isolation Forest), верификация документов (OCR, лицо, MRZ). Работает в фоне при заказах и регистрации. При высоком риске запрашивается доп. проверка.',
+      text: 'Security checks include behavioral risk evaluation and document verification. Additional review may be requested for high-risk actions.',
       generated: [],
     }
   }
-  if (
-    /язык|language|langue|перевод|translate|мультиязыч/.test(lower)
-  ) {
+  if (/language|translate|translation|multilingual/.test(lower)) {
     return {
-      text: 'Поддержка множества языков: определение языка текста, редкие языки (zero-shot). В интерфейсе переключение языка — в правом верхнем углу (глобус).',
+      text: 'The app supports multiple languages. You can switch language from the locale selector.',
       generated: [],
     }
   }
-  if (
-    /подбор|matching|исполнитель|охранник рядом|кто доступен/.test(lower)
-  ) {
-    add('Бронирование', '/booking')
-    add('Карта', '/map')
+  if (/matching|available guard|nearby guard|who is available/.test(lower)) {
+    add('Booking', '/booking')
+    add('Map', '/map')
     return {
-      text: 'Подбор идёт по геопоиску, лицензиям, бюджету и ML-скорингу (рейтинг, опыт, скорость ответа, расстояние). После создания заказа матч приходит в реальном времени.',
+      text: 'Matching uses location, licenses, budget, and ranking. After order creation, matching updates in near real-time.',
       generated: suggestions,
     }
   }
-  if (/заказ|orders|мои заказы/.test(lower)) {
-    add('Мои заказы', '/orders')
-    add('Бронирование', '/booking')
+  if (/order|orders|my orders/.test(lower)) {
+    add('My orders', '/orders')
+    add('Booking', '/booking')
     return {
-      text: 'Список заказов — в разделе «Заказы». Там же статусы и матчи. Новый заказ — с главной (бронирование).',
+      text: 'Use Orders to see statuses and matches. Create a new order from Booking.',
       generated: suggestions,
     }
   }
 
-  add('Бронирование', '/booking')
-  add('Карта', '/map')
-  add('Документы', '/documents')
-  add('Помощь', '')
+  add('Booking', '/booking')
+  add('Map', '/map')
+  add('Documents', '/documents')
+  add('Help', '')
   return {
-    text: 'По этому запросу могу подсказать: как создать заказ, открыть карту, документы или профиль. Напишите точнее или выберите действие ниже.',
+    text: 'I can help with booking, map, documents, or profile actions. Ask a more specific question or choose an action below.',
     generated: suggestions.filter((s) => s.payload?.path),
   }
 }
@@ -224,7 +210,7 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
         const errMsg: ChatMessage = {
           id: generateId(),
           role: 'assistant',
-          text: 'Произошла ошибка. Попробуйте ещё раз.',
+          text: 'An error occurred. Please try again.',
           at: Date.now(),
         }
         persist([...messages, userMsg, errMsg])

@@ -1,5 +1,5 @@
-// Обработка событий в реальном времени (Kafka consumer).
-// В проде: consumer.recv() → MatchingEvent → обновление индексов и поиск.
+// Real-time event processing (Kafka consumer).
+// In production: consumer.recv() -> MatchingEvent -> index updates and search.
 
 use domain::{Bid, BidId, Order};
 use uuid::Uuid;
@@ -27,7 +27,7 @@ pub enum MatchResponse {
     Rejected,
 }
 
-/// Заглушка: в проде здесь цикл consumer.recv() и вызов engine.handle_event().
+/// Placeholder: in production this runs consumer.recv() loop and calls engine.handle_event().
 pub async fn start_event_processor_placeholder() {
     loop {
         tokio::time::sleep(std::time::Duration::from_secs(3600)).await;

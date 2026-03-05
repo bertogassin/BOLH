@@ -1,14 +1,16 @@
 'use client'
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: 'Черновик',
-  published: 'Опубликован',
-  open: 'Открыт',
-  searching: 'Ищет исполнителя',
-  matched: 'Найден исполнитель',
-  in_progress: 'В работе',
-  completed: 'Завершён',
-  cancelled: 'Отменён',
+import { useLocale } from '@/context/LocaleContext'
+
+const STATUS_FALLBACK_LABELS: Record<string, string> = {
+  draft: 'Draft',
+  published: 'Published',
+  open: 'Open',
+  searching: 'Searching',
+  matched: 'Matched',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -23,7 +25,9 @@ const STATUS_STYLES: Record<string, string> = {
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const label = STATUS_LABELS[status] || status
+  const { t } = useLocale()
+  const translated = t(`status.${status}`)
+  const label = translated === `status.${status}` ? STATUS_FALLBACK_LABELS[status] || status : translated
   const style = STATUS_STYLES[status] || 'bg-gray-100 text-gray-700'
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style}`}>
@@ -32,6 +36,10 @@ export function StatusBadge({ status }: { status: string }) {
   )
 }
 
-export function statusLabel(s: string): string {
-  return STATUS_LABELS[s] || s
+export function statusLabel(s: string, t?: (key: string) => string): string {
+  if (t) {
+    const translated = t(`status.${s}`)
+    if (translated !== `status.${s}`) return translated
+  }
+  return STATUS_FALLBACK_LABELS[s] || s
 }

@@ -10,13 +10,13 @@ type Props = {
 export function ProfileBusinessSection({ isAgency }: Props) {
   return (
     <section>
-      <h2 className="text-sm font-semibold text-white mb-3">Tableau de bord entreprise</h2>
+      <h2 className="text-sm font-semibold text-white mb-3">Business dashboard</h2>
       <div className="space-y-1">
         {isAgency ? (
           <Link href="/profile/company-register" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
             <span className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-white/60" />
-              Inscription entreprise
+              Company registration
             </span>
             <span className="text-white/40">›</span>
           </Link>
@@ -24,7 +24,7 @@ export function ProfileBusinessSection({ isAgency }: Props) {
           <Link href="/profile/company-register" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
             <span className="flex items-center gap-3">
               <Building2 className="h-5 w-5 text-white/60" />
-              Devenir partenaire
+              Become a partner
             </span>
             <span className="text-white/40">›</span>
           </Link>

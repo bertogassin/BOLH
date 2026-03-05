@@ -6,7 +6,7 @@ import { TopGuards } from '@/components/dashboard/TopGuards'
 import { AlertBanner } from '@/components/ui/AlertBanner'
 
 export const metadata: Metadata = {
-  title: 'Дашборд | Guardian Admin',
+  title: 'Dashboard | Guardian Admin',
 }
 
 async function getDashboardStats() {
@@ -18,14 +18,14 @@ async function getDashboardStats() {
     growth: { users: 12, orders: 5, matches: 8, revenue: 15 },
     activity: [],
     topGuards: [
-      { id: '1', name: 'Иван Петров', rating: 4.9, completedOrders: 124 },
-      { id: '2', name: 'Алексей Сидоров', rating: 4.8, completedOrders: 98 },
-      { id: '3', name: 'Дмитрий Козлов', rating: 4.8, completedOrders: 87 },
+      { id: '1', name: 'Ivan Petrov', rating: 4.9, completedOrders: 124 },
+      { id: '2', name: 'Alexey Sidorov', rating: 4.8, completedOrders: 98 },
+      { id: '3', name: 'Dmitry Kozlov', rating: 4.8, completedOrders: 87 },
     ],
     recentOrders: [
-      { id: '1', title: 'Охрана мероприятия', status: 'В работе', createdAt: '15.06.2024 20:00' },
-      { id: '2', title: 'Ночная охрана', status: 'Подбор', createdAt: '15.06.2024 18:30' },
-      { id: '3', title: 'Конференция', status: 'Завершен', createdAt: '14.06.2024 22:00' },
+      { id: '1', title: 'Event security', status: 'In progress', createdAt: '15.06.2024 20:00' },
+      { id: '2', title: 'Night security', status: 'Matching', createdAt: '15.06.2024 18:30' },
+      { id: '3', title: 'Conference', status: 'Completed', createdAt: '14.06.2024 22:00' },
     ],
     recentMatches: [] as { id: string; orderId: string; guardName: string }[],
   }
@@ -42,9 +42,9 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Дашборд</h1>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="text-sm text-gray-500">
-          {new Date().toLocaleDateString('ru-RU', {
+          {new Date().toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
@@ -77,8 +77,8 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RecentOrders orders={stats.recentOrders} />
         <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-          <h3 className="mb-4 text-lg font-semibold">Последние матчи</h3>
-          <p className="text-sm text-gray-500">Нет данных</p>
+          <h3 className="mb-4 text-lg font-semibold">Recent matches</h3>
+          <p className="text-sm text-gray-500">No data</p>
         </div>
       </div>
     </div>

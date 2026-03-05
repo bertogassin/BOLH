@@ -1,32 +1,32 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Админка: дашборд', () => {
-  test('главная ведёт на дашборд', async ({ page }) => {
+test.describe('Admin: dashboard', () => {
+  test('home leads to dashboard', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('text=Guardian Admin')).toBeVisible()
-    await page.click('text=Перейти в дашборд')
+    await page.click('text=Go to dashboard')
     await expect(page).toHaveURL(/\/dashboard/)
   })
 
-  test('дашборд показывает блоки статистики', async ({ page }) => {
+  test('dashboard shows stats blocks', async ({ page }) => {
     await page.goto('/dashboard')
-    await expect(page.locator('text=Дашборд')).toBeVisible()
-    await expect(page.locator('text=Всего пользователей')).toBeVisible()
-    await expect(page.locator('text=Активные заказы')).toBeVisible()
+    await expect(page.locator('text=Dashboard')).toBeVisible()
+    await expect(page.locator('text=Total users')).toBeVisible()
+    await expect(page.locator('text=Active orders')).toBeVisible()
   })
 })
 
-test.describe('Админка: пользователи', () => {
-  test('страница пользователей загружается', async ({ page }) => {
+test.describe('Admin: users', () => {
+  test('users page loads', async ({ page }) => {
     await page.goto('/dashboard/users')
-    await expect(page.locator('text=Пользователи')).toBeVisible()
-    await expect(page.locator('input[placeholder*="Поиск"]')).toBeVisible()
+    await expect(page.locator('text=Users')).toBeVisible()
+    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible()
   })
 
-  test('переход в карточку пользователя', async ({ page }) => {
+  test('navigate to user details', async ({ page }) => {
     await page.goto('/dashboard/users')
-    await page.click('text=Иван Петров')
+    await page.click('text=Ivan Petrov')
     await expect(page).toHaveURL(/\/dashboard\/users\/1/)
-    await expect(page.locator('text=Иван Петров')).toBeVisible()
+    await expect(page.locator('text=Ivan Petrov')).toBeVisible()
   })
 })

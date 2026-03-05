@@ -1,4 +1,4 @@
-// Notification Service: HTTP API для отправки email (при регистрации и др.). SMTP при заданном SMTP_HOST.
+// Notification Service: HTTP API for sending email (registration and other events). SMTP when SMTP_HOST is set.
 package main
 
 import (
@@ -91,8 +91,8 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		subject := "Добро пожаловать в Guardian"
-		body := "Здравствуйте, " + req.FirstName + "!\n\nВы зарегистрированы. Войдите в приложение и создайте первый заказ.\n\n— Guardian"
+		subject := "Welcome to Guardian"
+		body := "Hello, " + req.FirstName + "!\n\nYour account is registered. Sign in to the app and create your first order.\n\n- Guardian"
 		if err := svc.sendEmail(req.Email, subject, body); err != nil {
 			log.Printf("sendEmail register: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send"})
@@ -114,8 +114,8 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		subject := "BOLH SECURITY — Gardien assigné"
-		body := "Votre réservation \"" + req.OrderTitle + "\" a été associée à un gardien. Prix: " + fmt.Sprintf("%.2f", req.FinalPrice) + " €.\n\n— BOLH SECURITY"
+		subject := "BOLH SECURITY - Guard assigned"
+		body := "Your reservation \"" + req.OrderTitle + "\" has been matched with a guard. Price: " + fmt.Sprintf("%.2f", req.FinalPrice) + " EUR.\n\n- BOLH SECURITY"
 		if err := svc.sendEmail(req.ClientEmail, subject, body); err != nil {
 			log.Printf("sendEmail match: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send"})

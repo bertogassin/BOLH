@@ -1,4 +1,4 @@
-// Bid Service: HTTP API. При DATABASE_URL — запись в PostgreSQL (gateway_bids); иначе in-memory.
+// Bid Service: HTTP API. With DATABASE_URL uses PostgreSQL (gateway_bids); otherwise in-memory.
 use axum::{
     extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},

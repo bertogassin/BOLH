@@ -39,21 +39,21 @@ export function BOLHNav({ current }: { current: Tab }) {
           className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'booking' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
         >
           <Shield className="h-5 w-5" />
-          <span className="text-xs font-medium">Accueil</span>
+          <span className="text-xs font-medium">Home</span>
         </Link>
         <Link
           href="/map"
           className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'map' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
         >
           <MapPin className="h-5 w-5" />
-          <span className="text-xs font-medium">Carte</span>
+          <span className="text-xs font-medium">Map</span>
         </Link>
         <Link
           href="/profile"
           className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'profile' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
         >
           <User className="h-5 w-5" />
-          <span className="text-xs font-medium">Profil</span>
+          <span className="text-xs font-medium">Profile</span>
         </Link>
       </div>
     </nav>

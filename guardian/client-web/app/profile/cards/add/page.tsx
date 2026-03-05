@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, CreditCard, ShieldCheck } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { addCard } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
@@ -52,6 +53,7 @@ function isValidLuhn(cardNumber: string): boolean {
 
 export default function AddCardPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const router = useRouter()
   const [cardNumber, setCardNumber] = useState('')
   const [cardHolder, setCardHolder] = useState('')
@@ -67,34 +69,34 @@ export default function AddCardPage() {
     setError('')
     const number = digitsOnly(cardNumber)
     if (!isValidLuhn(number)) {
-      setError('Номер карты введен неверно.')
+      setError(t('profile_add_card.error_invalid_number'))
       return
     }
     const cvcDigits = digitsOnly(cvc)
     const requiredCvcLen = brand === 'Amex' ? 4 : 3
     if (cvcDigits.length < requiredCvcLen) {
-      setError(`Введите корректный CVC (${requiredCvcLen} цифры).`)
+      setError(t('profile_add_card.error_invalid_cvc').replace('{n}', String(requiredCvcLen)))
       return
     }
     if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-      setError('Введите срок действия в формате MM/YY.')
+      setError(t('profile_add_card.error_invalid_expiry_format'))
       return
     }
     const mm = Number(expiry.slice(0, 2))
     const yy = Number(expiry.slice(3))
     if (mm < 1 || mm > 12) {
-      setError('Месяц срока действия некорректный.')
+      setError(t('profile_add_card.error_invalid_expiry_month'))
       return
     }
     const now = new Date()
     const currentYY = now.getFullYear() % 100
     const currentMM = now.getMonth() + 1
     if (yy < currentYY || (yy === currentYY && mm < currentMM)) {
-      setError('Срок действия карты истек.')
+      setError(t('profile_add_card.error_expired'))
       return
     }
     if (cardHolder.trim().length < 2) {
-      setError('Укажите имя держателя карты.')
+      setError(t('profile_add_card.error_holder_required'))
       return
     }
     const four = number.slice(-4)
@@ -104,7 +106,7 @@ export default function AddCardPage() {
       router.push('/profile/cards')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(err instanceof Error ? err.message : t('profile_add_card.error_generic'))
     } finally {
       setLoading(false)
     }
@@ -113,7 +115,7 @@ export default function AddCardPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -125,7 +127,7 @@ export default function AddCardPage() {
           <Link href="/profile/cards" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Ajouter une carte</h1>
+          <h1 className="text-lg font-semibold">{t('profile.add_card')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6">
@@ -140,11 +142,11 @@ export default function AddCardPage() {
             </p>
             <div className="mt-5 flex items-end justify-between">
               <div>
-                <p className="text-[10px] uppercase text-white/60">Card holder</p>
-                <p className="text-sm text-white">{cardHolder || 'YOUR NAME'}</p>
+                <p className="text-[10px] uppercase text-white/60">{t('profile_add_card.card_holder')}</p>
+                <p className="text-sm text-white">{cardHolder || t('profile_add_card.card_holder_placeholder_preview')}</p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] uppercase text-white/60">Expires</p>
+                <p className="text-[10px] uppercase text-white/60">{t('profile_add_card.expires')}</p>
                 <p className="text-sm text-white">{expiry || 'MM/YY'}</p>
               </div>
             </div>
@@ -154,7 +156,7 @@ export default function AddCardPage() {
             <div className="rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-200">{error}</div>
           )}
           <div>
-            <label className="block text-xs font-medium text-white/60 uppercase mb-1">Номер карты</label>
+            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile_add_card.number')}</label>
             <input
               type="text"
               inputMode="numeric"
@@ -167,7 +169,7 @@ export default function AddCardPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-white/60 uppercase mb-1">Срок (MM/YY)</label>
+            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile_add_card.expiry')}</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -192,7 +194,7 @@ export default function AddCardPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-white/60 uppercase mb-1">Имя держателя</label>
+            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile_add_card.holder_name')}</label>
             <input
               type="text"
               value={cardHolder}
@@ -202,14 +204,14 @@ export default function AddCardPage() {
             />
           </div>
           <div className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-xs text-white/70">
-            Будет сохранено: бренд <span className="text-white">{brand}</span> и последние 4 цифры <span className="text-white">•••• {lastFour.slice(-4)}</span>.
+            {t('profile_add_card.saved_hint_prefix')} <span className="text-white">{brand}</span> {t('profile_add_card.saved_hint_middle')} <span className="text-white">•••• {lastFour.slice(-4)}</span>.
           </div>
           <button
             type="submit"
             disabled={loading}
             className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
           >
-            {loading ? 'Enregistrement...' : 'Enregistrer'}
+            {loading ? t('profile_add_card.saving') : t('profile_add_card.save')}
           </button>
         </form>
       </main>

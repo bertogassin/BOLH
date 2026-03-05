@@ -8,8 +8,8 @@ export async function GET(request: NextRequest) {
   const users = [
     {
       id: '1',
-      firstName: 'Иван',
-      lastName: 'Петров',
+      firstName: 'Ivan',
+      lastName: 'Petrov',
       email: 'ivan@example.com',
       userType: 'client',
       verified: true,
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
     },
     {
       id: '2',
-      firstName: 'Алексей',
-      lastName: 'Сидоров',
+      firstName: 'Alexey',
+      lastName: 'Sidorov',
       email: 'alex@example.com',
       userType: 'guard',
       verified: true,

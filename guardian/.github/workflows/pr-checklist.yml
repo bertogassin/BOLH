@@ -1,0 +1,79 @@
+name: PR Checklist Gate
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required PR checklist items
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request?.body || "";
+
+            const requiredItems = [
+              "Layering respected: Domain -> Application -> Infrastructure -> Presentation.",
+              "No Infrastructure dependency imported into Domain.",
+              "Language choice follows `ARCHITECTURE_LANG_POLICY.md`.",
+              "No new core business logic added in non-approved language.",
+              "Cross-service / cross-language boundary uses typed contract (API/FFI), not ad-hoc coupling.",
+              "No hardcoded secrets, keys, or credentials.",
+              "Input validation is done at Presentation boundary.",
+              "Sensitive paths reviewed for authz/authn impact.",
+              "Error messages do not leak sensitive internals.",
+              "Hot-path changes evaluated for latency/throughput impact.",
+              "Heavy algorithmic logic stays in Rust where applicable.",
+              "Unit tests added/updated.",
+              "Existing critical E2E flows remain green.",
+              "Lint/format checks pass for touched languages."
+            ];
+
+            const optionalItems = [
+              "Added/updated caching strategy documented (if relevant).",
+              "Integration tests added/updated (if relevant)."
+            ];
+
+            function isChecked(label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const rx = new RegExp(`-\\s*\\[(x|X)\\]\\s*${escaped}`, "m");
+              return rx.test(body);
+            }
+
+            function isPresentAsNa(label) {
+              const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+              const rx = new RegExp(`${escaped}.*\\b(N\\/A|not applicable)\\b`, "i");
+              return rx.test(body);
+            }
+
+            const missing = [];
+            for (const item of requiredItems) {
+              if (!isChecked(item) && !isPresentAsNa(item)) {
+                missing.push(item);
+              }
+            }
+
+            for (const item of optionalItems) {
+              const existsChecked = isChecked(item);
+              const existsNa = isPresentAsNa(item);
+              if (!existsChecked && !existsNa) {
+                missing.push(`${item} (mark [x] or add N/A)`);
+              }
+            }
+
+            if (missing.length > 0) {
+              core.setFailed(
+                "PR checklist is incomplete. Mark all required items in the PR template.\n" +
+                missing.map((m) => `- ${m}`).join("\n")
+              );
+              return;
+            }
+
+            core.info("PR checklist validation passed.");

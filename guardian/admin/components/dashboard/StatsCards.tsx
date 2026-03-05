@@ -21,7 +21,7 @@ export interface StatsCardsProps {
 const cards = [
   {
     key: 'users',
-    title: 'Всего пользователей',
+    title: 'Total users',
     valueKey: 'totalUsers' as const,
     growthKey: 'users' as const,
     icon: Users,
@@ -29,7 +29,7 @@ const cards = [
   },
   {
     key: 'orders',
-    title: 'Активные заказы',
+    title: 'Active orders',
     valueKey: 'activeOrders' as const,
     growthKey: 'orders' as const,
     icon: ShieldCheck,
@@ -37,7 +37,7 @@ const cards = [
   },
   {
     key: 'matches',
-    title: 'Завершенные матчи',
+    title: 'Completed matches',
     valueKey: 'totalMatches' as const,
     growthKey: 'matches' as const,
     icon: CheckCircle,
@@ -45,7 +45,7 @@ const cards = [
   },
   {
     key: 'revenue',
-    title: 'Выручка (мес)',
+    title: 'Revenue (month)',
     valueKey: 'revenue' as const,
     growthKey: 'revenue' as const,
     icon: DollarSign,
@@ -80,7 +80,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
                 </p>
                 <p className="mt-2 text-3xl font-bold">{displayValue}</p>
                 <p className="mt-2 text-sm text-green-600">
-                  +{growth}% за месяц
+                  +{growth}% this month
                 </p>
               </div>
               <div

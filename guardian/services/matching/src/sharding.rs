@@ -1,10 +1,10 @@
-// Шардирование Matching Engine по order_id для горизонтального масштабирования.
+// Sharding Matching Engine by order_id for horizontal scaling.
 
 use std::hash::{Hash, Hasher};
 
 use domain::OrderId;
 
-/// Определяет номер шарда по ID заказа (консистентное хеширование).
+/// Returns shard number by order ID (consistent hashing).
 pub fn shard_for_order(order_id: &OrderId, shard_count: usize) -> usize {
     if shard_count == 0 {
         return 0;

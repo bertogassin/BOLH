@@ -39,18 +39,18 @@ export async function login(email: string, password: string): Promise<{ token: s
   })
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    throw new Error((data as { error?: string }).error || res.statusText || 'Ошибка входа')
+    throw new Error((data as { error?: string }).error || res.statusText || 'Login failed')
   }
   return data as { token: string; user: User }
 }
 
 export async function fetchMe(): Promise<User> {
   const token = getToken()
-  if (!token) throw new Error('Не авторизован')
+  if (!token) throw new Error('Unauthorized')
   const res = await fetch(`${API_BASE}/api/v1/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error((data as { error?: string }).error || 'Ошибка загрузки')
+  if (!res.ok) throw new Error((data as { error?: string }).error || 'Loading failed')
   return data as User
 }

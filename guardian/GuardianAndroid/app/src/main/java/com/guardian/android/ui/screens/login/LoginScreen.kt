@@ -58,7 +58,7 @@ fun LoginScreen(
     ) {
         Text("BOLH SECURITY", style = MaterialTheme.typography.headlineSmall)
         Text(
-            if (isRegisterMode) "Создай аккаунт и начни поиск" else "Войди и продолжай работу",
+            if (isRegisterMode) "Create an account and get started" else "Sign in to continue",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -66,14 +66,14 @@ fun LoginScreen(
 
         Row(modifier = Modifier.fillMaxWidth()) {
             AuthModeButton(
-                title = "Вход",
+                title = "Sign in",
                 active = !isRegisterMode,
                 onClick = { isRegisterMode = false; error = null },
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.padding(4.dp))
             AuthModeButton(
-                title = "Регистрация",
+                title = "Register",
                 active = isRegisterMode,
                 onClick = { isRegisterMode = true; error = null },
                 modifier = Modifier.weight(1f)
@@ -91,7 +91,7 @@ fun LoginScreen(
                     OutlinedTextField(
                         value = firstName,
                         onValueChange = { firstName = it; error = null },
-                        label = { Text("Имя") },
+                        label = { Text("First name") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -99,7 +99,7 @@ fun LoginScreen(
                     OutlinedTextField(
                         value = lastName,
                         onValueChange = { lastName = it; error = null },
-                        label = { Text("Фамилия") },
+                        label = { Text("Last name") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -116,7 +116,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it; error = null },
-                    label = { Text("Пароль") },
+                    label = { Text("Password") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -130,7 +130,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
         if (loading) {
-            Text("Загрузка...")
+            Text("Loading...")
         } else {
             Button(
                 onClick = {
@@ -144,9 +144,9 @@ fun LoginScreen(
                             onSuccess = { onLoginSuccess() },
                             onFailure = { e ->
                                 error = if (e is ConnectException || (e.message?.contains("Failed to connect") == true)) {
-                                    "Сервер недоступен. Запусти API на ПК и подключи USB."
+                                    "Server unavailable. Start API on your PC and connect USB."
                                 } else {
-                                    e.message ?: "Ошибка авторизации"
+                                    e.message ?: "Authorization failed"
                                 }
                             }
                         )
@@ -160,7 +160,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = email.isNotBlank() && password.isNotBlank() && (!isRegisterMode || (firstName.isNotBlank() && lastName.isNotBlank()))
             ) {
-                Text(if (isRegisterMode) "Создать аккаунт" else "Войти")
+                Text(if (isRegisterMode) "Create account" else "Sign in")
             }
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
@@ -170,7 +170,7 @@ fun LoginScreen(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isRegisterMode) "Уже есть аккаунт? Войти" else "Нет аккаунта? Регистрация")
+                Text(if (isRegisterMode) "Already have an account? Sign in" else "No account? Register")
             }
         }
     }

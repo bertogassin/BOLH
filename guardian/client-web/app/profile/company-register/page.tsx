@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Building2, ShieldCheck, Search, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
 
 type CompanyCheckResult = {
@@ -63,13 +64,14 @@ function includesNameHint(ownerFullName: string, payload: unknown): { match: boo
     .filter((t) => t.length >= 3)
   const matched = tokens.filter((t) => raw.includes(t))
   if (matched.length >= Math.min(2, tokens.length)) {
-    return { match: true, evidence: `Совпали токены: ${matched.join(', ')}` }
+    return { match: true, evidence: `Matched tokens: ${matched.join(', ')}` }
   }
   return { match: false }
 }
 
 export default function CompanyRegisterPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const [companyName, setCompanyName] = useState('')
   const [registrationNumber, setRegistrationNumber] = useState('')
   const [countryCode, setCountryCode] = useState('FR')
@@ -93,7 +95,7 @@ export default function CompanyRegisterPage() {
     const owner = normalize(ownerFullName)
     const regRaw = normalize(registrationNumber)
     if (!company || !owner || !regRaw) {
-      setError('Заполните название компании, регистрационный номер и ФИО владельца.')
+      setError(t('company_register.error_fill_required'))
       return
     }
 
@@ -107,11 +109,11 @@ export default function CompanyRegisterPage() {
         // SIREN(9) or SIRET(14) => Luhn checksum
         if (!(digits.length === 9 || digits.length === 14) || !luhnCheck(digits)) {
           localValid = false
-          localNote = 'Формат SIREN/SIRET не прошел контрольную проверку.'
+          localNote = t('company_register.error_siren_format')
         }
       } else if (digits.length < 6) {
         localValid = false
-        localNote = 'Слишком короткий регистрационный номер.'
+        localNote = t('company_register.error_reg_too_short')
       }
 
       if (!localValid) {
@@ -137,7 +139,7 @@ export default function CompanyRegisterPage() {
             exists: false,
             source: 'api.gouv.fr',
             ownerLikelyMatch: false,
-            note: 'Компания не найдена в реестре.',
+            note: t('company_register.not_found_registry'),
           })
           return
         }
@@ -155,8 +157,8 @@ export default function CompanyRegisterPage() {
           ownerLikelyMatch: ownerMatch.match,
           ownerEvidence: ownerMatch.evidence,
           note: ownerMatch.match
-            ? 'Компания найдена, владелец частично совпадает по данным.'
-            : 'Компания найдена. Точного совпадения владельца не обнаружено автоматически.',
+            ? t('company_register.found_owner_partial')
+            : t('company_register.found_owner_not_confirmed'),
         })
         return
       }
@@ -174,7 +176,7 @@ export default function CompanyRegisterPage() {
           exists: false,
           source: 'OpenCorporates',
           ownerLikelyMatch: false,
-          note: 'Компания не найдена по реестру.',
+          note: t('company_register.not_found_registry'),
         })
         return
       }
@@ -188,8 +190,8 @@ export default function CompanyRegisterPage() {
         ownerLikelyMatch: ownerMatch.match,
         ownerEvidence: ownerMatch.evidence,
         note: ownerMatch.match
-          ? 'Компания найдена, есть совпадение по владельцу.'
-          : 'Компания найдена. Имя владельца не подтверждено автоматически.',
+          ? t('company_register.found_owner_match')
+          : t('company_register.found_owner_not_confirmed'),
       })
     } catch (e) {
       setCheckResult({
@@ -197,7 +199,7 @@ export default function CompanyRegisterPage() {
         exists: false,
         source: 'network',
         ownerLikelyMatch: false,
-        note: e instanceof Error ? e.message : 'Автопроверка временно недоступна.',
+        note: e instanceof Error ? e.message : t('company_register.autocheck_unavailable'),
       })
     } finally {
       setChecking(false)
@@ -208,15 +210,15 @@ export default function CompanyRegisterPage() {
     setError('')
     setSuccess('')
     if (!user) {
-      setError('Нужно войти в аккаунт.')
+      setError(t('company_register.login_required'))
       return
     }
     if (!checkResult?.checked) {
-      setError('Сначала выполните автопроверку компании.')
+      setError(t('company_register.run_check_first'))
       return
     }
     if (!checkResult.exists) {
-      setError('Компания не подтверждена автоматически. Проверьте данные.')
+      setError(t('company_register.company_not_verified'))
       return
     }
     setSubmitting(true)
@@ -236,9 +238,9 @@ export default function CompanyRegisterPage() {
         status: 'pending',
       }
       localStorage.setItem(storageKey, JSON.stringify(payload))
-      setSuccess('Заявка партнера отправлена. Статус: pending.')
+      setSuccess(t('company_register.submitted_pending'))
     } catch {
-      setError('Не удалось сохранить заявку.')
+      setError(t('company_register.save_failed'))
     } finally {
       setSubmitting(false)
     }
@@ -247,7 +249,7 @@ export default function CompanyRegisterPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -259,20 +261,20 @@ export default function CompanyRegisterPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Inscription entreprise</h1>
+          <h1 className="text-lg font-semibold">{t('company_register.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
         <div className="rounded-2xl bg-white/10 border border-violet-400 p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-violet-300" />
-            <p className="text-sm text-white/80">Заполните данные компании и выполните автопроверку.</p>
+            <p className="text-sm text-white/80">{t('company_register.hint_fill_and_check')}</p>
           </div>
 
           <input
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="Название компании"
+            placeholder={t('company_register.company_name')}
             className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
           />
           <div className="grid grid-cols-3 gap-2">
@@ -292,40 +294,40 @@ export default function CompanyRegisterPage() {
             <input
               value={registrationNumber}
               onChange={(e) => setRegistrationNumber(e.target.value)}
-              placeholder="Reg Number"
+              placeholder={t('company_register.registration_number')}
               className="col-span-2 rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
             />
           </div>
           <input
             value={ownerFullName}
             onChange={(e) => setOwnerFullName(e.target.value)}
-            placeholder="ФИО владельца / директора"
+            placeholder={t('company_register.owner_full_name')}
             className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
           />
           <input
             value={ownerRole}
             onChange={(e) => setOwnerRole(e.target.value)}
-            placeholder="Роль (Owner, CEO...)"
+            placeholder={t('company_register.owner_role')}
             className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
           />
           <div className="grid grid-cols-2 gap-2">
             <input
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
-              placeholder="Email компании"
+              placeholder={t('company_register.company_email')}
               className="rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
             />
             <input
               value={contactPhone}
               onChange={(e) => setContactPhone(e.target.value)}
-              placeholder="Телефон"
+              placeholder={t('company_register.phone')}
               className="rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
             />
           </div>
           <input
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
-            placeholder="Website (optional)"
+            placeholder={t('company_register.website_optional')}
             className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
           />
 
@@ -336,7 +338,7 @@ export default function CompanyRegisterPage() {
             className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-violet-400 py-3 min-h-[44px] font-medium inline-flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <Search className="h-4 w-4" />
-            {checking ? 'Проверка...' : 'Автопроверка компании'}
+            {checking ? t('company_register.checking') : t('company_register.autocheck')}
           </button>
 
           {checkResult?.checked && (
@@ -349,13 +351,13 @@ export default function CompanyRegisterPage() {
             >
               <div className="font-semibold flex items-center gap-2">
                 {checkResult.exists ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
-                {checkResult.exists ? 'Компания найдена' : 'Компания не подтверждена'}
+                {checkResult.exists ? t('company_register.company_found') : t('company_register.company_not_confirmed')}
               </div>
-              <p className="mt-1 text-xs opacity-90">Источник: {checkResult.source}</p>
-              {checkResult.companyName && <p className="mt-1 text-xs">Название: {checkResult.companyName}</p>}
-              {checkResult.registration && <p className="mt-1 text-xs">Рег. номер: {checkResult.registration}</p>}
+              <p className="mt-1 text-xs opacity-90">{t('company_register.source')}: {checkResult.source}</p>
+              {checkResult.companyName && <p className="mt-1 text-xs">{t('company_register.company_name_label')}: {checkResult.companyName}</p>}
+              {checkResult.registration && <p className="mt-1 text-xs">{t('company_register.registration_label')}: {checkResult.registration}</p>}
               {checkResult.note && <p className="mt-1 text-xs">{checkResult.note}</p>}
-              {checkResult.ownerEvidence && <p className="mt-1 text-xs">Проверка владельца: {checkResult.ownerEvidence}</p>}
+              {checkResult.ownerEvidence && <p className="mt-1 text-xs">{t('company_register.owner_check')}: {checkResult.ownerEvidence}</p>}
             </div>
           )}
 
@@ -365,10 +367,10 @@ export default function CompanyRegisterPage() {
             disabled={submitting || !checkResult?.exists}
             className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 border border-violet-400 py-3 min-h-[44px] font-semibold disabled:opacity-50"
           >
-            {submitting ? 'Отправка...' : 'Стать партнером'}
+            {submitting ? t('company_register.sending') : t('company_register.become_partner')}
           </button>
           <p className="text-xs text-white/60">
-            После отправки заявка сохраняется со статусом <span className="text-white">pending</span>. Владелец проверяется автоматически по доступным данным реестра (если возможно).
+            {t('company_register.footer_note_before')} <span className="text-white">pending</span>. {t('company_register.footer_note_after')}
           </p>
         </div>
         {success && (

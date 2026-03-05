@@ -6,8 +6,8 @@ import { AIChatShell } from '@/components/AIChatShell'
 import { RootErrorBoundary } from '@/components/RootErrorBoundary'
 
 export const metadata: Metadata = {
-  title: 'BOLH — Охрана по запросу',
-  description: 'Закажи проверенного охранника за минуты',
+  title: 'BOLH Security',
+  description: 'On-demand security services',
 }
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ru" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen antialiased bg-[#1a1b26] text-white">
         <RootErrorBoundary>
           <LocaleProvider>

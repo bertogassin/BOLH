@@ -29,7 +29,7 @@ export function ProfileGeneralSection({ t }: Props) {
         <Link href="/help" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <HelpCircle className="h-5 w-5 text-white/60" />
-            Aide et FAQ
+            Help & FAQ
           </span>
           <span className="text-white/40">›</span>
         </Link>

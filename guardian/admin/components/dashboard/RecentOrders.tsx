@@ -10,10 +10,10 @@ export interface OrderRow {
 export function RecentOrders({ orders }: { orders: OrderRow[] }) {
   return (
     <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-      <h3 className="mb-4 text-lg font-semibold">Последние заказы</h3>
+      <h3 className="mb-4 text-lg font-semibold">Recent orders</h3>
       <div className="space-y-3">
         {orders.length === 0 ? (
-          <p className="text-sm text-gray-500">Нет заказов</p>
+          <p className="text-sm text-gray-500">No orders</p>
         ) : (
           orders.map((order) => (
             <div

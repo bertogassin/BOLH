@@ -1,4 +1,4 @@
-// Кэширование GET-ответов в Redis для снижения нагрузки на бэкенд.
+// Cache GET responses in Redis to reduce backend load.
 
 package middleware
 
@@ -14,18 +14,18 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// CacheMiddleware кэширует GET-запросы по пути и query.
+// CacheMiddleware caches GET requests by path and query.
 type CacheMiddleware struct {
 	Redis *redis.Client
 	TTL   time.Duration
 }
 
-// NewCacheMiddleware создаёт middleware с TTL по умолчанию 5 минут.
+// NewCacheMiddleware creates middleware with default TTL of 5 minutes.
 func NewCacheMiddleware(r *redis.Client) *CacheMiddleware {
 	return &CacheMiddleware{Redis: r, TTL: 5 * time.Minute}
 }
 
-// Cache возвращает gin.HandlerFunc, кэширующий пути с заданным префиксом.
+// Cache returns gin.HandlerFunc that caches paths with the given prefix.
 func (m *CacheMiddleware) Cache(prefixes ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method != http.MethodGet {
@@ -71,7 +71,7 @@ func (w *cachedWriter) Write(b []byte) (int, error) {
 	return w.ResponseWriter.Write(b)
 }
 
-// InvalidatePath сбрасывает кэш по префиксу пути (например после обновления заказа).
+// InvalidatePath clears cache by path prefix (for example after order update).
 func (m *CacheMiddleware) InvalidatePath(ctx context.Context, pathPrefix string) error {
 	iter := m.Redis.Scan(ctx, 0, "cache:"+pathPrefix+"*", 100).Iterator()
 	for iter.Next(ctx) {

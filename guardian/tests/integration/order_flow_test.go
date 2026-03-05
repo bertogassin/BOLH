@@ -26,7 +26,7 @@ func TestHealth(t *testing.T) {
 
 func TestCreateOrderValidation(t *testing.T) {
 	body := map[string]interface{}{
-		"title":            "Охрана мероприятия",
+		"title":            "Event security",
 		"required_licenses": []string{"weapon"},
 		"budget_min":       25.0,
 		"budget_max":       50.0,

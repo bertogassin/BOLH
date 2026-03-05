@@ -28,7 +28,7 @@ const defaultData = [
 export function ActivityChart({ data = defaultData }: ActivityChartProps) {
   return (
     <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
-      <h3 className="mb-4 text-lg font-semibold">Активность заказов</h3>
+      <h3 className="mb-4 text-lg font-semibold">Order activity</h3>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
@@ -41,14 +41,14 @@ export function ActivityChart({ data = defaultData }: ActivityChartProps) {
               type="monotone"
               dataKey="created"
               stroke="#0055FF"
-              name="Создано"
+              name="Created"
               strokeWidth={2}
             />
             <Line
               type="monotone"
               dataKey="completed"
               stroke="#00C48C"
-              name="Завершено"
+              name="Completed"
               strokeWidth={2}
             />
           </LineChart>

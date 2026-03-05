@@ -12,7 +12,7 @@ import { AppNav } from '@/components/AppNav'
 
 function formatDate(s: string, locale: string) {
   try {
-    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : 'en-US'
+    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US'
     return new Date(s).toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' })
   } catch {
     return s
@@ -20,11 +20,11 @@ function formatDate(s: string, locale: string) {
 }
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'Tous' },
-  { value: 'published', label: 'Publié' },
-  { value: 'matched', label: 'Assigné' },
-  { value: 'completed', label: 'Terminé' },
-  { value: 'cancelled', label: 'Annulé' },
+  { value: '', label: 'All' },
+  { value: 'published', label: 'Published' },
+  { value: 'matched', label: 'Matched' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'cancelled', label: 'Cancelled' },
 ]
 
 export default function OrdersPage() {
@@ -134,7 +134,7 @@ export default function OrdersPage() {
                         </span>
                       </div>
                       {order.guard_count > 0 && (
-                        <p className="mt-1 text-xs text-gray-500">Охранников: {order.guard_count}</p>
+                        <p className="mt-1 text-xs text-gray-500">Guards: {order.guard_count}</p>
                       )}
                     </div>
                     <MapPin className="h-5 w-5 shrink-0 text-gray-400" />
@@ -145,7 +145,7 @@ export default function OrdersPage() {
           </ul>
         )}
         <p className="mt-6">
-          <Link href="/booking" className="text-guardian-blue hover:underline">← На главную</Link>
+          <Link href="/booking" className="text-guardian-blue hover:underline">← Back to home</Link>
         </p>
       </main>
 

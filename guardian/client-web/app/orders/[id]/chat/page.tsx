@@ -4,11 +4,13 @@ import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Send } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { fetchOrder, fetchOrderMessages, sendOrderMessage, type ChatMessage } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
 export default function OrderChatPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
+  const { t, locale } = useLocale()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(true)
@@ -71,7 +73,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] flex items-center justify-center text-white">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -91,7 +93,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
           <Link href={`/orders/${params.id}`} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Chat réservation</h1>
+          <h1 className="text-lg font-semibold">{t('order_chat.title')}</h1>
         </div>
       </header>
 
@@ -110,7 +112,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
             >
               <p className="text-sm">{m.text}</p>
               <p className="text-[10px] opacity-70 mt-0.5">
-                {new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                {new Date(m.created_at).toLocaleTimeString(locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : locale === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
           </div>
@@ -125,7 +127,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder="Message..."
+            placeholder={t('order_chat.message_placeholder')}
             className="flex-1 rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 min-h-[44px]"
           />
           <button

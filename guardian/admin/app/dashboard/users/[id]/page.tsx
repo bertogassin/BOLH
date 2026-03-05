@@ -20,8 +20,8 @@ async function fetchUser(id: string): Promise<User | null> {
   if (!res || !('ok' in res) || !res.ok)
     return {
       id,
-      firstName: 'Иван',
-      lastName: 'Петров',
+      firstName: 'Ivan',
+      lastName: 'Petrov',
       email: 'ivan@example.com',
       userType: 'client',
       verified: true,
@@ -40,7 +40,7 @@ export default function UserDetailPage({
     queryFn: () => fetchUser(params.id),
   })
 
-  if (!user) return <div className="p-6">Загрузка...</div>
+  if (!user) return <div className="p-6">Loading...</div>
 
   return (
     <div className="space-y-6 p-6">
@@ -65,24 +65,24 @@ export default function UserDetailPage({
             }`}
           >
             {user.userType === 'client'
-              ? 'Клиент'
+              ? 'Client'
               : user.userType === 'guard'
-              ? 'Охранник'
-              : 'Агентство'}
+              ? 'Guard'
+              : 'Agency'}
           </span>
         </div>
         <div className="flex gap-2">
           <button className="rounded-lg border px-4 py-2 text-sm">
-            Верифицировать
+            Verify
           </button>
           <button className="rounded-lg border border-red-500 px-4 py-2 text-sm text-red-600">
-            Заблокировать
+            Block
           </button>
         </div>
       </div>
 
       <div className="rounded-lg border bg-white p-6 dark:bg-gray-800">
-        <h2 className="mb-4 text-lg font-semibold">Профиль</h2>
+        <h2 className="mb-4 text-lg font-semibold">Profile</h2>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
             <dt className="text-sm text-gray-500">Email</dt>
@@ -90,35 +90,35 @@ export default function UserDetailPage({
           </div>
           {user.phone && (
             <div>
-              <dt className="text-sm text-gray-500">Телефон</dt>
+              <dt className="text-sm text-gray-500">Phone</dt>
               <dd>{user.phone}</dd>
             </div>
           )}
           <div>
-            <dt className="text-sm text-gray-500">Статус</dt>
+            <dt className="text-sm text-gray-500">Status</dt>
             <dd>
               {user.verified ? (
-                <span className="text-green-600">Верифицирован</span>
+                <span className="text-green-600">Verified</span>
               ) : (
-                <span className="text-amber-600">Не верифицирован</span>
+                <span className="text-amber-600">Unverified</span>
               )}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">Регистрация</dt>
-            <dd>{new Date(user.createdAt).toLocaleDateString('ru-RU')}</dd>
+            <dt className="text-sm text-gray-500">Registered</dt>
+            <dd>{new Date(user.createdAt).toLocaleDateString('en-US')}</dd>
           </div>
         </dl>
       </div>
 
       <div className="rounded-lg border bg-white p-6 dark:bg-gray-800">
-        <h2 className="mb-4 text-lg font-semibold">Заказы</h2>
-        <p className="text-sm text-gray-500">Список заказов пользователя</p>
+        <h2 className="mb-4 text-lg font-semibold">Orders</h2>
+        <p className="text-sm text-gray-500">User order list</p>
       </div>
 
       <div className="rounded-lg border bg-white p-6 dark:bg-gray-800">
-        <h2 className="mb-4 text-lg font-semibold">Платежи</h2>
-        <p className="text-sm text-gray-500">История платежей</p>
+        <h2 className="mb-4 text-lg font-semibold">Payments</h2>
+        <p className="text-sm text-gray-500">Payment history</p>
       </div>
     </div>
   )

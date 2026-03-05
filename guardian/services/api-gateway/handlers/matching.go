@@ -17,8 +17,8 @@ func addMatchNotification(st store.Store, o *store.Order, finalPrice float64) {
 	n := &store.Notification{
 		ID:        uuid.New().String(),
 		UserID:    o.ClientID,
-		Title:     "Gardien assigné",
-		Body:      "Votre réservation a un gardien. Prix: " + fmt.Sprintf("%.2f", finalPrice) + " €",
+		Title:     "Guard assigned",
+		Body:      "Your reservation has an assigned guard. Price: " + fmt.Sprintf("%.2f", finalPrice) + " EUR",
 		Read:      false,
 		CreatedAt: time.Now(),
 	}

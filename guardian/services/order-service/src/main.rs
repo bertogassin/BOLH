@@ -1,4 +1,4 @@
-// Order Service: HTTP API. При DATABASE_URL — запись в PostgreSQL (gateway_orders); иначе in-memory.
+// Order Service: HTTP API. With DATABASE_URL uses PostgreSQL (gateway_orders); otherwise in-memory.
 use axum::{
     extract::{Path, Query, State},
     http::{HeaderMap, StatusCode},

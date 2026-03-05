@@ -1,4 +1,4 @@
-// Алгоритм выбора лучшего кандидата.
+// Best-candidate selection algorithm.
 
 use domain::{Bid, BidderType, Money, Order};
 use rust_decimal::Decimal;
@@ -6,7 +6,7 @@ use std::cmp::Ordering;
 
 use crate::models::Candidate;
 
-/// Выбираем лучшего: свободные агенты выше агентств, затем по цене (ниже лучше).
+/// Select best candidate: free guards are prioritized, then lower price wins.
 pub fn select_best(
     mut guards: Vec<Candidate>,
     mut agencies: Vec<Candidate>,
@@ -23,9 +23,9 @@ fn cmp_candidate_by_price(a: &Candidate, b: &Candidate) -> Ordering {
     a.bid.price.amount().cmp(&b.bid.price.amount())
 }
 
-/// Итоговая цена для клиента (с учётом комиссии платформы при необходимости).
+/// Final client price (platform/agency fee can be applied when needed).
 pub fn calculate_price(order: &Order, candidate: &Candidate) -> Money {
     let price = candidate.bid.price;
-    // Упрощённо: возвращаем цену предложения. В проде: + platform_fee, + agency commission.
+    // Simplified: return bid price. In production: + platform_fee, + agency commission.
     price
 }

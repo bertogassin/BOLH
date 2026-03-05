@@ -1,5 +1,5 @@
 // core/domain/src/lib.rs
-// Чистейшая доменная модель. Никаких зависимостей от фреймворков.
+// Pure domain model. No framework dependencies.
 
 mod auth;
 mod encryption;
@@ -12,7 +12,7 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-// === Идентификаторы ===
+// === Identifiers ===
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct UserId(pub Uuid);
 
@@ -28,7 +28,7 @@ pub struct GuardId(pub Uuid);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct AgencyId(pub Uuid);
 
-// === Валюта и деньги ===
+// === Currency and money ===
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum Currency {
@@ -59,11 +59,11 @@ impl Money {
     }
 }
 
-// === Репутация ===
+// === Reputation ===
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Serialize, Deserialize)]
 pub struct ReputationScore(pub f64);
 
-// === Гео и доступность ===
+// === Geo and availability ===
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GeoPoint {
     pub lat: f64,
@@ -81,7 +81,7 @@ pub struct TimeSlot {
     pub end: DateTime<Utc>,
 }
 
-// === Лицензия ===
+// === License ===
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LicenseType {
@@ -98,7 +98,7 @@ pub struct License {
     pub expiry_date: chrono::NaiveDate,
 }
 
-// === Требования заказа ===
+// === Order requirements ===
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Requirements {
     pub title: String,
@@ -107,7 +107,7 @@ pub struct Requirements {
     pub guard_count: u32,
 }
 
-// === Статус заказа ===
+// === Order status ===
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum OrderStatus {
@@ -118,7 +118,7 @@ pub enum OrderStatus {
     Cancelled,
 }
 
-// === Пользователь ===
+// === User ===
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum UserType {
     Client,
@@ -137,7 +137,7 @@ pub struct User {
     pub created_at: DateTime<Utc>,
 }
 
-// === Охранник ===
+// === Guard ===
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Guard {
     pub user_id: UserId,
@@ -147,7 +147,7 @@ pub struct Guard {
     pub availability: Availability,
 }
 
-// === Заказ ===
+// === Order ===
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Order {
     pub id: OrderId,
@@ -157,11 +157,11 @@ pub struct Order {
     pub location: GeoPoint,
     pub time_window: (DateTime<Utc>, DateTime<Utc>),
     pub status: OrderStatus,
-    /// Цена скрыта от всех кроме алгоритма
+    /// Price is hidden from everyone except the matching algorithm.
     pub matched_price: Option<Money>,
 }
 
-/// Клиентская проекция — без бюджета и цены.
+/// Client-facing projection without budget and price.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClientOrderView {
     pub id: OrderId,
@@ -206,7 +206,7 @@ impl Order {
     }
 }
 
-// === Bid (предложение) ===
+// === Bid (offer) ===
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BidderType {
@@ -228,7 +228,7 @@ pub struct Bid {
     pub valid_to: DateTime<Utc>,
 }
 
-// === Match (результат подбора) ===
+// === Match (matching result) ===
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Match {
     pub order_id: OrderId,
@@ -256,7 +256,7 @@ impl Match {
     }
 }
 
-// === Ошибки домена ===
+// === Domain errors ===
 #[derive(Debug, thiserror::Error)]
 pub enum DomainError {
     #[error("Money amount cannot be negative")]

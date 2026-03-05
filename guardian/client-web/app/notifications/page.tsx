@@ -79,15 +79,15 @@ export default function NotificationsPage() {
             ))}
           </div>
         ) : fetchError ? (
-          <ErrorRetry message="Не удалось загрузить уведомления." onRetry={load} />
+          <ErrorRetry message={t('notifications.load_failed')} onRetry={load} />
         ) : list.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center mb-4">
               <Bell className="h-8 w-8 text-white/50" />
             </div>
-            <p className="text-white/70 font-medium">Нет уведомлений</p>
-            <p className="text-sm text-white/50 mt-1">Здесь появятся матчи, сообщения и статусы заказов.</p>
-            <Link href="/profile" className="mt-6 text-violet-400 hover:underline text-sm">В профиль</Link>
+            <p className="text-white/70 font-medium">{t('notifications.empty_title')}</p>
+            <p className="text-sm text-white/50 mt-1">{t('notifications.empty_subtitle')}</p>
+            <Link href="/profile" className="mt-6 text-violet-400 hover:underline text-sm">{t('notifications.to_profile')}</Link>
           </div>
         ) : (
           <ul className="space-y-1">

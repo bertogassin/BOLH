@@ -8,8 +8,8 @@ export async function GET(
   // Stub: return mock user
   const user = {
     id,
-    firstName: 'Иван',
-    lastName: 'Петров',
+    firstName: 'Ivan',
+    lastName: 'Petrov',
     email: 'ivan@example.com',
     userType: 'client',
     verified: true,

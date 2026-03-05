@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, Trash2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { deleteMyAccount } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
 export default function DeleteAccountPage() {
   const { user, logout } = useAuth()
+  const { t } = useLocale()
   const router = useRouter()
   const [ack1, setAck1] = useState(false)
   const [ack2, setAck2] = useState(false)
@@ -75,8 +77,8 @@ export default function DeleteAccountPage() {
     } catch (e) {
       setError(
         e instanceof Error
-          ? `${e.message}. Если удаление не поддержано сервером, обратитесь в поддержку для ручного удаления.`
-          : 'Не удалось удалить аккаунт.'
+          ? `${e.message}. ${t('profile_delete.server_manual_hint')}`
+          : t('profile_delete.delete_failed')
       )
       setSubmitting(false)
       resetHold()
@@ -106,7 +108,7 @@ export default function DeleteAccountPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -118,32 +120,32 @@ export default function DeleteAccountPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Удалить аккаунт</h1>
+          <h1 className="text-lg font-semibold">{t('profile_delete.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
         <div className="rounded-2xl bg-red-500/10 border border-red-500/30 p-6 flex flex-col items-center gap-3">
           <Trash2 className="h-12 w-12 text-red-400" />
-          <p className="text-white/80 text-center">Действие необратимо. Все ваши данные будут удалены.</p>
-          <p className="text-white/50 text-sm">Защита от случайного удаления включена.</p>
+          <p className="text-white/80 text-center">{t('profile_delete.irreversible')}</p>
+          <p className="text-white/50 text-sm">{t('profile_delete.protection_enabled')}</p>
         </div>
 
         <div className="rounded-2xl bg-white/10 border border-violet-400 p-4 space-y-3">
           <label className="flex items-start gap-3 text-sm">
             <input type="checkbox" checked={ack1} onChange={(e) => setAck1(e.target.checked)} className="mt-1" />
-            <span>Я понимаю, что удаление аккаунта необратимо.</span>
+            <span>{t('profile_delete.ack_irreversible')}</span>
           </label>
           <label className="flex items-start gap-3 text-sm">
             <input type="checkbox" checked={ack2} onChange={(e) => setAck2(e.target.checked)} className="mt-1" />
-            <span>Я понимаю, что будут удалены документы, карты и данные профиля.</span>
+            <span>{t('profile_delete.ack_data_removed')}</span>
           </label>
           <label className="flex items-start gap-3 text-sm">
             <input type="checkbox" checked={ack3} onChange={(e) => setAck3(e.target.checked)} className="mt-1" />
-            <span>Я подтверждаю, что это делаю я, владелец аккаунта.</span>
+            <span>{t('profile_delete.ack_owner')}</span>
           </label>
 
           <div>
-            <label className="block text-xs text-white/60 mb-1">Введите фразу: <span className="text-white">DELETE ACCOUNT</span></label>
+            <label className="block text-xs text-white/60 mb-1">{t('profile_delete.enter_phrase')}: <span className="text-white">DELETE ACCOUNT</span></label>
             <input
               value={phrase}
               onChange={(e) => setPhrase(e.target.value)}
@@ -152,7 +154,7 @@ export default function DeleteAccountPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-white/60 mb-1">Подтвердите ваш email</label>
+            <label className="block text-xs text-white/60 mb-1">{t('profile_delete.confirm_email')}</label>
             <input
               value={emailConfirm}
               onChange={(e) => setEmailConfirm(e.target.value)}
@@ -161,7 +163,7 @@ export default function DeleteAccountPage() {
             />
           </div>
           <div>
-            <label className="block text-xs text-white/60 mb-1">Введите пароль</label>
+            <label className="block text-xs text-white/60 mb-1">{t('profile_delete.enter_password')}</label>
             <input
               type="password"
               value={password}
@@ -181,7 +183,7 @@ export default function DeleteAccountPage() {
             }}
             className="w-full rounded-xl bg-amber-500/20 border border-amber-400/50 text-amber-200 py-3 min-h-[44px] font-medium disabled:opacity-50"
           >
-            {armed ? `Подтверждение активно (${secondsLeft}s)` : 'Включить удаление'}
+            {armed ? `${t('profile_delete.confirmation_active')} (${secondsLeft}s)` : t('profile_delete.enable_deletion')}
           </button>
 
           <button
@@ -199,7 +201,7 @@ export default function DeleteAccountPage() {
               style={{ width: `${holdProgress}%` }}
             />
             <span className="relative z-10">
-              {submitting ? 'Удаление...' : 'Удерживайте для удаления аккаунта'}
+              {submitting ? t('profile_delete.deleting') : t('profile_delete.hold_to_delete')}
             </span>
           </button>
           {error && <p className="text-sm text-red-300">{error}</p>}

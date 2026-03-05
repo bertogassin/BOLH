@@ -11,16 +11,16 @@ export default function TermsPage() {
           <Link href="/booking" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">CGU — Conditions générales</h1>
+          <h1 className="text-lg font-semibold">Terms and Conditions</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 prose prose-invert prose-sm max-w-none">
         <p className="text-white/80">
-          En utilisant BOLH SECURITY, vous acceptez nos conditions générales d&apos;utilisation.
-          Les réservations sont soumises à disponibilité. Le paiement est dû selon les modalités indiquées à la réservation.
+          By using BOLH SECURITY, you agree to our terms and conditions.
+          Reservations are subject to availability. Payment is due under the terms shown at booking.
         </p>
         <p className="text-white/60 text-sm mt-4">
-          Pour toute question : support@bolh-security.com
+          For questions: support@bolh-security.com
         </p>
       </main>
     </div>

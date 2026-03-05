@@ -11,14 +11,14 @@ export function ProfileDataLinksSection() {
         <Link href="/profile/edit" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <Pencil className="h-5 w-5 text-white/60" />
-            Modifier le profil
+            Edit profile
           </span>
           <span className="text-white/40">›</span>
         </Link>
         <Link href="/profile/verification" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <ShieldCheck className="h-5 w-5 text-violet-400" />
-            Верификация
+            Verification
           </span>
           <span className="text-white/40">›</span>
         </Link>

@@ -13,6 +13,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import {
   type Plugin,
   type PluginTeamMember,
@@ -33,6 +34,7 @@ type Tab = 'info' | 'team' | 'comments' | 'export'
 
 export default function PluginDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
+  const { t, locale } = useLocale()
   const [plugin, setPlugin] = useState<Plugin | null>(null)
   const [loading, setLoading] = useState(true)
   const [publishing, setPublishing] = useState(false)
@@ -162,7 +164,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -172,8 +174,8 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
       <div className="min-h-screen bg-[#1a1b26] text-white pb-24 flex items-center justify-center">
         {!loading && !plugin ? (
           <div className="text-center">
-            <p className="text-white/60">Плагин не найден</p>
-            <Link href="/documents/plugins" className="text-violet-400 mt-2 inline-block">К списку</Link>
+            <p className="text-white/60">{t('plugin_detail.not_found')}</p>
+            <Link href="/documents/plugins" className="text-violet-400 mt-2 inline-block">{t('plugin_detail.back_to_list')}</Link>
           </div>
         ) : (
           <div className="animate-pulse w-full max-w-lg px-4 space-y-4">
@@ -186,10 +188,10 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'info', label: 'Инфо', icon: <Puzzle className="h-4 w-4" /> },
-    { key: 'team', label: 'Команда', icon: <Users className="h-4 w-4" /> },
-    { key: 'comments', label: 'Комментарии', icon: <MessageSquare className="h-4 w-4" /> },
-    { key: 'export', label: 'Экспорт', icon: <Download className="h-4 w-4" /> },
+    { key: 'info', label: t('plugin_detail.tab_info'), icon: <Puzzle className="h-4 w-4" /> },
+    { key: 'team', label: t('plugin_detail.tab_team'), icon: <Users className="h-4 w-4" /> },
+    { key: 'comments', label: t('plugin_detail.tab_comments'), icon: <MessageSquare className="h-4 w-4" /> },
+    { key: 'export', label: t('plugin_detail.tab_export'), icon: <Download className="h-4 w-4" /> },
   ]
 
   return (
@@ -225,7 +227,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                 <Puzzle className="h-8 w-8 text-violet-400" />
               </div>
               <p className="font-medium text-center">{plugin.name}</p>
-              <p className="text-sm text-white/50 text-center">{plugin.description || '—'}</p>
+              <p className="text-sm text-white/50 text-center">{plugin.description || t('plugin_detail.no_description')}</p>
               <span className="rounded bg-white/10 text-white/70 text-sm px-3 py-1">{plugin.status}</span>
             </div>
             {plugin.status !== 'active' && isOwner && (
@@ -236,7 +238,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                 className="w-full flex items-center justify-center gap-2 rounded-xl bg-violet-600 py-3.5 text-white font-medium disabled:opacity-50"
               >
                 <Check className="h-5 w-5" />
-                {publishing ? 'Публикация...' : 'Опубликовать плагин'}
+                {publishing ? t('plugin_detail.publishing') : t('plugin_detail.publish')}
               </button>
             )}
           </>
@@ -246,11 +248,11 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
           <>
             {isOwner && (
               <div className="rounded-2xl bg-white/10 p-4 space-y-3">
-                <p className="text-sm font-medium text-white/80">Добавить участника</p>
+                <p className="text-sm font-medium text-white/80">{t('plugin_detail.add_member')}</p>
                 <div className="flex gap-2">
                   <input
                     type="email"
-                    placeholder="Email"
+                    placeholder={t('plugin_detail.email')}
                     value={addEmail}
                     onChange={(e) => setAddEmail(e.target.value)}
                     className="flex-1 rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder-white/40"
@@ -272,16 +274,16 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                   className="flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
                 >
                   <UserPlus className="h-4 w-4" />
-                  {addingMember ? 'Добавление...' : 'Добавить'}
+                  {addingMember ? t('plugin_detail.adding') : t('plugin_detail.add')}
                 </button>
               </div>
             )}
             <div className="rounded-2xl bg-white/10 p-4">
-              <p className="text-sm font-medium text-white/80 mb-3">Участники</p>
+              <p className="text-sm font-medium text-white/80 mb-3">{t('plugin_detail.members')}</p>
               {membersLoading ? (
-                <p className="text-white/50 text-sm">Загрузка...</p>
+                <p className="text-white/50 text-sm">{t('plugin_detail.loading')}</p>
               ) : members.length === 0 ? (
-                <p className="text-white/50 text-sm">Нет участников</p>
+                <p className="text-white/50 text-sm">{t('plugin_detail.no_members')}</p>
               ) : (
                 <ul className="space-y-2">
                   {members.map((m) => (
@@ -296,7 +298,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                           type="button"
                           onClick={() => handleRemoveMember(m.user_id)}
                           className="p-1.5 rounded text-red-400 hover:bg-red-400/20"
-                          aria-label="Удалить"
+                          aria-label={t('plugin_detail.delete')}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -313,7 +315,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
           <>
             <div className="rounded-2xl bg-white/10 p-4 space-y-3">
               <textarea
-                placeholder="Новый комментарий..."
+                placeholder={t('plugin_detail.new_comment')}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 rows={2}
@@ -325,15 +327,15 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                 disabled={submittingComment || !newComment.trim()}
                 className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
               >
-                {submittingComment ? 'Отправка...' : 'Отправить'}
+                {submittingComment ? t('plugin_detail.sending') : t('plugin_detail.send')}
               </button>
             </div>
             <div className="rounded-2xl bg-white/10 p-4 space-y-3">
-              <p className="text-sm font-medium text-white/80">Комментарии</p>
+              <p className="text-sm font-medium text-white/80">{t('plugin_detail.comments')}</p>
               {commentsLoading ? (
-                <p className="text-white/50 text-sm">Загрузка...</p>
+                <p className="text-white/50 text-sm">{t('plugin_detail.loading')}</p>
               ) : comments.length === 0 ? (
-                <p className="text-white/50 text-sm">Нет комментариев</p>
+                <p className="text-white/50 text-sm">{t('plugin_detail.no_comments')}</p>
               ) : (
                 <ul className="space-y-3">
                   {comments.map((c) => (
@@ -345,14 +347,14 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                     >
                       <p className="text-sm text-white/90">{c.content}</p>
                       <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-white/50">{c.user_id} · {new Date(c.created_at).toLocaleDateString()}</span>
+                        <span className="text-xs text-white/50">{c.user_id} · {new Date(c.created_at).toLocaleDateString(locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US')}</span>
                         {(isOwner || c.user_id === user.id) && (
                           <button
                             type="button"
                             onClick={() => handleResolve(c.id, !c.resolved)}
                             className="text-xs text-violet-400 hover:underline"
                           >
-                            {c.resolved ? 'Открыть' : 'Решить'}
+                            {c.resolved ? t('plugin_detail.reopen') : t('plugin_detail.resolve')}
                           </button>
                         )}
                       </div>
@@ -368,7 +370,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
           <div className="rounded-2xl bg-white/10 p-6 flex flex-col items-center gap-4">
             <Download className="h-12 w-12 text-violet-400" />
             <p className="text-sm text-white/70 text-center">
-              Скачать плагин как HTML-страницу.
+              {t('plugin_detail.export_hint')}
             </p>
             <button
               type="button"
@@ -376,7 +378,7 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
               disabled={exporting}
               className="flex items-center gap-2 rounded-xl bg-violet-600 py-3 px-6 text-white font-medium disabled:opacity-50"
             >
-              {exporting ? 'Скачивание...' : 'Экспорт в HTML'}
+              {exporting ? t('plugin_detail.downloading') : t('plugin_detail.export_html')}
             </button>
           </div>
         )}

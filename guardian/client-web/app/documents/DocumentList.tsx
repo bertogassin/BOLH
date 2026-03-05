@@ -15,6 +15,7 @@ type Props = {
   downloadOne: (d: Document) => Promise<void>
   copyDocumentLink: (id: string) => Promise<void>
   clearFilters: () => void
+  t: (key: string) => string
 }
 
 export function DocumentList({
@@ -27,6 +28,7 @@ export function DocumentList({
   downloadOne,
   copyDocumentLink,
   clearFilters,
+  t,
 }: Props) {
   if (loading) {
     return (
@@ -40,16 +42,16 @@ export function DocumentList({
 
   return (
     <section>
-      <h2 className="text-sm font-semibold text-white/70 mb-2">Документы</h2>
+      <h2 className="text-sm font-semibold text-white/70 mb-2">{t('documents_hub.documents')}</h2>
       {visibleDocs.length === 0 ? (
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/60 space-y-3">
-          <p>Нет документов по текущим фильтрам.</p>
+          <p>{t('documents_hub.empty_filtered')}</p>
           <div className="flex flex-wrap gap-2">
             <Link href="/documents/upload" className="rounded-lg bg-violet-600 px-3 py-1.5 text-white text-xs">
-              Загрузить документ
+              {t('documents_hub.upload_document')}
             </Link>
             <button type="button" onClick={clearFilters} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">
-              Сбросить фильтры
+              {t('documents_hub.reset_filters')}
             </button>
           </div>
         </div>
@@ -85,13 +87,13 @@ export function DocumentList({
                   {getFileExt(d.file_name) ? <span className="rounded bg-white/10 px-1.5 py-0.5">{getFileExt(d.file_name)}</span> : null}
                 </div>
                 <div className="flex gap-1.5 mt-2">
-                  <button type="button" onClick={() => downloadOne(d)} className="rounded bg-white/10 p-1.5" title="Скачать">
+                  <button type="button" onClick={() => downloadOne(d)} className="rounded bg-white/10 p-1.5" title={t('documents_hub.download')}>
                     <Download className="h-3.5 w-3.5" />
                   </button>
-                  <button type="button" onClick={() => copyDocumentLink(d.id)} className="rounded bg-white/10 p-1.5" title="Копировать ссылку">
+                  <button type="button" onClick={() => copyDocumentLink(d.id)} className="rounded bg-white/10 p-1.5" title={t('documents_hub.copy_link')}>
                     <Link2 className="h-3.5 w-3.5" />
                   </button>
-                  <Link href={`/documents/${d.id}`} className="rounded bg-white/10 p-1.5" title="Открыть">
+                  <Link href={`/documents/${d.id}`} className="rounded bg-white/10 p-1.5" title={t('documents_hub.open')}>
                     <ExternalLink className="h-3.5 w-3.5" />
                   </Link>
                 </div>
@@ -111,7 +113,7 @@ export function DocumentList({
                   type="button"
                   onClick={() => toggleSelectDoc(d.id)}
                   className="shrink-0 text-white/70 hover:text-white"
-                  aria-label={selected ? 'Снять выбор' : 'Выбрать'}
+                  aria-label={selected ? t('documents_hub.clear_selection') : t('documents_hub.select')}
                 >
                   {selected ? <CheckSquare className="h-5 w-5 text-violet-300" /> : <Square className="h-5 w-5" />}
                 </button>
@@ -124,14 +126,14 @@ export function DocumentList({
                     {d.doc_type} · {formatSize(d.file_size)} · {formatDate(d.created_at, locale)} · {formatRelativeDate(d.updated_at || d.created_at, locale)}
                   </p>
                 </Link>
-                <button type="button" onClick={() => downloadOne(d)} className="rounded bg-white/10 p-1.5 text-white/80" title="Скачать">
+                <button type="button" onClick={() => downloadOne(d)} className="rounded bg-white/10 p-1.5 text-white/80" title={t('documents_hub.download')}>
                   <Download className="h-3.5 w-3.5" />
                 </button>
-                <button type="button" onClick={() => copyDocumentLink(d.id)} className="rounded bg-white/10 p-1.5 text-white/80" title="Копировать ссылку">
+                <button type="button" onClick={() => copyDocumentLink(d.id)} className="rounded bg-white/10 p-1.5 text-white/80" title={t('documents_hub.copy_link')}>
                   <Link2 className="h-3.5 w-3.5" />
                 </button>
                 {getFileExt(d.file_name) ? <span className="rounded bg-white/10 text-[10px] px-1.5 py-0.5 shrink-0">{getFileExt(d.file_name)}</span> : null}
-                {d.status === 'signed' && <span className="rounded bg-green-500/20 text-green-300 text-xs px-2 py-0.5 shrink-0">Подписан</span>}
+                {d.status === 'signed' && <span className="rounded bg-green-500/20 text-green-300 text-xs px-2 py-0.5 shrink-0">{t('documents_hub.signed')}</span>}
                 <Link href={`/documents/${d.id}`} className="shrink-0">
                   <ChevronRight className="h-5 w-5 text-white/40" />
                 </Link>

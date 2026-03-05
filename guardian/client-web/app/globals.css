@@ -68,7 +68,7 @@ html {
   }
 }
 
-/* Карта Leaflet: гарантированная высота */
+/* Leaflet map: guaranteed height */
 .leaflet-container {
   height: 100%;
   min-height: 300px;

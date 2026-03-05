@@ -34,7 +34,7 @@ export function useDocumentsHub(userId?: string) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [downloadingBulk, setDownloadingBulk] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const [actionHint, setActionHint] = useState('')
+  const [actionHintKey, setActionHintKey] = useState('')
 
   const loadDocuments = async () => {
     try {
@@ -103,10 +103,10 @@ export function useDocumentsHub(userId?: string) {
   }, [])
 
   useEffect(() => {
-    if (!actionHint) return
-    const timer = setTimeout(() => setActionHint(''), 1500)
+    if (!actionHintKey) return
+    const timer = setTimeout(() => setActionHintKey(''), 1500)
     return () => clearTimeout(timer)
-  }, [actionHint])
+  }, [actionHintKey])
 
   const needSignature = useMemo(() => documents.filter((d) => d.status !== 'signed'), [documents])
   const cat = CATEGORIES.find((c) => c.id === category)
@@ -135,7 +135,7 @@ export function useDocumentsHub(userId?: string) {
 
   const orderedDocs = useMemo(() => {
     const next = [...statusFilteredDocs]
-    if (sortBy === 'title') return next.sort((a, b) => (a.title || '').localeCompare(b.title || '', 'ru'))
+    if (sortBy === 'title') return next.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
     if (sortBy === 'size_desc') return next.sort((a, b) => b.file_size - a.file_size)
     if (sortBy === 'size_asc') return next.sort((a, b) => a.file_size - b.file_size)
     if (sortBy === 'created') return next.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
@@ -153,7 +153,7 @@ export function useDocumentsHub(userId?: string) {
   const refresh = async () => {
     setRefreshing(true)
     await loadDocuments()
-    setActionHint('Список обновлен')
+    setActionHintKey('documents_hub.hint_list_refreshed')
     setRefreshing(false)
   }
 
@@ -180,7 +180,7 @@ export function useDocumentsHub(userId?: string) {
     const text = selectedDocs.map((d) => `• ${d.title} (${d.doc_type}, ${formatSize(d.file_size)})`).join('\n')
     try {
       await navigator.clipboard.writeText(text)
-      setActionHint('Сводка скопирована')
+      setActionHintKey('documents_hub.hint_summary_copied')
     } catch {
       // ignore
     }
@@ -191,7 +191,7 @@ export function useDocumentsHub(userId?: string) {
     const link = `${window.location.origin}/documents/${id}`
     try {
       await navigator.clipboard.writeText(link)
-      setActionHint('Ссылка скопирована')
+      setActionHintKey('documents_hub.hint_link_copied')
     } catch {
       // ignore
     }
@@ -228,7 +228,7 @@ export function useDocumentsHub(userId?: string) {
     a.download = `document-hub-${Date.now()}.csv`
     a.click()
     URL.revokeObjectURL(url)
-    setActionHint('CSV выгружен')
+    setActionHintKey('documents_hub.hint_csv_exported')
   }
 
   const downloadSelected = async () => {
@@ -277,7 +277,7 @@ export function useDocumentsHub(userId?: string) {
     selectedIds,
     downloadingBulk,
     refreshing,
-    actionHint,
+    actionHintKey,
     needSignature,
     visibleDocs,
     selectedDocs,

@@ -67,7 +67,7 @@ export function NotificationBell() {
             Notifications
           </p>
           {safeList.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-white/50 text-center">Нет уведомлений</p>
+            <p className="px-4 py-6 text-sm text-white/50 text-center">No notifications</p>
           ) : (
             <ul>
               {safeList.map((n) => (

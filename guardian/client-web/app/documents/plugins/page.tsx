@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight, Puzzle, Plus, FileText, Receipt, Calendar, Building2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { fetchPlugins, fetchPluginTemplates, createPlugin, type Plugin, type PluginTemplate } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
@@ -18,6 +19,7 @@ const TEMPLATE_ICONS: Record<string, React.ComponentType<{ className?: string }>
 
 export default function PluginsPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const router = useRouter()
   const [plugins, setPlugins] = useState<Plugin[]>([])
   const [templates, setTemplates] = useState<PluginTemplate[]>([])
@@ -57,7 +59,7 @@ export default function PluginsPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -69,19 +71,19 @@ export default function PluginsPage() {
           <Link href="/documents" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Конструктор плагинов</h1>
+          <h1 className="text-lg font-semibold">{t('plugins.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-6">
         <section>
-          <h2 className="text-sm font-semibold text-white/70 mb-2">Мои плагины</h2>
+          <h2 className="text-sm font-semibold text-white/70 mb-2">{t('plugins.my_plugins')}</h2>
           {loading ? (
             <div className="animate-pulse space-y-2">
               <div className="h-16 rounded-xl bg-white/10" />
               <div className="h-16 rounded-xl bg-white/10" />
             </div>
           ) : plugins.length === 0 ? (
-            <p className="text-white/50 text-sm py-2">Плагинов пока нет. Выберите шаблон ниже.</p>
+            <p className="text-white/50 text-sm py-2">{t('plugins.empty')}</p>
           ) : (
             <ul className="space-y-2">
               {plugins.map((p) => (
@@ -105,7 +107,7 @@ export default function PluginsPage() {
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold text-white/70 mb-2">Готовые шаблоны</h2>
+          <h2 className="text-sm font-semibold text-white/70 mb-2">{t('plugins.templates')}</h2>
           <ul className="space-y-2">
             {templates.map((t) => {
               const Icon = TEMPLATE_ICONS[t.icon] || Puzzle
@@ -129,7 +131,7 @@ export default function PluginsPage() {
                     className="shrink-0 flex items-center gap-1 rounded-lg bg-violet-600 py-2 px-3 text-sm text-white disabled:opacity-50"
                   >
                     <Plus className="h-4 w-4" />
-                    {isCreating ? 'Создание...' : 'Создать'}
+                    {isCreating ? t('plugins.creating') : t('plugins.create')}
                   </button>
                 </li>
               )

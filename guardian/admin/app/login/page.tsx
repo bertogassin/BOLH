@@ -22,7 +22,7 @@ export default function LoginPage() {
       router.push('/dashboard')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка входа')
+      setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -31,7 +31,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <h1 className="mb-2 text-2xl font-bold">Вход в админ-панель</h1>
+        <h1 className="mb-2 text-2xl font-bold">Admin panel login</h1>
         <p className="mb-6 text-sm text-gray-500">Guardian Admin</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
@@ -51,7 +51,7 @@ export default function LoginPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Пароль</label>
+            <label className="mb-1 block text-sm font-medium">Password</label>
             <input
               type="password"
               value={password}
@@ -66,12 +66,12 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-lg bg-guardian-blue py-2 text-white hover:opacity-90 disabled:opacity-60"
           >
-            {loading ? 'Вход...' : 'Войти'}
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-500">
           <Link href="/" className="text-guardian-blue hover:underline">
-            На главную
+            Back to home
           </Link>
         </p>
       </div>

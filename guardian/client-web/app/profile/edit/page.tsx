@@ -112,7 +112,7 @@ export default function ProfileEditPage() {
             disabled={loading || success}
             className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
           >
-            {loading ? 'Сохранение...' : 'Сохранить'}
+            {loading ? t('profile.saving') : t('profile.save')}
           </button>
         </form>
       </main>

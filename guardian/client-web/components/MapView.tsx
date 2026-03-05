@@ -47,7 +47,7 @@ function LocationButton({ coords, ariaLabel }: { coords: [number, number] | null
       type="button"
       onClick={() => map.flyTo(coords, 16, { duration: 0.8 })}
       className="absolute bottom-20 right-4 z-[1000] flex h-12 w-12 items-center justify-center rounded-xl bg-[#1a1b26] border border-white/20 text-white shadow-lg hover:bg-[#252530]"
-      aria-label="Моё местоположение"
+      aria-label={ariaLabel}
     >
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M12 2a8 8 0 0 1 8 8c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 8-8z" />

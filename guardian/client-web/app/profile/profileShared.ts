@@ -1,11 +1,11 @@
 export function formatMemberSince(dateStr?: string) {
-  if (!dateStr) return 'févr. 2026'
+  if (!dateStr) return 'Feb 2026'
   try {
     const d = new Date(dateStr)
-    const months = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.']
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     return `${months[d.getMonth()]} ${d.getFullYear()}`
   } catch {
-    return 'févr. 2026'
+    return 'Feb 2026'
   }
 }
 

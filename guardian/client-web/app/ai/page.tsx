@@ -15,7 +15,7 @@ export default function AIPage() {
 
   return (
     <div className="min-h-screen bg-[#1a1b26] flex items-center justify-center">
-      <p className="text-white/50 text-sm">Открываю чат BOLH AI...</p>
+      <p className="text-white/50 text-sm">Opening BOLH AI chat...</p>
     </div>
   )
 }

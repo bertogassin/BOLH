@@ -32,7 +32,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Главная") },
+                title = { Text("Home") },
                 actions = {
                     IconButton(onClick = { }) {
                         BadgedBox(
@@ -44,7 +44,7 @@ fun HomeScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Notifications,
-                                contentDescription = "Уведомления"
+                                contentDescription = "Notifications"
                             )
                         }
                     }
@@ -58,7 +58,7 @@ fun HomeScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Новый заказ"
+                    contentDescription = "New order"
                 )
             }
         }
@@ -96,9 +96,9 @@ fun HomeScreen(
 @Composable
 fun GreetingHeader(user: User?) {
     val greeting = when (java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)) {
-        in 0..11 -> "Доброе утро"
-        in 12..17 -> "Добрый день"
-        else -> "Добрый вечер"
+        in 0..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        else -> "Good evening"
     }
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -112,7 +112,7 @@ fun GreetingHeader(user: User?) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                user?.firstName ?: "Загрузка...",
+                user?.firstName ?: "Loading...",
                 style = MaterialTheme.typography.titleLarge
             )
         }
@@ -132,28 +132,28 @@ fun QuickActionsGrid(
     ) {
         QuickActionButton(
             icon = Icons.Default.Add,
-            title = "Новый заказ",
+            title = "New order",
             color = MaterialTheme.colorScheme.primary,
             onClick = onCreateOrder,
             modifier = Modifier.weight(1f)
         )
         QuickActionButton(
             icon = Icons.Default.Menu,
-            title = "Мои заказы",
+            title = "My orders",
             color = Color(0xFFAF52DE),
             onClick = onMyOrders,
             modifier = Modifier.weight(1f)
         )
         QuickActionButton(
             icon = Icons.Default.Settings,
-            title = "Платежи",
+            title = "Payments",
             color = MaterialTheme.colorScheme.tertiary,
             onClick = onPayments,
             modifier = Modifier.weight(1f)
         )
         QuickActionButton(
             icon = Icons.Default.Email,
-            title = "Чаты",
+            title = "Chats",
             color = Color(0xFFFF9500),
             onClick = onChats,
             modifier = Modifier.weight(1f)
@@ -205,10 +205,10 @@ fun ActiveOrdersSection(
     onOrderClick: (String) -> Unit
 ) {
     Column {
-        Text("Активные заказы", style = MaterialTheme.typography.titleMedium)
+        Text("Active orders", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         if (orders.isEmpty()) {
-            Text("Нет активных заказов", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("No active orders", color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
             orders.forEach { order ->
                 Card(
@@ -231,10 +231,10 @@ fun ActiveOrdersSectionApi(
     onOrderClick: (String) -> Unit
 ) {
     Column {
-        Text("Мои заказы", style = MaterialTheme.typography.titleMedium)
+        Text("My orders", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         if (orders.isEmpty()) {
-            Text("Нет заказов", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("No orders", color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
             orders.forEach { order ->
                 Card(

@@ -1,6 +1,6 @@
 /**
- * k6 нагрузочный сценарий. Запуск: k6 run tests/load/scenarios.js
- * Требует поднятый API: API_URL=http://localhost:8080 k6 run tests/load/scenarios.js
+ * k6 load scenario. Run: k6 run tests/load/scenarios.js
+ * Requires running API: API_URL=http://localhost:8080 k6 run tests/load/scenarios.js
  */
 import http from 'k6/http'
 import { check, sleep } from 'k6'

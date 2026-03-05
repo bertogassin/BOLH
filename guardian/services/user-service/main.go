@@ -1,4 +1,4 @@
-// User Service: HTTP API — Register (Argon2), GetProfile. In-memory store (в проде: PostgreSQL, Redis cache).
+// User Service: HTTP API - Register (Argon2), GetProfile. In-memory store (production: PostgreSQL, Redis cache).
 package main
 
 import (

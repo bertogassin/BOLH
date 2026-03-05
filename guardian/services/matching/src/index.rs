@@ -1,10 +1,10 @@
-// Индексы для быстрого поиска кандидатов. O(log n) / пространственный поиск.
+// Indexes for fast candidate lookup. O(log n) / spatial search.
 
 use domain::{BidId, GeoPoint, LicenseType};
 use rust_decimal::Decimal;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-/// Пространственный индекс: по радиусу от точки (упрощённо — хэш-карта + фильтр).
+/// Spatial index: radius query from a point (simplified hash map + filter).
 pub struct SpatialIndex {
     by_id: HashMap<BidId, GeoPoint>,
 }
@@ -21,7 +21,7 @@ impl SpatialIndex {
     pub fn remove(&mut self, bid_id: &BidId) {
         self.by_id.remove(bid_id);
     }
-    /// Запрос по радиусу (radius_m — в метрах, упрощённо считаем по квадрату).
+    /// Radius query (radius_m in meters, simplified square approximation).
     pub fn query_radius(&self, center: &GeoPoint, radius_m: f64) -> Vec<BidId> {
         let lat_deg = radius_m / 111_320.0;
         let lon_deg = radius_m / (111_320.0 * center.lat.to_radians().cos());
@@ -41,7 +41,7 @@ impl Default for SpatialIndex {
     }
 }
 
-/// Индекс по типу лицензии.
+/// Index by license type.
 pub struct LicenseIndex {
     by_license: HashMap<LicenseType, HashSet<BidId>>,
 }
@@ -78,7 +78,7 @@ impl Default for LicenseIndex {
     }
 }
 
-/// Индекс по цене (диапазон).
+/// Price index (range query).
 pub struct PriceIndex {
     by_price: BTreeMap<Decimal, HashSet<BidId>>,
 }

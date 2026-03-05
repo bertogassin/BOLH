@@ -1,5 +1,5 @@
-// Шифрование чувствительных данных (цены). AES-256-GCM.
-// Ключи — только из Vault/env, не в коде.
+// Encryption of sensitive data (prices). AES-256-GCM.
+// Keys must come from Vault/env only, never from code.
 
 use aes_gcm::{
     aead::{Aead, KeyInit},
@@ -22,7 +22,7 @@ pub enum EncryptionError {
     KeyLength,
 }
 
-/// Шифрование цены. Ключ 32 байта (256 бит).
+/// Encrypt price. Key must be 32 bytes (256-bit).
 pub fn encrypt_price(price: &Money, key: &[u8]) -> Result<Vec<u8>, EncryptionError> {
     if key.len() != 32 {
         return Err(EncryptionError::KeyLength);
@@ -42,7 +42,7 @@ pub fn encrypt_price(price: &Money, key: &[u8]) -> Result<Vec<u8>, EncryptionErr
         })
 }
 
-/// Дешифровка только алгоритмом. Ключ 32 байта.
+/// Decrypt price for matching logic only. Key must be 32 bytes.
 pub fn decrypt_price(encrypted: &[u8], key: &[u8]) -> Result<Money, EncryptionError> {
     if key.len() != 32 || encrypted.len() < NONCE_LEN {
         return Err(EncryptionError::Decrypt);

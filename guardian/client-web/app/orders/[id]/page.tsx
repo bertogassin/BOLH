@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { ArrowLeft, MapPin, Calendar, Wallet, Users, FileText, XCircle, MessageCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { fetchOrderWithMatch, cancelOrder, type Order, type Match } from '@/lib/api'
 import { StatusBadge } from '@/components/StatusBadge'
 import { BOLHNav } from '@/components/BOLHNav'
 
-function formatDateTime(s: string) {
+function formatDateTime(s: string, locale: string) {
   try {
-    return new Date(s).toLocaleString('fr-FR', {
+    const normalized = locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : locale === 'fr' ? 'fr-FR' : 'en-US'
+    return new Date(s).toLocaleString(normalized, {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -24,11 +25,11 @@ function formatDateTime(s: string) {
 }
 
 const ORDER_TIMELINE = [
-  { key: 'published', label: 'Создан' },
-  { key: 'searching', label: 'Поиск' },
-  { key: 'matched', label: 'Назначен' },
-  { key: 'in_progress', label: 'В работе' },
-  { key: 'completed', label: 'Завершён' },
+  { key: 'published', labelKey: 'order_detail.step_created' },
+  { key: 'searching', labelKey: 'order_detail.step_searching' },
+  { key: 'matched', labelKey: 'order_detail.step_matched' },
+  { key: 'in_progress', labelKey: 'order_detail.step_in_progress' },
+  { key: 'completed', labelKey: 'order_detail.step_completed' },
 ]
 
 function timelineIndex(status: string): number {
@@ -39,7 +40,7 @@ function timelineIndex(status: string): number {
 
 export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
-  const router = useRouter()
+  const { t, locale } = useLocale()
   const [order, setOrder] = useState<Order | null>(null)
   const [match, setMatch] = useState<Match | null>(null)
   const [loading, setLoading] = useState(true)
@@ -83,7 +84,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
   const handleCancel = async () => {
     if (!order || order.status === 'cancelled') return
-    if (!confirm('Annuler la réservation ?')) return
+    if (!confirm(t('order_detail.cancel_confirm'))) return
     setCancelling(true)
     try {
       await cancelOrder(order.id)
@@ -97,7 +98,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] p-4 flex items-center justify-center text-white">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -112,8 +113,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   if (!order) {
     return (
       <div className="min-h-screen bg-[#1a1b26] p-4 flex flex-col items-center justify-center text-white">
-        <p>Réservation introuvable.</p>
-        <Link href="/orders" className="mt-4 text-violet-400 hover:underline">← Liste des réservations</Link>
+        <p>{t('order_detail.not_found')}</p>
+        <Link href="/orders" className="mt-4 text-violet-400 hover:underline">← {t('order_detail.back_to_orders')}</Link>
       </div>
     )
   }
@@ -135,17 +136,17 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
       <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
         <div className="rounded-2xl bg-white/10 p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-white/50">Statut</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t('order_detail.status')}</p>
           <div className="mt-1">
             <StatusBadge status={order.status} />
           </div>
         </div>
 
         <div className="rounded-2xl bg-white/10 p-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-white/50">Прогресс</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t('order_detail.progress')}</p>
           {isCancelled ? (
             <p className="mt-2 inline-flex items-center rounded-full border border-red-400/40 bg-red-500/20 px-2.5 py-1 text-xs text-red-200">
-              Заказ отменён
+              {t('order_detail.cancelled')}
             </p>
           ) : (
             <div className="mt-3 space-y-2">
@@ -159,7 +160,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
                         done ? (isCurrent ? 'bg-violet-300' : 'bg-emerald-300') : 'bg-white/25'
                       }`}
                     />
-                    <span className={`text-xs ${done ? 'text-white/90' : 'text-white/45'}`}>{step.label}</span>
+                    <span className={`text-xs ${done ? 'text-white/90' : 'text-white/45'}`}>{t(step.labelKey)}</span>
                   </div>
                 )
               })}
@@ -169,15 +170,15 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
         {match && (
           <div className="rounded-2xl bg-violet-500/20 border border-violet-400/30 p-4">
-            <p className="text-xs font-medium uppercase tracking-wide text-violet-300">Gardien assigné</p>
-            <p className="mt-1 text-white font-medium">Prix final: {match.final_price} €</p>
-            <p className="text-sm text-white/70">Guard ID: {match.guard_id.slice(0, 8)}…</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-violet-300">{t('order_detail.assigned_guard')}</p>
+            <p className="mt-1 text-white font-medium">{t('order_detail.final_price')}: {match.final_price} €</p>
+            <p className="text-sm text-white/70">{t('order_detail.guard_id')}: {match.guard_id.slice(0, 8)}…</p>
             <Link
               href={`/orders/${order.id}/chat`}
               className="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15 min-h-[44px]"
             >
               <MessageCircle className="h-4 w-4" />
-              Ouvrir le chat
+              {t('order_detail.open_chat')}
             </Link>
           </div>
         )}
@@ -185,7 +186,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         {order.description && (
           <div className="rounded-2xl bg-white/10 p-4">
             <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
-              <FileText className="h-4 w-4" /> Description
+              <FileText className="h-4 w-4" /> {t('order_detail.description')}
             </p>
             <p className="mt-2 text-white/90">{order.description}</p>
           </div>
@@ -193,7 +194,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
         <div className="rounded-2xl bg-white/10 p-4">
           <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
-            <Wallet className="h-4 w-4" /> Budget
+            <Wallet className="h-4 w-4" /> {t('order_detail.budget')}
           </p>
           <p className="mt-2 text-lg font-semibold text-white">
             {order.budget_min} – {order.budget_max} €
@@ -202,16 +203,16 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
         <div className="rounded-2xl bg-white/10 p-4">
           <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
-            <Calendar className="h-4 w-4" /> Horaires
+            <Calendar className="h-4 w-4" /> {t('order_detail.schedule')}
           </p>
           <p className="mt-2 text-white/90">
-            {formatDateTime(order.start_time)} – {formatDateTime(order.end_time)}
+            {formatDateTime(order.start_time, locale)} – {formatDateTime(order.end_time, locale)}
           </p>
         </div>
 
         <div className="rounded-2xl bg-white/10 p-4">
           <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
-            <Users className="h-4 w-4" /> Gardes
+            <Users className="h-4 w-4" /> {t('order_detail.guards')}
           </p>
           <p className="mt-2 font-medium">{order.guard_count}</p>
         </div>
@@ -219,7 +220,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         {order.latitude != null && order.longitude != null && (
           <div className="rounded-2xl bg-white/10 p-4">
             <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
-              <MapPin className="h-4 w-4" /> Coordonnées
+            <MapPin className="h-4 w-4" /> {t('order_detail.coordinates')}
             </p>
             <p className="mt-2 text-sm text-white/70">
               {order.latitude.toFixed(4)}, {order.longitude.toFixed(4)}
@@ -235,12 +236,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-red-400/50 bg-red-500/20 py-3.5 text-red-300 hover:bg-red-500/30 disabled:opacity-50 min-h-[44px]"
           >
             <XCircle className="h-5 w-5" />
-            {cancelling ? 'Annulation...' : 'Annuler la réservation'}
+            {cancelling ? t('order_detail.cancelling') : t('order_detail.cancel_order')}
           </button>
         )}
 
         <p>
-          <Link href="/orders" className="text-violet-400 hover:underline">← Liste des réservations</Link>
+          <Link href="/orders" className="text-violet-400 hover:underline">← {t('order_detail.back_to_orders')}</Link>
         </p>
       </main>
 

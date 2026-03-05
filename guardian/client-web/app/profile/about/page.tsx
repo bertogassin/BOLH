@@ -3,15 +3,17 @@
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
 
 export default function ProfileAboutPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
 
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -23,12 +25,12 @@ export default function ProfileAboutPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">О приложении</h1>
+          <h1 className="text-lg font-semibold">About app</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
         <p className="text-white/80">BOLH SECURITY v2.1.0</p>
-        <p className="text-white/60 text-sm">Application de sécurité et gardiennage.</p>
+        <p className="text-white/60 text-sm">Security and guarding application.</p>
       </main>
       <BOLHNav current="profile" />
     </div>

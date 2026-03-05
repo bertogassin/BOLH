@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Plus, Star, Trash2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
 import { AddressAutocomplete, type AddressResult } from '@/components/AddressAutocomplete'
 
@@ -18,6 +19,7 @@ type SavedAddress = {
 
 export default function ProfileAddressesPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const [addresses, setAddresses] = useState<SavedAddress[]>([])
   const [addressInput, setAddressInput] = useState('')
   const [selected, setSelected] = useState<AddressResult | null>(null)
@@ -48,12 +50,12 @@ export default function ProfileAddressesPage() {
   const addAddress = () => {
     const label = addressInput.trim()
     if (!label) {
-      setError('Введите адрес')
+      setError(t('profile_addresses.enter_address'))
       return
     }
     const duplicate = addresses.some((a) => a.label.toLowerCase() === label.toLowerCase())
     if (duplicate) {
-      setError('Этот адрес уже сохранен')
+      setError(t('profile_addresses.address_exists'))
       return
     }
     const item: SavedAddress = {
@@ -85,7 +87,7 @@ export default function ProfileAddressesPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
-        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+        <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
@@ -97,7 +99,7 @@ export default function ProfileAddressesPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Сохраненные адреса</h1>
+          <h1 className="text-lg font-semibold">{t('profile_addresses.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
@@ -113,7 +115,7 @@ export default function ProfileAddressesPage() {
               setAddressInput(r.display)
               if (error) setError('')
             }}
-            placeholder="Добавьте адрес"
+            placeholder={t('profile_addresses.add_address_placeholder')}
           />
           <button
             type="button"
@@ -121,13 +123,13 @@ export default function ProfileAddressesPage() {
             className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 border border-violet-400 py-3 min-h-[44px] inline-flex items-center justify-center gap-2 font-medium"
           >
             <Plus className="h-4 w-4" />
-            Сохранить адрес
+            {t('profile_addresses.save_address')}
           </button>
           {error && <p className="text-sm text-red-300">{error}</p>}
         </div>
 
         {addresses.length === 0 ? (
-          <p className="text-white/60 text-sm">Нет сохранённых адресов.</p>
+          <p className="text-white/60 text-sm">{t('profile_addresses.empty')}</p>
         ) : (
           <div className="space-y-2">
             {addresses.map((item) => (
@@ -138,7 +140,7 @@ export default function ProfileAddressesPage() {
                     type="button"
                     onClick={() => removeAddress(item.id)}
                     className="p-2 rounded-lg hover:bg-red-500/20 text-red-300 min-h-[36px] min-w-[36px] flex items-center justify-center"
-                    aria-label="Удалить адрес"
+                    aria-label={t('profile_addresses.delete_address')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -154,7 +156,7 @@ export default function ProfileAddressesPage() {
                     }`}
                   >
                     <Star className={`h-3.5 w-3.5 ${item.isDefault ? 'fill-current' : ''}`} />
-                    {item.isDefault ? 'Основной' : 'Сделать основным'}
+                    {item.isDefault ? t('profile_addresses.default') : t('profile_addresses.make_default')}
                   </button>
                   {item.latitude !== 0 || item.longitude !== 0 ? (
                     <span className="text-[11px] text-white/60 tabular-nums">

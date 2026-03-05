@@ -1,5 +1,5 @@
 // services/api-gateway/main.go
-// API Gateway — Gin, JWT, Store, маршруты Order, Bid, Auth.
+// API Gateway - Gin, JWT, Store, Order/Bid/Auth routes.
 
 package main
 

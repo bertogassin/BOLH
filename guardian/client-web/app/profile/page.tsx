@@ -173,13 +173,13 @@ export default function ProfilePage() {
             >
               <span className={`inline-block h-2 w-2 rounded-full ${details.online ? 'bg-green-300 animate-pulse' : 'bg-white/70'}`} />
               {details.online ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
-              {details.online ? 'Online' : 'Offline'}
+              {details.online ? t('profile.online') : t('profile.offline')}
             </button>
             <button
               type="button"
               onClick={openChat}
               className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="BOLH AI — чат"
+              aria-label={t('ai_chat.aria_chat')}
             >
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>
