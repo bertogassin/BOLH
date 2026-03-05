@@ -1,0 +1,15 @@
+{
+  "name": "guardian-translations-api",
+  "version": "1.0.0",
+  "description": "API for serving and invalidating translation files",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "redis": "^4.6.0"
+  }
+}

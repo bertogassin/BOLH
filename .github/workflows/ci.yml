@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+
+      - name: fmt
+        run: go fmt ./...
+
+      - name: vet
+        run: go vet ./...
+
+      - name: staticcheck
+        uses: dominikh/staticcheck-action@v1.2.2
+        with:
+          version: "2024.1"
+
+      - name: test
+        run: go test -race -count=1 ./...
+
+      - name: govulncheck
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  guardian-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - name: Build api-gateway
+        run: |
+          cd guardian/services/api-gateway
+          go build .
+      - name: Test api-gateway
+        run: |
+          cd guardian/services/api-gateway
+          go test -count=1 ./...
+
+  guardian-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: guardian/client-web/package-lock.json
+      - name: Install and lint client-web
+        run: |
+          cd guardian/client-web
+          npm ci
+          npm run lint
+      - name: Build client-web
+        run: |
+          cd guardian/client-web
+          npm run build
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: fmt
+        run: cargo fmt -- --check
+      - name: clippy
+        run: cargo clippy --all-targets -- -D warnings
+      - name: test
+        run: cargo test --all-features
+      - name: cargo audit
+        run: |
+          cargo install cargo-audit
+          cargo audit

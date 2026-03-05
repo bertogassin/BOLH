@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Sicherheit",
+  "clear_aria": "Leeren",
+  "back_home": "← Zur Startseite",
+  "navigation": {
+    "home": "Start",
+    "orders": "Auftraege",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "map": "Karte",
+    "notifications": "Benachrichtigungen"
+  },
+  "actions": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "search": "Suchen",
+    "logout": "Abmelden"
+  },
+  "auth": {
+    "login_title": "Anmelden",
+    "login_subtitle": "BOLH - Sicherheit auf Abruf",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "login_btn": "Anmelden",
+    "logging_in": "Anmeldung...",
+    "register_title": "Registrieren",
+    "register_btn": "Registrieren",
+    "registering": "Registrierung...",
+    "show_password": "Passwort anzeigen",
+    "invalid_email": "Gueltige E-Mail eingeben",
+    "password_required": "Passwort eingeben"
+  },
+  "booking": {
+    "title": "Buchung",
+    "address": "Adresse",
+    "your_price": "Ihr Preis",
+    "per_guard": "pro Wachkraft",
+    "payment": "Zahlung",
+    "accept_terms": "Ich akzeptiere die Bedingungen",
+    "terms_link": "Bedingungen",
+    "privacy_link": "Datenschutz",
+    "confirm": "Buchung bestaetigen",
+    "enter_address": "Adresse eingeben",
+    "sending": "Senden...",
+    "day": "Tag",
+    "month": "Monat",
+    "time_from": "Zeit von",
+    "time_to": "Zeit bis",
+    "guards": "Wachkraefte",
+    "price_positive": "Gueltigen Preis eingeben"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Benutzer",
+    "member_since": "Mitglied seit",
+    "unverified": "Nicht verifiziert",
+    "level": "Level",
+    "orders": "Auftraege",
+    "rating": "Bewertung",
+    "my_cards": "Meine Karten",
+    "no_cards": "Keine Karten",
+    "add_card": "Karte hinzufuegen",
+    "settings": "Einstellungen",
+    "delete_account": "Konto loeschen",
+    "login_to_see": "Anmelden, um Ihr Profil zu sehen.",
+    "login": "Anmelden"
+  },
+  "orders": {
+    "my_orders": "Meine Auftraege",
+    "guest_msg": "Anmelden, um Auftraege zu sehen.",
+    "search_placeholder": "Suchen",
+    "created_banner": "Auftrag erstellt.",
+    "no_orders": "Noch keine Auftraege.",
+    "create_order": "Auftrag erstellen"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "intro": "Benachrichtigungen, Sprache, Datenschutz.",
+    "lang_note": "Sprache kann im Profil geaendert werden.",
+    "privacy_link": "Datenschutzrichtlinie"
+  },
+  "errors": {
+    "load_failed": "Laden fehlgeschlagen.",
+    "retry": "Erneut versuchen"
+  },
+  "map": {
+    "my_location_aria": "Mein Standort",
+    "you_here": "Sie sind hier",
+    "guard": "Wachkraft",
+    "order": "Auftrag",
+    "available": "Verfuegbar",
+    "reserve": "Reservieren",
+    "near_you": "In Ihrer Naehe",
+    "legend": "Blau - Sie · Gruen - Auftraege · Lila - Wachkraefte"
+  }
+}

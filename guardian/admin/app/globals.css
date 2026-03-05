@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --guardian-blue: #0055FF;
+  --guardian-dark: #0A0C10;
+  --guardian-light: #F8F9FC;
+}
+
+body {
+  background-color: #F8F9FC;
+  color: #1A1E2B;
+  min-height: 100vh;
+}
+body.dark {
+  background-color: #0A0C10;
+  color: #ffffff;
+}

@@ -1,0 +1,42 @@
+client_messages:
+  - audience: "event organizers"
+    headline: "Охрана мероприятий без головной боли"
+    subheadline: "Проверенные профессионалы за 2 минуты"
+    cta: "Заказать охрану"
+    visual: "event_with_guard.jpg"
+
+  - audience: "business owners"
+    headline: "Ваш бизнес под защитой 24/7"
+    subheadline: "Корпоративная охрана с GPS-контролем"
+    cta: "Подобрать охрану"
+    visual: "office_security.jpg"
+
+  - audience: "individuals"
+    headline: "Спокойствие ваших близких"
+    subheadline: "Личная охрана, сопровождение, защита дома"
+    cta: "Узнать стоимость"
+    visual: "family_protection.jpg"
+
+guard_messages:
+  - headline: "Зарабатывайте на охране, когда хотите"
+    subheadline: "Свободный график, высокие ставки, мгновенные выплаты"
+    cta: "Стать охранником"
+    visual: "guard_with_phone.jpg"
+  - headline: "Больше никаких простоев"
+    subheadline: "Алгоритм сам находит заказы рядом с вами"
+    cta: "Начать зарабатывать"
+    visual: "guard_working.jpg"
+
+seasonal_campaigns:
+  - name: "New Year"
+    period: "Dec 20 - Jan 10"
+    message: "Встречайте Новый год безопасно"
+    offer: "Скидка 15% на охрану мероприятий"
+  - name: "Summer"
+    period: "Jun - Aug"
+    message: "Лето без забот"
+    offer: "Охрана дачи и загородных домов со скидкой"
+  - name: "Business Season"
+    period: "Sep - Nov"
+    message: "Деловой сезон под защитой"
+    offer: "Корпоративные тарифы для форумов и конференций"

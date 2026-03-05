@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Izwahilli",
+  "clear_aria": "Dela",
+  "back_home": "← Cyga",
+  "navigation": { "home": "Cyga", "orders": "Zakazash", "profile": "Profil", "settings": "Nastroikash", "map": "Karta", "notifications": "Xabarnash" },
+  "actions": { "save": "Dazdar", "cancel": "Tokha", "search": "Lakhara", "logout": "Arxga yaha" },
+  "auth": { "login_title": "Daxar", "email": "Email", "password": "Parol", "login_btn": "Daxar", "logging_in": "Daxar... ", "register_title": "Registraci", "register_btn": "Registraci ya", "registering": "Registraci...", "show_password": "Parol gaita", "invalid_email": "Dogu email yazi", "password_required": "Parol yazi" },
+  "booking": { "title": "Bron", "address": "Adres", "your_price": "Hila tsina", "per_guard": "har ohrannikah", "payment": "Oplata", "accept_terms": "Usloviyash qobal do", "terms_link": "Usloviyash", "privacy_link": "Konfidencialnost", "confirm": "Bron tadar", "enter_address": "Adres yazi", "sending": "Yohu...", "day": "de", "month": "butt", "time_from": "Sah delara", "time_to": "Sah xila", "guards": "ohrannikhash", "price_positive": "Dogu tsina yazi" },
+  "profile": { "title": "Profil", "user": "Polzovatel", "member_since": "Xila yuz", "unverified": "Ne verif", "level": "Darja", "orders": "zakazash", "rating": "reyting", "my_cards": "San kartash", "no_cards": "Karta yotsu", "add_card": "Karta qeta", "settings": "Nastroikash", "delete_account": "Akaunt doxka", "login_to_see": "Profil gaita daxar de.", "login": "Daxar" },
+  "orders": { "my_orders": "San zakazash", "guest_msg": "Zakazash gaita daxar de.", "search_placeholder": "Lakhara", "created_banner": "Zakaz darsina.", "no_orders": "Zakaz yotsu.", "create_order": "Zakaz dara" },
+  "settings": { "title": "Nastroikash", "intro": "Xabarnash, mott, konf.", "lang_note": "Mott profil yitxina.", "privacy_link": "Konfidencialnost politika" },
+  "errors": { "load_failed": "Zagruzka xila.", "retry": "Dukha tobo" },
+  "map": { "my_location_aria": "San moxk", "you_here": "Huna hio", "guard": "Ohrannik", "order": "Zakaz", "available": "Yolush", "reserve": "Rezerv", "near_you": "Huna lagga", "legend": "Sin - huna · Zel - zakazash · Fiolet - ohrannikhash" }
+}

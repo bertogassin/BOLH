@@ -1,0 +1,8 @@
+pandas>=2.0
+numpy>=1.24
+# fastapi>=0.100
+# uvicorn[standard]
+# aiokafka
+# redis
+# plotly
+# prophet  # optional

@@ -1,0 +1,70 @@
+paid_channels:
+  - name: "Yandex.Direct / Google Ads"
+    budget_month_1: 50000
+    budget_month_2: 100000
+    budget_month_3: 200000
+    cac: 2500
+    conversion: 2.5
+    keywords:
+      - "заказать охрану"
+      - "охрана мероприятия"
+      - "частный охранник"
+      - "security guard"
+
+  - name: "Instagram/Facebook Ads"
+    budget_month_1: 30000
+    budget_month_2: 80000
+    budget_month_3: 150000
+    cac: 1800
+    conversion: 1.8
+    targeting:
+      - "event organizers"
+      - "business owners"
+      - "high net worth individuals"
+
+  - name: "LinkedIn"
+    budget_month_1: 10000
+    budget_month_2: 30000
+    budget_month_3: 50000
+    cac: 3000
+    conversion: 0.5
+    targeting: "security agencies, corporate security managers"
+
+organic_channels:
+  - name: "SEO"
+    investment: "content team 2 people"
+    timeline: "3-6 months to rank"
+    expected_traffic_month_6: 50000
+  - name: "Content Marketing"
+    formats:
+      - "Blog posts about security"
+      - "Video interviews with guards"
+      - "Safety tips for events"
+    distribution: "social media, email"
+  - name: "PR"
+    targets:
+      - "TechCrunch"
+      - "Forbes"
+      - "Local business media"
+    angle: "Uber for security, gig economy"
+
+partnerships:
+  - name: "Event Agencies"
+    model: "Revenue share 10%"
+    target: 50
+  - name: "Hotel Chains"
+    model: "Fixed monthly retainer + per hour"
+    target: 10
+  - name: "Property Management"
+    model: "Whitelabel solution"
+    target: 5
+
+referral_program:
+  client_referral:
+    reward: "1000 ₽ за друга"
+    max_per_year: 10000
+    conversion_rate: 15
+  guard_referral:
+    reward: "3000 ₽ за друга-охранника"
+    condition: "друг должен выполнить 10 заказов"
+    conversion_rate: 8

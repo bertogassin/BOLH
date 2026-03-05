@@ -1,0 +1,43 @@
+year_1:
+  revenue:
+    platform_fees: 50000000
+    premium_subscriptions: 5000000
+    advertising: 2000000
+    total: 57000000
+  costs:
+    payment_processing: 1710000
+    server_infrastructure: 6000000
+    customer_support: 4000000
+    insurance: 1500000
+    legal_compliance: 800000
+    total_cogs: 14010000
+  gross_profit: 42990000
+  gross_margin: 75.4
+  operating_expenses:
+    product_development: 15500000
+    sales_marketing: 12000000
+    general_admin: 5500000
+    total_opex: 33000000
+  ebitda: 9990000
+  ebitda_margin: 17.5
+  net_profit: 9290000
+  net_margin: 16.3
+
+year_2:
+  growth_rate: 150
+  revenue: 142500000
+  ebitda: 28500000
+  net_profit: 26000000
+
+year_3:
+  growth_rate: 100
+  revenue: 285000000
+  ebitda: 71250000
+  net_profit: 65000000
+
+key_metrics:
+  cac_paid: 2000
+  ltv_cac_ratio: 3.5
+  payback_months: 8
+  gross_margin_target: 75
+  ebitda_margin_target: 25

@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Securitate",
+  "clear_aria": "Sterge",
+  "back_home": "← Acasa",
+  "navigation": {
+    "home": "Acasa",
+    "orders": "Comenzi",
+    "profile": "Profil",
+    "settings": "Setari",
+    "map": "Harta",
+    "notifications": "Notificari"
+  },
+  "actions": {
+    "save": "Salveaza",
+    "cancel": "Anuleaza",
+    "search": "Cauta",
+    "logout": "Deconectare"
+  },
+  "auth": {
+    "login_title": "Autentificare",
+    "login_subtitle": "BOLH - securitate la cerere",
+    "email": "Email",
+    "password": "Parola",
+    "login_btn": "Intra",
+    "logging_in": "Autentificare...",
+    "register_title": "Inregistrare",
+    "register_btn": "Inregistreaza-te",
+    "registering": "Se inregistreaza...",
+    "show_password": "Afiseaza parola",
+    "invalid_email": "Introdu un email valid",
+    "password_required": "Introdu parola"
+  },
+  "booking": {
+    "title": "Rezervare",
+    "address": "Adresa",
+    "your_price": "Pretul tau",
+    "per_guard": "pe agent",
+    "payment": "Plata",
+    "accept_terms": "Accept termenii",
+    "terms_link": "Termeni",
+    "privacy_link": "Confidentialitate",
+    "confirm": "Confirma rezervarea",
+    "enter_address": "Introdu o adresa",
+    "sending": "Se trimite...",
+    "day": "zi",
+    "month": "luna",
+    "time_from": "Ora de la",
+    "time_to": "Ora pana la",
+    "guards": "agenti",
+    "price_positive": "Introdu un pret valid"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Utilizator",
+    "member_since": "Membru din",
+    "unverified": "Neverificat",
+    "level": "Nivel",
+    "orders": "comenzi",
+    "rating": "rating",
+    "my_cards": "Cardurile mele",
+    "no_cards": "Fara carduri",
+    "add_card": "Adauga card",
+    "settings": "Setari",
+    "delete_account": "Sterge contul",
+    "login_to_see": "Autentifica-te pentru a vedea profilul.",
+    "login": "Autentificare"
+  },
+  "orders": {
+    "my_orders": "Comenzile mele",
+    "guest_msg": "Autentifica-te pentru a vedea comenzile.",
+    "search_placeholder": "Cauta",
+    "created_banner": "Comanda creata.",
+    "no_orders": "Nu exista comenzi.",
+    "create_order": "Creeaza comanda"
+  },
+  "settings": {
+    "title": "Setari",
+    "intro": "Notificari, limba, confidentialitate.",
+    "lang_note": "Limba poate fi schimbata din profil.",
+    "privacy_link": "Politica de confidentialitate"
+  },
+  "errors": {
+    "load_failed": "Incarcarea a esuat.",
+    "retry": "Incearca din nou"
+  },
+  "map": {
+    "my_location_aria": "Locatia mea",
+    "you_here": "Esti aici",
+    "guard": "Agent",
+    "order": "Comanda",
+    "available": "Disponibil",
+    "reserve": "Rezerva",
+    "near_you": "Langa tine",
+    "legend": "Albastru - tu · Verde - comenzi · Mov - agenti"
+  }
+}

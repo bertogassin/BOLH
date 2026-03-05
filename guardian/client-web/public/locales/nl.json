@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Beveiliging",
+  "clear_aria": "Wissen",
+  "back_home": "← Start",
+  "navigation": {
+    "home": "Start",
+    "orders": "Bestellingen",
+    "profile": "Profiel",
+    "settings": "Instellingen",
+    "map": "Kaart",
+    "notifications": "Meldingen"
+  },
+  "actions": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "search": "Zoeken",
+    "logout": "Uitloggen"
+  },
+  "auth": {
+    "login_title": "Inloggen",
+    "login_subtitle": "BOLH - beveiliging op aanvraag",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "login_btn": "Inloggen",
+    "logging_in": "Inloggen...",
+    "register_title": "Registreren",
+    "register_btn": "Registreren",
+    "registering": "Registreren...",
+    "show_password": "Wachtwoord tonen",
+    "invalid_email": "Voer een geldig e-mailadres in",
+    "password_required": "Voer wachtwoord in"
+  },
+  "booking": {
+    "title": "Boeking",
+    "address": "Adres",
+    "your_price": "Jouw prijs",
+    "per_guard": "per beveiliger",
+    "payment": "Betaling",
+    "accept_terms": "Ik ga akkoord met de voorwaarden",
+    "terms_link": "Voorwaarden",
+    "privacy_link": "Privacy",
+    "confirm": "Boeking bevestigen",
+    "enter_address": "Voer een adres in",
+    "sending": "Verzenden...",
+    "day": "dag",
+    "month": "maand",
+    "time_from": "Tijd van",
+    "time_to": "Tijd tot",
+    "guards": "beveiligers",
+    "price_positive": "Voer een geldige prijs in"
+  },
+  "profile": {
+    "title": "Profiel",
+    "user": "Gebruiker",
+    "member_since": "Lid sinds",
+    "unverified": "Niet geverifieerd",
+    "level": "Niveau",
+    "orders": "bestellingen",
+    "rating": "beoordeling",
+    "my_cards": "Mijn kaarten",
+    "no_cards": "Geen kaarten",
+    "add_card": "Kaart toevoegen",
+    "settings": "Instellingen",
+    "delete_account": "Account verwijderen",
+    "login_to_see": "Log in om je profiel te zien.",
+    "login": "Inloggen"
+  },
+  "orders": {
+    "my_orders": "Mijn bestellingen",
+    "guest_msg": "Log in om bestellingen te zien.",
+    "search_placeholder": "Zoeken",
+    "created_banner": "Bestelling aangemaakt.",
+    "no_orders": "Nog geen bestellingen.",
+    "create_order": "Bestelling maken"
+  },
+  "settings": {
+    "title": "Instellingen",
+    "intro": "Meldingen, taal, privacy.",
+    "lang_note": "Je kunt taal wijzigen in je profiel.",
+    "privacy_link": "Privacybeleid"
+  },
+  "errors": {
+    "load_failed": "Laden mislukt.",
+    "retry": "Opnieuw proberen"
+  },
+  "map": {
+    "my_location_aria": "Mijn locatie",
+    "you_here": "Je bent hier",
+    "guard": "Beveiliger",
+    "order": "Bestelling",
+    "available": "Beschikbaar",
+    "reserve": "Reserveren",
+    "near_you": "Bij jou in de buurt",
+    "legend": "Blauw - jij · Groen - bestellingen · Paars - beveiligers"
+  }
+}

@@ -1,0 +1,9 @@
+[package]
+name = "matching-engine"
+version = "0.1.0"
+edition = "2021"
+description = "BOLH Matching Engine — подбор заказов и предложений (Rust)"
+
+[dependencies]
+bolh-domain = { path = "../bolh-domain" }
+uuid = { version = "1.6", features = ["v4"] }

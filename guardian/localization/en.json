@@ -1,0 +1,20 @@
+{
+  "app_name": "Guardian",
+  "navigation": {
+    "home": "Home",
+    "orders": "Orders",
+    "bids": "Bids",
+    "profile": "Profile",
+    "settings": "Settings",
+    "support": "Support"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "filter": "Filter"
+  }
+}

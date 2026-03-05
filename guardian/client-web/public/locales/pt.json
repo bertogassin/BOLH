@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Seguranca",
+  "clear_aria": "Limpar",
+  "back_home": "← Inicio",
+  "navigation": {
+    "home": "Inicio",
+    "orders": "Pedidos",
+    "profile": "Perfil",
+    "settings": "Definicoes",
+    "map": "Mapa",
+    "notifications": "Notificacoes"
+  },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "search": "Pesquisar",
+    "logout": "Terminar sessao"
+  },
+  "auth": {
+    "login_title": "Entrar",
+    "login_subtitle": "BOLH - seguranca sob demanda",
+    "email": "Email",
+    "password": "Palavra-passe",
+    "login_btn": "Entrar",
+    "logging_in": "A entrar...",
+    "register_title": "Registo",
+    "register_btn": "Registar",
+    "registering": "A registar...",
+    "show_password": "Mostrar palavra-passe",
+    "invalid_email": "Insira um email valido",
+    "password_required": "Insira a palavra-passe"
+  },
+  "booking": {
+    "title": "Reserva",
+    "address": "Morada",
+    "your_price": "O seu preco",
+    "per_guard": "por guarda",
+    "payment": "Pagamento",
+    "accept_terms": "Aceito os termos",
+    "terms_link": "Termos",
+    "privacy_link": "Privacidade",
+    "confirm": "Confirmar reserva",
+    "enter_address": "Insira uma morada",
+    "sending": "A enviar...",
+    "day": "dia",
+    "month": "mes",
+    "time_from": "Hora de",
+    "time_to": "Hora ate",
+    "guards": "guardas",
+    "price_positive": "Insira um preco valido"
+  },
+  "profile": {
+    "title": "Perfil",
+    "user": "Utilizador",
+    "member_since": "Membro desde",
+    "unverified": "Nao verificado",
+    "level": "Nivel",
+    "orders": "pedidos",
+    "rating": "avaliacao",
+    "my_cards": "Meus cartoes",
+    "no_cards": "Sem cartoes",
+    "add_card": "Adicionar cartao",
+    "settings": "Definicoes",
+    "delete_account": "Eliminar conta",
+    "login_to_see": "Inicie sessao para ver o seu perfil.",
+    "login": "Entrar"
+  },
+  "orders": {
+    "my_orders": "Meus pedidos",
+    "guest_msg": "Inicie sessao para ver pedidos.",
+    "search_placeholder": "Pesquisar",
+    "created_banner": "Pedido criado.",
+    "no_orders": "Sem pedidos ainda.",
+    "create_order": "Criar pedido"
+  },
+  "settings": {
+    "title": "Definicoes",
+    "intro": "Notificacoes, idioma, privacidade.",
+    "lang_note": "Pode alterar o idioma no perfil.",
+    "privacy_link": "Politica de privacidade"
+  },
+  "errors": {
+    "load_failed": "Falha ao carregar.",
+    "retry": "Tentar novamente"
+  },
+  "map": {
+    "my_location_aria": "Minha localizacao",
+    "you_here": "Voce esta aqui",
+    "guard": "Guarda",
+    "order": "Pedido",
+    "available": "Disponivel",
+    "reserve": "Reservar",
+    "near_you": "Perto de si",
+    "legend": "Azul - voce · Verde - pedidos · Roxo - guardas"
+  }
+}

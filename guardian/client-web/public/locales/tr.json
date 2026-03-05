@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Guvenlik",
+  "clear_aria": "Temizle",
+  "back_home": "← Ana sayfa",
+  "navigation": { "home": "Ana sayfa", "orders": "Siparisler", "profile": "Profil", "settings": "Ayarlar", "map": "Harita", "notifications": "Bildirimler" },
+  "actions": { "save": "Kaydet", "cancel": "Iptal", "search": "Ara", "logout": "Cikis yap" },
+  "auth": { "login_title": "Giris", "email": "E-posta", "password": "Sifre", "login_btn": "Giris yap", "logging_in": "Giris yapiliyor...", "register_title": "Kayit", "register_btn": "Kayit ol", "registering": "Kayit oluyor...", "show_password": "Sifreyi goster", "invalid_email": "Gecerli bir e-posta girin", "password_required": "Sifre girin" },
+  "booking": { "title": "Rezervasyon", "address": "Adres", "your_price": "Fiyatiniz", "per_guard": "koruma basina", "payment": "Odeme", "accept_terms": "Kosullari kabul ediyorum", "terms_link": "Kosullar", "privacy_link": "Gizlilik", "confirm": "Rezervasyonu onayla", "enter_address": "Adres girin", "sending": "Gonderiliyor...", "day": "gun", "month": "ay", "time_from": "Baslangic saati", "time_to": "Bitis saati", "guards": "korumalar", "price_positive": "Gecerli bir fiyat girin" },
+  "profile": { "title": "Profil", "user": "Kullanici", "member_since": "Uyelik baslangici", "unverified": "Dogrulanmamis", "level": "Seviye", "orders": "siparis", "rating": "puan", "my_cards": "Kartlarim", "no_cards": "Kart yok", "add_card": "Kart ekle", "settings": "Ayarlar", "delete_account": "Hesabi sil", "login_to_see": "Profili gormek icin giris yapin.", "login": "Giris yap" },
+  "orders": { "my_orders": "Siparislerim", "guest_msg": "Siparisleri gormek icin giris yapin.", "search_placeholder": "Ara", "created_banner": "Siparis olusturuldu.", "no_orders": "Henuz siparis yok.", "create_order": "Siparis olustur" },
+  "settings": { "title": "Ayarlar", "intro": "Bildirimler, dil, gizlilik.", "lang_note": "Dili profilden degistirebilirsiniz.", "privacy_link": "Gizlilik politikasi" },
+  "errors": { "load_failed": "Yukleme basarisiz.", "retry": "Tekrar dene" },
+  "map": { "my_location_aria": "Konumum", "you_here": "Buradasiniz", "guard": "Koruma", "order": "Siparis", "available": "Musait", "reserve": "Ayir", "near_you": "Yakininda", "legend": "Mavi - siz · Yesil - siparisler · Mor - korumalar" }
+}

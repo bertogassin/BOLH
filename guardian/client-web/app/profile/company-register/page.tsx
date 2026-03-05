@@ -1,0 +1,385 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import Link from 'next/link'
+import { ChevronLeft, Building2, ShieldCheck, Search, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { BOLHNav } from '@/components/BOLHNav'
+
+type CompanyCheckResult = {
+  checked: boolean
+  exists: boolean
+  source: string
+  companyName?: string
+  registration?: string
+  ownerLikelyMatch?: boolean
+  ownerEvidence?: string
+  note?: string
+}
+
+type PartnerApplication = {
+  companyName: string
+  registrationNumber: string
+  countryCode: string
+  ownerFullName: string
+  ownerRole: string
+  contactEmail: string
+  contactPhone: string
+  website: string
+  checkedAt?: string
+  checkResult?: CompanyCheckResult
+  submittedAt: string
+  status: 'pending'
+}
+
+function normalize(v: string): string {
+  return v.trim().replace(/\s+/g, ' ')
+}
+
+function onlyDigits(v: string): string {
+  return v.replace(/\D/g, '')
+}
+
+function luhnCheck(digits: string): boolean {
+  let sum = 0
+  let alt = false
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let n = Number(digits[i])
+    if (alt) {
+      n *= 2
+      if (n > 9) n -= 9
+    }
+    sum += n
+    alt = !alt
+  }
+  return sum % 10 === 0
+}
+
+function includesNameHint(ownerFullName: string, payload: unknown): { match: boolean; evidence?: string } {
+  const raw = JSON.stringify(payload || '').toLowerCase()
+  const tokens = ownerFullName
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((t) => t.length >= 3)
+  const matched = tokens.filter((t) => raw.includes(t))
+  if (matched.length >= Math.min(2, tokens.length)) {
+    return { match: true, evidence: `Совпали токены: ${matched.join(', ')}` }
+  }
+  return { match: false }
+}
+
+export default function CompanyRegisterPage() {
+  const { user } = useAuth()
+  const [companyName, setCompanyName] = useState('')
+  const [registrationNumber, setRegistrationNumber] = useState('')
+  const [countryCode, setCountryCode] = useState('FR')
+  const [ownerFullName, setOwnerFullName] = useState('')
+  const [ownerRole, setOwnerRole] = useState('Owner')
+  const [contactEmail, setContactEmail] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [website, setWebsite] = useState('')
+  const [checking, setChecking] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [checkResult, setCheckResult] = useState<CompanyCheckResult | null>(null)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+
+  const storageKey = useMemo(() => `guardian_partner_application_${user?.id || 'guest'}`, [user?.id])
+
+  const runAutomaticCheck = async () => {
+    setError('')
+    setSuccess('')
+    const company = normalize(companyName)
+    const owner = normalize(ownerFullName)
+    const regRaw = normalize(registrationNumber)
+    if (!company || !owner || !regRaw) {
+      setError('Заполните название компании, регистрационный номер и ФИО владельца.')
+      return
+    }
+
+    setChecking(true)
+    try {
+      // 1) Local structural validation by country
+      let localValid = true
+      let localNote = ''
+      const digits = onlyDigits(regRaw)
+      if (countryCode === 'FR') {
+        // SIREN(9) or SIRET(14) => Luhn checksum
+        if (!(digits.length === 9 || digits.length === 14) || !luhnCheck(digits)) {
+          localValid = false
+          localNote = 'Формат SIREN/SIRET не прошел контрольную проверку.'
+        }
+      } else if (digits.length < 6) {
+        localValid = false
+        localNote = 'Слишком короткий регистрационный номер.'
+      }
+
+      if (!localValid) {
+        setCheckResult({
+          checked: true,
+          exists: false,
+          source: 'local_rules',
+          ownerLikelyMatch: false,
+          note: localNote,
+        })
+        return
+      }
+
+      // 2) Remote existence check
+      if (countryCode === 'FR') {
+        const url = `https://recherche-entreprises.api.gouv.fr/search?q=${encodeURIComponent(digits)}&page=1&per_page=1`
+        const res = await fetch(url)
+        const data = await res.json().catch(() => ({}))
+        const first = Array.isArray((data as { results?: unknown[] }).results) ? (data as { results: unknown[] }).results[0] : null
+        if (!first || typeof first !== 'object') {
+          setCheckResult({
+            checked: true,
+            exists: false,
+            source: 'api.gouv.fr',
+            ownerLikelyMatch: false,
+            note: 'Компания не найдена в реестре.',
+          })
+          return
+        }
+        const candidateName =
+          String((first as Record<string, unknown>).nom_complet || (first as Record<string, unknown>).nom_raison_sociale || company)
+        const reg =
+          String((first as Record<string, unknown>).siret || (first as Record<string, unknown>).siren || digits)
+        const ownerMatch = includesNameHint(owner, first)
+        setCheckResult({
+          checked: true,
+          exists: true,
+          source: 'api.gouv.fr',
+          companyName: candidateName,
+          registration: reg,
+          ownerLikelyMatch: ownerMatch.match,
+          ownerEvidence: ownerMatch.evidence,
+          note: ownerMatch.match
+            ? 'Компания найдена, владелец частично совпадает по данным.'
+            : 'Компания найдена. Точного совпадения владельца не обнаружено автоматически.',
+        })
+        return
+      }
+
+      // fallback for non-FR: OpenCorporates
+      const ocUrl = `https://api.opencorporates.com/v0.4/companies/search?q=${encodeURIComponent(regRaw)}`
+      const ocRes = await fetch(ocUrl)
+      const ocData = await ocRes.json().catch(() => ({}))
+      const companies =
+        (ocData as { results?: { companies?: Array<{ company?: Record<string, unknown> }> } }).results?.companies || []
+      const found = companies[0]?.company
+      if (!found) {
+        setCheckResult({
+          checked: true,
+          exists: false,
+          source: 'OpenCorporates',
+          ownerLikelyMatch: false,
+          note: 'Компания не найдена по реестру.',
+        })
+        return
+      }
+      const ownerMatch = includesNameHint(owner, found)
+      setCheckResult({
+        checked: true,
+        exists: true,
+        source: 'OpenCorporates',
+        companyName: String(found.name || company),
+        registration: String(found.company_number || regRaw),
+        ownerLikelyMatch: ownerMatch.match,
+        ownerEvidence: ownerMatch.evidence,
+        note: ownerMatch.match
+          ? 'Компания найдена, есть совпадение по владельцу.'
+          : 'Компания найдена. Имя владельца не подтверждено автоматически.',
+      })
+    } catch (e) {
+      setCheckResult({
+        checked: true,
+        exists: false,
+        source: 'network',
+        ownerLikelyMatch: false,
+        note: e instanceof Error ? e.message : 'Автопроверка временно недоступна.',
+      })
+    } finally {
+      setChecking(false)
+    }
+  }
+
+  const submitApplication = async () => {
+    setError('')
+    setSuccess('')
+    if (!user) {
+      setError('Нужно войти в аккаунт.')
+      return
+    }
+    if (!checkResult?.checked) {
+      setError('Сначала выполните автопроверку компании.')
+      return
+    }
+    if (!checkResult.exists) {
+      setError('Компания не подтверждена автоматически. Проверьте данные.')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const payload: PartnerApplication = {
+        companyName: normalize(companyName),
+        registrationNumber: normalize(registrationNumber),
+        countryCode,
+        ownerFullName: normalize(ownerFullName),
+        ownerRole: normalize(ownerRole) || 'Owner',
+        contactEmail: normalize(contactEmail),
+        contactPhone: normalize(contactPhone),
+        website: normalize(website),
+        checkedAt: new Date().toISOString(),
+        checkResult,
+        submittedAt: new Date().toISOString(),
+        status: 'pending',
+      }
+      localStorage.setItem(storageKey, JSON.stringify(payload))
+      setSuccess('Заявка партнера отправлена. Статус: pending.')
+    } catch {
+      setError('Не удалось сохранить заявку.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
+        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+        <div className="flex items-center gap-2 px-4 py-3">
+          <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10">
+            <ChevronLeft className="h-5 w-5" />
+          </Link>
+          <h1 className="text-lg font-semibold">Inscription entreprise</h1>
+        </div>
+      </header>
+      <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
+        <div className="rounded-2xl bg-white/10 border border-violet-400 p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-violet-300" />
+            <p className="text-sm text-white/80">Заполните данные компании и выполните автопроверку.</p>
+          </div>
+
+          <input
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            placeholder="Название компании"
+            className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+          />
+          <div className="grid grid-cols-3 gap-2">
+            <select
+              value={countryCode}
+              onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
+              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+            >
+              <option value="FR">FR</option>
+              <option value="DE">DE</option>
+              <option value="ES">ES</option>
+              <option value="IT">IT</option>
+              <option value="TR">TR</option>
+              <option value="GB">GB</option>
+              <option value="US">US</option>
+            </select>
+            <input
+              value={registrationNumber}
+              onChange={(e) => setRegistrationNumber(e.target.value)}
+              placeholder="Reg Number"
+              className="col-span-2 rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+            />
+          </div>
+          <input
+            value={ownerFullName}
+            onChange={(e) => setOwnerFullName(e.target.value)}
+            placeholder="ФИО владельца / директора"
+            className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+          />
+          <input
+            value={ownerRole}
+            onChange={(e) => setOwnerRole(e.target.value)}
+            placeholder="Роль (Owner, CEO...)"
+            className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+          />
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
+              placeholder="Email компании"
+              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+            />
+            <input
+              value={contactPhone}
+              onChange={(e) => setContactPhone(e.target.value)}
+              placeholder="Телефон"
+              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+            />
+          </div>
+          <input
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            placeholder="Website (optional)"
+            className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
+          />
+
+          <button
+            type="button"
+            onClick={runAutomaticCheck}
+            disabled={checking}
+            className="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-violet-400 py-3 min-h-[44px] font-medium inline-flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Search className="h-4 w-4" />
+            {checking ? 'Проверка...' : 'Автопроверка компании'}
+          </button>
+
+          {checkResult?.checked && (
+            <div
+              className={`rounded-xl border p-3 text-sm ${
+                checkResult.exists
+                  ? 'bg-green-500/20 border-green-500/40 text-green-100'
+                  : 'bg-red-500/20 border-red-500/40 text-red-100'
+              }`}
+            >
+              <div className="font-semibold flex items-center gap-2">
+                {checkResult.exists ? <CheckCircle2 className="h-4 w-4" /> : <AlertTriangle className="h-4 w-4" />}
+                {checkResult.exists ? 'Компания найдена' : 'Компания не подтверждена'}
+              </div>
+              <p className="mt-1 text-xs opacity-90">Источник: {checkResult.source}</p>
+              {checkResult.companyName && <p className="mt-1 text-xs">Название: {checkResult.companyName}</p>}
+              {checkResult.registration && <p className="mt-1 text-xs">Рег. номер: {checkResult.registration}</p>}
+              {checkResult.note && <p className="mt-1 text-xs">{checkResult.note}</p>}
+              {checkResult.ownerEvidence && <p className="mt-1 text-xs">Проверка владельца: {checkResult.ownerEvidence}</p>}
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={submitApplication}
+            disabled={submitting || !checkResult?.exists}
+            className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 border border-violet-400 py-3 min-h-[44px] font-semibold disabled:opacity-50"
+          >
+            {submitting ? 'Отправка...' : 'Стать партнером'}
+          </button>
+          <p className="text-xs text-white/60">
+            После отправки заявка сохраняется со статусом <span className="text-white">pending</span>. Владелец проверяется автоматически по доступным данным реестра (если возможно).
+          </p>
+        </div>
+        {success && (
+          <div className="rounded-xl border border-green-500/40 bg-green-500/20 p-3 text-sm text-green-200 inline-flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4" />
+            {success}
+          </div>
+        )}
+        {error && <div className="rounded-xl border border-red-500/40 bg-red-500/20 p-3 text-sm text-red-200">{error}</div>}
+      </main>
+      <BOLHNav current="profile" />
+    </div>
+  )
+}

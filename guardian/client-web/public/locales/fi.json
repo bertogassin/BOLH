@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Turvallisuus",
+  "clear_aria": "Tyhjenna",
+  "back_home": "← Kotiin",
+  "navigation": { "home": "Koti", "orders": "Tilaukset", "profile": "Profiili", "settings": "Asetukset", "map": "Kartta", "notifications": "Ilmoitukset" },
+  "actions": { "save": "Tallenna", "cancel": "Peruuta", "search": "Hae", "logout": "Kirjaudu ulos" },
+  "auth": { "login_title": "Kirjaudu sisaan", "email": "Sahkoposti", "password": "Salasana", "login_btn": "Kirjaudu", "logging_in": "Kirjaudutaan...", "register_title": "Rekisterointi", "register_btn": "Rekisteroidy", "registering": "Rekisteroidaan...", "show_password": "Nayta salasana", "invalid_email": "Anna kelvollinen sahkoposti", "password_required": "Anna salasana" },
+  "booking": { "title": "Varaus", "address": "Osoite", "your_price": "Hintasi", "per_guard": "per vartija", "payment": "Maksu", "accept_terms": "Hyvaksyn ehdot", "terms_link": "Ehdot", "privacy_link": "Tietosuoja", "confirm": "Vahvista varaus", "enter_address": "Syota osoite", "sending": "Lahetetaan...", "day": "paiva", "month": "kuukausi", "time_from": "Aika alkaen", "time_to": "Aika asti", "guards": "vartijat", "price_positive": "Anna kelvollinen hinta" },
+  "profile": { "title": "Profiili", "user": "Kayttaja", "member_since": "Jasen alkaen", "unverified": "Vahvistamaton", "level": "Taso", "orders": "tilausta", "rating": "arvio", "my_cards": "Korttini", "no_cards": "Ei kortteja", "add_card": "Lisaa kortti", "settings": "Asetukset", "delete_account": "Poista tili", "login_to_see": "Kirjaudu nahdaksesi profiilin.", "login": "Kirjaudu" },
+  "orders": { "my_orders": "Tilaukseni", "guest_msg": "Kirjaudu nahdaksesi tilaukset.", "search_placeholder": "Hae", "created_banner": "Tilaus luotu.", "no_orders": "Ei tilauksia viela.", "create_order": "Luo tilaus" },
+  "settings": { "title": "Asetukset", "intro": "Ilmoitukset, kieli, tietosuoja.", "lang_note": "Kielen voi vaihtaa profiilissa.", "privacy_link": "Tietosuojakaytanto" },
+  "errors": { "load_failed": "Lataus epaonnistui.", "retry": "Yrita uudelleen" },
+  "map": { "my_location_aria": "Sijaintini", "you_here": "Olet tassa", "guard": "Vartija", "order": "Tilaus", "available": "Saatavilla", "reserve": "Varaa", "near_you": "Lahellasi", "legend": "Sininen - sina · Vihrea - tilaukset · Violetti - vartijat" }
+}

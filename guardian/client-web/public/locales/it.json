@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Sicurezza",
+  "clear_aria": "Cancella",
+  "back_home": "← Home",
+  "navigation": {
+    "home": "Home",
+    "orders": "Ordini",
+    "profile": "Profilo",
+    "settings": "Impostazioni",
+    "map": "Mappa",
+    "notifications": "Notifiche"
+  },
+  "actions": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "search": "Cerca",
+    "logout": "Esci"
+  },
+  "auth": {
+    "login_title": "Accedi",
+    "login_subtitle": "BOLH - sicurezza su richiesta",
+    "email": "Email",
+    "password": "Password",
+    "login_btn": "Accedi",
+    "logging_in": "Accesso...",
+    "register_title": "Registrazione",
+    "register_btn": "Registrati",
+    "registering": "Registrazione...",
+    "show_password": "Mostra password",
+    "invalid_email": "Inserisci un'email valida",
+    "password_required": "Inserisci la password"
+  },
+  "booking": {
+    "title": "Prenotazione",
+    "address": "Indirizzo",
+    "your_price": "Il tuo prezzo",
+    "per_guard": "per guardia",
+    "payment": "Pagamento",
+    "accept_terms": "Accetto i termini",
+    "terms_link": "Termini",
+    "privacy_link": "Privacy",
+    "confirm": "Conferma prenotazione",
+    "enter_address": "Inserisci un indirizzo",
+    "sending": "Invio...",
+    "day": "giorno",
+    "month": "mese",
+    "time_from": "Ora da",
+    "time_to": "Ora a",
+    "guards": "guardie",
+    "price_positive": "Inserisci un prezzo valido"
+  },
+  "profile": {
+    "title": "Profilo",
+    "user": "Utente",
+    "member_since": "Membro dal",
+    "unverified": "Non verificato",
+    "level": "Livello",
+    "orders": "ordini",
+    "rating": "valutazione",
+    "my_cards": "Le mie carte",
+    "no_cards": "Nessuna carta",
+    "add_card": "Aggiungi carta",
+    "settings": "Impostazioni",
+    "delete_account": "Elimina account",
+    "login_to_see": "Accedi per vedere il tuo profilo.",
+    "login": "Accedi"
+  },
+  "orders": {
+    "my_orders": "I miei ordini",
+    "guest_msg": "Accedi per vedere gli ordini.",
+    "search_placeholder": "Cerca",
+    "created_banner": "Ordine creato.",
+    "no_orders": "Nessun ordine.",
+    "create_order": "Crea ordine"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "intro": "Notifiche, lingua, privacy.",
+    "lang_note": "Puoi cambiare lingua nel profilo.",
+    "privacy_link": "Informativa privacy"
+  },
+  "errors": {
+    "load_failed": "Caricamento non riuscito.",
+    "retry": "Riprova"
+  },
+  "map": {
+    "my_location_aria": "La mia posizione",
+    "you_here": "Sei qui",
+    "guard": "Guardia",
+    "order": "Ordine",
+    "available": "Disponibile",
+    "reserve": "Prenota",
+    "near_you": "Vicino a te",
+    "legend": "Blu - tu · Verde - ordini · Viola - guardie"
+  }
+}

@@ -1,0 +1,73 @@
+phase_1_seed:
+  leadership:
+    ceo: "Product vision, fundraising, strategy"
+    cto: "Tech architecture, team building"
+  product:
+    product_manager: 1
+    product_designer: 1
+  engineering:
+    backend_lead: 1
+    ios_developer: 1
+    android_developer: 1
+    devops: 1
+  operations:
+    operations_manager: 1
+    support_agent: 2
+  total: 10
+
+phase_2_series_a:
+  leadership:
+    ceo: 1
+    cto: 1
+    cpo: 1
+    cmo: 1
+    cfo: 1
+  product:
+    product_managers: 3
+    ux_designers: 2
+    ui_designers: 2
+    product_analyst: 1
+  engineering:
+    backend: 8
+    ios: 4
+    android: 4
+    frontend: 4
+    devops: 3
+    qa: 4
+    tech_lead: 3
+  data_science:
+    ml_engineers: 3
+    data_analysts: 2
+  marketing:
+    performance_marketing: 3
+    content_marketing: 2
+    pr: 1
+    community_manager: 1
+  sales:
+    bd_manager: 2
+    account_managers: 3
+  operations:
+    operations_director: 1
+    verification_specialists: 5
+    support_team: 10
+    dispute_resolution: 3
+  finance_legal:
+    finance_manager: 2
+    legal_counsel: 2
+    compliance_officer: 1
+  hr:
+    hr_manager: 1
+    recruiter: 2
+  total: 50
+
+phase_3_series_b:
+  structure: "matrix with product teams"
+  product_teams:
+    team_client: "pm, designer, 5 engineers"
+    team_guard: "pm, designer, 5 engineers"
+    team_agency: "pm, designer, 3 engineers"
+    team_platform: "pm, 8 engineers"
+  regions:
+    eu_team: "sales, support, ops"
+    asia_team: "sales, support, ops"
+    us_team: "sales, support, ops"

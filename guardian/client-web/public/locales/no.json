@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Sikkerhet",
+  "clear_aria": "Fjern",
+  "back_home": "← Hjem",
+  "navigation": { "home": "Hjem", "orders": "Ordre", "profile": "Profil", "settings": "Innstillinger", "map": "Kart", "notifications": "Varsler" },
+  "actions": { "save": "Lagre", "cancel": "Avbryt", "search": "Sok", "logout": "Logg ut" },
+  "auth": { "login_title": "Logg inn", "email": "E-post", "password": "Passord", "login_btn": "Logg inn", "logging_in": "Logger inn...", "register_title": "Registrering", "register_btn": "Registrer", "registering": "Registrerer...", "show_password": "Vis passord", "invalid_email": "Skriv inn gyldig e-post", "password_required": "Skriv inn passord" },
+  "booking": { "title": "Bestilling", "address": "Adresse", "your_price": "Din pris", "per_guard": "per vakt", "payment": "Betaling", "accept_terms": "Jeg godtar vilkaarene", "terms_link": "Vilkaar", "privacy_link": "Personvern", "confirm": "Bekreft bestilling", "enter_address": "Skriv inn adresse", "sending": "Sender...", "day": "dag", "month": "maaned", "time_from": "Tid fra", "time_to": "Tid til", "guards": "vakter", "price_positive": "Skriv inn en gyldig pris" },
+  "profile": { "title": "Profil", "user": "Bruker", "member_since": "Medlem siden", "unverified": "Ikke verifisert", "level": "Niva", "orders": "ordre", "rating": "vurdering", "my_cards": "Mine kort", "no_cards": "Ingen kort", "add_card": "Legg til kort", "settings": "Innstillinger", "delete_account": "Slett konto", "login_to_see": "Logg inn for a se profilen din.", "login": "Logg inn" },
+  "orders": { "my_orders": "Mine ordre", "guest_msg": "Logg inn for a se ordre.", "search_placeholder": "Sok", "created_banner": "Ordre opprettet.", "no_orders": "Ingen ordre ennå.", "create_order": "Opprett ordre" },
+  "settings": { "title": "Innstillinger", "intro": "Varsler, sprak, personvern.", "lang_note": "Du kan bytte sprak i profil.", "privacy_link": "Personvernerklaering" },
+  "errors": { "load_failed": "Kunne ikke laste.", "retry": "Prov igjen" },
+  "map": { "my_location_aria": "Min plassering", "you_here": "Du er her", "guard": "Vakt", "order": "Ordre", "available": "Tilgjengelig", "reserve": "Reserver", "near_you": "Naer deg", "legend": "Bla - deg · Gronn - ordre · Lilla - vakter" }
+}

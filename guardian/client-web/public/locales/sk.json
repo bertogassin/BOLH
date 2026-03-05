@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Bezpecnost",
+  "clear_aria": "Vymazat",
+  "back_home": "← Domov",
+  "navigation": { "home": "Domov", "orders": "Objednavky", "profile": "Profil", "settings": "Nastavenia", "map": "Mapa", "notifications": "Upozornenia" },
+  "actions": { "save": "Ulozit", "cancel": "Zrusit", "search": "Hladat", "logout": "Odhlasit" },
+  "auth": { "login_title": "Prihlasenie", "email": "Email", "password": "Heslo", "login_btn": "Prihlasit", "logging_in": "Prihlasovanie...", "register_title": "Registracia", "register_btn": "Registrovat", "registering": "Registracia...", "show_password": "Zobrazit heslo", "invalid_email": "Zadajte platny email", "password_required": "Zadajte heslo" },
+  "booking": { "title": "Rezervacia", "address": "Adresa", "your_price": "Vasa cena", "per_guard": "za straznika", "payment": "Platba", "accept_terms": "Suhlasim s podmienkami", "terms_link": "Podmienky", "privacy_link": "Sukromie", "confirm": "Potvrdit rezervaciu", "enter_address": "Zadajte adresu", "sending": "Odosielanie...", "day": "den", "month": "mesiac", "time_from": "Cas od", "time_to": "Cas do", "guards": "straznici", "price_positive": "Zadajte platnu cenu" },
+  "profile": { "title": "Profil", "user": "Pouzivatel", "member_since": "Clen od", "unverified": "Neovereny", "level": "Uroven", "orders": "objednavok", "rating": "hodnotenie", "my_cards": "Moje karty", "no_cards": "Ziadne karty", "add_card": "Pridat kartu", "settings": "Nastavenia", "delete_account": "Zmazat ucet", "login_to_see": "Prihlaste sa pre zobrazenie profilu.", "login": "Prihlasit" },
+  "orders": { "my_orders": "Moje objednavky", "guest_msg": "Prihlaste sa pre objednavky.", "search_placeholder": "Hladat", "created_banner": "Objednavka vytvorena.", "no_orders": "Ziadne objednavky.", "create_order": "Vytvorit objednavku" },
+  "settings": { "title": "Nastavenia", "intro": "Upozornenia, jazyk, sukromie.", "lang_note": "Jazyk zmenite v profile.", "privacy_link": "Zasady sukromia" },
+  "errors": { "load_failed": "Nacitanie zlyhalo.", "retry": "Skusit znova" },
+  "map": { "my_location_aria": "Moja poloha", "you_here": "Ste tu", "guard": "Straznik", "order": "Objednavka", "available": "Dostupny", "reserve": "Rezervovat", "near_you": "Blizko vas", "legend": "Modra - vy · Zelena - objednavky · Fialova - straznici" }
+}

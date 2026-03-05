@@ -1,0 +1,30 @@
+policy:
+  provider: "INGO Insurance / Lloyd's"
+  type: "Professional Liability + Cyber"
+  coverage:
+    professional_liability: "$5,000,000 per claim"
+    cyber_liability: "$2,000,000 per incident"
+    workers_comp: "As required by law"
+
+  cost:
+    annual_premium: "$150,000"
+    deductible: "$25,000"
+
+  covers:
+    - "Телесные повреждения при оказании услуг"
+    - "Ущерб имуществу заказчика"
+    - "Кража со стороны охранника"
+    - "Утечка данных"
+
+  exclusions:
+    - "Умышленные действия"
+    - "Военные действия"
+    - "Ядерный ущерб"
+
+  claims_process:
+    report_within: "24 hours"
+    documentation_required:
+      - "Заявление от заказчика"
+      - "Акт о происшествии"
+      - "Фото/видео доказательства"
+      - "Заявление в полицию (если применимо)"

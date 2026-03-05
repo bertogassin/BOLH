@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Sakerhet",
+  "clear_aria": "Rensa",
+  "back_home": "← Hem",
+  "navigation": {
+    "home": "Hem",
+    "orders": "Bestallningar",
+    "profile": "Profil",
+    "settings": "Installningar",
+    "map": "Karta",
+    "notifications": "Notiser"
+  },
+  "actions": {
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "search": "Sok",
+    "logout": "Logga ut"
+  },
+  "auth": {
+    "login_title": "Logga in",
+    "login_subtitle": "BOLH - sakerhet pa begaran",
+    "email": "E-post",
+    "password": "Losenord",
+    "login_btn": "Logga in",
+    "logging_in": "Loggar in...",
+    "register_title": "Registrera",
+    "register_btn": "Registrera",
+    "registering": "Registrerar...",
+    "show_password": "Visa losenord",
+    "invalid_email": "Ange en giltig e-post",
+    "password_required": "Ange losenord"
+  },
+  "booking": {
+    "title": "Bokning",
+    "address": "Adress",
+    "your_price": "Ditt pris",
+    "per_guard": "per vakt",
+    "payment": "Betalning",
+    "accept_terms": "Jag godkanner villkoren",
+    "terms_link": "Villkor",
+    "privacy_link": "Integritet",
+    "confirm": "Bekrafta bokning",
+    "enter_address": "Ange adress",
+    "sending": "Skickar...",
+    "day": "dag",
+    "month": "manad",
+    "time_from": "Tid fran",
+    "time_to": "Tid till",
+    "guards": "vakter",
+    "price_positive": "Ange ett giltigt pris"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Anvandare",
+    "member_since": "Medlem sedan",
+    "unverified": "Ej verifierad",
+    "level": "Niva",
+    "orders": "bestallningar",
+    "rating": "betyg",
+    "my_cards": "Mina kort",
+    "no_cards": "Inga kort",
+    "add_card": "Lagg till kort",
+    "settings": "Installningar",
+    "delete_account": "Radera konto",
+    "login_to_see": "Logga in for att se din profil.",
+    "login": "Logga in"
+  },
+  "orders": {
+    "my_orders": "Mina bestallningar",
+    "guest_msg": "Logga in for att se bestallningar.",
+    "search_placeholder": "Sok",
+    "created_banner": "Bestallning skapad.",
+    "no_orders": "Inga bestallningar annu.",
+    "create_order": "Skapa bestallning"
+  },
+  "settings": {
+    "title": "Installningar",
+    "intro": "Notiser, sprak, integritet.",
+    "lang_note": "Du kan byta sprak i profilen.",
+    "privacy_link": "Integritetspolicy"
+  },
+  "errors": {
+    "load_failed": "Kunde inte ladda.",
+    "retry": "Forsok igen"
+  },
+  "map": {
+    "my_location_aria": "Min plats",
+    "you_here": "Du ar har",
+    "guard": "Vakt",
+    "order": "Bestallning",
+    "available": "Tillganglig",
+    "reserve": "Reservera",
+    "near_you": "Nara dig",
+    "legend": "Bla - du · Gron - bestallningar · Lila - vakter"
+  }
+}

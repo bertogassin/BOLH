@@ -1,0 +1,47 @@
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+/bin/
+
+# Go
+/vendor/
+*.test
+*.out
+go.work
+
+# Rust
+/target/
+Cargo.lock
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Env and secrets (never commit)
+.env
+.env.*
+!.env.example
+
+# Workspace/tooling
+.cursor/
+
+# JS/Next
+**/node_modules/
+**/.next/
+
+# Build outputs
+**/build/
+**/target/
+**/.gradle/
+
+# Python virtual envs
+**/.venv/
+
+# Android signing artifacts
+**/keystore/*.jks
+**/*.keystore

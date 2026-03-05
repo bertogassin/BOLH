@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Varnost",
+  "clear_aria": "Pobrisi",
+  "back_home": "← Domov",
+  "navigation": { "home": "Domov", "orders": "Narocila", "profile": "Profil", "settings": "Nastavitve", "map": "Zemljevid", "notifications": "Obvestila" },
+  "actions": { "save": "Shrani", "cancel": "Preklici", "search": "Iskanje", "logout": "Odjava" },
+  "auth": { "login_title": "Prijava", "email": "Email", "password": "Geslo", "login_btn": "Prijava", "logging_in": "Prijava...", "register_title": "Registracija", "register_btn": "Registriraj", "registering": "Registracija...", "show_password": "Prikazi geslo", "invalid_email": "Vnesi veljaven email", "password_required": "Vnesi geslo" },
+  "booking": { "title": "Rezervacija", "address": "Naslov", "your_price": "Tvoja cena", "per_guard": "na varnostnika", "payment": "Placilo", "accept_terms": "Sprejemam pogoje", "terms_link": "Pogoji", "privacy_link": "Zasebnost", "confirm": "Potrdi rezervacijo", "enter_address": "Vnesi naslov", "sending": "Posiljanje...", "day": "dan", "month": "mesec", "time_from": "Cas od", "time_to": "Cas do", "guards": "varnostniki", "price_positive": "Vnesi veljavno ceno" },
+  "profile": { "title": "Profil", "user": "Uporabnik", "member_since": "Clan od", "unverified": "Neoverjen", "level": "Raven", "orders": "narocil", "rating": "ocena", "my_cards": "Moje kartice", "no_cards": "Brez kartic", "add_card": "Dodaj kartico", "settings": "Nastavitve", "delete_account": "Izbrisi racun", "login_to_see": "Prijavi se za ogled profila.", "login": "Prijava" },
+  "orders": { "my_orders": "Moja narocila", "guest_msg": "Prijavi se za ogled narocil.", "search_placeholder": "Iskanje", "created_banner": "Narocilo ustvarjeno.", "no_orders": "Ni narocil.", "create_order": "Ustvari narocilo" },
+  "settings": { "title": "Nastavitve", "intro": "Obvestila, jezik, zasebnost.", "lang_note": "Jezik lahko zamenjas v profilu.", "privacy_link": "Politika zasebnosti" },
+  "errors": { "load_failed": "Nalaganje ni uspelo.", "retry": "Poskusi znova" },
+  "map": { "my_location_aria": "Moja lokacija", "you_here": "Si tukaj", "guard": "Varnostnik", "order": "Narocilo", "available": "Na voljo", "reserve": "Rezerviraj", "near_you": "Blizu tebe", "legend": "Modra - ti · Zelena - narocila · Vijolicna - varnostniki" }
+}

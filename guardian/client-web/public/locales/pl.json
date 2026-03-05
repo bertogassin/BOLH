@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Ochrona",
+  "clear_aria": "Wyczysc",
+  "back_home": "← Strona glowna",
+  "navigation": {
+    "home": "Glowna",
+    "orders": "Zlecenia",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "map": "Mapa",
+    "notifications": "Powiadomienia"
+  },
+  "actions": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "search": "Szukaj",
+    "logout": "Wyloguj"
+  },
+  "auth": {
+    "login_title": "Logowanie",
+    "login_subtitle": "BOLH - ochrona na zadanie",
+    "email": "E-mail",
+    "password": "Haslo",
+    "login_btn": "Zaloguj",
+    "logging_in": "Logowanie...",
+    "register_title": "Rejestracja",
+    "register_btn": "Zarejestruj",
+    "registering": "Rejestrowanie...",
+    "show_password": "Pokaz haslo",
+    "invalid_email": "Wpisz poprawny e-mail",
+    "password_required": "Wpisz haslo"
+  },
+  "booking": {
+    "title": "Rezerwacja",
+    "address": "Adres",
+    "your_price": "Twoja cena",
+    "per_guard": "za ochroniarza",
+    "payment": "Platnosc",
+    "accept_terms": "Akceptuje warunki",
+    "terms_link": "Warunki",
+    "privacy_link": "Prywatnosc",
+    "confirm": "Potwierdz rezerwacje",
+    "enter_address": "Wpisz adres",
+    "sending": "Wysylanie...",
+    "day": "dzien",
+    "month": "miesiac",
+    "time_from": "Godzina od",
+    "time_to": "Godzina do",
+    "guards": "ochroniarze",
+    "price_positive": "Podaj poprawna cene"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Uzytkownik",
+    "member_since": "Czlonek od",
+    "unverified": "Niezweryfikowany",
+    "level": "Poziom",
+    "orders": "zlecen",
+    "rating": "ocena",
+    "my_cards": "Moje karty",
+    "no_cards": "Brak kart",
+    "add_card": "Dodaj karte",
+    "settings": "Ustawienia",
+    "delete_account": "Usun konto",
+    "login_to_see": "Zaloguj sie, aby zobaczyc profil.",
+    "login": "Zaloguj"
+  },
+  "orders": {
+    "my_orders": "Moje zlecenia",
+    "guest_msg": "Zaloguj sie, aby zobaczyc zlecenia.",
+    "search_placeholder": "Szukaj",
+    "created_banner": "Zlecenie utworzone.",
+    "no_orders": "Brak zlecen.",
+    "create_order": "Utworz zlecenie"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "intro": "Powiadomienia, jezyk, prywatnosc.",
+    "lang_note": "Jezyk zmienisz w profilu.",
+    "privacy_link": "Polityka prywatnosci"
+  },
+  "errors": {
+    "load_failed": "Nie udalo sie zaladowac.",
+    "retry": "Sprobuj ponownie"
+  },
+  "map": {
+    "my_location_aria": "Moja lokalizacja",
+    "you_here": "Jestes tutaj",
+    "guard": "Ochroniarz",
+    "order": "Zlecenie",
+    "available": "Dostepny",
+    "reserve": "Rezerwuj",
+    "near_you": "W poblizu",
+    "legend": "Niebieski - Ty · Zielony - zlecenia · Fioletowy - ochrona"
+  }
+}

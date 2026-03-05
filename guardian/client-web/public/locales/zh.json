@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "安保",
+  "clear_aria": "清除",
+  "back_home": "← 返回首页",
+  "navigation": { "home": "首页", "orders": "订单", "profile": "个人资料", "settings": "设置", "map": "地图", "notifications": "通知" },
+  "actions": { "save": "保存", "cancel": "取消", "search": "搜索", "logout": "退出登录" },
+  "auth": { "login_title": "登录", "email": "邮箱", "password": "密码", "login_btn": "登录", "logging_in": "正在登录...", "register_title": "注册", "register_btn": "注册", "registering": "正在注册...", "show_password": "显示密码", "invalid_email": "请输入有效邮箱", "password_required": "请输入密码" },
+  "booking": { "title": "预约", "address": "地址", "your_price": "您的价格", "per_guard": "每位安保", "payment": "支付", "accept_terms": "我接受条款", "terms_link": "条款", "privacy_link": "隐私", "confirm": "确认预约", "enter_address": "请输入地址", "sending": "发送中...", "day": "日", "month": "月", "time_from": "开始时间", "time_to": "结束时间", "guards": "安保人数", "price_positive": "请输入有效价格" },
+  "profile": { "title": "个人资料", "user": "用户", "member_since": "注册于", "unverified": "未验证", "level": "等级", "orders": "订单", "rating": "评分", "my_cards": "我的银行卡", "no_cards": "暂无银行卡", "add_card": "添加银行卡", "settings": "设置", "delete_account": "删除账户", "login_to_see": "请登录查看个人资料。", "login": "登录" },
+  "orders": { "my_orders": "我的订单", "guest_msg": "请登录查看订单。", "search_placeholder": "搜索", "created_banner": "订单已创建。", "no_orders": "暂无订单。", "create_order": "创建订单" },
+  "settings": { "title": "设置", "intro": "通知、语言、隐私。", "lang_note": "可在个人资料中切换语言。", "privacy_link": "隐私政策" },
+  "errors": { "load_failed": "加载失败。", "retry": "重试" },
+  "map": { "my_location_aria": "我的位置", "you_here": "您在这里", "guard": "安保", "order": "订单", "available": "可用", "reserve": "预订", "near_you": "您附近", "legend": "蓝色-您 · 绿色-订单 · 紫色-安保" }
+}

@@ -1,0 +1,17 @@
+# Jaeger — трассировка. Запуск: jaeger-all-in-one
+collector:
+  service:
+    port: 14250
+  zipkin:
+    port: 9411
+
+query:
+  service:
+    port: 16686
+
+agent:
+  service:
+    port: 6831
+    type: UDP
+
+# Для production: storage.type=elasticsearch и es.server-urls

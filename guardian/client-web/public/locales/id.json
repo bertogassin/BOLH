@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Keamanan",
+  "clear_aria": "Hapus",
+  "back_home": "← Beranda",
+  "navigation": { "home": "Beranda", "orders": "Pesanan", "profile": "Profil", "settings": "Pengaturan", "map": "Peta", "notifications": "Notifikasi" },
+  "actions": { "save": "Simpan", "cancel": "Batal", "search": "Cari", "logout": "Keluar" },
+  "auth": { "login_title": "Masuk", "email": "Email", "password": "Kata sandi", "login_btn": "Masuk", "logging_in": "Sedang masuk...", "register_title": "Daftar", "register_btn": "Daftar", "registering": "Sedang mendaftar...", "show_password": "Tampilkan kata sandi", "invalid_email": "Masukkan email yang valid", "password_required": "Masukkan kata sandi" },
+  "booking": { "title": "Pemesanan", "address": "Alamat", "your_price": "Harga Anda", "per_guard": "per petugas", "payment": "Pembayaran", "accept_terms": "Saya menyetujui syarat", "terms_link": "Syarat", "privacy_link": "Privasi", "confirm": "Konfirmasi pemesanan", "enter_address": "Masukkan alamat", "sending": "Mengirim...", "day": "hari", "month": "bulan", "time_from": "Waktu dari", "time_to": "Waktu sampai", "guards": "petugas", "price_positive": "Masukkan harga yang valid" },
+  "profile": { "title": "Profil", "user": "Pengguna", "member_since": "Anggota sejak", "unverified": "Belum terverifikasi", "level": "Level", "orders": "pesanan", "rating": "rating", "my_cards": "Kartu saya", "no_cards": "Belum ada kartu", "add_card": "Tambah kartu", "settings": "Pengaturan", "delete_account": "Hapus akun", "login_to_see": "Masuk untuk melihat profil Anda.", "login": "Masuk" },
+  "orders": { "my_orders": "Pesanan saya", "guest_msg": "Masuk untuk melihat pesanan.", "search_placeholder": "Cari", "created_banner": "Pesanan dibuat.", "no_orders": "Belum ada pesanan.", "create_order": "Buat pesanan" },
+  "settings": { "title": "Pengaturan", "intro": "Notifikasi, bahasa, privasi.", "lang_note": "Bahasa dapat diubah dari profil.", "privacy_link": "Kebijakan privasi" },
+  "errors": { "load_failed": "Gagal memuat.", "retry": "Coba lagi" },
+  "map": { "my_location_aria": "Lokasi saya", "you_here": "Anda di sini", "guard": "Petugas", "order": "Pesanan", "available": "Tersedia", "reserve": "Pesan", "near_you": "Di dekat Anda", "legend": "Biru-Anda · Hijau-pesanan · Ungu-petugas" }
+}

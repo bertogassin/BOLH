@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Biztonsag",
+  "clear_aria": "Torles",
+  "back_home": "← Kezdolap",
+  "navigation": { "home": "Kezdolap", "orders": "Rendelesek", "profile": "Profil", "settings": "Beallitasok", "map": "Terkep", "notifications": "Ertesitesek" },
+  "actions": { "save": "Mentes", "cancel": "Megse", "search": "Kereses", "logout": "Kijelentkezes" },
+  "auth": { "login_title": "Bejelentkezes", "email": "Email", "password": "Jelszo", "login_btn": "Bejelentkezes", "logging_in": "Bejelentkezes...", "register_title": "Regisztracio", "register_btn": "Regisztralok", "registering": "Regisztracio...", "show_password": "Jelszo mutatasa", "invalid_email": "Adjon meg ervenyes emailt", "password_required": "Adja meg a jelszot" },
+  "booking": { "title": "Foglalas", "address": "Cim", "your_price": "Ajanlott ar", "per_guard": "oronkent", "payment": "Fizetes", "accept_terms": "Elfogadom a felteteleket", "terms_link": "Feltetelek", "privacy_link": "Adatvedelem", "confirm": "Foglalas megerositese", "enter_address": "Adjon meg cimet", "sending": "Kuldese...", "day": "nap", "month": "honap", "time_from": "Ido kezdete", "time_to": "Ido vege", "guards": "orok", "price_positive": "Adjon meg ervenyes arat" },
+  "profile": { "title": "Profil", "user": "Felhasznalo", "member_since": "Tag ettol", "unverified": "Nincs hitelesitve", "level": "Szint", "orders": "rendeles", "rating": "ertekeles", "my_cards": "Kartyaim", "no_cards": "Nincs kartya", "add_card": "Kartya hozzaadasa", "settings": "Beallitasok", "delete_account": "Fiok torlese", "login_to_see": "Jelentkezzen be a profil megtekintesehez.", "login": "Bejelentkezes" },
+  "orders": { "my_orders": "Rendeleseim", "guest_msg": "Jelentkezzen be a rendelesekhez.", "search_placeholder": "Kereses", "created_banner": "Rendeles letrehozva.", "no_orders": "Nincs rendeles.", "create_order": "Rendeles letrehozasa" },
+  "settings": { "title": "Beallitasok", "intro": "Ertesitesek, nyelv, adatvedelem.", "lang_note": "A nyelv a profilban modosithato.", "privacy_link": "Adatvedelmi szabalyzat" },
+  "errors": { "load_failed": "Betoltes sikertelen.", "retry": "Ujraprobalas" },
+  "map": { "my_location_aria": "Sajat helyzet", "you_here": "Itt vagy", "guard": "Or", "order": "Rendeles", "available": "Elerheto", "reserve": "Foglalas", "near_you": "Kozeledben", "legend": "Kek - te · Zold - rendelesek · Lila - orok" }
+}

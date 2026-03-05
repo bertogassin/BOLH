@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "امنیت",
+  "clear_aria": "پاک کردن",
+  "back_home": "← صفحه اصلی",
+  "navigation": { "home": "خانه", "orders": "سفارش‌ها", "profile": "پروفایل", "settings": "تنظیمات", "map": "نقشه", "notifications": "اعلان‌ها" },
+  "actions": { "save": "ذخیره", "cancel": "لغو", "search": "جستجو", "logout": "خروج" },
+  "auth": { "login_title": "ورود", "email": "ایمیل", "password": "رمز عبور", "login_btn": "ورود", "logging_in": "در حال ورود...", "register_title": "ثبت نام", "register_btn": "ثبت نام", "registering": "در حال ثبت نام...", "show_password": "نمایش رمز", "invalid_email": "ایمیل معتبر وارد کنید", "password_required": "رمز عبور را وارد کنید" },
+  "booking": { "title": "رزرو", "address": "آدرس", "your_price": "قیمت شما", "per_guard": "برای هر نگهبان", "payment": "پرداخت", "accept_terms": "شرایط را می‌پذیرم", "terms_link": "شرایط", "privacy_link": "حریم خصوصی", "confirm": "تایید رزرو", "enter_address": "آدرس را وارد کنید", "sending": "در حال ارسال...", "day": "روز", "month": "ماه", "time_from": "از ساعت", "time_to": "تا ساعت", "guards": "نگهبانان", "price_positive": "قیمت معتبر وارد کنید" },
+  "profile": { "title": "پروفایل", "user": "کاربر", "member_since": "عضو از", "unverified": "تایید نشده", "level": "سطح", "orders": "سفارش", "rating": "امتیاز", "my_cards": "کارت‌های من", "no_cards": "کارتی نیست", "add_card": "افزودن کارت", "settings": "تنظیمات", "delete_account": "حذف حساب", "login_to_see": "برای دیدن پروفایل وارد شوید.", "login": "ورود" },
+  "orders": { "my_orders": "سفارش‌های من", "guest_msg": "برای دیدن سفارش‌ها وارد شوید.", "search_placeholder": "جستجو", "created_banner": "سفارش ایجاد شد.", "no_orders": "سفارشی وجود ندارد.", "create_order": "ایجاد سفارش" },
+  "settings": { "title": "تنظیمات", "intro": "اعلان‌ها، زبان، حریم خصوصی.", "lang_note": "زبان را از پروفایل می‌توانید تغییر دهید.", "privacy_link": "سیاست حریم خصوصی" },
+  "errors": { "load_failed": "بارگذاری ناموفق بود.", "retry": "تلاش دوباره" },
+  "map": { "my_location_aria": "مکان من", "you_here": "شما اینجا هستید", "guard": "نگهبان", "order": "سفارش", "available": "موجود", "reserve": "رزرو", "near_you": "نزدیک شما", "legend": "آبی-شما · سبز-سفارش‌ها · بنفش-نگهبانان" }
+}

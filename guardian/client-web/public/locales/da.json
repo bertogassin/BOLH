@@ -1,0 +1,16 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Sikkerhed",
+  "clear_aria": "Ryd",
+  "back_home": "← Hjem",
+  "navigation": { "home": "Hjem", "orders": "Ordrer", "profile": "Profil", "settings": "Indstillinger", "map": "Kort", "notifications": "Notifikationer" },
+  "actions": { "save": "Gem", "cancel": "Annuller", "search": "Soeg", "logout": "Log ud" },
+  "auth": { "login_title": "Log ind", "email": "Email", "password": "Adgangskode", "login_btn": "Log ind", "logging_in": "Logger ind...", "register_title": "Registrering", "register_btn": "Registrer", "registering": "Registrerer...", "show_password": "Vis adgangskode", "invalid_email": "Indtast gyldig email", "password_required": "Indtast adgangskode" },
+  "booking": { "title": "Booking", "address": "Adresse", "your_price": "Din pris", "per_guard": "pr. vagt", "payment": "Betaling", "accept_terms": "Jeg accepterer vilkaarene", "terms_link": "Vilkaar", "privacy_link": "Privatliv", "confirm": "Bekraeft booking", "enter_address": "Indtast adresse", "sending": "Sender...", "day": "dag", "month": "maaned", "time_from": "Tid fra", "time_to": "Tid til", "guards": "vagter", "price_positive": "Indtast en gyldig pris" },
+  "profile": { "title": "Profil", "user": "Bruger", "member_since": "Medlem siden", "unverified": "Ikke verificeret", "level": "Niveau", "orders": "ordrer", "rating": "bedommelse", "my_cards": "Mine kort", "no_cards": "Ingen kort", "add_card": "Tilfoej kort", "settings": "Indstillinger", "delete_account": "Slet konto", "login_to_see": "Log ind for at se din profil.", "login": "Log ind" },
+  "orders": { "my_orders": "Mine ordrer", "guest_msg": "Log ind for at se ordrer.", "search_placeholder": "Soeg", "created_banner": "Ordre oprettet.", "no_orders": "Ingen ordrer endnu.", "create_order": "Opret ordre" },
+  "settings": { "title": "Indstillinger", "intro": "Notifikationer, sprog, privatliv.", "lang_note": "Du kan skifte sprog i profil.", "privacy_link": "Privatlivspolitik" },
+  "errors": { "load_failed": "Kunne ikke indlaese.", "retry": "Proev igen" },
+  "map": { "my_location_aria": "Min placering", "you_here": "Du er her", "guard": "Vagt", "order": "Ordre", "available": "Tilgaengelig", "reserve": "Reserver", "near_you": "Taet paa dig", "legend": "Blaa - dig · Groen - ordrer · Lilla - vagter" }
+}

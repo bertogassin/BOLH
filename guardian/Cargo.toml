@@ -1,0 +1,3 @@
+[workspace]
+resolver = "2"
+members = ["core/domain", "services/matching", "services/order-service", "services/bid-service"]

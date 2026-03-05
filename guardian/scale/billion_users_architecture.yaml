@@ -1,0 +1,25 @@
+name: "Guardian Scale to 1B Users"
+regions:
+  - name: North America
+    primary: us-east-1
+    users: 300M
+  - name: Europe
+    primary: eu-west-1
+    users: 250M
+  - name: Asia Pacific
+    primary: ap-southeast-1
+    users: 350M
+database_sharding:
+  strategy: geo+user_id
+  shards_per_region: 1000
+  total_shards: 4000
+cache_strategy:
+  redis_clusters:
+    per_region: 50
+    memory_per_node: 64GB
+compute:
+  api_gateway: "1000-10000 pods"
+  matching_engine: "500-5000 pods"
+disaster_recovery:
+  rpo: 5 minutes
+  rto: 15 minutes

@@ -1,0 +1,60 @@
+cdn:
+  provider: "CloudFront"
+  buckets:
+    translations: "guardian-translations"
+    icons: "guardian-icons"
+
+  structure:
+    translations:
+      - "en.json"
+      - "ru.json"
+      - "de.json"
+      - "fr.json"
+      - "es.json"
+      - "it.json"
+      - "zh.json"
+      - "ja.json"
+      - "ko.json"
+      - "ar.json"
+      - "he.json"
+      - "fa.json"
+      - "tr.json"
+      - "ce.json"
+      - "av.json"
+      - "inh.json"
+      - "lez.json"
+    icons:
+      - "home.svg"
+      - "orders.svg"
+      - "shield.svg"
+      - "weapon.svg"
+      - "guard.svg"
+      - "agency.svg"
+      - "client.svg"
+
+  versioning:
+    strategy: "semver"
+    current_version: "2.0.0"
+    cache_control: "max-age=31536000"
+
+translation_workflow:
+  tools:
+    - "Crowdin"
+    - "Smartling"
+    - "DeepL API"
+  quality_control:
+    - "Двойная проверка носителями"
+    - "Контекстные скриншоты"
+    - "Автоматические тесты"
+  update_frequency:
+    critical_strings: "daily"
+    new_features: "weekly"
+    full_review: "monthly"
+
+fallback_strategy:
+  primary: "en"
+  secondary:
+    - "en"
+    - "ru"
+    - "zh"
+    - "ar"

@@ -1,0 +1,21 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAIChat } from '@/context/AIChatContext'
+
+export default function AIPage() {
+  const router = useRouter()
+  const { openChat } = useAIChat()
+
+  useEffect(() => {
+    openChat()
+    router.replace('/profile')
+  }, [openChat, router])
+
+  return (
+    <div className="min-h-screen bg-[#1a1b26] flex items-center justify-center">
+      <p className="text-white/50 text-sm">Открываю чат BOLH AI...</p>
+    </div>
+  )
+}

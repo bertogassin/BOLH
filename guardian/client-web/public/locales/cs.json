@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Bezpecnost",
+  "clear_aria": "Vymazat",
+  "back_home": "← Domu",
+  "navigation": {
+    "home": "Domu",
+    "orders": "Objednavky",
+    "profile": "Profil",
+    "settings": "Nastaveni",
+    "map": "Mapa",
+    "notifications": "Oznameni"
+  },
+  "actions": {
+    "save": "Ulozit",
+    "cancel": "Zrusit",
+    "search": "Hledat",
+    "logout": "Odhlasit"
+  },
+  "auth": {
+    "login_title": "Prihlaseni",
+    "login_subtitle": "BOLH - bezpecnost na vyzadani",
+    "email": "Email",
+    "password": "Heslo",
+    "login_btn": "Prihlasit",
+    "logging_in": "Prihlasovani...",
+    "register_title": "Registrace",
+    "register_btn": "Registrovat",
+    "registering": "Registrace...",
+    "show_password": "Zobrazit heslo",
+    "invalid_email": "Zadejte platny email",
+    "password_required": "Zadejte heslo"
+  },
+  "booking": {
+    "title": "Rezervace",
+    "address": "Adresa",
+    "your_price": "Vase cena",
+    "per_guard": "za strazneho",
+    "payment": "Platba",
+    "accept_terms": "Souhlasim s podminkami",
+    "terms_link": "Podminky",
+    "privacy_link": "Soukromi",
+    "confirm": "Potvrdit rezervaci",
+    "enter_address": "Zadejte adresu",
+    "sending": "Odesilani...",
+    "day": "den",
+    "month": "mesic",
+    "time_from": "Cas od",
+    "time_to": "Cas do",
+    "guards": "strazni",
+    "price_positive": "Zadejte platnou cenu"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Uzivatel",
+    "member_since": "Clenem od",
+    "unverified": "Neovereno",
+    "level": "Uroven",
+    "orders": "objednavek",
+    "rating": "hodnoceni",
+    "my_cards": "Moje karty",
+    "no_cards": "Zadne karty",
+    "add_card": "Pridat kartu",
+    "settings": "Nastaveni",
+    "delete_account": "Smazat ucet",
+    "login_to_see": "Prihlaste se pro zobrazeni profilu.",
+    "login": "Prihlasit"
+  },
+  "orders": {
+    "my_orders": "Moje objednavky",
+    "guest_msg": "Prihlaste se pro zobrazeni objednavek.",
+    "search_placeholder": "Hledat",
+    "created_banner": "Objednavka vytvorena.",
+    "no_orders": "Zadne objednavky.",
+    "create_order": "Vytvorit objednavku"
+  },
+  "settings": {
+    "title": "Nastaveni",
+    "intro": "Oznameni, jazyk, soukromi.",
+    "lang_note": "Jazyk lze zmenit v profilu.",
+    "privacy_link": "Zasady ochrany soukromi"
+  },
+  "errors": {
+    "load_failed": "Nahrani selhalo.",
+    "retry": "Zkusit znovu"
+  },
+  "map": {
+    "my_location_aria": "Moje poloha",
+    "you_here": "Jste zde",
+    "guard": "Strazny",
+    "order": "Objednavka",
+    "available": "Dostupny",
+    "reserve": "Rezervovat",
+    "near_you": "Blizko vas",
+    "legend": "Modra - vy · Zelena - objednavky · Fialova - strazni"
+  }
+}

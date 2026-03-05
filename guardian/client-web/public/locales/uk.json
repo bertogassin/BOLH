@@ -1,0 +1,98 @@
+{
+  "app_name": "Guardian",
+  "brand": "BOLH",
+  "security": "Okhorona",
+  "clear_aria": "Ochystyty",
+  "back_home": "← Na holovnu",
+  "navigation": {
+    "home": "Holovna",
+    "orders": "Zamovlennia",
+    "profile": "Profil",
+    "settings": "Nalashtuvannia",
+    "map": "Mapa",
+    "notifications": "Spovishchennia"
+  },
+  "actions": {
+    "save": "Zberehty",
+    "cancel": "Skasuvaty",
+    "search": "Poshuk",
+    "logout": "Vyity"
+  },
+  "auth": {
+    "login_title": "Vkhid",
+    "login_subtitle": "BOLH - okhorona na zapyt",
+    "email": "Email",
+    "password": "Parol",
+    "login_btn": "Uviity",
+    "logging_in": "Vkhid...",
+    "register_title": "Reiestratsiia",
+    "register_btn": "Zareiestruvatysia",
+    "registering": "Reiestratsiia...",
+    "show_password": "Pokazaty parol",
+    "invalid_email": "Vvedit korektnyi email",
+    "password_required": "Vvedit parol"
+  },
+  "booking": {
+    "title": "Broniuvannia",
+    "address": "Adresа",
+    "your_price": "Vasha tsina",
+    "per_guard": "za okhorontsia",
+    "payment": "Oplata",
+    "accept_terms": "Pryimaiu umovy",
+    "terms_link": "Umovy",
+    "privacy_link": "Pryvatnist",
+    "confirm": "Pidtverdyty broniuvannia",
+    "enter_address": "Vvedit adresu",
+    "sending": "Nadsylaietsia...",
+    "day": "den",
+    "month": "misiats",
+    "time_from": "Chas z",
+    "time_to": "Chas do",
+    "guards": "okhorontsi",
+    "price_positive": "Vvedit korektnu tsinu"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Korystuvach",
+    "member_since": "Z namy z",
+    "unverified": "Ne pidtverdzheno",
+    "level": "Riven",
+    "orders": "zamovlen",
+    "rating": "reitynh",
+    "my_cards": "Moi kartky",
+    "no_cards": "Kartoк nema",
+    "add_card": "Dodaty kartku",
+    "settings": "Nalashtuvannia",
+    "delete_account": "Vydalyty akaunt",
+    "login_to_see": "Uviidit, shchob bachyty profil.",
+    "login": "Uviity"
+  },
+  "orders": {
+    "my_orders": "Moi zamovlennia",
+    "guest_msg": "Uviidit, shchob bachyty zamovlennia.",
+    "search_placeholder": "Poshuk",
+    "created_banner": "Zamovlennia stvoreno.",
+    "no_orders": "Shche nema zamovlen.",
+    "create_order": "Stvoryty zamovlennia"
+  },
+  "settings": {
+    "title": "Nalashtuvannia",
+    "intro": "Spovishchennia, mova, pryvatnist.",
+    "lang_note": "Movu mozhna zminyty u profili.",
+    "privacy_link": "Polityka pryvatnosti"
+  },
+  "errors": {
+    "load_failed": "Ne vdaloся zavantazhyty.",
+    "retry": "Povtoryty"
+  },
+  "map": {
+    "my_location_aria": "Moie mistseznakhodzhennia",
+    "you_here": "Vy tut",
+    "guard": "Okhoronets",
+    "order": "Zamovlennia",
+    "available": "Dostupnyi",
+    "reserve": "Zarezeruvaty",
+    "near_you": "Poruch z vamy",
+    "legend": "Synii - vy · Zelenyi - zamovlennia · Fioletovyi - okhorona"
+  }
+}

@@ -1,0 +1,34 @@
+# Выбор юрисдикции и структура компаний
+company_structure:
+  holding:
+    jurisdiction: "Delaware, USA"
+    entity: "C-Corp"
+    reasons:
+      - "Привычная структура для инвесторов"
+      - "Простой выход на IPO"
+      - "Гибкое налоговое планирование"
+    cost: "$5,000 incorporation + $2,000/year"
+
+  operating_companies:
+    - jurisdiction: "UK"
+      entity: "Ltd"
+      purpose: "Европа"
+    - jurisdiction: "Singapore"
+      entity: "Pte. Ltd"
+      purpose: "Азия"
+    - jurisdiction: "UAE"
+      entity: "FZCO"
+      purpose: "Ближний Восток"
+    - jurisdiction: "Russia/CIS"
+      entity: "OOO"
+      purpose: "СНГ"
+
+  ip_holding:
+    jurisdiction: "Singapore"
+    structure: "Торговые марки и патенты вынесены отдельно"
+    royalty_rate: "5% от выручки"
+
+  tax_optimization:
+    transfer_pricing: "Рыночные ставки между компаниями"
+    ip_royalties: "Через Сингапур (налог 0% на foreign income)"
+    dividend_strategy: "Реинвестирование в рост первые 5 лет"

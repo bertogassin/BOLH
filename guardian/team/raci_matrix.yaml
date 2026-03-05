@@ -1,0 +1,40 @@
+processes:
+  - process: "Верификация нового охранника"
+    roles:
+      guard: "I"
+      support_agent: "R"
+      verification_specialist: "A"
+      compliance_officer: "C"
+      legal: "C"
+      tech_support: "I"
+
+  - process: "Разрешение спора"
+    roles:
+      support_agent: "R"
+      dispute_specialist: "A"
+      legal: "C"
+      finance: "C"
+      product: "I"
+      guard: "I"
+      client: "I"
+
+  - process: "Релиз новой фичи"
+    roles:
+      product_manager: "R"
+      designer: "R"
+      developer: "R"
+      qa: "R"
+      tech_lead: "A"
+      product_director: "C"
+      cto: "I"
+      marketing: "C"
+      support: "C"
+
+  - process: "Привлечение агентства"
+    roles:
+      bd_manager: "R"
+      sales_director: "A"
+      legal: "C"
+      finance: "C"
+      operations: "C"
+      product: "I"

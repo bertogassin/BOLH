@@ -1,0 +1,250 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { ArrowLeft, MapPin, Calendar, Wallet, Users, FileText, XCircle, MessageCircle } from 'lucide-react'
+import { useAuth } from '@/context/AuthContext'
+import { fetchOrderWithMatch, cancelOrder, type Order, type Match } from '@/lib/api'
+import { StatusBadge } from '@/components/StatusBadge'
+import { BOLHNav } from '@/components/BOLHNav'
+
+function formatDateTime(s: string) {
+  try {
+    return new Date(s).toLocaleString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return s
+  }
+}
+
+const ORDER_TIMELINE = [
+  { key: 'published', label: 'Создан' },
+  { key: 'searching', label: 'Поиск' },
+  { key: 'matched', label: 'Назначен' },
+  { key: 'in_progress', label: 'В работе' },
+  { key: 'completed', label: 'Завершён' },
+]
+
+function timelineIndex(status: string): number {
+  if (status === 'open' || status === 'published' || status === 'draft') return 0
+  const idx = ORDER_TIMELINE.findIndex((s) => s.key === status)
+  return idx >= 0 ? idx : 0
+}
+
+export default function OrderDetailPage({ params }: { params: { id: string } }) {
+  const { user } = useAuth()
+  const router = useRouter()
+  const [order, setOrder] = useState<Order | null>(null)
+  const [match, setMatch] = useState<Match | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [cancelling, setCancelling] = useState(false)
+
+  useEffect(() => {
+    if (!user || typeof document === 'undefined') {
+      setLoading(false)
+      return
+    }
+
+    let intervalId: ReturnType<typeof setInterval> | null = null
+    const load = (silent = false) => {
+      fetchOrderWithMatch(params.id)
+        .then((data) => {
+          setOrder(data.order)
+          setMatch(data.match ?? null)
+        })
+        .catch(() => {
+          if (!silent) setOrder(null)
+        })
+        .finally(() => {
+          if (!silent) setLoading(false)
+        })
+    }
+
+    const onVisible = () => {
+      if (!document.hidden) load(true)
+    }
+
+    load()
+    intervalId = setInterval(() => {
+      if (!document.hidden) load(true)
+    }, 15000)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [user, params.id])
+
+  const handleCancel = async () => {
+    if (!order || order.status === 'cancelled') return
+    if (!confirm('Annuler la réservation ?')) return
+    setCancelling(true)
+    try {
+      await cancelOrder(order.id)
+      setOrder((o) => (o ? { ...o, status: 'cancelled' } : null))
+      setMatch(null)
+    } finally {
+      setCancelling(false)
+    }
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#1a1b26] p-4 flex items-center justify-center text-white">
+        <Link href="/login" className="text-violet-400 hover:underline">Войти</Link>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#1a1b26]">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
+      </div>
+    )
+  }
+  if (!order) {
+    return (
+      <div className="min-h-screen bg-[#1a1b26] p-4 flex flex-col items-center justify-center text-white">
+        <p>Réservation introuvable.</p>
+        <Link href="/orders" className="mt-4 text-violet-400 hover:underline">← Liste des réservations</Link>
+      </div>
+    )
+  }
+
+  const canCancel = ['draft', 'published', 'searching', 'open'].includes(order.status)
+  const isCancelled = order.status === 'cancelled'
+  const currentStep = timelineIndex(order.status)
+
+  return (
+    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <Link href="/orders" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <h1 className="truncate text-lg font-semibold">{order.title}</h1>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
+        <div className="rounded-2xl bg-white/10 p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-white/50">Statut</p>
+          <div className="mt-1">
+            <StatusBadge status={order.status} />
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white/10 p-4">
+          <p className="text-xs font-medium uppercase tracking-wide text-white/50">Прогресс</p>
+          {isCancelled ? (
+            <p className="mt-2 inline-flex items-center rounded-full border border-red-400/40 bg-red-500/20 px-2.5 py-1 text-xs text-red-200">
+              Заказ отменён
+            </p>
+          ) : (
+            <div className="mt-3 space-y-2">
+              {ORDER_TIMELINE.map((step, idx) => {
+                const done = idx <= currentStep
+                const isCurrent = idx === currentStep
+                return (
+                  <div key={step.key} className="flex items-center gap-2">
+                    <span
+                      className={`inline-flex h-2.5 w-2.5 rounded-full ${
+                        done ? (isCurrent ? 'bg-violet-300' : 'bg-emerald-300') : 'bg-white/25'
+                      }`}
+                    />
+                    <span className={`text-xs ${done ? 'text-white/90' : 'text-white/45'}`}>{step.label}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {match && (
+          <div className="rounded-2xl bg-violet-500/20 border border-violet-400/30 p-4">
+            <p className="text-xs font-medium uppercase tracking-wide text-violet-300">Gardien assigné</p>
+            <p className="mt-1 text-white font-medium">Prix final: {match.final_price} €</p>
+            <p className="text-sm text-white/70">Guard ID: {match.guard_id.slice(0, 8)}…</p>
+            <Link
+              href={`/orders/${order.id}/chat`}
+              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium text-white hover:bg-white/15 min-h-[44px]"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Ouvrir le chat
+            </Link>
+          </div>
+        )}
+
+        {order.description && (
+          <div className="rounded-2xl bg-white/10 p-4">
+            <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
+              <FileText className="h-4 w-4" /> Description
+            </p>
+            <p className="mt-2 text-white/90">{order.description}</p>
+          </div>
+        )}
+
+        <div className="rounded-2xl bg-white/10 p-4">
+          <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
+            <Wallet className="h-4 w-4" /> Budget
+          </p>
+          <p className="mt-2 text-lg font-semibold text-white">
+            {order.budget_min} – {order.budget_max} €
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/10 p-4">
+          <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
+            <Calendar className="h-4 w-4" /> Horaires
+          </p>
+          <p className="mt-2 text-white/90">
+            {formatDateTime(order.start_time)} – {formatDateTime(order.end_time)}
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white/10 p-4">
+          <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
+            <Users className="h-4 w-4" /> Gardes
+          </p>
+          <p className="mt-2 font-medium">{order.guard_count}</p>
+        </div>
+
+        {order.latitude != null && order.longitude != null && (
+          <div className="rounded-2xl bg-white/10 p-4">
+            <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white/50">
+              <MapPin className="h-4 w-4" /> Coordonnées
+            </p>
+            <p className="mt-2 text-sm text-white/70">
+              {order.latitude.toFixed(4)}, {order.longitude.toFixed(4)}
+            </p>
+          </div>
+        )}
+
+        {canCancel && (
+          <button
+            type="button"
+            onClick={handleCancel}
+            disabled={cancelling}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-red-400/50 bg-red-500/20 py-3.5 text-red-300 hover:bg-red-500/30 disabled:opacity-50 min-h-[44px]"
+          >
+            <XCircle className="h-5 w-5" />
+            {cancelling ? 'Annulation...' : 'Annuler la réservation'}
+          </button>
+        )}
+
+        <p>
+          <Link href="/orders" className="text-violet-400 hover:underline">← Liste des réservations</Link>
+        </p>
+      </main>
+
+      <BOLHNav current="booking" />
+    </div>
+  )
+}
