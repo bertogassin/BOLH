@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Bell } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -24,18 +24,29 @@ export default function NotificationsPage() {
   const [list, setList] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(false)
+  const inFlightRef = useRef(false)
 
   const load = () => {
-    if (!user) return
+    if (!user || inFlightRef.current) return
     setFetchError(false)
     setLoading(true)
+    inFlightRef.current = true
     fetchNotifications()
       .then((data) => {
-        setList(data)
+        const next = Array.isArray(data) ? data : []
+        setList((prev) => {
+          const sameSize = prev.length === next.length
+          const sameFirst = prev[0]?.id === next[0]?.id
+          const sameLast = prev[prev.length - 1]?.id === next[next.length - 1]?.id
+          return sameSize && sameFirst && sameLast ? prev : next
+        })
         setFetchError(false)
       })
       .catch(() => setFetchError(true))
-      .finally(() => setLoading(false))
+      .finally(() => {
+        inFlightRef.current = false
+        setLoading(false)
+      })
   }
 
   useEffect(() => {

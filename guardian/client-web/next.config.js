@@ -22,7 +22,7 @@ const nextConfig = {
     ]
   },
   webpack: (config, { dev }) => {
-    if (dev) {
+    if (dev && process.env.NEXT_FORCE_POLLING === '1') {
       config.watchOptions = {
         poll: 1000,
         aggregateTimeout: 300,

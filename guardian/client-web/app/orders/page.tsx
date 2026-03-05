@@ -26,6 +26,7 @@ const STATUS_OPTIONS = [
   { value: 'completed', label: 'Completed' },
   { value: 'cancelled', label: 'Cancelled' },
 ]
+const SEARCH_DEBOUNCE_MS = 220
 
 export default function OrdersPage() {
   const { user } = useAuth()
@@ -34,6 +35,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
   const [searchQ, setSearchQ] = useState('')
+  const [searchInput, setSearchInput] = useState('')
   const [showCreatedBanner, setShowCreatedBanner] = useState(false)
 
   useEffect(() => {
@@ -46,14 +48,36 @@ export default function OrdersPage() {
   }, [])
 
   useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearchQ(searchInput.trim())
+    }, SEARCH_DEBOUNCE_MS)
+    return () => window.clearTimeout(timer)
+  }, [searchInput])
+
+  useEffect(() => {
     if (!user) {
       setLoading(false)
       return
     }
+    let isCancelled = false
     fetchOrders({ status: statusFilter || undefined, q: searchQ || undefined })
-      .then(setOrders)
+      .then((next) => {
+        if (isCancelled) return
+        const safeNext = Array.isArray(next) ? next : []
+        setOrders((prev) => {
+          if (prev.length === safeNext.length && prev[0]?.id === safeNext[0]?.id && prev[prev.length - 1]?.id === safeNext[safeNext.length - 1]?.id) {
+            return prev
+          }
+          return safeNext
+        })
+      })
       .catch(() => setOrders([]))
-      .finally(() => setLoading(false))
+      .finally(() => {
+        if (!isCancelled) setLoading(false)
+      })
+    return () => {
+      isCancelled = true
+    }
   }, [user, statusFilter, searchQ])
 
   return (
@@ -87,8 +111,8 @@ export default function OrdersPage() {
             </select>
             <InputWithClear
               type="search"
-              value={searchQ}
-              onChange={setSearchQ}
+              value={searchInput}
+              onChange={setSearchInput}
               placeholder={t('orders.search_placeholder')}
               wrapperClassName="flex-1 min-w-0"
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500"

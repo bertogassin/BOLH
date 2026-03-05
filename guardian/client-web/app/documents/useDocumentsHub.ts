@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { fetchDocuments, getDocumentFileUrl, type Document } from '@/lib/api'
 import { CATEGORIES, formatSize, isExpiringSoon } from './documentHubUtils'
 
+const SETTINGS_WRITE_DEBOUNCE_MS = 180
+
 export function useDocumentsHub(userId?: string) {
   const [documents, setDocuments] = useState<Document[]>([])
   const [savedIds, setSavedIds] = useState<string[]>([])
@@ -71,24 +73,15 @@ export function useDocumentsHub(userId?: string) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    localStorage.setItem('dochub_category', category)
-  }, [category])
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    localStorage.setItem('dochub_search', search)
-  }, [search])
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    localStorage.setItem('dochub_status', statusFilter)
-  }, [statusFilter])
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    localStorage.setItem('dochub_sort', sortBy)
-  }, [sortBy])
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    localStorage.setItem('dochub_view', viewMode)
-  }, [viewMode])
+    const timer = window.setTimeout(() => {
+      localStorage.setItem('dochub_category', category)
+      localStorage.setItem('dochub_search', search)
+      localStorage.setItem('dochub_status', statusFilter)
+      localStorage.setItem('dochub_sort', sortBy)
+      localStorage.setItem('dochub_view', viewMode)
+    }, SETTINGS_WRITE_DEBOUNCE_MS)
+    return () => window.clearTimeout(timer)
+  }, [category, search, statusFilter, sortBy, viewMode])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -110,21 +103,27 @@ export function useDocumentsHub(userId?: string) {
 
   const needSignature = useMemo(() => documents.filter((d) => d.status !== 'signed'), [documents])
   const cat = CATEGORIES.find((c) => c.id === category)
-  const filteredDocs = documents.filter((d) => {
-    if (category === 'saved' && !savedIds.includes(d.id)) return false
-    if (cat?.docType && d.doc_type !== cat.docType) return false
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      return (
-        d.title?.toLowerCase().includes(q) ||
-        d.file_name?.toLowerCase().includes(q) ||
-        d.doc_type?.toLowerCase().includes(q) ||
-        d.description?.toLowerCase().includes(q) ||
-        d.tags?.some((t) => t.toLowerCase().includes(q))
-      )
-    }
-    return true
-  })
+  const savedIdSet = useMemo(() => new Set(savedIds), [savedIds])
+  const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds])
+  const searchQuery = useMemo(() => search.trim().toLowerCase(), [search])
+  const filteredDocs = useMemo(
+    () =>
+      documents.filter((d) => {
+        if (category === 'saved' && !savedIdSet.has(d.id)) return false
+        if (cat?.docType && d.doc_type !== cat.docType) return false
+        if (searchQuery) {
+          return (
+            d.title?.toLowerCase().includes(searchQuery) ||
+            d.file_name?.toLowerCase().includes(searchQuery) ||
+            d.doc_type?.toLowerCase().includes(searchQuery) ||
+            d.description?.toLowerCase().includes(searchQuery) ||
+            d.tags?.some((t) => t.toLowerCase().includes(searchQuery))
+          )
+        }
+        return true
+      }),
+    [documents, category, savedIdSet, cat?.docType, searchQuery]
+  )
 
   const statusFilteredDocs = useMemo(() => {
     if (statusFilter === 'all') return filteredDocs
@@ -143,10 +142,10 @@ export function useDocumentsHub(userId?: string) {
   }, [statusFilteredDocs, sortBy])
 
   const visibleDocs = useMemo(
-    () => (showOnlySelected ? orderedDocs.filter((d) => selectedIds.includes(d.id)) : orderedDocs),
-    [orderedDocs, selectedIds, showOnlySelected]
+    () => (showOnlySelected ? orderedDocs.filter((d) => selectedIdSet.has(d.id)) : orderedDocs),
+    [orderedDocs, selectedIdSet, showOnlySelected]
   )
-  const selectedDocs = useMemo(() => orderedDocs.filter((d) => selectedIds.includes(d.id)), [orderedDocs, selectedIds])
+  const selectedDocs = useMemo(() => orderedDocs.filter((d) => selectedIdSet.has(d.id)), [orderedDocs, selectedIdSet])
   const totalStorageBytes = useMemo(() => documents.reduce((sum, d) => sum + (d.file_size || 0), 0), [documents])
   const selectedSizeBytes = useMemo(() => selectedDocs.reduce((sum, d) => sum + (d.file_size || 0), 0), [selectedDocs])
 

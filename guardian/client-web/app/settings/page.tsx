@@ -2,20 +2,27 @@
 
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Settings, Moon, Sun, Globe2, Vibrate, KeyRound } from 'lucide-react'
+import { ChevronLeft, Settings, Moon, Sun, Globe2, Vibrate, KeyRound, Trash2 } from 'lucide-react'
 import { AVAILABLE_LOCALES, LOCALE_OPTIONS, useLocale } from '@/context/LocaleContext'
+import { useSound } from '@/context/SoundContext'
 import { BOLHNav } from '@/components/BOLHNav'
 
 type AppSettings = {
   vibrationEnabled: boolean
   theme: 'dark' | 'light'
   locale: string
+  soundEnabled: boolean
+  soundVolume: number
+  soundPreset: 'soft' | 'classic' | 'arcade'
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
   vibrationEnabled: true,
   theme: 'dark',
   locale: 'en',
+  soundEnabled: true,
+  soundVolume: 0.55,
+  soundPreset: 'classic',
 }
 
 function SwitchRow({
@@ -61,6 +68,7 @@ function SwitchRow({
 
 export default function SettingsPage() {
   const { t, locale, setLocale } = useLocale()
+  const { soundEnabled, soundVolume, soundPreset, updateSoundSettings, playPreview } = useSound()
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
   const [saved, setSaved] = useState(false)
 
@@ -75,18 +83,29 @@ export default function SettingsPage() {
         ...DEFAULT_SETTINGS,
         ...parsed,
         locale: locale || parsed.locale || DEFAULT_SETTINGS.locale,
+        soundEnabled: typeof parsed.soundEnabled === 'boolean' ? parsed.soundEnabled : soundEnabled,
+        soundVolume: typeof parsed.soundVolume === 'number' ? parsed.soundVolume : soundVolume,
+        soundPreset:
+          parsed.soundPreset === 'soft' || parsed.soundPreset === 'classic' || parsed.soundPreset === 'arcade'
+            ? parsed.soundPreset
+            : soundPreset,
       }
       setSettings(merged)
       document.documentElement.setAttribute('data-theme', merged.theme)
     } catch {
-      setSettings({ ...DEFAULT_SETTINGS, locale })
+      setSettings({ ...DEFAULT_SETTINGS, locale, soundEnabled, soundVolume, soundPreset })
     }
-  }, [locale])
+  }, [locale, soundEnabled, soundPreset, soundVolume])
 
   const persist = (next: AppSettings) => {
     setSettings(next)
     localStorage.setItem(storageKey, JSON.stringify(next))
     localStorage.setItem('bolh-theme', next.theme)
+    updateSoundSettings({
+      soundEnabled: next.soundEnabled,
+      soundVolume: next.soundVolume,
+      soundPreset: next.soundPreset,
+    })
     if (AVAILABLE_LOCALES.has(next.locale)) {
       setLocale(next.locale)
     }
@@ -132,6 +151,13 @@ export default function SettingsPage() {
             </span>
             <span className="text-white/40">›</span>
           </Link>
+          <Link href="/profile/delete" className="rounded-xl bg-red-500/10 border border-red-400/40 px-4 py-3 flex items-center justify-between text-red-200 hover:bg-red-500/15">
+            <span className="flex items-center gap-2 text-sm">
+              <Trash2 className="h-4 w-4 text-red-300" />
+              Delete account
+            </span>
+            <span className="text-red-300/70">›</span>
+          </Link>
         </section>
 
         <section className="space-y-2">
@@ -143,6 +169,49 @@ export default function SettingsPage() {
             onChange={(v) => update('vibrationEnabled', v)}
             icon={<Vibrate className="h-4 w-4 text-violet-300" />}
           />
+          <SwitchRow
+            title="Action sounds"
+            hint="Clicks, submits, and validation feedback"
+            value={settings.soundEnabled}
+            onChange={(v) => update('soundEnabled', v)}
+            icon={<Vibrate className="h-4 w-4 text-violet-300" />}
+          />
+          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
+            <p className="text-sm text-white">Sound volume</p>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={Math.round(settings.soundVolume * 100)}
+              onChange={(e) => update('soundVolume', Number(e.target.value) / 100)}
+              className="w-full"
+            />
+            <p className="text-xs text-white/60">{Math.round(settings.soundVolume * 100)}%</p>
+            <div className="grid grid-cols-3 gap-2">
+              {(['soft', 'classic', 'arcade'] as const).map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => update('soundPreset', preset)}
+                  className={`rounded-lg border px-3 py-2 text-sm ${
+                    settings.soundPreset === preset
+                      ? 'bg-violet-600 border-violet-400'
+                      : 'bg-white/10 border-violet-400 hover:bg-white/15'
+                  }`}
+                >
+                  {preset[0].toUpperCase() + preset.slice(1)}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={playPreview}
+              className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+            >
+              Play preview
+            </button>
+          </div>
         </section>
 
         <section className="space-y-2">

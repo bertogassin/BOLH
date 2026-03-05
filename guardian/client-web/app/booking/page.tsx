@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react'
@@ -20,6 +20,7 @@ const SERVICES = [
   { id: 'patrol', label: 'Patrol' },
 ]
 const PANEL_CLASS = 'rounded-xl bg-black border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
+const DRAFT_WRITE_DEBOUNCE_MS = 250
 
 function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
@@ -149,20 +150,33 @@ export default function BookingPage() {
   const minDay = isCurrentMonth ? currentDay : 1
   const cardDigits = oneTimeCardNumber.replace(/\D/g, '')
   const cardLastFour = cardDigits.slice(-4)
-  const selectedServiceLabel = SERVICES.find((s) => s.id === service)?.label || 'Security'
+  const selectedServiceLabel = useMemo(
+    () => SERVICES.find((s) => s.id === service)?.label || 'Security',
+    [service]
+  )
   const missionDraftKey = `guardian_booking_mission_draft_${user?.id || 'guest'}`
   const bookingDraftKey = `guardian_booking_form_draft_${user?.id || 'guest'}`
   const lastOrderTemplateKey = `guardian_booking_last_order_${user?.id || 'guest'}`
-  const missionDateLabel = `${String(safeDay).padStart(2, '0')} ${MONTHS[month]}`
-  const placeType = t(`booking.place_type_${detectPlaceType(address)}`)
-  const autoMissionDescription = [
-    `${t('booking.mission_prefix')}: ${selectedServiceLabel}.`,
-    `${t('booking.place_type_short')}: ${placeType}.`,
-    `${t('booking.address')}: ${address.trim() || t('booking.address_pending')}.`,
-    `${t('booking.period')}: ${missionDateLabel}, ${t('booking.from')} ${fromTime} ${t('booking.to')} ${toTime}.`,
-    t('booking.mission_task_default'),
-    t('booking.mission_additional_default'),
-  ].join(' ')
+  const missionDateLabel = useMemo(
+    () => `${String(safeDay).padStart(2, '0')} ${MONTHS[month]}`,
+    [safeDay, month]
+  )
+  const placeType = useMemo(
+    () => t(`booking.place_type_${detectPlaceType(address)}`),
+    [address, t]
+  )
+  const autoMissionDescription = useMemo(
+    () =>
+      [
+        `${t('booking.mission_prefix')}: ${selectedServiceLabel}.`,
+        `${t('booking.place_type_short')}: ${placeType}.`,
+        `${t('booking.address')}: ${address.trim() || t('booking.address_pending')}.`,
+        `${t('booking.period')}: ${missionDateLabel}, ${t('booking.from')} ${fromTime} ${t('booking.to')} ${toTime}.`,
+        t('booking.mission_task_default'),
+        t('booking.mission_additional_default'),
+      ].join(' '),
+    [t, selectedServiceLabel, placeType, address, missionDateLabel, fromTime, toTime]
+  )
   const canUseOneTimeCard =
     isLuhnValid(cardDigits) &&
     isExpiryValid(oneTimeCardExpiry) &&
@@ -171,11 +185,11 @@ export default function BookingPage() {
   const selectedSavedCard = selectedCardId ? savedCards.find((card) => card.id === selectedCardId) : null
   const hasSelectedPaymentMethod = Boolean(selectedSavedCard || oneTimeCard)
   const paymentValidationError = submitAttempted && !hasSelectedPaymentMethod
-  const paymentPreview = selectedSavedCard
-    ? `•••• ${selectedSavedCard.last_four}`
-    : oneTimeCard
-      ? `•••• ${oneTimeCard.last_four}`
-      : '—'
+  const paymentPreview = useMemo(() => {
+    if (selectedSavedCard) return `•••• ${selectedSavedCard.last_four}`
+    if (oneTimeCard) return `•••• ${oneTimeCard.last_four}`
+    return '—'
+  }, [selectedSavedCard, oneTimeCard])
   const paymentSheetIsFloating = keyboardInset > 0
   const isAnyDrawerOpen = showMissionSheet || showPaymentSheet || showOneTimeCardSheet
   const shouldHideBottomNav = showMissionSheet || showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
@@ -254,12 +268,15 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (!missionDescription.trim()) return
-    try {
-      window.localStorage.setItem(missionDraftKey, missionDescription)
-      setHasMissionDraft(true)
-    } catch {
-      // Ignore local storage write errors in UI.
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(missionDraftKey, missionDescription)
+        setHasMissionDraft(true)
+      } catch {
+        // Ignore local storage write errors in UI.
+      }
+    }, DRAFT_WRITE_DEBOUNCE_MS)
+    return () => window.clearTimeout(timer)
   }, [missionDescription, missionDraftKey])
 
   useEffect(() => {
@@ -335,11 +352,14 @@ export default function BookingPage() {
       acceptTerms,
       selectedCardId,
     }
-    try {
-      window.localStorage.setItem(bookingDraftKey, JSON.stringify(payload))
-    } catch {
-      // Ignore local storage write errors in UI.
-    }
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(bookingDraftKey, JSON.stringify(payload))
+      } catch {
+        // Ignore local storage write errors in UI.
+      }
+    }, DRAFT_WRITE_DEBOUNCE_MS)
+    return () => window.clearTimeout(timer)
   }, [
     user,
     draftHydrated,

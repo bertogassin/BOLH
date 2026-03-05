@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import { LocaleProvider } from '@/context/LocaleContext'
+import { SoundProvider } from '@/context/SoundContext'
 import { AIChatShell } from '@/components/AIChatShell'
 import { RootErrorBoundary } from '@/components/RootErrorBoundary'
 
@@ -21,9 +22,11 @@ export default function RootLayout({
         <RootErrorBoundary>
           <LocaleProvider>
             <AuthProvider>
-              <AIChatShell>
-                {children}
-              </AIChatShell>
+              <SoundProvider>
+                <AIChatShell>
+                  {children}
+                </AIChatShell>
+              </SoundProvider>
             </AuthProvider>
           </LocaleProvider>
         </RootErrorBoundary>

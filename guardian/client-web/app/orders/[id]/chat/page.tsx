@@ -8,6 +8,8 @@ import { useLocale } from '@/context/LocaleContext'
 import { fetchOrder, fetchOrderMessages, sendOrderMessage, type ChatMessage } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
+const CHAT_POLL_MS = 5000
+
 export default function OrderChatPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
   const { t, locale } = useLocale()
@@ -24,14 +26,29 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
     }
 
     let intervalId: ReturnType<typeof setInterval> | null = null
+    let inFlight = false
+    const applyMessages = (next: ChatMessage[]) => {
+      const safe = Array.isArray(next) ? next : []
+      setMessages((prev) => {
+        const sameSize = prev.length === safe.length
+        const sameFirst = prev[0]?.id === safe[0]?.id
+        const sameLast = prev[prev.length - 1]?.id === safe[safe.length - 1]?.id
+        return sameSize && sameFirst && sameLast ? prev : safe
+      })
+    }
     const loadMessages = (silent = false) => {
-      fetchOrder(params.id)
-        .then(() => fetchOrderMessages(params.id))
+      if (inFlight) return
+      inFlight = true
+      const request = silent
+        ? fetchOrderMessages(params.id)
+        : fetchOrder(params.id).then(() => fetchOrderMessages(params.id))
+      request
         .then((next) => {
-          setMessages(Array.isArray(next) ? next : [])
+          applyMessages(Array.isArray(next) ? next : [])
         })
         .catch(() => {})
         .finally(() => {
+          inFlight = false
           if (!silent) setLoading(false)
         })
     }
@@ -43,7 +60,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
     loadMessages()
     intervalId = setInterval(() => {
       if (!document.hidden) loadMessages(true)
-    }, 5000)
+    }, CHAT_POLL_MS)
     document.addEventListener('visibilitychange', onVisible)
     return () => {
       if (intervalId) clearInterval(intervalId)

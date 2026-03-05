@@ -14,13 +14,28 @@ export default function TermsPage() {
           <h1 className="text-lg font-semibold">Terms and Conditions</h1>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 py-6 prose prose-invert prose-sm max-w-none">
-        <p className="text-white/80">
-          By using BOLH SECURITY, you agree to our terms and conditions.
-          Reservations are subject to availability. Payment is due under the terms shown at booking.
-        </p>
-        <p className="text-white/60 text-sm mt-4">
-          For questions: support@bolh-security.com
+      <main className="mx-auto max-w-lg px-4 py-6 space-y-4 text-sm">
+        <p className="text-white/60">Last updated: 2026-03-05</p>
+        <section className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <h2 className="text-base font-semibold mb-2">Use of Service</h2>
+          <p className="text-white/80">
+            By using BOLH Security, you agree to use the app lawfully and provide accurate account information.
+          </p>
+        </section>
+        <section className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <h2 className="text-base font-semibold mb-2">Orders and Payments</h2>
+          <p className="text-white/80">
+            Service requests are subject to provider availability. Pricing and payment terms are shown during booking.
+          </p>
+        </section>
+        <section className="rounded-xl border border-white/10 bg-white/5 p-4">
+          <h2 className="text-base font-semibold mb-2">User Responsibilities</h2>
+          <p className="text-white/80">
+            You are responsible for account security and activities under your account credentials.
+          </p>
+        </section>
+        <p className="text-white/60">
+          Contact: support@bolh-security.com
         </p>
       </main>
     </div>

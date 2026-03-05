@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Sparkles, Sun, Moon } from 'lucide-react'
 import { fetchOrders, fetchBids } from '@/lib/api'
@@ -38,6 +38,7 @@ export default function MapPage() {
   const [bids, setBids] = useState<Awaited<ReturnType<typeof fetchBids>>>([])
   const [mapTileTheme, setMapTileTheme] = useState<'dark' | 'light'>('dark')
   const [viewportHeight, setViewportHeight] = useState<number | null>(null)
+  const inFlightRef = useRef(false)
 
   const load = useCallback((opts?: { force?: boolean }) => {
     if (!user) {
@@ -58,6 +59,8 @@ export default function MapPage() {
       setBids(mapCache.bids)
       if (cacheIsFresh && !force) return
     }
+    if (inFlightRef.current) return
+    inFlightRef.current = true
 
     Promise.all([fetchOrders(), fetchBids()])
       .then(([o, b]) => {
@@ -68,6 +71,9 @@ export default function MapPage() {
         mapCache = { userId, at: Date.now(), orders: safeOrders, bids: safeBids }
       })
       .catch(() => {})
+      .finally(() => {
+        inFlightRef.current = false
+      })
   }, [user])
 
   useEffect(() => {
@@ -114,15 +120,29 @@ export default function MapPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const updateViewport = () => setViewportHeight(window.innerHeight)
+    let rafId: number | null = null
+    const updateViewport = () => {
+      const next = window.innerHeight
+      setViewportHeight((prev) => (prev === next ? prev : next))
+    }
+    const scheduleViewportUpdate = () => {
+      if (rafId != null) return
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null
+        updateViewport()
+      })
+    }
     updateViewport()
-    window.addEventListener('resize', updateViewport)
-    window.addEventListener('orientationchange', updateViewport)
-    window.visualViewport?.addEventListener('resize', updateViewport)
+    window.addEventListener('resize', scheduleViewportUpdate)
+    window.addEventListener('orientationchange', scheduleViewportUpdate)
+    window.visualViewport?.addEventListener('resize', scheduleViewportUpdate)
     return () => {
-      window.removeEventListener('resize', updateViewport)
-      window.removeEventListener('orientationchange', updateViewport)
-      window.visualViewport?.removeEventListener('resize', updateViewport)
+      if (rafId != null) {
+        window.cancelAnimationFrame(rafId)
+      }
+      window.removeEventListener('resize', scheduleViewportUpdate)
+      window.removeEventListener('orientationchange', scheduleViewportUpdate)
+      window.visualViewport?.removeEventListener('resize', scheduleViewportUpdate)
     }
   }, [])
 

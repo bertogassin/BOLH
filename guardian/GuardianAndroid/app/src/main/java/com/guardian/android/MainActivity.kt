@@ -1,9 +1,14 @@
 package com.guardian.android
 
+import android.content.Context
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -11,6 +16,7 @@ import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +33,26 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "GuardianWebView"
     }
 
+    private fun parseAppUri(): Uri {
+        val parsed = Uri.parse(BuildConfig.WEB_APP_URL)
+        require(!parsed.scheme.isNullOrBlank()) { "WEB_APP_URL must include scheme" }
+        require(!parsed.host.isNullOrBlank()) { "WEB_APP_URL must include host" }
+        return parsed
+    }
+
+    private fun isLocalHost(host: String?): Boolean {
+        return host == "127.0.0.1" || host == "localhost" || host == "10.0.2.2"
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "MainActivity created")
@@ -40,7 +66,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             GuardianTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    val appUrl = remember { "http://127.0.0.1:3003/" }
+                    val appUri = remember { parseAppUri() }
+                    val appUrl = remember { appUri.toString() }
+                    val appHost = remember { appUri.host }
+                    val appPort = remember { appUri.port }
+                    val appScheme = remember { appUri.scheme }
                     val offlineHtml = remember {
                         """
                         <!doctype html>
@@ -63,17 +93,39 @@ class MainActivity : ComponentActivity() {
                               padding: 10px 14px;
                               font-size: 14px;
                             }
+                            .retry-link {
+                              display: inline-block;
+                              text-decoration: none;
+                              border: 1px solid rgba(139, 92, 246, 0.55);
+                              background: #111827;
+                              color: #f9fafb;
+                              border-radius: 10px;
+                              padding: 10px 14px;
+                              font-size: 14px;
+                            }
                           </style>
                         </head>
                         <body>
                           <main class="card">
                             <h1>BOLH Security - Offline</h1>
                             <p>Offline mode is active on this device.</p>
-                            <p>App will continue automatically when connection returns.</p>
+                            <p>The app opens in offline mode and keeps local access to basic screens.</p>
                             <div class="actions">
-                              <button onclick="window.location.href='http://127.0.0.1:3003/'">Retry now</button>
+                              <a id="retryLink" class="retry-link" href="$appUrl">Retry now</a>
                             </div>
                           </main>
+                          <script>
+                            (function () {
+                              var link = document.getElementById('retryLink');
+                              if (!link) return;
+                              link.addEventListener('click', function (e) {
+                                if (window.BOLH && window.BOLH.retryOnline) {
+                                  e.preventDefault();
+                                  window.BOLH.retryOnline();
+                                }
+                              });
+                            })();
+                          </script>
                         </body>
                         </html>
                         """.trimIndent()
@@ -82,6 +134,21 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         factory = { context ->
                             WebView(context).apply {
+                                class OfflineBridge {
+                                    @JavascriptInterface
+                                    fun retryOnline() {
+                                        post {
+                                            Toast.makeText(
+                                                context,
+                                                "Trying to reconnect...",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            Log.i(TAG, "Offline retry tapped: loading appUrl=$appUrl")
+                                            loadUrl(appUrl)
+                                        }
+                                    }
+                                }
+
                                 settings.javaScriptEnabled = true
                                 settings.domStorageEnabled = true
                                 settings.allowFileAccess = false
@@ -92,21 +159,11 @@ class MainActivity : ComponentActivity() {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     settings.safeBrowsingEnabled = true
                                 }
+                                addJavascriptInterface(OfflineBridge(), "BOLH")
                                 // Keep cache enabled so previously loaded web assets can still render offline.
                                 settings.cacheMode = WebSettings.LOAD_DEFAULT
                                 webViewClient = object : WebViewClient() {
-                                    var retryScheduled = false
                                     var mainFrameFailed = false
-
-                                    fun scheduleReconnect(view: WebView?) {
-                                        val webView = view ?: return
-                                        if (retryScheduled) return
-                                        retryScheduled = true
-                                        webView.postDelayed({
-                                            retryScheduled = false
-                                            webView.loadUrl(appUrl)
-                                        }, 3000)
-                                    }
 
                                     fun showOffline(view: WebView?) {
                                         Log.w(TAG, "showOffline: loading embedded offline page")
@@ -118,7 +175,6 @@ class MainActivity : ComponentActivity() {
                                             "utf-8",
                                             null
                                         )
-                                        scheduleReconnect(view)
                                     }
 
                                     override fun shouldOverrideUrlLoading(
@@ -126,12 +182,21 @@ class MainActivity : ComponentActivity() {
                                         request: WebResourceRequest?
                                     ): Boolean {
                                         val url = request?.url ?: return false
-                                        val raw = url.toString()
+                                        val raw = url.toString().trim()
+                                        val requestHost = url.host
+                                        val requestScheme = url.scheme
+                                        val requestPort = url.port
                                         val isOfflineAsset = raw.startsWith("file:///android_asset/")
-                                        val isLocalAppHost =
-                                            (url.scheme == "http" || url.scheme == "https") &&
-                                                    (url.host == "127.0.0.1" || url.host == "localhost")
-                                        return !(isOfflineAsset || isLocalAppHost)
+                                        val sameConfiguredOrigin =
+                                            requestScheme == appScheme &&
+                                                requestHost == appHost &&
+                                                requestPort == appPort
+                                        val isDebugLocalOrigin =
+                                            BuildConfig.DEBUG &&
+                                                (requestScheme == "http" || requestScheme == "https") &&
+                                                isLocalHost(requestHost)
+                                        val isAppHost = sameConfiguredOrigin || isDebugLocalOrigin
+                                        return !(isOfflineAsset || isAppHost)
                                     }
 
                                     override fun onReceivedError(
@@ -167,34 +232,48 @@ class MainActivity : ComponentActivity() {
                                     override fun onPageFinished(view: WebView?, url: String?) {
                                         super.onPageFinished(view, url)
                                         val loaded = url ?: return
+                                        val loadedUri = Uri.parse(loaded)
                                         Log.i(TAG, "onPageFinished url=$loaded")
                                         val isOfflinePage = loaded.startsWith("https://offline.local/")
-                                        val isLocalAppPage =
-                                            loaded.startsWith("http://127.0.0.1:3003") ||
-                                                loaded.startsWith("http://localhost:3003")
+                                        val isAppPage =
+                                            loadedUri.scheme == appScheme &&
+                                                loadedUri.host == appHost &&
+                                                loadedUri.port == appPort
                                         if (isOfflinePage) {
-                                            Log.i(TAG, "onPageFinished: offline page active, schedule reconnect")
-                                            scheduleReconnect(view)
-                                        } else if (isLocalAppPage && !mainFrameFailed) {
+                                            Log.i(TAG, "onPageFinished: offline page active")
+                                        } else if (isAppPage && !mainFrameFailed) {
                                             Log.i(TAG, "onPageFinished: app page active")
-                                            retryScheduled = false
                                         }
                                     }
 
                                     override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
                                         super.onPageStarted(view, url, favicon)
                                         val started = url ?: return
-                                        if (
-                                            started.startsWith("http://127.0.0.1:3003") ||
-                                            started.startsWith("http://localhost:3003")
-                                        ) {
+                                        val startedUri = Uri.parse(started)
+                                        val isAppPage =
+                                            startedUri.scheme == appScheme &&
+                                                startedUri.host == appHost &&
+                                                startedUri.port == appPort
+                                        if (isAppPage) {
                                             mainFrameFailed = false
                                         }
                                     }
                                 }
                                 webChromeClient = WebChromeClient()
-                                Log.i(TAG, "WebView loading appUrl=$appUrl")
-                                loadUrl(appUrl)
+                                val shouldStartOffline = !isNetworkAvailable(context)
+                                if (shouldStartOffline) {
+                                    Log.i(TAG, "No network detected: opening offline page immediately")
+                                    loadDataWithBaseURL(
+                                        "https://offline.local/",
+                                        offlineHtml,
+                                        "text/html",
+                                        "utf-8",
+                                        null
+                                    )
+                                } else {
+                                    Log.i(TAG, "WebView loading appUrl=$appUrl")
+                                    loadUrl(appUrl)
+                                }
                             }
                         }
                     )

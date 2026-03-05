@@ -12,6 +12,8 @@ export type ProfileDetails = {
   languages: string
   experienceYears: string
   licenses: string
+  serviceRadiusKm: string
+  basePrice: string
   hourlyRate: string
   availability: string
   bio: string
@@ -27,6 +29,26 @@ type Props = {
 
 export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSaving, detailsSaved }: Props) {
   const [isOpen, setIsOpen] = useState(false)
+  const [onlineError, setOnlineError] = useState('')
+  const requiredFields = [
+    { key: 'displayName', label: 'Display name', value: details.displayName },
+    { key: 'city', label: 'City', value: details.city },
+    { key: 'availability', label: 'Availability', value: details.availability },
+    { key: 'serviceRadiusKm', label: 'Radius (km)', value: details.serviceRadiusKm },
+    { key: 'basePrice', label: 'Base price', value: details.basePrice },
+    { key: 'hourlyRate', label: 'Rate / hour', value: details.hourlyRate },
+  ] as const
+  const missingRequired = requiredFields.filter((f) => String(f.value || '').trim().length === 0)
+  const canGoOnline = missingRequired.length === 0
+
+  const toggleOnline = () => {
+    if (!details.online && !canGoOnline) {
+      setOnlineError(`Fill required fields first: ${missingRequired.map((f) => f.label).join(', ')}`)
+      return
+    }
+    setOnlineError('')
+    setDetails((d) => ({ ...d, online: !d.online }))
+  }
 
   return (
     <section>
@@ -42,9 +64,15 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
 
       {isOpen ? (
       <div className="rounded-xl bg-white/10 border border-violet-400 p-4 space-y-3">
+        <div className="rounded-lg border border-amber-400/40 bg-amber-500/10 p-3 text-xs text-amber-200">
+          <p className="font-semibold">Required before Online:</p>
+          <p>
+            Display name, City, Availability, Radius (km), Base price, and Rate per hour.
+          </p>
+        </div>
         <button
           type="button"
-          onClick={() => setDetails((d) => ({ ...d, online: !d.online }))}
+          onClick={toggleOnline}
           className={`w-full rounded-xl border px-3 py-2.5 min-h-[44px] inline-flex items-center justify-center gap-2 font-medium ${
             details.online
               ? 'bg-green-500/30 border-green-400/60 text-green-100'
@@ -54,13 +82,16 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
           {details.online ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
           {details.online ? 'Online active' : 'Switch to online'}
         </button>
+        {onlineError ? <p className="text-xs text-amber-300">{onlineError}</p> : null}
 
         <div className="grid grid-cols-1 gap-2">
           <input
             value={details.displayName}
             onChange={(e) => setDetails((d) => ({ ...d, displayName: e.target.value }))}
-            placeholder="Display name"
-            className="rounded-xl bg-white/10 border border-violet-400 px-3 py-2.5 text-sm outline-none"
+            placeholder="Display name *"
+            className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+              String(details.displayName || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+            }`}
           />
           <div className="grid grid-cols-2 gap-2">
             <input
@@ -72,8 +103,10 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
             <input
               value={details.city}
               onChange={(e) => setDetails((d) => ({ ...d, city: e.target.value }))}
-              placeholder="City"
-              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-2.5 text-sm outline-none"
+              placeholder="City *"
+              className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+                String(details.city || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+              }`}
             />
           </div>
           <input
@@ -96,16 +129,38 @@ export function OnlineDetailsForm({ details, setDetails, saveDetails, detailsSav
               className="rounded-xl bg-white/10 border border-violet-400 px-3 py-2.5 text-sm outline-none"
             />
             <input
+              value={details.serviceRadiusKm}
+              onChange={(e) => setDetails((d) => ({ ...d, serviceRadiusKm: e.target.value.replace(/[^\d]/g, '').slice(0, 3) }))}
+              placeholder="Radius km *"
+              className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+                String(details.serviceRadiusKm || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+              }`}
+            />
+            <input
+              value={details.basePrice}
+              onChange={(e) => setDetails((d) => ({ ...d, basePrice: e.target.value.replace(',', '.').replace(/[^\d.]/g, '') }))}
+              placeholder="Base price *"
+              className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+                String(details.basePrice || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+              }`}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
               value={details.hourlyRate}
               onChange={(e) => setDetails((d) => ({ ...d, hourlyRate: e.target.value.replace(',', '.') }))}
-              placeholder="Rate / hour"
-              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-2.5 text-sm outline-none"
+              placeholder="Rate / hour *"
+              className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+                String(details.hourlyRate || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+              }`}
             />
             <input
               value={details.availability}
               onChange={(e) => setDetails((d) => ({ ...d, availability: e.target.value }))}
-              placeholder="Availability"
-              className="rounded-xl bg-white/10 border border-violet-400 px-3 py-2.5 text-sm outline-none"
+              placeholder="Availability *"
+              className={`rounded-xl bg-white/10 px-3 py-2.5 text-sm outline-none ${
+                String(details.availability || '').trim() ? 'border border-violet-400' : 'border border-amber-400/60'
+              }`}
             />
           </div>
           <input

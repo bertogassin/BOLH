@@ -173,7 +173,7 @@ const DEFAULT_MESSAGES: Messages = {
     sending: 'Sending...',
     price_positive: 'Enter a valid price',
   },
-  profile: { title: 'Profile', settings: 'Settings', delete_account: 'Delete account', edit_title: 'Edit profile', edit_short: 'Edit', first_name: 'First name', last_name: 'Last name', phone: 'Phone', saved: 'Profile saved.', save_error: 'Save failed', placeholder_phone: '+1 234 567 8900', role_client: 'Client', role_guard: 'Guard', role_agency: 'Agency', completion_label: 'Profile', user: 'User' },
+  profile: { title: 'Profile', settings: 'Settings', delete_account: 'Delete account', edit_title: 'Job search details', edit_short: 'Job search details', edit_profile: 'Job search details', first_name: 'First name', last_name: 'Last name', phone: 'Phone', saved: 'Profile saved.', save_error: 'Save failed', placeholder_phone: '+1 234 567 8900', role_client: 'Client', role_guard: 'Guard', role_agency: 'Agency', completion_label: 'Profile', user: 'User', my_data: 'My data', verification: 'Verification' },
   orders: { my_orders: 'My orders', guest_msg: 'Log in to see orders.', search_placeholder: 'Search', created_banner: 'Order created.', no_orders: 'No orders yet.', create_order: 'Create order' },
   create_order: { login_required: 'Log in to create an order.', new_order: 'New order', title_label: 'Title', create_btn: 'Create order', creating: 'Creating...' },
   settings: { title: 'Settings', intro: 'Notifications, language, privacy.', lang_note: 'Language: English by default.', privacy_link: 'Privacy policy' },

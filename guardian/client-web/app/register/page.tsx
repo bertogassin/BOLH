@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [acceptedLegal, setAcceptedLegal] = useState(false)
   const [typingCount, setTypingCount] = useState(0)
   const [autofillUsed, setAutofillUsed] = useState(false)
   const firstInputRef = useRef<HTMLInputElement>(null)
@@ -40,6 +41,10 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!acceptedLegal) {
+      setError('Please accept the Terms and Privacy Policy to continue.')
+      return
+    }
     if (password !== confirmPassword) {
       setError(t('auth.confirm_password_mismatch'))
       return
@@ -195,9 +200,28 @@ export default function RegisterPage() {
             {' · '}
             <Link href="/legal/privacy" className="text-guardian-blue hover:underline">{t('booking.privacy_link')}</Link>
           </p>
+          <label className="flex items-start gap-2 rounded-xl border border-gray-200 p-3 bg-gray-50/70 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={acceptedLegal}
+              onChange={(e) => setAcceptedLegal(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-guardian-blue focus:ring-guardian-blue"
+              required
+            />
+            <span className="text-sm text-gray-700">
+              I confirm that I have read and accept the{' '}
+              <Link href="/legal/terms" className="text-guardian-blue hover:underline">
+                Terms and Conditions
+              </Link>{' '}
+              and{' '}
+              <Link href="/legal/privacy" className="text-guardian-blue hover:underline">
+                Privacy Policy
+              </Link>.
+            </span>
+          </label>
           <button
             type="submit"
-            disabled={loading || (!!confirmPassword && !passwordsMatch)}
+            disabled={loading || (!!confirmPassword && !passwordsMatch) || !acceptedLegal}
             className="btn-primary w-full py-3"
           >
             {loading ? t('auth.registering') : t('auth.register_btn')}

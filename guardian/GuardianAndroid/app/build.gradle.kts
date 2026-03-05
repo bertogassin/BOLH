@@ -5,13 +5,18 @@ plugins {
 android {
     namespace = "com.guardian.android"
     compileSdk = 34
+    val debugApiBaseUrl = providers.gradleProperty("DEBUG_API_BASE_URL").orElse("http://10.0.2.2:8080").get()
+    val releaseApiBaseUrl = providers.gradleProperty("RELEASE_API_BASE_URL").orElse("https://api.bolhsecurity.com").get()
+    val debugWebAppUrl = providers.gradleProperty("DEBUG_WEB_APP_URL").orElse("http://10.0.2.2:3003/").get()
+    val releaseWebAppUrl = providers.gradleProperty("RELEASE_WEB_APP_URL").orElse("https://app.bolhsecurity.com/").get()
     defaultConfig {
         applicationId = "com.guardian.android"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
-        buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8080\"")
+        versionCode = 2
+        versionName = "1.0.1-beta1"
+        buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
+        buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
     }
     signingConfigs {
         create("release") {
@@ -33,10 +38,35 @@ android {
             }
         }
     }
+    val releaseSigningValues = mapOf(
+        "RELEASE_STORE_FILE" to providers.gradleProperty("RELEASE_STORE_FILE").orNull,
+        "RELEASE_STORE_PASSWORD" to providers.gradleProperty("RELEASE_STORE_PASSWORD").orNull,
+        "RELEASE_KEY_ALIAS" to providers.gradleProperty("RELEASE_KEY_ALIAS").orNull,
+        "RELEASE_KEY_PASSWORD" to providers.gradleProperty("RELEASE_KEY_PASSWORD").orNull
+    )
+    val missingReleaseSigningProps =
+        releaseSigningValues.filterValues { it.isNullOrBlank() }.keys
+    val isReleaseTaskRequested =
+        gradle.startParameter.taskNames.any { task ->
+            task.contains("Release", ignoreCase = true)
+        }
+    if (isReleaseTaskRequested && missingReleaseSigningProps.isNotEmpty()) {
+        throw GradleException(
+            "Missing release signing properties: ${missingReleaseSigningProps.joinToString(", ")}"
+        )
+    }
     buildTypes {
+        getByName("debug") {
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiBaseUrl\"")
+            buildConfigField("String", "WEB_APP_URL", "\"$debugWebAppUrl\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+        }
         getByName("release") {
             isMinifyEnabled = false
             signingConfig = signingConfigs.getByName("release")
+            buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
+            buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

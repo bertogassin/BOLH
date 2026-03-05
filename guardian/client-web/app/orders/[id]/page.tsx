@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Calendar, Wallet, Users, FileText, XCircle, MessageCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -45,6 +45,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const [match, setMatch] = useState<Match | null>(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(false)
+  const orderStatusRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    orderStatusRef.current = order?.status ?? null
+  }, [order?.status])
 
   useEffect(() => {
     if (!user || typeof document === 'undefined') {
@@ -53,7 +58,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
     }
 
     let intervalId: ReturnType<typeof setInterval> | null = null
+    let inFlight = false
+    const isTerminal = (status: string | null) => status === 'cancelled' || status === 'completed'
     const load = (silent = false) => {
+      if (inFlight) return
+      if (silent && isTerminal(orderStatusRef.current)) return
+      inFlight = true
       fetchOrderWithMatch(params.id)
         .then((data) => {
           setOrder(data.order)
@@ -63,6 +73,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
           if (!silent) setOrder(null)
         })
         .finally(() => {
+          inFlight = false
           if (!silent) setLoading(false)
         })
     }

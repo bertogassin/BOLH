@@ -8,8 +8,8 @@ const DEMO_TOKEN = 'demo'
 const DEMO_USER: User = {
   id: 'demo',
   email: 'demo@bolh.local',
-  first_name: 'Demo',
-  last_name: 'User',
+  first_name: 'Profil',
+  last_name: '',
   user_type: 'client',
   verified: false,
 }

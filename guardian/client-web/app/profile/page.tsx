@@ -24,8 +24,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [cards, setCards] = useState<PaymentCard[]>([])
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const [detailsSaving, setDetailsSaving] = useState(false)
-  const [detailsSaved, setDetailsSaved] = useState(false)
+  const [onlineHint, setOnlineHint] = useState('')
   const [details, setDetails] = useState<ProfileDetails>({
     online: false,
     displayName: '',
@@ -35,12 +34,15 @@ export default function ProfilePage() {
     languages: '',
     experienceYears: '',
     licenses: '',
+    serviceRadiusKm: '',
+    basePrice: '',
     hourlyRate: '',
     availability: '',
     bio: '',
   })
 
   const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
+  const isDemoUser = user?.id === 'demo'
 
   useEffect(() => {
     if (!user) return
@@ -48,7 +50,14 @@ export default function ProfilePage() {
       const raw = window.localStorage.getItem(detailsStorageKey)
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<typeof details>
-        setDetails((prev) => ({ ...prev, ...parsed }))
+        setDetails((prev) => ({
+          ...prev,
+          ...parsed,
+          displayName:
+            String(parsed.displayName || '').trim() ||
+            `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+          phoneAlt: String(parsed.phoneAlt || '').trim() || user.phone || '',
+        }))
       } else {
         setDetails((prev) => ({
           ...prev,
@@ -66,19 +75,26 @@ export default function ProfilePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id])
 
-  const saveDetails = async () => {
-    if (!user) return
-    setDetailsSaving(true)
-    try {
-      window.localStorage.setItem(detailsStorageKey, JSON.stringify(details))
-      setDetailsSaved(true)
-      window.setTimeout(() => setDetailsSaved(false), 1300)
-    } finally {
-      setDetailsSaving(false)
-    }
-  }
-
   const toggleOnlineStatus = () => {
+    if (!details.online) {
+      const requiredForOnline = [
+        details.displayName,
+        details.city,
+      ]
+      if (!isDemoUser) {
+        requiredForOnline.push(details.availability, details.serviceRadiusKm, details.basePrice, details.hourlyRate)
+      }
+      const missingRequired = requiredForOnline.some((v) => String(v || '').trim().length === 0)
+      if (missingRequired) {
+        setOnlineHint(
+          isDemoUser
+            ? 'Complete profile details first: name and city.'
+            : 'Complete profile details first: name, city, availability, radius (km), and price.'
+        )
+        return
+      }
+    }
+    setOnlineHint('')
     setDetails((prev) => {
       const next = { ...prev, online: !prev.online }
       try {
@@ -130,6 +146,8 @@ export default function ProfilePage() {
     details.languages,
     details.experienceYears,
     details.licenses,
+    details.serviceRadiusKm,
+    details.basePrice,
     details.hourlyRate,
     details.availability,
     details.bio,
@@ -185,6 +203,11 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
+        {onlineHint ? (
+          <div className="px-4 pb-2 text-xs text-amber-300">
+            {onlineHint}
+          </div>
+        ) : null}
       </header>
 
       <main className="mx-auto max-w-lg px-4 py-5 space-y-5">
@@ -197,11 +220,6 @@ export default function ProfilePage() {
             completionPercent={completionPercent}
             cards={cards}
             isAgency={isAgency}
-            details={details}
-            setDetails={setDetails}
-            saveDetails={saveDetails}
-            detailsSaving={detailsSaving}
-            detailsSaved={detailsSaved}
             showLogoutConfirm={showLogoutConfirm}
             setShowLogoutConfirm={setShowLogoutConfirm}
             handleLogout={handleLogout}

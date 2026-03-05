@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, FileText, Star, Trash2, PenLine, Download, Share2, Copy, ExternalLink, Mail, Printer, ClipboardList } from 'lucide-react'
@@ -85,7 +85,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     }
   }
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     if (!params.id || !doc) return
     setDownloading(true)
     try {
@@ -113,7 +113,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     } finally {
       setDownloading(false)
     }
-  }
+  }, [params.id, doc])
 
   const handleToggleSaveLocal = () => {
     if (!params.id || typeof window === 'undefined') return
@@ -134,7 +134,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     }
   }
 
-  const copyCurrentLink = async () => {
+  const copyCurrentLink = useCallback(async () => {
     if (typeof window === 'undefined') return
     try {
       await navigator.clipboard.writeText(window.location.href)
@@ -142,7 +142,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     } catch {
       // ignore
     }
-  }
+  }, [t])
 
   const shareDocument = async () => {
     if (typeof window === 'undefined') return
@@ -231,7 +231,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  })
+  }, [handleDownload, copyCurrentLink])
 
   if (!user) {
     return (

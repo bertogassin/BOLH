@@ -14,7 +14,7 @@ export function ProfileIdentityStats({ initial, displayName, roleLabel, completi
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
-        <Link href="/profile/edit" className="inline-flex items-center hover:opacity-90 transition-opacity">
+        <Link href="/profile/personal" className="inline-flex items-center hover:opacity-90 transition-opacity">
           <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-violet-500/40 text-2xl font-bold text-white">
             {initial}
           </span>
@@ -33,12 +33,6 @@ export function ProfileIdentityStats({ initial, displayName, roleLabel, completi
           </div>
         </div>
       </div>
-      <Link
-        href="/profile/edit"
-        className="shrink-0 rounded-lg border border-violet-400 bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/15"
-      >
-        {t('profile.edit_short')}
-      </Link>
     </div>
   )
 }

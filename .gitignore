@@ -45,3 +45,7 @@ Thumbs.db
 # Android signing artifacts
 **/keystore/*.jks
 **/*.keystore
+
+# Local release notes/secrets (never commit)
+**/RELEASE_IMPORTANT.local.md
+**/release-signing.local.env
