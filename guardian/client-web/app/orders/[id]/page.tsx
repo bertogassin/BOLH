@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Calendar, Wallet, Users, FileText, XCircle, MessageC
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { fetchOrderWithMatch, cancelOrder, type Order, type Match } from '@/lib/api'
+import { subscribeOrderSync } from '@/lib/order_sync'
 import { StatusBadge } from '@/components/StatusBadge'
 import { BOLHNav } from '@/components/BOLHNav'
 
@@ -87,9 +88,13 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       if (!document.hidden) load(true)
     }, 15000)
     document.addEventListener('visibilitychange', onVisible)
+    const unsubscribe = subscribeOrderSync(() => {
+      if (!document.hidden) load(true)
+    })
     return () => {
       if (intervalId) clearInterval(intervalId)
       document.removeEventListener('visibilitychange', onVisible)
+      unsubscribe()
     }
   }, [user, params.id])
 

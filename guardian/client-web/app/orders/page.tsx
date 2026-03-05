@@ -6,6 +6,7 @@ import { ArrowLeft, MapPin, Calendar, Wallet, Plus, Check } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { fetchOrders, type Order } from '@/lib/api'
+import { subscribeOrderSync } from '@/lib/order_sync'
 import { StatusBadge } from '@/components/StatusBadge'
 import { InputWithClear } from '@/components/InputWithClear'
 import { AppNav } from '@/components/AppNav'
@@ -55,28 +56,55 @@ export default function OrdersPage() {
   }, [searchInput])
 
   useEffect(() => {
-    if (!user) {
+    if (!user || typeof document === 'undefined') {
+      setOrders([])
       setLoading(false)
       return
     }
     let isCancelled = false
-    fetchOrders({ status: statusFilter || undefined, q: searchQ || undefined })
-      .then((next) => {
-        if (isCancelled) return
-        const safeNext = Array.isArray(next) ? next : []
-        setOrders((prev) => {
-          if (prev.length === safeNext.length && prev[0]?.id === safeNext[0]?.id && prev[prev.length - 1]?.id === safeNext[safeNext.length - 1]?.id) {
-            return prev
-          }
-          return safeNext
+    let inFlight = false
+    let intervalId: ReturnType<typeof setInterval> | null = null
+
+    const loadOrders = (silent = false) => {
+      if (inFlight) return
+      inFlight = true
+      if (!silent) setLoading(true)
+      fetchOrders({ status: statusFilter || undefined, q: searchQ || undefined })
+        .then((next) => {
+          if (isCancelled) return
+          const safeNext = Array.isArray(next) ? next : []
+          setOrders((prev) => {
+            if (prev.length === safeNext.length && prev[0]?.id === safeNext[0]?.id && prev[prev.length - 1]?.id === safeNext[safeNext.length - 1]?.id) {
+              return prev
+            }
+            return safeNext
+          })
         })
-      })
-      .catch(() => setOrders([]))
-      .finally(() => {
-        if (!isCancelled) setLoading(false)
-      })
+        .catch(() => {
+          if (!isCancelled) setOrders([])
+        })
+        .finally(() => {
+          inFlight = false
+          if (!silent && !isCancelled) setLoading(false)
+        })
+    }
+
+    const onVisible = () => {
+      if (!document.hidden) loadOrders(true)
+    }
+
+    loadOrders()
+    intervalId = setInterval(() => {
+      if (!document.hidden) loadOrders(true)
+    }, 10000)
+    document.addEventListener('visibilitychange', onVisible)
+    const unsubscribe = subscribeOrderSync(() => loadOrders(true))
+
     return () => {
       isCancelled = true
+      if (intervalId) clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', onVisible)
+      unsubscribe()
     }
   }, [user, statusFilter, searchQ])
 

@@ -1,3 +1,6 @@
+# Google Play service account keys (local only)
+guardian/GuardianAndroid/keys/
+*.service-account.json
 # Binaries
 *.exe
 *.dll

@@ -1,4 +1,5 @@
 import { api } from './api_client'
+import { emitOrderSync } from './order_sync'
 
 export type Order = {
   id: string
@@ -65,6 +66,7 @@ export async function sendOrderMessage(orderId: string, text: string): Promise<C
     method: 'POST',
     body: JSON.stringify({ text }),
   })
+  emitOrderSync({ reason: 'message', orderId })
   return data.message
 }
 
@@ -84,11 +86,14 @@ export async function createOrder(body: {
     method: 'POST',
     body: JSON.stringify(body),
   })
-  return (data as { order?: Order }).order ?? (data as Order)
+  const order = (data as { order?: Order }).order ?? (data as Order)
+  emitOrderSync({ reason: 'created', orderId: order.id })
+  return order
 }
 
 export async function cancelOrder(id: string): Promise<Order> {
   const data = await api<{ order: Order }>(`/api/v1/orders/${id}/cancel`, { method: 'POST' })
+  emitOrderSync({ reason: 'cancelled', orderId: id })
   return data.order
 }
 

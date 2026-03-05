@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.github.triplet.play")
 }
 android {
     namespace = "com.guardian.android"
@@ -103,4 +104,18 @@ dependencies {
     implementation("org.json:json:20240303")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+play {
+    val serviceAccountFile =
+        providers.gradleProperty("PLAY_SERVICE_ACCOUNT_FILE")
+            .orElse("keys/play-service-account.json")
+            .get()
+    val releaseTrack =
+        providers.gradleProperty("PLAY_TRACK")
+            .orElse("internal")
+            .get()
+    serviceAccountCredentials.set(rootProject.file(serviceAccountFile))
+    track.set(releaseTrack)
+    defaultToAppBundles.set(true)
 }

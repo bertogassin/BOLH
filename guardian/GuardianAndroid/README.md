@@ -21,4 +21,20 @@ Kotlin + Jetpack Compose. Тема и экраны по [docs/DESIGN_SYSTEM_UX.m
 ./gradlew assembleDebug
 ```
 
+## Публикация в Google Play (Internal/Closed)
+
+1. Положите сервисный ключ в `keys/play-service-account.json` (локально, не коммитить).
+2. Подготовьте `release-signing.local.env` по примеру `release-signing.local.env.example`.
+3. Запустите публикацию:
+
+```powershell
+.\publish-play.ps1 -Track internal
+```
+
+Для закрытого теста:
+
+```powershell
+.\publish-play.ps1 -Track closed
+```
+
 Текущие файлы — скелет под копирование в новый проект Android Studio (File → New → Project → Empty Compose Activity), затем скопировать пакеты `ui/theme`, `ui/screens/home`, `data/models`.

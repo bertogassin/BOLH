@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import {
+  ArrowLeft,
   FileText,
   Upload,
   Search,
@@ -77,12 +78,21 @@ export default function DocumentsHubPage() {
     <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
       <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
         <div className="px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">Document Hub</h1>
-            <p className="text-sm text-white/50">
-              {documents.length} {t('documents_hub.docs_short')}{' '}
-              {needSignature.length > 0 ? `· ${needSignature.length} ${t('documents_hub.unsigned_short')}` : `· ${t('documents_hub.all_signed_short')}`}
-            </p>
+          <div className="flex items-start gap-3">
+            <Link
+              href="/profile"
+              className="mt-0.5 inline-flex min-h-[38px] min-w-[38px] items-center justify-center rounded-lg bg-white/10 hover:bg-white/20"
+              aria-label={t('back_home')}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold">Document Hub</h1>
+              <p className="text-sm text-white/50">
+                {documents.length} {t('documents_hub.docs_short')}{' '}
+                {needSignature.length > 0 ? `· ${needSignature.length} ${t('documents_hub.unsigned_short')}` : `· ${t('documents_hub.all_signed_short')}`}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button

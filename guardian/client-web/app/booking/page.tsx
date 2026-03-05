@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { useAIChat } from '@/context/AIChatContext'
 import { createOrder, fetchCards, fetchOrders, type PaymentCard, type Order } from '@/lib/api'
+import { subscribeOrderSync } from '@/lib/order_sync'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
 import { InputWithClear } from '@/components/InputWithClear'
 import { BOLHNav } from '@/components/BOLHNav'
@@ -204,9 +205,12 @@ export default function BookingPage() {
       return
     }
     let timerId: ReturnType<typeof setInterval> | null = null
+    let inFlight = false
     const ACTIVE_STATUSES = ['published', 'open', 'searching', 'matched', 'in_progress']
 
     const loadActiveOrder = () => {
+      if (inFlight) return
+      inFlight = true
       fetchOrders()
         .then((ordersList) => {
           const list = Array.isArray(ordersList) ? ordersList : []
@@ -214,6 +218,9 @@ export default function BookingPage() {
           setActiveOrder(next)
         })
         .catch(() => setActiveOrder(null))
+        .finally(() => {
+          inFlight = false
+        })
     }
 
     const handleVisibility = () => {
@@ -224,11 +231,15 @@ export default function BookingPage() {
     loadActiveOrder()
     timerId = setInterval(() => {
       if (!document.hidden) loadActiveOrder()
-    }, 20000)
+    }, 10000)
     document.addEventListener('visibilitychange', handleVisibility)
+    const unsubscribe = subscribeOrderSync(() => {
+      if (!document.hidden) loadActiveOrder()
+    })
     return () => {
       if (timerId) clearInterval(timerId)
       document.removeEventListener('visibilitychange', handleVisibility)
+      unsubscribe()
     }
   }, [user])
 
