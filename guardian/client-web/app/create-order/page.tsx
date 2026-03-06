@@ -27,6 +27,23 @@ export default function CreateOrderPage() {
   const [endDate, setEndDate] = useState('')
   const [endTime, setEndTime] = useState('')
   const [guardCount, setGuardCount] = useState('1')
+  const minBudgetValue = Number.parseFloat(budgetMin)
+  const maxBudgetValue = Number.parseFloat(budgetMax)
+  const hasBudgetInputs = budgetMin.trim() !== '' && budgetMax.trim() !== ''
+  const budgetRangeInvalid =
+    hasBudgetInputs && Number.isFinite(minBudgetValue) && Number.isFinite(maxBudgetValue) && maxBudgetValue < minBudgetValue
+  const startDateTime = startDate && startTime ? new Date(`${startDate}T${startTime}`) : null
+  const endDateTime = endDate && endTime ? new Date(`${endDate}T${endTime}`) : null
+  const invalidDateInput =
+    (startDateTime !== null && Number.isNaN(startDateTime.getTime())) ||
+    (endDateTime !== null && Number.isNaN(endDateTime.getTime()))
+  const dateRangeInvalid =
+    startDateTime !== null &&
+    endDateTime !== null &&
+    !Number.isNaN(startDateTime.getTime()) &&
+    !Number.isNaN(endDateTime.getTime()) &&
+    endDateTime.getTime() <= startDateTime.getTime()
+  const submitDisabled = loading || budgetRangeInvalid || dateRangeInvalid || invalidDateInput
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,14 +52,22 @@ export default function CreateOrderPage() {
       router.refresh()
       return
     }
-    const minB = parseFloat(budgetMin) || 0
-    const maxB = parseFloat(budgetMax) || 0
+    const minB = Number.parseFloat(budgetMin)
+    const maxB = Number.parseFloat(budgetMax)
+    if (!Number.isFinite(minB) || !Number.isFinite(maxB)) {
+      setError(t('create_order.error_budget'))
+      return
+    }
     if (maxB < minB) {
       setError(t('create_order.error_budget'))
       return
     }
     const start = new Date(`${startDate}T${startTime}`)
     const end = new Date(`${endDate}T${endTime}`)
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      setError(t('create_order.error_dates'))
+      return
+    }
     if (end.getTime() <= start.getTime()) {
       setError(t('create_order.error_dates'))
       return
@@ -138,9 +163,13 @@ export default function CreateOrderPage() {
                   min="0"
                   step="100"
                   value={budgetMin}
-                  onChange={(e) => setBudgetMin(e.target.value)}
-                  className="input-field"
+                  onChange={(e) => {
+                    setBudgetMin(e.target.value)
+                    if (error) setError('')
+                  }}
+                  className={`input-field ${budgetRangeInvalid ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={budgetRangeInvalid}
                 />
               </div>
               <div>
@@ -150,12 +179,19 @@ export default function CreateOrderPage() {
                   min="0"
                   step="100"
                   value={budgetMax}
-                  onChange={(e) => setBudgetMax(e.target.value)}
-                  className="input-field"
+                  onChange={(e) => {
+                    setBudgetMax(e.target.value)
+                    if (error) setError('')
+                  }}
+                  className={`input-field ${budgetRangeInvalid ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={budgetRangeInvalid}
                 />
               </div>
             </div>
+            {budgetRangeInvalid && (
+              <p className="text-sm text-red-600">{t('create_order.error_budget')}</p>
+            )}
           </div>
 
           <div className="card space-y-4">
@@ -196,10 +232,14 @@ export default function CreateOrderPage() {
                 <input
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    if (error) setError('')
+                  }}
                   min={today}
-                  className="input-field"
+                  className={`input-field ${dateRangeInvalid || invalidDateInput ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={dateRangeInvalid || invalidDateInput}
                 />
               </div>
               <div>
@@ -207,9 +247,13 @@ export default function CreateOrderPage() {
                 <input
                   type="time"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="input-field"
+                  onChange={(e) => {
+                    setStartTime(e.target.value)
+                    if (error) setError('')
+                  }}
+                  className={`input-field ${dateRangeInvalid || invalidDateInput ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={dateRangeInvalid || invalidDateInput}
                 />
               </div>
             </div>
@@ -219,10 +263,14 @@ export default function CreateOrderPage() {
                 <input
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={(e) => {
+                    setEndDate(e.target.value)
+                    if (error) setError('')
+                  }}
                   min={startDate || today}
-                  className="input-field"
+                  className={`input-field ${dateRangeInvalid || invalidDateInput ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={dateRangeInvalid || invalidDateInput}
                 />
               </div>
               <div>
@@ -230,12 +278,19 @@ export default function CreateOrderPage() {
                 <input
                   type="time"
                   value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="input-field"
+                  onChange={(e) => {
+                    setEndTime(e.target.value)
+                    if (error) setError('')
+                  }}
+                  className={`input-field ${dateRangeInvalid || invalidDateInput ? 'border-red-400 focus:border-red-500' : ''}`}
                   required
+                  aria-invalid={dateRangeInvalid || invalidDateInput}
                 />
               </div>
             </div>
+            {(dateRangeInvalid || invalidDateInput) && (
+              <p className="text-sm text-red-600">{t('create_order.error_dates')}</p>
+            )}
           </div>
 
           <div className="card">
@@ -252,7 +307,7 @@ export default function CreateOrderPage() {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-base">
+          <button type="submit" disabled={submitDisabled} className="btn-primary w-full py-3 text-base">
             {loading ? t('create_order.creating') : t('create_order.create_btn')}
           </button>
         </form>

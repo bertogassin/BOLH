@@ -61,7 +61,7 @@ export default function ProfilePersonalPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">Profile</h1>
+          <h1 className="text-lg font-semibold">{t('profile.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6">

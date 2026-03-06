@@ -27,16 +27,9 @@ export default function LoginPage() {
   const emailInputRef = useRef<HTMLInputElement>(null)
   const passwordInputRef = useRef<HTMLInputElement>(null)
   const startedAtRef = useRef<number>(Date.now())
-  const { login, loginDemo } = useAuth()
+  const { login } = useAuth()
   const { t } = useLocale()
   const router = useRouter()
-
-  const handleDemoLogin = () => {
-    setError('')
-    loginDemo()
-    router.push('/profile')
-    router.refresh()
-  }
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -210,9 +203,6 @@ export default function LoginPage() {
           <button type="submit" disabled={loading || !email.trim() || !password} className="btn-primary w-full py-3">
             {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
-          <p className="text-center text-sm text-gray-500 mt-2">
-            <button type="button" onClick={handleDemoLogin} className="font-medium text-guardian-blue hover:underline">{t('auth.demo_btn')}</button>
-          </p>
         </form>
         <p className="mt-6 text-center text-sm text-gray-500">
           {t('auth.no_account')}{' '}

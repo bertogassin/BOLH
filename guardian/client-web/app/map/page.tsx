@@ -183,7 +183,7 @@ export default function MapPage() {
               type="button"
               onClick={openChat}
               className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              aria-label="BOLH AI chat"
+              aria-label={t('ai_chat.aria_chat')}
             >
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>

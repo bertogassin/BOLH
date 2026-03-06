@@ -1,6 +1,6 @@
 'use client'
 
-import { AVAILABLE_LOCALES, LOCALE_OPTIONS } from '@/context/LocaleContext'
+import { AVAILABLE_LOCALES, LOCALE_OPTIONS, useLocale } from '@/context/LocaleContext'
 
 type Props = {
   locale: string
@@ -8,15 +8,17 @@ type Props = {
 }
 
 export function LanguagePicker({ locale, setLocale }: Props) {
+  const { t } = useLocale()
+
   return (
     <section>
-      <h2 className="text-sm font-semibold text-white mb-3">Languages</h2>
+      <h2 className="text-sm font-semibold text-white mb-3">{t('profile_language.title')}</h2>
       <div className="rounded-xl bg-white/10 border border-violet-400 p-3 space-y-2">
         <div className="flex items-center justify-between text-xs text-white/70">
           <span>
-            Current: <span className="text-white font-semibold">{(LOCALE_OPTIONS.find((l) => l.code === locale)?.code || locale).toUpperCase()}</span>
+            {t('profile_language.current')}: <span className="text-white font-semibold">{(LOCALE_OPTIONS.find((l) => l.code === locale)?.code || locale).toUpperCase()}</span>
           </span>
-          <span>{LOCALE_OPTIONS.length} languages</span>
+          <span>{LOCALE_OPTIONS.length} {t('profile_language.languages_count')}</span>
         </div>
         <div className="max-h-44 overflow-y-auto pr-1">
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -40,7 +42,7 @@ export function LanguagePicker({ locale, setLocale }: Props) {
                   aria-pressed={locale === opt.code}
                 >
                   {opt.code.toUpperCase()}
-                  {!isAvailable && <span className="ml-1 text-[9px]">Soon</span>}
+                  {!isAvailable && <span className="ml-1 text-[9px]">{t('profile_language.soon')}</span>}
                 </button>
               )
             })}

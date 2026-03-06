@@ -335,7 +335,7 @@ export default function CompanyRegisterPage() {
             {submitting ? t('company_register.sending') : t('company_register.become_partner')}
           </button>
           <p className="text-xs text-white/60">
-            {t('company_register.footer_note_before')} <span className="text-white">pending</span>. {t('company_register.footer_note_after')}
+            {t('company_register.footer_note_before')} <span className="text-white">{t('company_register.pending')}</span>. {t('company_register.footer_note_after')}
           </p>
         </div>
         {success && (

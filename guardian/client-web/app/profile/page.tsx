@@ -42,7 +42,7 @@ export default function ProfilePage() {
   })
 
   const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
-  const isDemoUser = user?.id === 'demo'
+  const defaultDisplayName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
 
   useEffect(() => {
     if (!user) return
@@ -55,42 +55,39 @@ export default function ProfilePage() {
           ...parsed,
           displayName:
             String(parsed.displayName || '').trim() ||
-            `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+            defaultDisplayName,
           phoneAlt: String(parsed.phoneAlt || '').trim() || user.phone || '',
         }))
       } else {
         setDetails((prev) => ({
           ...prev,
-          displayName: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+          displayName: defaultDisplayName,
           phoneAlt: user.phone || '',
         }))
       }
     } catch {
       setDetails((prev) => ({
         ...prev,
-        displayName: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        displayName: defaultDisplayName,
         phoneAlt: user.phone || '',
       }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+  }, [defaultDisplayName, user?.id])
 
   const toggleOnlineStatus = () => {
     if (!details.online) {
       const requiredForOnline = [
         details.displayName,
         details.city,
+        details.availability,
+        details.serviceRadiusKm,
+        details.basePrice,
+        details.hourlyRate,
       ]
-      if (!isDemoUser) {
-        requiredForOnline.push(details.availability, details.serviceRadiusKm, details.basePrice, details.hourlyRate)
-      }
       const missingRequired = requiredForOnline.some((v) => String(v || '').trim().length === 0)
       if (missingRequired) {
-        setOnlineHint(
-          isDemoUser
-            ? 'Complete profile details first: name and city.'
-            : 'Complete profile details first: name, city, availability, radius (km), and price.'
-        )
+        setOnlineHint(t('profile.online_hint_full'))
         return
       }
     }
@@ -131,7 +128,8 @@ export default function ProfilePage() {
 
   const initial = user ? (user.first_name?.[0] || user.email?.[0] || 'U').toUpperCase() : 'U'
   const isAgency = user?.user_type === 'agency'
-  const displayName = (details.displayName || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || 'User').trim()
+  const fallbackDisplayName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
+  const displayName = (details.displayName || fallbackDisplayName).trim()
   const roleLabel =
     user?.user_type === 'agency'
       ? t('profile.role_agency')

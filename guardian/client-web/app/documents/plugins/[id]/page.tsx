@@ -262,9 +262,9 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
                     onChange={(e) => setAddRole(e.target.value)}
                     className="rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white"
                   >
-                    <option value="viewer">viewer</option>
-                    <option value="editor">editor</option>
-                    <option value="admin">admin</option>
+                    <option value="viewer">{t('plugin_detail.role_viewer')}</option>
+                    <option value="editor">{t('plugin_detail.role_editor')}</option>
+                    <option value="admin">{t('plugin_detail.role_admin')}</option>
                   </select>
                 </div>
                 <button

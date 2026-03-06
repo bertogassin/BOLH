@@ -150,7 +150,7 @@ export default function DeleteAccountPage() {
               value={phrase}
               onChange={(e) => setPhrase(e.target.value)}
               className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
-              placeholder="DELETE ACCOUNT"
+              placeholder={t('profile_delete.phrase_placeholder')}
             />
           </div>
           <div>
@@ -169,7 +169,7 @@ export default function DeleteAccountPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-xl bg-white/10 border border-violet-400 px-3 py-3 min-h-[44px] outline-none"
-              placeholder="******"
+              placeholder={t('profile_delete.password_placeholder')}
             />
           </div>
 

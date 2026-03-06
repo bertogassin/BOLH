@@ -87,7 +87,7 @@ export default function DocumentsHubPage() {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
-              <h1 className="text-xl font-bold">Document Hub</h1>
+              <h1 className="text-xl font-bold">{t('documents_hub.title')}</h1>
               <p className="text-sm text-white/50">
                 {documents.length} {t('documents_hub.docs_short')}{' '}
                 {needSignature.length > 0 ? `· ${needSignature.length} ${t('documents_hub.unsigned_short')}` : `· ${t('documents_hub.all_signed_short')}`}
@@ -227,7 +227,7 @@ export default function DocumentsHubPage() {
               {t('documents_hub.reset_filters')}
             </button>
             <button type="button" onClick={copySelectionSummary} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs flex items-center gap-1"><Copy className="h-3.5 w-3.5" />{t('documents_hub.copy')}</button>
-            <button type="button" onClick={exportCsv} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs flex items-center gap-1"><Database className="h-3.5 w-3.5" />CSV</button>
+            <button type="button" onClick={exportCsv} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs flex items-center gap-1"><Database className="h-3.5 w-3.5" />{t('documents_hub.csv')}</button>
             <button type="button" onClick={downloadSelected} disabled={downloadingBulk || selectedDocs.length === 0} className="rounded-lg bg-violet-600/80 px-3 py-1.5 text-xs disabled:opacity-50 flex items-center gap-1"><Download className="h-3.5 w-3.5" />{downloadingBulk ? t('documents_hub.downloading') : t('documents_hub.download_selected')}</button>
           </div>
         </div>
@@ -251,7 +251,7 @@ export default function DocumentsHubPage() {
             <p className="text-xs text-violet-100">{selectedDocs.length} {t('documents_hub.selected')} · {formatSize(selectedSizeBytes)}</p>
             <div className="flex gap-2">
               <button type="button" onClick={copySelectionSummary} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">{t('documents_hub.copy')}</button>
-              <button type="button" onClick={exportCsv} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">CSV</button>
+              <button type="button" onClick={exportCsv} className="rounded-lg bg-white/10 px-3 py-1.5 text-xs">{t('documents_hub.csv')}</button>
               <button type="button" onClick={downloadSelected} disabled={downloadingBulk} className="rounded-lg bg-violet-600 px-3 py-1.5 text-xs disabled:opacity-50">
                 {downloadingBulk ? t('documents_hub.downloading') : t('documents_hub.download')}
               </button>

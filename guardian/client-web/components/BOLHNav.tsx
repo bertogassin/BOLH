@@ -4,11 +4,13 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, Shield, User } from 'lucide-react'
+import { useLocale } from '@/context/LocaleContext'
 
 type Tab = 'booking' | 'map' | 'profile'
 
 export function BOLHNav({ current }: { current: Tab }) {
   const router = useRouter()
+  const { t } = useLocale()
 
   useEffect(() => {
     const run = () => {
@@ -43,7 +45,7 @@ export function BOLHNav({ current }: { current: Tab }) {
           }`}
         >
           <Shield className={`h-5 w-5 ${current === 'booking' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">Home</span>
+          <span className="text-xs font-medium">{t('navigation.home')}</span>
         </Link>
         <Link
           href="/map"
@@ -54,7 +56,7 @@ export function BOLHNav({ current }: { current: Tab }) {
           }`}
         >
           <MapPin className={`h-5 w-5 ${current === 'map' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">Map</span>
+          <span className="text-xs font-medium">{t('navigation.map')}</span>
         </Link>
         <Link
           href="/profile"
@@ -65,7 +67,7 @@ export function BOLHNav({ current }: { current: Tab }) {
           }`}
         >
           <User className={`h-5 w-5 ${current === 'profile' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">Profile</span>
+          <span className="text-xs font-medium">{t('navigation.profile')}</span>
         </Link>
       </div>
     </nav>

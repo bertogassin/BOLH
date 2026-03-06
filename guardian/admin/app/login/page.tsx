@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { login, setAdminToken } from '@/lib/api'
 
 export default function LoginPage() {
@@ -11,15 +11,23 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
     try {
-      const { token } = await login(email, password)
+      const { token, user } = await login(email, password)
+      if (!token) {
+        throw new Error('Token is missing in login response')
+      }
+      if (user.user_type !== 'admin') {
+        throw new Error('Access denied: admin role required')
+      }
       setAdminToken(token)
-      router.push('/dashboard')
+      const nextPath = searchParams.get('next')
+      router.push(nextPath || '/dashboard')
       router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')

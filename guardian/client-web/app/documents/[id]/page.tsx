@@ -278,8 +278,8 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
             <p className="text-sm">{doc.version}</p>
           </div>
           <div className="rounded-xl bg-white/5 p-3">
-            <p className="text-xs text-white/50">MIME</p>
-            <p className="text-sm truncate">{doc.mime_type || 'unknown'}</p>
+            <p className="text-xs text-white/50">{t('documents_detail.mime')}</p>
+            <p className="text-sm truncate">{doc.mime_type || t('documents_detail.unknown')}</p>
           </div>
           <div className="rounded-xl bg-white/5 p-3">
             <p className="text-xs text-white/50">{t('documents_detail.last_updated')}</p>
@@ -392,8 +392,8 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
               {t('documents_detail.send_by_email')}
             </button>
             {lastDownloadedAt && <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.last_download')}: {formatDateTime(lastDownloadedAt, locale)}</span>}
-            <span className="rounded-lg bg-white/10 px-3 py-1.5">ID: {doc.id.slice(0, 8)}...</span>
-            <span className="rounded-lg bg-white/10 px-3 py-1.5">MIME: {doc.mime_type || 'unknown'}</span>
+            <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.id')}: {doc.id.slice(0, 8)}...</span>
+            <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.mime')}: {doc.mime_type || t('documents_detail.unknown')}</span>
             {doc.expires_at ? <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.expires')}: {formatDateTime(doc.expires_at, locale)}</span> : null}
             <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.hotkeys')}</span>
           </div>

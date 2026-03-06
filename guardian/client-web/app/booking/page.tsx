@@ -23,9 +23,9 @@ import { TimeSelector } from '@/components/booking/TimeSelector'
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sep', 'Oct', 'Nov', 'Dec']
 const SERVICES = [
-  { id: 'security', label: 'Security' },
-  { id: 'guardian', label: 'Guardian' },
-  { id: 'patrol', label: 'Patrol' },
+  { id: 'security' },
+  { id: 'guardian' },
+  { id: 'patrol' },
 ]
 const PANEL_CLASS = 'rounded-xl bg-black border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
 const DRAFT_WRITE_DEBOUNCE_MS = 250
@@ -79,8 +79,8 @@ export default function BookingPage() {
   const cardDigits = oneTimeCardNumber.replace(/\D/g, '')
   const cardLastFour = cardDigits.slice(-4)
   const selectedServiceLabel = useMemo(
-    () => SERVICES.find((s) => s.id === service)?.label || 'Security',
-    [service]
+    () => t(`booking.service_${service}`),
+    [service, t]
   )
   const missionDraftKey = `guardian_booking_mission_draft_${user?.id || 'guest'}`
   const bookingDraftKey = `guardian_booking_form_draft_${user?.id || 'guest'}`
@@ -120,10 +120,22 @@ export default function BookingPage() {
   const paymentSheetIsFloating = keyboardInset > 0
   const isAnyDrawerOpen = showMissionSheet || showPaymentSheet || showOneTimeCardSheet
   const shouldHideBottomNav = showMissionSheet || showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
+  const fromParts = fromTime.split(':')
+  const toParts = toTime.split(':')
+  const fromMinutes =
+    fromParts.length === 2 ? Number.parseInt(fromParts[0], 10) * 60 + Number.parseInt(fromParts[1], 10) : null
+  const toMinutes =
+    toParts.length === 2 ? Number.parseInt(toParts[0], 10) * 60 + Number.parseInt(toParts[1], 10) : null
+  const timeRangeInvalid = fromMinutes !== null && toMinutes !== null && toMinutes <= fromMinutes
+  const parsedPrice = Number.parseFloat(price)
+  const priceNotPositive = price.trim() !== '' && (!Number.isFinite(parsedPrice) || parsedPrice <= 0)
   const addressError = submitAttempted && !address.trim()
   const termsError = submitAttempted && !acceptTerms
   const onlineError = submitAttempted && !isOnline
   const priceError = submitAttempted && !price.trim()
+  const priceValueError = submitAttempted && priceNotPositive
+  const timeError = submitAttempted && timeRangeInvalid
+  const submitDisabled = loading || timeRangeInvalid || priceNotPositive
 
   useEffect(() => {
     if (day > maxDay) setDay(maxDay)
@@ -385,11 +397,11 @@ export default function BookingPage() {
           const parsed = raw ? (JSON.parse(raw) as { rib?: string }) : {}
           const rib = String(parsed.rib || '').trim()
           if (!rib) {
-            setError('Add your RIB in Settings before switching to Online mode.')
+            setError(t('booking.error_rib_required'))
             return prev
           }
         } catch {
-          setError('Add your RIB in Settings before switching to Online mode.')
+          setError(t('booking.error_rib_required'))
           return prev
         }
       }
@@ -416,28 +428,32 @@ export default function BookingPage() {
       return
     }
     if (!address.trim()) {
-      setError('Please enter an address.')
+      setError(t('booking.error_address_required'))
       return
     }
     if (!acceptTerms) {
-      setError('Please accept terms and privacy policy.')
+      setError(t('booking.error_terms_required'))
       return
     }
     if (!isOnline) {
-      setError('Switch to Online mode before creating an order.')
+      setError(t('booking.error_online_required'))
       return
     }
     if (!hasSelectedPaymentMethod) {
-      setError('Please select a payment method.')
+      setError(t('booking.error_payment_required'))
       return
     }
-    const p = parseFloat(price) || 0
+    if (timeRangeInvalid) {
+      setError(t('booking.error_time_range'))
+      return
+    }
+    const p = Number.parseFloat(price)
     if (!price.trim()) {
-      setError('Please enter your price per hour.')
+      setError(t('booking.error_price_required'))
       return
     }
-    if (p < 0) {
-      setError('Price cannot be negative.')
+    if (!Number.isFinite(p) || p <= 0) {
+      setError(t('booking.error_price_positive'))
       return
     }
     setLoading(true)
@@ -448,12 +464,11 @@ export default function BookingPage() {
       const start = new Date(y, m, d, parseInt(fromTime.slice(0, 2), 10), parseInt(fromTime.slice(3), 10))
       let end = new Date(y, m, d, parseInt(toTime.slice(0, 2), 10), parseInt(toTime.slice(3), 10))
       if (start <= new Date()) {
-        setError('Start time must be in the future.')
+        setError(t('booking.error_start_future'))
         return
       }
-      if (end <= start) end = new Date(end.getTime() + 24 * 60 * 60 * 1000)
       await createOrder({
-        title: `${SERVICES.find(s => s.id === service)?.label || 'Guardian'} · ${address.slice(0, 30)}`,
+        title: `${t(`booking.service_${service}`)} · ${address.slice(0, 30)}`,
         description: missionDescription.trim() || autoMissionDescription,
         budget_min: p,
         budget_max: p,
@@ -490,7 +505,7 @@ export default function BookingPage() {
       router.push('/orders')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error')
+      setError(err instanceof Error ? err.message : t('booking.error_generic'))
     } finally {
       setLoading(false)
     }
@@ -553,11 +568,11 @@ export default function BookingPage() {
   if (!user) {
     return (
       <div className="min-h-dvh bg-black p-4 flex flex-col items-center justify-center gap-4 pb-32">
-        <p className="text-white/75 text-center">Log in to create a security order.</p>
+        <p className="text-white/75 text-center">{t('booking.login_required')}</p>
         <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
-          Log in
+          {t('auth.login_btn')}
         </Link>
-        <Link href="/register" className="text-sm text-white/70 hover:text-white">Create account</Link>
+        <Link href="/register" className="text-sm text-white/70 hover:text-white">{t('auth.register_link')}</Link>
       </div>
     )
   }
@@ -591,9 +606,9 @@ export default function BookingPage() {
                 }`}
               />
               {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
-              {isOnline ? 'Online' : 'Offline'}
+              {isOnline ? t('booking.online') : t('booking.offline')}
             </button>
-            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label="BOLH AI chat">
+            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label={t('booking.ai_chat_aria')}>
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>
           </div>
@@ -615,7 +630,7 @@ export default function BookingPage() {
               onClick={applyLastOrderTemplate}
               className="w-full rounded-lg border border-violet-400 bg-black px-3 py-2 text-sm text-white/85 hover:bg-white/5"
             >
-              Repeat last order
+              {t('booking.repeat_last_order')}
             </button>
           )}
           {error && (
@@ -624,13 +639,13 @@ export default function BookingPage() {
                 message={error}
                 className="border-0 bg-transparent p-0 text-sm text-red-200"
               />
-              <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label="Close">×</button>
+              <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label={t('booking.close')}>×</button>
             </div>
           )}
           {activeOrder && (
             <div className="rounded-xl border border-violet-400 bg-black px-3 py-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-white/75 uppercase tracking-wide">Active order</span>
+                <span className="text-xs text-white/75 uppercase tracking-wide">{t('booking.active_order')}</span>
                 <span className="rounded-full border border-violet-400/80 bg-white/5 px-2 py-0.5 text-[11px] text-white/85">
                   {statusLabel(activeOrder.status, t)}
                 </span>
@@ -641,19 +656,19 @@ export default function BookingPage() {
                   href={`/orders/${activeOrder.id}`}
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Details
+                  {t('booking.details')}
                 </Link>
                 <Link
                   href={`/orders/${activeOrder.id}/chat`}
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Chat
+                  {t('booking.chat')}
                 </Link>
                 <Link
                   href="/map"
                   className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
                 >
-                  Map
+                  {t('booking.map')}
                 </Link>
               </div>
             </div>
@@ -680,7 +695,7 @@ export default function BookingPage() {
                     ) : (
                       <Map className="h-3.5 w-3.5" />
                     )}
-                    {option.label}
+                    {t(`booking.service_${option.id}`)}
                   </span>
                 </button>
               ))}
@@ -693,8 +708,8 @@ export default function BookingPage() {
                 onNext={() => setDay((d) => Math.min(maxDay, d + 1))}
                 disablePrev={safeDay <= minDay}
                 disableNext={safeDay >= maxDay}
-                ariaLabelPrev="Previous day"
-                ariaLabelNext="Next day"
+                ariaLabelPrev={t('booking.previous_day')}
+                ariaLabelNext={t('booking.next_day')}
                 panelClass={PANEL_CLASS}
               />
               <Selector
@@ -704,8 +719,8 @@ export default function BookingPage() {
                 onNext={() => setMonth((m) => Math.min(11, m + 1))}
                 disablePrev={month <= currentMonth}
                 disableNext={month >= 11}
-                ariaLabelPrev="Previous month"
-                ariaLabelNext="Next month"
+                ariaLabelPrev={t('booking.previous_month')}
+                ariaLabelNext={t('booking.next_month')}
                 panelClass={PANEL_CLASS}
               />
             </div>
@@ -713,6 +728,7 @@ export default function BookingPage() {
               <TimeSelector label={t('booking.from')} value={fromTime} onChange={setFromTime} panelClass={PANEL_CLASS} />
               <TimeSelector label={t('booking.to')} value={toTime} onChange={setToTime} panelClass={PANEL_CLASS} />
             </div>
+            {timeError ? <FieldError message={t('booking.error_time_range')} className="mt-1 text-xs text-red-300" /> : null}
           </div>
 
           <AddressAutocomplete
@@ -735,7 +751,7 @@ export default function BookingPage() {
           />
           {address.trim() && missionHints && (
             <div className="rounded-xl border border-violet-400 bg-black px-3 py-2.5">
-              <p className="text-[11px] text-white/75">Detected object</p>
+              <p className="text-[11px] text-white/75">{t('booking.detected_object')}</p>
               <p className="mt-0.5 text-xs text-white/90">{missionHints.objectLabel}</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {missionHints.tasks.map((task) => (
@@ -746,12 +762,12 @@ export default function BookingPage() {
               </div>
             </div>
           )}
-          {addressError ? <FieldError message="Address is required." className="mt-1 text-xs text-red-300" /> : null}
+          {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
           <div className={`relative ${showMissionSheet ? 'z-50' : ''} rounded-xl bg-black border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
             <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/85">
               <span className="inline-flex items-center gap-1.5 text-left text-white/85">
                 <Shield className="h-3.5 w-3.5" />
-                Mission
+                {t('booking.mission_title')}
               </span>
               <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
             </div>
@@ -786,7 +802,7 @@ export default function BookingPage() {
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Collapse
+                    {t('booking.collapse')}
                   </button>
                 </div>
                 <div className="mb-1 flex items-center gap-1">
@@ -798,7 +814,7 @@ export default function BookingPage() {
                     }}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
                   >
-                    Auto
+                    {t('booking.auto')}
                   </button>
                   <button
                     type="button"
@@ -806,14 +822,14 @@ export default function BookingPage() {
                     disabled={!hasMissionDraft}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10 disabled:opacity-40"
                   >
-                    Restore
+                    {t('booking.restore')}
                   </button>
                   <button
                     type="button"
                     onClick={clearMissionText}
                     className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
                   >
-                    Clear
+                    {t('booking.clear')}
                   </button>
                 </div>
               <textarea
@@ -828,7 +844,7 @@ export default function BookingPage() {
                 className="w-full resize-y rounded-lg bg-black border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
               />
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
-                <span>You can keep this text or add details. Draft is saved automatically.</span>
+                <span>{t('booking.mission_hint')}</span>
                 <span>{missionDescription.length}/2500</span>
               </div>
             </div>
@@ -847,7 +863,7 @@ export default function BookingPage() {
                 inputMode="decimal"
                 aria-label={t('booking.your_price')}
               />
-              <span className="text-white/60 text-[11px] shrink-0">/ hour</span>
+              <span className="text-white/60 text-[11px] shrink-0">{t('booking.per_hour')}</span>
             </div>
             <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/85`}>
               <button
@@ -859,7 +875,7 @@ export default function BookingPage() {
                 className="inline-flex items-center gap-1.5 text-white/85 hover:text-white"
               >
                 <CreditCard className="h-3 w-3" />
-                Payment card
+                {t('booking.payment_card')}
               </button>
               <div className="inline-flex items-center gap-1.5">
                 <span className="tabular-nums text-white/85">{paymentPreview}</span>
@@ -888,18 +904,18 @@ export default function BookingPage() {
                 style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 8}px` } : undefined}
               >
                 <div className="mb-1 flex items-center justify-between rounded-md border border-white/10 bg-white/5 px-2 py-1">
-                  <span className="text-[11px] text-white/70">Saved cards</span>
+                  <span className="text-[11px] text-white/70">{t('booking.saved_cards')}</span>
                   <button
                     type="button"
                     onClick={() => setShowPaymentSheet(false)}
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Collapse
+                    {t('booking.collapse')}
                   </button>
                 </div>
                 {savedCards.length === 0 ? (
-                  <p className="mt-1 text-[11px] text-white/50">No saved cards</p>
+                  <p className="mt-1 text-[11px] text-white/50">{t('booking.no_saved_cards')}</p>
                 ) : (
                   <div className="mt-1 flex gap-1.5 overflow-x-auto pb-0.5">
                     {savedCards.map((card) => (
@@ -941,7 +957,7 @@ export default function BookingPage() {
                     className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
-                    Collapse
+                    {t('booking.collapse')}
                   </button>
                 </div>
                 <div className="mt-1 grid grid-cols-1 gap-1.5">
@@ -975,7 +991,7 @@ export default function BookingPage() {
                         setOneTimeCardExpiry(formatted)
                         setOneTimeCard(null)
                       }}
-                      placeholder="MM/YY"
+                      placeholder={t('booking.expiry_placeholder')}
                       className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                         submitAttempted && oneTimeCardExpiry.trim().length > 0 && !isExpiryValid(oneTimeCardExpiry)
                           ? 'border-red-500/80 focus:border-red-500/80'
@@ -991,7 +1007,7 @@ export default function BookingPage() {
                         setOneTimeCardCvc(e.target.value.replace(/\D/g, '').slice(0, 4))
                         setOneTimeCard(null)
                       }}
-                      placeholder="CVC"
+                      placeholder={t('booking.cvc_placeholder')}
                       className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                         submitAttempted && oneTimeCardCvc.trim().length > 0 && !/^\d{3,4}$/.test(oneTimeCardCvc)
                           ? 'border-red-500/80 focus:border-red-500/80'
@@ -1006,7 +1022,7 @@ export default function BookingPage() {
                       setOneTimeCardHolder(e.target.value)
                       setOneTimeCard(null)
                     }}
-                    placeholder="Cardholder name"
+                      placeholder={t('booking.cardholder_name')}
                     className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                       submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
                         ? 'border-red-500/80 focus:border-red-500/80'
@@ -1025,15 +1041,16 @@ export default function BookingPage() {
                     disabled={!canUseOneTimeCard}
                     className="w-full rounded-lg bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
                   >
-                    Use this card
+                    {t('booking.use_this_card')}
                   </button>
                 </div>
               </div>
             )}
           </div>
-          {priceError ? <FieldError message="Price is required." className="mt-1 text-xs text-red-300" /> : null}
-          {paymentValidationError ? <FieldError message="Please choose at least one payment method." className="mt-1 text-xs text-red-300" /> : null}
-          {onlineError ? <FieldError message="You need to be online to publish an order." className="mt-1 text-xs text-red-300" /> : null}
+          {priceError ? <FieldError message={t('booking.error_price_required')} className="mt-1 text-xs text-red-300" /> : null}
+          {priceValueError ? <FieldError message={t('booking.error_price_positive')} className="mt-1 text-xs text-red-300" /> : null}
+          {paymentValidationError ? <FieldError message={t('booking.error_payment_required')} className="mt-1 text-xs text-red-300" /> : null}
+          {onlineError ? <FieldError message={t('booking.error_online_required')} className="mt-1 text-xs text-red-300" /> : null}
 
           <label className="flex items-start gap-3 cursor-pointer">
             <input
@@ -1050,11 +1067,11 @@ export default function BookingPage() {
               <Link href="/legal/privacy" className="text-violet-400 hover:underline">{t('booking.privacy_link')}</Link>
             </span>
           </label>
-          {termsError ? <FieldError message="Please accept terms and privacy policy." className="mt-1 text-xs text-red-300" /> : null}
+          {termsError ? <FieldError message={t('booking.error_terms_required')} className="mt-1 text-xs text-red-300" /> : null}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitDisabled}
             className="w-full rounded-xl bg-[#6b21a8] hover:bg-[#7c3aed] py-3.5 font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors min-h-[46px] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
             aria-busy={loading}
           >

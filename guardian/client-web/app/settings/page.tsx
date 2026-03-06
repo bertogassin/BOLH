@@ -169,36 +169,36 @@ export default function SettingsPage() {
               <Settings className="h-5 w-5 text-violet-300" />
               <p className="text-white/90 font-medium">{t('settings.intro')}</p>
             </div>
-            {saved ? <span className="text-xs text-green-300">Saved</span> : null}
+            {saved ? <span className="text-xs text-green-300">{t('settings.saved')}</span> : null}
           </div>
           <p className="text-xs text-white/75">
-            All settings are saved automatically.
+            {t('settings.autosave_hint')}
           </p>
         </div>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/75 tracking-wide">Account</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.account')}</h2>
           <Link href="/profile/change-password" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
             <span className="flex items-center gap-2 text-sm">
               <KeyRound className="h-4 w-4 text-violet-300" />
-              Change password
+              {t('settings.change_password')}
             </span>
             <span className="text-white/40">›</span>
           </Link>
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Paperclip className="h-4 w-4 text-violet-300" />
-              RIB details
+              {t('settings.rib_details')}
             </p>
             <FormField
-              label="RIB / IBAN"
+              label={t('settings.rib_label')}
               labelClassName={DARK_FIELD_LABEL_CLASS}
             >
               <input
                 type="text"
                 value={settings.rib}
                 onChange={(e) => update('rib', e.target.value.replace(/\s+/g, '').toUpperCase())}
-                placeholder="Enter your RIB / IBAN"
+                placeholder={t('settings.rib_placeholder')}
                 className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80"
               />
             </FormField>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
                 onClick={() => ribFileInputRef.current?.click()}
                 className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
               >
-                Attach RIB file
+                {t('settings.rib_attach')}
               </button>
               {settings.ribAttachmentName ? (
                 <button
@@ -227,34 +227,36 @@ export default function SettingsPage() {
                   onClick={() => update('ribAttachmentName', '')}
                   className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
                 >
-                  Remove
+                  {t('settings.remove')}
                 </button>
               ) : null}
             </div>
             <p className="text-xs text-white/75">
-              {settings.ribAttachmentName ? `Attached: ${settings.ribAttachmentName}` : 'No file attached yet'}
+              {settings.ribAttachmentName
+                ? `${t('settings.rib_attached_prefix')}: ${settings.ribAttachmentName}`
+                : t('settings.rib_no_file')}
             </p>
           </div>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/75 tracking-wide">Experience</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.experience')}</h2>
           <SwitchRow
-            title="Vibration"
-            hint="Mobile haptic feedback"
+            title={t('settings.vibration')}
+            hint={t('settings.vibration_hint')}
             value={settings.vibrationEnabled}
             onChange={(v) => update('vibrationEnabled', v)}
             icon={<Vibrate className="h-4 w-4 text-violet-300" />}
           />
           <SwitchRow
-            title="Action sounds"
-            hint="Clicks, submits, and validation feedback"
+            title={t('settings.action_sounds')}
+            hint={t('settings.action_sounds_hint')}
             value={settings.soundEnabled}
             onChange={(v) => update('soundEnabled', v)}
             icon={<Vibrate className="h-4 w-4 text-violet-300" />}
           />
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
-            <p className="text-sm text-white">Sound volume</p>
+            <p className="text-sm text-white">{t('settings.sound_volume')}</p>
             <input
               type="range"
               min={0}
@@ -277,7 +279,7 @@ export default function SettingsPage() {
                       : 'bg-white/10 border-violet-400 hover:bg-white/15'
                   }`}
                 >
-                  {preset[0].toUpperCase() + preset.slice(1)}
+                  {t(`settings.sound_preset_${preset}`)}
                 </button>
               ))}
             </div>
@@ -286,17 +288,17 @@ export default function SettingsPage() {
               onClick={playPreview}
               className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
             >
-              Play preview
+              {t('settings.play_preview')}
             </button>
           </div>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/75 tracking-wide">Appearance & Language</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.appearance_language')}</h2>
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-2">
             <p className="text-sm text-white inline-flex items-center gap-2">
               {settings.theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
-              Theme
+              {t('settings.theme')}
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
@@ -304,14 +306,14 @@ export default function SettingsPage() {
                 onClick={() => update('theme', 'dark')}
                 className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'dark' ? 'bg-violet-600 border-violet-400' : 'bg-white/10 border-violet-400 hover:bg-white/15'}`}
               >
-                Dark
+                {t('settings.theme_dark')}
               </button>
               <button
                 type="button"
                 onClick={() => update('theme', 'light')}
                 className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'light' ? 'bg-violet-600 border-violet-400' : 'bg-white/10 border-violet-400 hover:bg-white/15'}`}
               >
-                Light
+                {t('settings.theme_light')}
               </button>
             </div>
           </div>
@@ -319,10 +321,10 @@ export default function SettingsPage() {
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-2">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Globe2 className="h-4 w-4 text-violet-300" />
-              Language
+              {t('settings.language')}
             </p>
             <FormField
-              label="App language"
+              label={t('settings.app_language')}
               labelClassName={DARK_FIELD_LABEL_CLASS}
             >
               <select

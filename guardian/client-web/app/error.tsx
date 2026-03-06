@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Link from 'next/link'
+import { useLocale } from '@/context/LocaleContext'
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const { t } = useLocale()
+
   useEffect(() => {
     console.error(error)
   }, [error])
@@ -17,9 +20,9 @@ export default function Error({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#1a1b26] p-4 text-white">
       <div className="max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 text-center">
-        <h1 className="text-xl font-semibold">Something went wrong</h1>
+        <h1 className="text-xl font-semibold">{t('errors.boundary_title')}</h1>
         <p className="mt-2 text-sm text-white/60">
-          Page load failed. Try again or return to home.
+          {t('errors.boundary_subtitle')}
         </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
@@ -27,13 +30,13 @@ export default function Error({
             onClick={reset}
             className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-violet-500"
           >
-            Try again
+            {t('errors.retry')}
           </button>
           <Link
             href="/booking"
             className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-medium text-white hover:bg-white/10"
           >
-            Home
+            {t('navigation.home')}
           </Link>
         </div>
       </div>

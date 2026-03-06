@@ -6,10 +6,10 @@ export default function HomePage() {
       <h1 className="text-4xl font-bold">Guardian Admin</h1>
       <p className="text-gray-500">Reliability. Speed. Security.</p>
       <Link
-        href="/dashboard"
+        href="/login"
         className="rounded-lg bg-guardian-blue px-6 py-3 text-white hover:opacity-90"
       >
-        Go to dashboard
+        Sign in
       </Link>
     </div>
   )
