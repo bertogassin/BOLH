@@ -45,23 +45,36 @@ jobs:
 
       - name: Validate required secrets
         shell: pwsh
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")) { throw "Missing secret: ANDROID_KEYSTORE_BASE64" }
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}")) { throw "Missing secret: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" }
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEY_ALIAS }}")) { throw "Missing secret: ANDROID_KEY_ALIAS" }
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEYSTORE_PASSWORD }}")) { throw "Missing secret: ANDROID_KEYSTORE_PASSWORD" }
-          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEY_PASSWORD }}")) { throw "Missing secret: ANDROID_KEY_PASSWORD" }
+          if ([string]::IsNullOrWhiteSpace($env:ANDROID_KEYSTORE_BASE64)) { throw "Missing secret: ANDROID_KEYSTORE_BASE64" }
+          if ([string]::IsNullOrWhiteSpace($env:GOOGLE_PLAY_SERVICE_ACCOUNT_JSON)) { throw "Missing secret: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" }
+          if ([string]::IsNullOrWhiteSpace($env:ANDROID_KEY_ALIAS)) { throw "Missing secret: ANDROID_KEY_ALIAS" }
+          if ([string]::IsNullOrWhiteSpace($env:ANDROID_KEYSTORE_PASSWORD)) { throw "Missing secret: ANDROID_KEYSTORE_PASSWORD" }
+          if ([string]::IsNullOrWhiteSpace($env:ANDROID_KEY_PASSWORD)) { throw "Missing secret: ANDROID_KEY_PASSWORD" }
 
       - name: Prepare signing and Play credentials
         shell: pwsh
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
         run: |
           New-Item -Path "guardian/GuardianAndroid/app/keystore" -ItemType Directory -Force | Out-Null
           New-Item -Path "guardian/GuardianAndroid/keys" -ItemType Directory -Force | Out-Null
           [IO.File]::WriteAllBytes(
             "guardian/GuardianAndroid/app/keystore/upload-keystore.jks",
-            [Convert]::FromBase64String("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")
+            [Convert]::FromBase64String($env:ANDROID_KEYSTORE_BASE64)
           )
-          Set-Content -Path "guardian/GuardianAndroid/keys/play-service-account.json" -Value '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}' -NoNewline
+          [IO.File]::WriteAllText(
+            "guardian/GuardianAndroid/keys/play-service-account.json",
+            $env:GOOGLE_PLAY_SERVICE_ACCOUNT_JSON,
+            [Text.UTF8Encoding]::new($false)
+          )
 
       - name: Build release bundle
         working-directory: guardian/GuardianAndroid
