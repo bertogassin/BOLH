@@ -88,8 +88,8 @@ export default function ProfilePage() {
       if (missingRequired) {
         setOnlineHint(
           isDemoUser
-            ? 'Complete profile details first: name and city.'
-            : 'Complete profile details first: name, city, availability, radius (km), and price.'
+            ? t('profile.online_hint_demo')
+            : t('profile.online_hint_full')
         )
         return
       }
@@ -131,7 +131,7 @@ export default function ProfilePage() {
 
   const initial = user ? (user.first_name?.[0] || user.email?.[0] || 'U').toUpperCase() : 'U'
   const isAgency = user?.user_type === 'agency'
-  const displayName = (details.displayName || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || 'User').trim()
+  const displayName = (details.displayName || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')).trim()
   const roleLabel =
     user?.user_type === 'agency'
       ? t('profile.role_agency')

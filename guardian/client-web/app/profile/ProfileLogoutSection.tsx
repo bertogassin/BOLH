@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { LogOut } from 'lucide-react'
+import { useLocale } from '@/context/LocaleContext'
 
 type Props = {
   showLogoutConfirm: boolean
@@ -10,17 +11,19 @@ type Props = {
 }
 
 export function ProfileLogoutSection({ showLogoutConfirm, setShowLogoutConfirm, handleLogout }: Props) {
+  const { t } = useLocale()
+
   return (
     <>
       {showLogoutConfirm ? (
         <div className="rounded-xl bg-white/10 border border-violet-400 p-4 space-y-3">
-          <p className="text-white/90 text-center">Sign out?</p>
+          <p className="text-white/90 text-center">{t('profile_logout.confirm_title')}</p>
           <div className="flex gap-2">
             <button type="button" onClick={() => setShowLogoutConfirm(false)} className="flex-1 rounded-xl bg-white/10 border border-violet-400 py-3 text-white">
-              Cancel
+              {t('actions.cancel')}
             </button>
             <button type="button" onClick={handleLogout} className="flex-1 rounded-xl bg-red-500/30 py-3 text-red-300 font-medium">
-              Sign out
+              {t('profile_logout.sign_out')}
             </button>
           </div>
         </div>
@@ -31,7 +34,7 @@ export function ProfileLogoutSection({ showLogoutConfirm, setShowLogoutConfirm, 
           className="w-full rounded-xl bg-red-500/20 border border-red-400/50 py-3.5 text-red-300 hover:bg-red-500/30 flex items-center justify-center gap-2 font-medium min-h-[44px]"
         >
           <LogOut className="h-5 w-5" />
-          Sign out
+          {t('profile_logout.sign_out')}
         </button>
       )}
 

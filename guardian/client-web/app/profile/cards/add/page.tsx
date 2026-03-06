@@ -106,7 +106,7 @@ export default function AddCardPage() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] uppercase text-white/60">{t('profile_add_card.expires')}</p>
-                <p className="text-sm text-white">{expiry || 'MM/YY'}</p>
+                <p className="text-sm text-white">{expiry || t('profile_add_card.expiry_placeholder')}</p>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function AddCardPage() {
               maxLength={23}
               value={cardNumber}
               onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-              placeholder="4242 4242 4242 4242"
+              placeholder={t('profile_add_card.number_placeholder')}
               className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
             />
           </div>
@@ -140,7 +140,7 @@ export default function AddCardPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-white/60 uppercase mb-1">CVC</label>
+              <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile_add_card.cvc')}</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -158,7 +158,7 @@ export default function AddCardPage() {
               type="text"
               value={cardHolder}
               onChange={(e) => setCardHolder(e.target.value.toUpperCase())}
-              placeholder="IVAN IVANOV"
+              placeholder={t('profile_add_card.holder_name_placeholder')}
               className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
             />
           </div>

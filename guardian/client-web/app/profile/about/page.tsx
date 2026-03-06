@@ -25,12 +25,12 @@ export default function ProfileAboutPage() {
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold">About app</h1>
+          <h1 className="text-lg font-semibold">{t('profile_about.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
         <p className="text-white/80">BOLH SECURITY v2.1.0</p>
-        <p className="text-white/60 text-sm">Security and guarding application.</p>
+        <p className="text-white/60 text-sm">{t('profile_about.subtitle')}</p>
       </main>
       <BOLHNav current="profile" />
     </div>

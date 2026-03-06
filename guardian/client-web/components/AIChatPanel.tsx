@@ -107,7 +107,7 @@ export function AIChatPanel() {
         <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-violet-400" />
-            <h2 className="font-semibold text-white">BOLH AI</h2>
+            <h2 className="font-semibold text-white">{t('ai_chat.title')}</h2>
           </div>
           <div className="flex items-center gap-1">
             {messages.length > 0 && (

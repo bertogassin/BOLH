@@ -10,26 +10,26 @@ type Props = {
 export function ProfileGeneralSection({ t }: Props) {
   return (
     <section>
-      <h2 className="text-sm font-semibold text-white mb-3">General</h2>
+      <h2 className="text-sm font-semibold text-white mb-3">{t('profile.general')}</h2>
       <div className="space-y-1">
         <Link href="/documents" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <FileText className="h-5 w-5 text-white/60" />
-            Document Hub
+            {t('documents_hub.title')}
           </span>
           <span className="text-white/40">›</span>
         </Link>
         <Link href="/notifications" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <HelpCircle className="h-5 w-5 text-white/60" />
-            Notifications
+            {t('notifications.title')}
           </span>
           <span className="text-white/40">›</span>
         </Link>
         <Link href="/help" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
             <HelpCircle className="h-5 w-5 text-white/60" />
-            Help & FAQ
+            {t('help.title')}
           </span>
           <span className="text-white/40">›</span>
         </Link>

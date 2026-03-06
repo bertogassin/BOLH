@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown, MapPin, Plus } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { useLocale } from '@/context/LocaleContext'
 
 type SavedAddress = {
   id: string
@@ -15,6 +16,7 @@ type SavedAddress = {
 
 export function ProfileAddressesSection() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const [isExpanded, setIsExpanded] = useState(false)
   const [addresses, setAddresses] = useState<SavedAddress[]>([])
   const storageKey = useMemo(() => `guardian_saved_addresses_${user?.id || 'guest'}`, [user?.id])
@@ -43,7 +45,7 @@ export function ProfileAddressesSection() {
       >
         <span className="inline-flex items-center gap-2">
           <MapPin className="h-4.5 w-4.5 text-white/80" />
-          Saved addresses
+          {t('profile_addresses.title')}
         </span>
         <span className="inline-flex items-center gap-2 text-sm text-white/80">
           {addresses.length}
@@ -59,7 +61,7 @@ export function ProfileAddressesSection() {
           >
             <MapPin className="h-4 w-4 text-white/80" />
             <Plus className="h-4 w-4 text-violet-300" />
-            Manage addresses
+            {t('profile_addresses.manage')}
           </Link>
           <div className="max-h-56 space-y-2 overflow-y-auto">
             {addresses.length > 0 ? (
@@ -69,14 +71,14 @@ export function ProfileAddressesSection() {
                     <span className="text-sm text-white/90 break-words">{item.label}</span>
                     {item.isDefault ? (
                       <span className="shrink-0 rounded-md border border-violet-400 bg-violet-600/80 px-2 py-0.5 text-[10px] text-white">
-                        Default
+                        {t('profile_addresses.default')}
                       </span>
                     ) : null}
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-white/60">No saved addresses yet.</p>
+              <p className="text-sm text-white/60">{t('profile_addresses.empty')}</p>
             )}
           </div>
         </div>

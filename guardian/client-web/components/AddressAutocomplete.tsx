@@ -295,7 +295,7 @@ export function AddressAutocomplete({
               onClick={() => setShowSavedHistory((v) => !v)}
               className={`w-full border-t ${borderClass} px-3 py-1 text-[11px] text-white/70 flex items-center justify-between hover:bg-white/5`}
             >
-              <span>Saved and recent addresses</span>
+              <span>{t('address_autocomplete.saved_recent')}</span>
               <span className="inline-flex items-center gap-1">
                 {totalHistoryCount}
                 {showSavedHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -305,7 +305,7 @@ export function AddressAutocomplete({
               <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5 bg-black/40`}>
                 {saved.length > 0 && (
                   <>
-                    <p className="px-1 text-[11px] text-white/45">Saved addresses</p>
+                    <p className="px-1 text-[11px] text-white/45">{t('address_autocomplete.saved')}</p>
                     <ul className="mt-1 space-y-1">
                       {saved.map((item) => (
                         <li key={`saved-${item.display}-${item.latitude}-${item.longitude}`}>
@@ -324,7 +324,7 @@ export function AddressAutocomplete({
                 )}
                 {recent.length > 0 && (
                   <>
-                    <p className="mt-2 px-1 text-[11px] text-white/45">Recent history</p>
+                    <p className="mt-2 px-1 text-[11px] text-white/45">{t('address_autocomplete.recent')}</p>
                     <ul className="mt-1 space-y-1">
                       {recent.map((item) => (
                         <li key={`${item.display}-${item.latitude}-${item.longitude}`}>
@@ -344,8 +344,8 @@ export function AddressAutocomplete({
                                 removeRecent(item.display)
                               }}
                               className="rounded p-1 text-white/35 hover:bg-white/10 hover:text-white/75"
-                              aria-label={`Remove ${item.display}`}
-                              title="Remove from history"
+                              aria-label={`${t('address_autocomplete.remove')} ${item.display}`}
+                              title={t('address_autocomplete.remove_from_history')}
                             >
                               <X className="h-3.5 w-3.5" />
                             </button>
