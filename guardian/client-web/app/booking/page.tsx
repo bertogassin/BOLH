@@ -20,6 +20,7 @@ import { detectPlaceType, missionHintsByPlaceType } from '@/lib/booking/missionH
 import { isExpiryValid, isValidLuhn } from '@/lib/payment/cardUtils'
 import { Selector } from '@/components/booking/Selector'
 import { TimeSelector } from '@/components/booking/TimeSelector'
+import { getBankDetailsMode } from '@/lib/bankDetails'
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sep', 'Oct', 'Nov', 'Dec']
 const SERVICES = [
@@ -32,7 +33,7 @@ const DRAFT_WRITE_DEBOUNCE_MS = 250
 
 export default function BookingPage() {
   const { user } = useAuth()
-  const { t } = useLocale()
+  const { t, locale } = useLocale()
   const { openChat } = useAIChat()
   const router = useRouter()
   const now = new Date()
@@ -71,6 +72,7 @@ export default function BookingPage() {
   const [draftHydrated, setDraftHydrated] = useState(false)
   const [activeOrder, setActiveOrder] = useState<Order | null>(null)
   const errorRef = useRef<HTMLDivElement>(null)
+  const bankDetailsMode = getBankDetailsMode(locale)
 
   const maxDay = getDaysInMonth(now.getFullYear(), month)
   const safeDay = Math.min(day, maxDay)
@@ -397,11 +399,23 @@ export default function BookingPage() {
           const parsed = raw ? (JSON.parse(raw) as { rib?: string }) : {}
           const rib = String(parsed.rib || '').trim()
           if (!rib) {
-            setError(t('booking.error_rib_required'))
+            setError(
+              bankDetailsMode === 'rib'
+                ? t('booking.error_bank_required_rib')
+                : bankDetailsMode === 'iban'
+                ? t('booking.error_bank_required_iban')
+                : t('booking.error_bank_required_generic')
+            )
             return prev
           }
         } catch {
-          setError(t('booking.error_rib_required'))
+          setError(
+            bankDetailsMode === 'rib'
+              ? t('booking.error_bank_required_rib')
+              : bankDetailsMode === 'iban'
+              ? t('booking.error_bank_required_iban')
+              : t('booking.error_bank_required_generic')
+          )
           return prev
         }
       }

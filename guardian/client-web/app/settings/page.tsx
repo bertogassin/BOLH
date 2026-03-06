@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext'
 import { BOLHNav } from '@/components/BOLHNav'
 import { FormField } from '@/components/FormField'
 import { DARK_FIELD_LABEL_CLASS } from '@/components/formStyles'
+import { getBankDetailsMode } from '@/lib/bankDetails'
 
 type AppSettings = {
   vibrationEnabled: boolean
@@ -84,6 +85,19 @@ export default function SettingsPage() {
   const storageKey = 'guardian_app_settings_v1'
   const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
   const availableLocaleCodes = useMemo(() => new Set(LOCALE_OPTIONS.map((l) => l.code)), [])
+  const bankDetailsMode = useMemo(() => getBankDetailsMode(locale), [locale])
+  const bankLabel =
+    bankDetailsMode === 'rib'
+      ? t('settings.bank_label_rib')
+      : bankDetailsMode === 'iban'
+      ? t('settings.bank_label_iban')
+      : t('settings.bank_label_generic')
+  const bankPlaceholder =
+    bankDetailsMode === 'rib'
+      ? t('settings.bank_placeholder_rib')
+      : bankDetailsMode === 'iban'
+      ? t('settings.bank_placeholder_iban')
+      : t('settings.bank_placeholder_generic')
 
   useEffect(() => {
     try {
@@ -188,17 +202,17 @@ export default function SettingsPage() {
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Paperclip className="h-4 w-4 text-violet-300" />
-              {t('settings.rib_details')}
+              {t('settings.bank_details')}
             </p>
             <FormField
-              label={t('settings.rib_label')}
+              label={bankLabel}
               labelClassName={DARK_FIELD_LABEL_CLASS}
             >
               <input
                 type="text"
                 value={settings.rib}
                 onChange={(e) => update('rib', e.target.value.replace(/\s+/g, '').toUpperCase())}
-                placeholder={t('settings.rib_placeholder')}
+                placeholder={bankPlaceholder}
                 className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80"
               />
             </FormField>
@@ -219,7 +233,7 @@ export default function SettingsPage() {
                 onClick={() => ribFileInputRef.current?.click()}
                 className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
               >
-                {t('settings.rib_attach')}
+                {t('settings.bank_attach')}
               </button>
               {settings.ribAttachmentName ? (
                 <button
