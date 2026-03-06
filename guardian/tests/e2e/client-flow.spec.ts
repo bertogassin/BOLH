@@ -25,8 +25,8 @@ test.describe('Admin: users', () => {
 
   test('navigate to user details', async ({ page }) => {
     await page.goto('/dashboard/users')
-    await page.click('text=Ivan Petrov')
+    await page.click('text=Alex Taylor')
     await expect(page).toHaveURL(/\/dashboard\/users\/1/)
-    await expect(page.locator('text=Ivan Petrov')).toBeVisible()
+    await expect(page.locator('text=Alex Taylor')).toBeVisible()
   })
 })

@@ -18,7 +18,7 @@ async function getDashboardStats() {
     growth: { users: 12, orders: 5, matches: 8, revenue: 15 },
     activity: [],
     topGuards: [
-      { id: '1', name: 'Ivan Petrov', rating: 4.9, completedOrders: 124 },
+      { id: '1', name: 'Alex Taylor', rating: 4.9, completedOrders: 124 },
       { id: '2', name: 'Alexey Sidorov', rating: 4.8, completedOrders: 98 },
       { id: '3', name: 'Dmitry Kozlov', rating: 4.8, completedOrders: 87 },
     ],

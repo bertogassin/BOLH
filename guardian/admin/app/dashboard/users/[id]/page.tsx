@@ -20,9 +20,9 @@ async function fetchUser(id: string): Promise<User | null> {
   if (!res || !('ok' in res) || !res.ok)
     return {
       id,
-      firstName: 'Ivan',
-      lastName: 'Petrov',
-      email: 'ivan@example.com',
+      firstName: 'Alex',
+      lastName: 'Taylor',
+      email: 'alex.taylor@example.com',
       userType: 'client',
       verified: true,
       createdAt: '2024-01-15',

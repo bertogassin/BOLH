@@ -8,9 +8,9 @@ export async function GET(request: NextRequest) {
   const users = [
     {
       id: '1',
-      firstName: 'Ivan',
-      lastName: 'Petrov',
-      email: 'ivan@example.com',
+      firstName: 'Alex',
+      lastName: 'Taylor',
+      email: 'alex.taylor@example.com',
       userType: 'client',
       verified: true,
       blocked: false,

@@ -27,9 +27,9 @@ async function fetchUsers(params: { search: string; filter: string }): Promise<U
     return [
       {
         id: '1',
-        firstName: 'Ivan',
-        lastName: 'Petrov',
-        email: 'ivan@example.com',
+        firstName: 'Alex',
+        lastName: 'Taylor',
+        email: 'alex.taylor@example.com',
         userType: 'client',
         verified: true,
         blocked: false,
