@@ -1,0 +1,13 @@
+.git
+.gitignore
+.cursor
+**/node_modules
+**/target
+**/build
+**/.next
+**/.gradle
+**/.venv
+guardian
+bolh-ai
+docs
+migrations
