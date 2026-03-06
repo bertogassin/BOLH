@@ -47,7 +47,7 @@ function SwitchRow({
   icon: ReactNode
 }) {
   return (
-    <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between gap-3">
+    <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 flex items-center justify-between gap-3">
       <div className="min-w-0">
         <p className="text-sm font-medium text-white flex items-center gap-2">
           {icon}
@@ -167,17 +167,17 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-2 px-4 py-3">
-          <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10">
+          <Link href="/profile" className="p-2 rounded-lg theme-hover">
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-lg font-semibold">{t('settings.title')}</h1>
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
-        <div className="rounded-2xl bg-white/10 border border-violet-400 p-5 flex flex-col gap-3">
+        <div className="theme-surface rounded-2xl border border-violet-400 p-5 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2">
               <Settings className="h-5 w-5 text-violet-300" />
@@ -192,14 +192,14 @@ export default function SettingsPage() {
 
         <section className="space-y-2">
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.account')}</h2>
-          <Link href="/profile/change-password" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
+          <Link href="/profile/change-password" className="theme-surface rounded-xl border border-violet-400 px-4 py-3 flex items-center justify-between text-white theme-hover">
             <span className="flex items-center gap-2 text-sm">
               <KeyRound className="h-4 w-4 text-violet-300" />
               {t('settings.change_password')}
             </span>
             <span className="text-white/40">›</span>
           </Link>
-          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Paperclip className="h-4 w-4 text-violet-300" />
               {t('settings.bank_details')}
@@ -213,7 +213,7 @@ export default function SettingsPage() {
                 value={settings.rib}
                 onChange={(e) => update('rib', e.target.value.replace(/\s+/g, '').toUpperCase())}
                 placeholder={bankPlaceholder}
-                className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80"
+                className="theme-input w-full rounded-lg border px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80"
               />
             </FormField>
             <input
@@ -231,7 +231,7 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => ribFileInputRef.current?.click()}
-                className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+                className="theme-surface-soft rounded-lg border border-violet-400 px-3 py-2 text-sm theme-hover"
               >
                 {t('settings.bank_attach')}
               </button>
@@ -239,7 +239,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={() => update('ribAttachmentName', '')}
-                  className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+                  className="theme-surface-soft rounded-lg border border-violet-400 px-3 py-2 text-sm theme-hover"
                 >
                   {t('settings.remove')}
                 </button>
@@ -269,7 +269,7 @@ export default function SettingsPage() {
             onChange={(v) => update('soundEnabled', v)}
             icon={<Vibrate className="h-4 w-4 text-violet-300" />}
           />
-          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white">{t('settings.sound_volume')}</p>
             <input
               type="range"
@@ -290,7 +290,7 @@ export default function SettingsPage() {
                   className={`rounded-lg border px-3 py-2 text-sm ${
                     settings.soundPreset === preset
                       ? 'bg-violet-600 border-violet-400'
-                      : 'bg-white/10 border-violet-400 hover:bg-white/15'
+                      : 'theme-surface-soft border-violet-400 theme-hover'
                   }`}
                 >
                   {t(`settings.sound_preset_${preset}`)}
@@ -300,7 +300,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={playPreview}
-              className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+              className="theme-surface-soft rounded-lg border border-violet-400 px-3 py-2 text-sm theme-hover"
             >
               {t('settings.play_preview')}
             </button>
@@ -309,7 +309,7 @@ export default function SettingsPage() {
 
         <section className="space-y-2">
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.appearance_language')}</h2>
-          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-2">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-2">
             <p className="text-sm text-white inline-flex items-center gap-2">
               {settings.theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
               {t('settings.theme')}
@@ -318,21 +318,21 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => update('theme', 'dark')}
-                className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'dark' ? 'bg-violet-600 border-violet-400' : 'bg-white/10 border-violet-400 hover:bg-white/15'}`}
+                className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'dark' ? 'bg-violet-600 border-violet-400' : 'theme-surface-soft border-violet-400 theme-hover'}`}
               >
                 {t('settings.theme_dark')}
               </button>
               <button
                 type="button"
                 onClick={() => update('theme', 'light')}
-                className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'light' ? 'bg-violet-600 border-violet-400' : 'bg-white/10 border-violet-400 hover:bg-white/15'}`}
+                className={`rounded-lg border px-3 py-2 text-sm ${settings.theme === 'light' ? 'bg-violet-600 border-violet-400' : 'theme-surface-soft border-violet-400 theme-hover'}`}
               >
                 {t('settings.theme_light')}
               </button>
             </div>
           </div>
 
-          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-2">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-2">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Globe2 className="h-4 w-4 text-violet-300" />
               {t('settings.language')}
@@ -349,7 +349,7 @@ export default function SettingsPage() {
                   if (!AVAILABLE_LOCALES.has(next)) return
                   update('locale', next)
                 }}
-                className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm outline-none"
+                className="theme-input w-full rounded-lg border px-3 py-2 text-sm outline-none"
               >
                 {LOCALE_OPTIONS.filter((o) => AVAILABLE_LOCALES.has(o.code)).map((opt) => (
                   <option key={opt.code} value={opt.code}>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <div className="rounded-xl bg-white/10 border border-violet-400 p-4 text-sm text-white/80">
+        <div className="theme-surface rounded-xl border border-violet-400 p-4 text-sm text-white/80">
           <p>{t('settings.lang_note')}</p>
           <p className="mt-1">
             <Link href="/legal/privacy" className="text-violet-300 hover:underline">

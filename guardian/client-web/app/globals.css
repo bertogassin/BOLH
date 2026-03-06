@@ -11,27 +11,37 @@
   --guardian-shadow-hover: 0 4px 12px rgba(0, 85, 255, 0.1);
   --radius-card: 1rem;
   --radius-btn: 0.75rem;
-  --bolh-bg: #000000;
-  --bolh-surface: #000000;
-  --bolh-text: #ffffff;
-  --bolh-text-muted: rgba(255, 255, 255, 0.72);
+  --bolh-bg: #111827;
+  --bolh-surface: #111827;
+  --bolh-surface-soft: #1f2937;
+  --bolh-text: #f9fafb;
+  --bolh-text-muted: #d1d5db;
   --bolh-accent: #6b21a8;
   --bolh-accent-hover: #7c3aed;
   --bolh-panel-border: var(--bolh-accent);
   --bolh-panel-glow: rgba(107, 33, 168, 0.24);
-  --bolh-header-bg: rgb(0 0 0 / 0.95);
+  --bolh-header-bg: rgb(17 24 39 / 0.94);
+  --bolh-input-bg: rgb(255 255 255 / 0.08);
+  --bolh-input-border: rgb(167 139 250 / 0.75);
+  --bolh-hover-bg: rgb(255 255 255 / 0.12);
+  --bolh-danger: #dc2626;
 }
 
 [data-theme="light"] {
-  --bolh-bg: #ffffff;
+  --bolh-bg: #f8fafc;
   --bolh-surface: #ffffff;
+  --bolh-surface-soft: #f1f5f9;
   --bolh-text: #111827;
   --bolh-text-muted: #4b5563;
   --bolh-accent: #6b21a8;
   --bolh-accent-hover: #7c3aed;
-  --bolh-panel-border: var(--bolh-accent);
-  --bolh-panel-glow: rgba(107, 33, 168, 0.24);
+  --bolh-panel-border: #d1d5db;
+  --bolh-panel-glow: rgba(17, 24, 39, 0.03);
   --bolh-header-bg: rgb(255 255 255 / 0.95);
+  --bolh-input-bg: #ffffff;
+  --bolh-input-border: #d1d5db;
+  --bolh-hover-bg: #f3f4f6;
+  --bolh-danger: #b91c1c;
 }
 
 body {
@@ -47,6 +57,21 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+/* Remove native inner input frame (notably on Windows) */
+input[type='text'],
+input[type='search'],
+input[type='email'],
+input[type='tel'],
+input[type='password'],
+input[type='number'],
+input[type='url'],
+input[type='time'],
+textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  background-clip: padding-box;
 }
 
 @layer components {
@@ -66,6 +91,42 @@ html {
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0.5rem);
   }
+  .theme-page {
+    background-color: var(--bolh-bg);
+    color: var(--bolh-text);
+  }
+  .theme-header {
+    background-color: var(--bolh-header-bg);
+    border-color: color-mix(in srgb, var(--bolh-panel-border) 40%, transparent);
+  }
+  .theme-surface {
+    background-color: var(--bolh-surface);
+    border-color: var(--bolh-panel-border);
+    color: var(--bolh-text);
+  }
+  .theme-surface-soft {
+    background-color: var(--bolh-surface-soft);
+    border-color: color-mix(in srgb, var(--bolh-panel-border) 80%, transparent);
+    color: var(--bolh-text);
+  }
+  .theme-text-muted {
+    color: var(--bolh-text-muted);
+  }
+  .theme-input {
+    background-color: var(--bolh-input-bg);
+    color: var(--bolh-text);
+    border-color: var(--bolh-input-border);
+  }
+.theme-input[aria-invalid='true'] {
+  border-color: var(--bolh-danger);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bolh-danger) 40%, transparent);
+}
+  .theme-hover:hover {
+    background-color: var(--bolh-hover-bg);
+  }
+  .theme-danger {
+    color: var(--bolh-danger);
+  }
 }
 
 /* Leaflet map: guaranteed height */
@@ -76,6 +137,28 @@ html {
 }
 .leaflet-container a {
   color: #3b82f6;
+}
+
+/* Map controls: adapt for light theme readability */
+[data-theme='light'] .leaflet-control-zoom a,
+[data-theme='light'] .leaflet-bar a {
+  background-color: #ffffff;
+  color: #111827;
+  border-color: #d1d5db;
+}
+[data-theme='light'] .leaflet-control-zoom a:hover,
+[data-theme='light'] .leaflet-bar a:hover {
+  background-color: #f3f4f6;
+}
+
+/* Consistent keyboard focus ring across UI controls */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--bolh-accent) 80%, white 20%);
 }
 
 /* Global panel design across client-web */
@@ -99,6 +182,15 @@ html {
 .border-violet-400\/50 {
   border-color: var(--bolh-panel-border) !important;
   box-shadow: 0 0 0 1px var(--bolh-panel-glow);
+}
+
+/* Keep panel frame optics stable in error state too */
+.border-red-500,
+.border-red-500\/80,
+.border-red-500\/60,
+.border-red-500\/40 {
+  border-color: var(--bolh-danger) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bolh-danger) 28%, transparent);
 }
 
 /* Keep checkbox/radio with a single visible border */
@@ -164,72 +256,12 @@ input[type='radio'].border-violet-400\/50 {
   color: var(--bolh-text-muted) !important;
 }
 
+/* Normalize legacy Tailwind white hover shades across themes */
+.hover\:bg-white\/5:hover,
 .hover\:bg-white\/10:hover,
 .hover\:bg-white\/15:hover,
 .hover\:bg-white\/20:hover {
-  background-color: #f5f3ff !important;
-}
-
-.hover\:bg-white\/10:hover,
-.hover\:bg-white\/15:hover,
-.hover\:bg-white\/20:hover {
-  color: #111827 !important;
-}
-
-.hover\:bg-white\/10:hover *,
-.hover\:bg-white\/15:hover *,
-.hover\:bg-white\/20:hover * {
-  color: #111827 !important;
-}
-
-.hover\:bg-white\/10:hover svg,
-.hover\:bg-white\/15:hover svg,
-.hover\:bg-white\/20:hover svg,
-.hover\:bg-white\/10:hover .text-white,
-.hover\:bg-white\/15:hover .text-white,
-.hover\:bg-white\/20:hover .text-white,
-.hover\:bg-white\/10:hover .text-white\/90,
-.hover\:bg-white\/15:hover .text-white\/90,
-.hover\:bg-white\/20:hover .text-white\/90,
-.hover\:bg-white\/10:hover .text-white\/80,
-.hover\:bg-white\/15:hover .text-white\/80,
-.hover\:bg-white\/20:hover .text-white\/80,
-.hover\:bg-white\/10:hover .text-white\/70,
-.hover\:bg-white\/15:hover .text-white\/70,
-.hover\:bg-white\/20:hover .text-white\/70,
-.hover\:bg-white\/10:hover .text-white\/60,
-.hover\:bg-white\/15:hover .text-white\/60,
-.hover\:bg-white\/20:hover .text-white\/60 {
-  color: #111827 !important;
-}
-
-/* Preserve badge readability on hover cards */
-.force-light-text,
-.force-light-text * {
-  color: #e5e7eb !important;
-}
-
-.force-green-text,
-.force-green-text * {
-  color: #bbf7d0 !important;
-}
-
-.hover\:bg-white\/10:hover .force-light-text,
-.hover\:bg-white\/15:hover .force-light-text,
-.hover\:bg-white\/20:hover .force-light-text,
-.hover\:bg-white\/10:hover .force-light-text *,
-.hover\:bg-white\/15:hover .force-light-text *,
-.hover\:bg-white\/20:hover .force-light-text * {
-  color: #e5e7eb !important;
-}
-
-.hover\:bg-white\/10:hover .force-green-text,
-.hover\:bg-white\/15:hover .force-green-text,
-.hover\:bg-white\/20:hover .force-green-text,
-.hover\:bg-white\/10:hover .force-green-text *,
-.hover\:bg-white\/15:hover .force-green-text *,
-.hover\:bg-white\/20:hover .force-green-text * {
-  color: #bbf7d0 !important;
+  background-color: var(--bolh-hover-bg) !important;
 }
 
 .min-h-screen {

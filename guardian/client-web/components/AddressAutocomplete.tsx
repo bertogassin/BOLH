@@ -73,6 +73,7 @@ type AddressAutocompleteProps = {
   placeholder?: string
   className?: string
   showHistoryPanel?: boolean
+  showSuggestions?: boolean
   hasError?: boolean
 }
 
@@ -86,6 +87,7 @@ export function AddressAutocomplete({
   placeholder = 'Address',
   className = '',
   showHistoryPanel = true,
+  showSuggestions = true,
   hasError = false,
 }: AddressAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<AddressResult[]>([])
@@ -100,6 +102,11 @@ export function AddressAutocomplete({
   const { user } = useAuth()
 
   const fetchSuggestions = useCallback(async (q: string, skipOpenIfEqualTo?: string | null) => {
+    if (!showSuggestions) {
+      setSuggestions([])
+      setOpen(false)
+      return
+    }
     const trimmed = q.trim()
     if (trimmed.length < 3) {
       setSuggestions([])
@@ -142,7 +149,7 @@ export function AddressAutocomplete({
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [showSuggestions])
 
   useEffect(() => {
     if (value.trim() !== lastSelectedRef.current?.trim()) lastSelectedRef.current = null
@@ -253,31 +260,33 @@ export function AddressAutocomplete({
   }
 
   const borderClass = hasError ? 'border-red-500/80' : 'border-violet-400'
-  const inputRowClass = 'rounded-t-xl bg-black flex items-center gap-2.5 min-h-[56px] px-3 py-3.5'
+  const inputRowClass = 'rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5'
   const totalHistoryCount = saved.length + recent.length
 
   return (
     <div ref={wrapperRef} className={`relative ${className}`}>
-      <div className={`rounded-xl bg-black border ${borderClass} overflow-hidden`}>
+      <div className={`rounded-xl theme-surface border ${borderClass} overflow-hidden`}>
         <div className={inputRowClass}>
-          <MapPin className="h-5 w-5 text-white/60 shrink-0" />
+          <MapPin className="h-5 w-5 theme-text-muted shrink-0" />
           <div className="relative flex-1 min-w-0">
             <input
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
               onFocus={() => {
-                if (suggestions.length > 0 && value.trim() !== lastSelectedRef.current?.trim()) setOpen(true)
+                if (showSuggestions && suggestions.length > 0 && value.trim() !== lastSelectedRef.current?.trim()) {
+                  setOpen(true)
+                }
               }}
               placeholder={placeholder}
-              className={`w-full bg-transparent text-white placeholder:text-white/50 outline-none ${value ? 'pr-9' : ''}`}
+              className="w-full border-0 bg-transparent pr-9 text-white placeholder:text-white/75 outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0"
               autoComplete="off"
             />
             {value.length > 0 && !loading && (
               <button
                 type="button"
                 onClick={() => onChange('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-white/60 hover:text-white hover:bg-white/10 focus:outline-none"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md theme-text-muted hover:text-white theme-hover focus:outline-none"
                 aria-label={t('clear_aria')}
               >
                 <X className="h-4 w-4" />
@@ -288,12 +297,14 @@ export function AddressAutocomplete({
             )}
           </div>
         </div>
-        {showHistoryPanel && totalHistoryCount > 0 && (
+        {showHistoryPanel && (
           <>
             <button
               type="button"
-              onClick={() => setShowSavedHistory((v) => !v)}
-              className={`w-full border-t ${borderClass} px-3 py-1 text-[11px] text-white/70 flex items-center justify-between hover:bg-white/5`}
+              onClick={() => {
+                if (totalHistoryCount > 0) setShowSavedHistory((v) => !v)
+              }}
+              className={`w-full border-t ${borderClass} px-3 py-1 text-[11px] text-white/70 flex items-center justify-between theme-hover`}
             >
               <span>{t('address_autocomplete.saved_recent')}</span>
               <span className="inline-flex items-center gap-1">
@@ -302,7 +313,7 @@ export function AddressAutocomplete({
               </span>
             </button>
             {showSavedHistory && !open && (
-              <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5 bg-black/40`}>
+              <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5 theme-surface-soft`}>
                 {saved.length > 0 && (
                   <>
                     <p className="px-1 text-[11px] text-white/45">{t('address_autocomplete.saved')}</p>
@@ -312,7 +323,7 @@ export function AddressAutocomplete({
                           <button
                             type="button"
                             onClick={() => handleSelect(item)}
-                            className="w-full rounded-md px-1 py-1 text-left text-xs text-white/75 hover:bg-white/5 hover:text-white truncate"
+                            className="w-full rounded-md px-1 py-1 text-left text-xs text-white/75 theme-hover hover:text-white truncate"
                             title={item.display}
                           >
                             {item.display}
@@ -328,7 +339,7 @@ export function AddressAutocomplete({
                     <ul className="mt-1 space-y-1">
                       {recent.map((item) => (
                         <li key={`${item.display}-${item.latitude}-${item.longitude}`}>
-                          <div className="group flex items-center gap-1 rounded-md px-1 py-1 hover:bg-white/5">
+                          <div className="group flex items-center gap-1 rounded-md px-1 py-1 theme-hover">
                             <button
                               type="button"
                               onClick={() => handleSelect(item)}
@@ -343,7 +354,7 @@ export function AddressAutocomplete({
                                 e.stopPropagation()
                                 removeRecent(item.display)
                               }}
-                              className="rounded p-1 text-white/35 hover:bg-white/10 hover:text-white/75"
+                              className="rounded p-1 text-white/35 theme-hover hover:text-white/75"
                               aria-label={`${t('address_autocomplete.remove')} ${item.display}`}
                               title={t('address_autocomplete.remove_from_history')}
                             >
@@ -360,16 +371,17 @@ export function AddressAutocomplete({
           </>
         )}
       </div>
-      {open && suggestions.length > 0 && !suggestions.some((s) => s.display.trim() === value.trim()) && (
+      {showSuggestions && open && suggestions.length > 0 && !suggestions.some((s) => s.display.trim() === value.trim()) && (
         <ul
-          className="absolute top-full left-0 right-0 mt-1 rounded-xl bg-black border border-violet-400 shadow-xl z-50 max-h-48 overflow-auto"
+          className="absolute top-full left-0 right-0 mt-1 rounded-xl theme-surface border border-violet-400 shadow-xl z-50 max-h-48 overflow-auto"
           role="listbox"
         >
           {suggestions.map((s, i) => (
             <li
               key={`${s.latitude}-${s.longitude}-${i}`}
               role="option"
-              className="px-3 py-2 text-sm text-white/90 hover:bg-white/10 cursor-pointer min-h-[40px] flex items-center"
+              aria-selected={s.display.trim() === value.trim()}
+              className="px-3 py-2 text-sm text-white/90 theme-hover cursor-pointer min-h-[40px] flex items-center"
               onClick={() => handleSelect(s)}
             >
               {s.display}

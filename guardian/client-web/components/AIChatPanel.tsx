@@ -20,7 +20,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
           isUser
             ? 'bg-violet-600 text-white rounded-br-md'
-            : 'bg-white/15 text-white/95 rounded-bl-md'
+            : 'theme-surface-soft text-white/95 rounded-bl-md'
         }`}
       >
         <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
@@ -31,7 +31,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
                 {g.type === 'suggestion' && g.payload?.path ? (
                   <Link
                     href={String(g.payload.path)}
-                    className="inline-block rounded-lg bg-violet-500/30 hover:bg-violet-500/50 px-3 py-1.5 text-xs font-medium text-violet-200"
+                    className="inline-block rounded-lg bg-violet-500/30 hover:bg-violet-500/50 px-3 py-1.5 text-xs font-medium text-violet-100"
                   >
                     {g.content}
                   </Link>
@@ -50,7 +50,7 @@ function MessageBubble({ msg }: { msg: ChatMessage }) {
 function TypingIndicator() {
   return (
     <div className="flex justify-start">
-      <div className="rounded-2xl rounded-bl-md bg-white/15 px-4 py-3 flex gap-1">
+      <div className="theme-surface-soft rounded-2xl rounded-bl-md px-4 py-3 flex gap-1">
         <span className="w-2 h-2 rounded-full bg-white/50 animate-bounce [animation-delay:0ms]" />
         <span className="w-2 h-2 rounded-full bg-white/50 animate-bounce [animation-delay:150ms]" />
         <span className="w-2 h-2 rounded-full bg-white/50 animate-bounce [animation-delay:300ms]" />
@@ -100,11 +100,11 @@ export function AIChatPanel() {
         aria-hidden
       />
       <div
-        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-[#1a1b26] border-l border-white/10 flex flex-col shadow-xl"
+        className="theme-page fixed right-0 top-0 bottom-0 z-50 w-full max-w-md border-l border-white/10 flex flex-col shadow-xl"
         role="dialog"
         aria-label={t('ai_chat.aria_chat')}
       >
-        <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
+        <header className="theme-header flex items-center justify-between px-4 py-3 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-violet-400" />
             <h2 className="font-semibold text-white">{t('ai_chat.title')}</h2>
@@ -114,7 +114,7 @@ export function AIChatPanel() {
               <button
                 type="button"
                 onClick={clearChat}
-                className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/60 hover:text-white/90"
+                className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center text-white/60 hover:text-white/90"
                 aria-label={t('ai_chat.clear_chat')}
                 title={t('ai_chat.clear_chat')}
               >
@@ -124,7 +124,7 @@ export function AIChatPanel() {
             <button
               type="button"
               onClick={closeChat}
-              className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center text-white/80"
+              className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center text-white/80"
                 aria-label={t('ai_chat.close')}
             >
               <X className="h-5 w-5" />
@@ -138,7 +138,7 @@ export function AIChatPanel() {
         >
           {messages.length === 0 && !isLoading && (
             <div className="space-y-4">
-              <p className="text-sm text-white/60 text-center">
+              <p className="theme-text-muted text-sm text-center">
                 {t('ai_chat.empty_hint')}
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -147,13 +147,13 @@ export function AIChatPanel() {
                     key={a.label}
                     type="button"
                     onClick={() => handleQuickAction(a.prompt)}
-                    className="rounded-xl bg-white/10 hover:bg-violet-500/30 border border-white/10 px-3 py-2 text-xs font-medium text-white/90"
+                    className="theme-surface-soft rounded-xl hover:bg-violet-500/30 border border-white/10 px-3 py-2 text-xs font-medium text-white/90"
                   >
                     {a.label}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-white/40 text-center pt-2">
+              <p className="theme-text-muted text-xs text-center pt-2">
                 BOLH AI 1.0 · Matching · Fraud · NLP · Analytics · AGI · Purifier
               </p>
             </div>
@@ -166,7 +166,7 @@ export function AIChatPanel() {
 
         <form
           onSubmit={handleSubmit}
-          className="p-4 border-t border-white/10 shrink-0"
+          className="theme-header p-4 border-t border-white/10 shrink-0"
         >
           <div className="flex gap-2">
             <input
@@ -174,7 +174,7 @@ export function AIChatPanel() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={t('ai_chat.message_placeholder')}
-              className="flex-1 min-w-0 rounded-xl bg-white/10 border border-white/10 px-4 py-3 text-white placeholder:text-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="theme-input flex-1 min-w-0 rounded-xl border px-4 py-3 text-white placeholder:text-white/40 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
               disabled={isLoading}
               aria-label={t('ai_chat.message_placeholder')}
             />

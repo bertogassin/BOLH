@@ -58,17 +58,17 @@ export default function NotificationsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
+      <div className="theme-page min-h-screen text-white flex items-center justify-center">
         <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-2 px-4 py-3">
-          <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <Link href="/profile" className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-lg font-semibold">{t('navigation.notifications')}</h1>
@@ -85,7 +85,7 @@ export default function NotificationsPage() {
           <ErrorRetry message={t('notifications.load_failed')} onRetry={load} />
         ) : list.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="h-16 w-16 rounded-2xl bg-white/10 flex items-center justify-center mb-4">
+            <div className="theme-surface h-16 w-16 rounded-2xl flex items-center justify-center mb-4">
               <Bell className="h-8 w-8 text-white/50" />
             </div>
             <p className="text-white/70 font-medium">{t('notifications.empty_title')}</p>
@@ -101,7 +101,7 @@ export default function NotificationsPage() {
                 tabIndex={0}
                 onClick={() => handleMark(n)}
                 onKeyDown={(e) => e.key === 'Enter' && handleMark(n)}
-                className={`rounded-xl px-4 py-3 border border-white/5 hover:bg-white/5 min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : 'bg-white/5'}`}
+                className={`rounded-xl px-4 py-3 border border-white/5 theme-hover min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : 'theme-surface-soft'}`}
               >
                 <p className="font-medium text-white text-sm">{n.title}</p>
                 <p className="text-xs text-white/60 mt-0.5">{n.body}</p>

@@ -13,7 +13,7 @@ export function LanguagePicker({ locale, setLocale }: Props) {
   return (
     <section>
       <h2 className="text-sm font-semibold text-white mb-3">{t('profile_language.title')}</h2>
-      <div className="rounded-xl bg-white/10 border border-violet-400 p-3 space-y-2">
+      <div className="theme-surface rounded-xl border border-violet-400 p-3 space-y-2">
         <div className="flex items-center justify-between text-xs text-white/70">
           <span>
             {t('profile_language.current')}: <span className="text-white font-semibold">{(LOCALE_OPTIONS.find((l) => l.code === locale)?.code || locale).toUpperCase()}</span>
@@ -36,8 +36,8 @@ export function LanguagePicker({ locale, setLocale }: Props) {
                     locale === opt.code
                       ? 'bg-violet-600 border-violet-400 text-white'
                       : isAvailable
-                        ? 'bg-white/10 border-violet-400 text-white hover:bg-white/15'
-                        : 'bg-white/5 border-violet-400 text-white/50 cursor-not-allowed opacity-70'
+                        ? 'theme-surface-soft border-violet-400 text-white theme-hover'
+                        : 'theme-surface-soft border-violet-400 text-white/50 cursor-not-allowed opacity-70'
                   }`}
                   aria-pressed={locale === opt.code}
                 >

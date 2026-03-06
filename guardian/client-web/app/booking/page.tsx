@@ -28,7 +28,7 @@ const SERVICES = [
   { id: 'guardian' },
   { id: 'patrol' },
 ]
-const PANEL_CLASS = 'rounded-xl bg-black border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
+const PANEL_CLASS = 'theme-surface rounded-xl border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
 const DRAFT_WRITE_DEBOUNCE_MS = 250
 
 export default function BookingPage() {
@@ -53,7 +53,6 @@ export default function BookingPage() {
   const [price, setPrice] = useState('')
   const [missionDescription, setMissionDescription] = useState('')
   const [missionTouched, setMissionTouched] = useState(false)
-  const [showMissionSheet, setShowMissionSheet] = useState(false)
   const [hasMissionDraft, setHasMissionDraft] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [savedCards, setSavedCards] = useState<PaymentCard[]>([])
@@ -120,8 +119,8 @@ export default function BookingPage() {
     return '—'
   }, [selectedSavedCard, oneTimeCard])
   const paymentSheetIsFloating = keyboardInset > 0
-  const isAnyDrawerOpen = showMissionSheet || showPaymentSheet || showOneTimeCardSheet
-  const shouldHideBottomNav = showMissionSheet || showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
+  const isAnyDrawerOpen = showPaymentSheet || showOneTimeCardSheet
+  const shouldHideBottomNav = showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
   const fromParts = fromTime.split(':')
   const toParts = toTime.split(':')
   const fromMinutes =
@@ -348,7 +347,6 @@ export default function BookingPage() {
 
   useEffect(() => {
     // Always open booking on the main screen state.
-    setShowMissionSheet(false)
     setShowPaymentSheet(false)
     setShowOneTimeCardSheet(false)
   }, [])
@@ -581,7 +579,7 @@ export default function BookingPage() {
 
   if (!user) {
     return (
-      <div className="min-h-dvh bg-black p-4 flex flex-col items-center justify-center gap-4 pb-32">
+      <div className="theme-page min-h-dvh p-4 flex flex-col items-center justify-center gap-4 pb-32">
         <p className="text-white/75 text-center">{t('booking.login_required')}</p>
         <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
           {t('auth.login_btn')}
@@ -591,8 +589,8 @@ export default function BookingPage() {
     )
   }
   return (
-    <div className="min-h-dvh bg-black text-white flex flex-col">
-      <header className="sticky top-0 z-20 border-b border-violet-400 bg-black/95 backdrop-blur">
+    <div className="theme-page min-h-dvh text-white flex flex-col">
+      <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="text-lg font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
@@ -607,7 +605,7 @@ export default function BookingPage() {
                   ? 'bg-red-500/20 border-red-400/60 text-red-200 hover:bg-red-500/30'
                   : isOnline
                   ? 'bg-green-500/20 border-green-400/40 text-green-200 hover:bg-green-500/30'
-                  : 'bg-white/10 border-violet-400 text-white/80 hover:bg-white/15'
+                  : 'theme-surface border-violet-400 text-white/80 theme-hover'
               }`}
             >
               <span
@@ -622,7 +620,7 @@ export default function BookingPage() {
               {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
               {isOnline ? t('booking.online') : t('booking.offline')}
             </button>
-            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label={t('booking.ai_chat_aria')}>
+            <button type="button" onClick={openChat} className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label={t('booking.ai_chat_aria')}>
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>
           </div>
@@ -642,7 +640,7 @@ export default function BookingPage() {
             <button
               type="button"
               onClick={applyLastOrderTemplate}
-              className="w-full rounded-lg border border-violet-400 bg-black px-3 py-2 text-sm text-white/85 hover:bg-white/5"
+              className="theme-surface w-full rounded-lg border border-violet-400 px-3 py-2 text-sm text-white/85 theme-hover"
             >
               {t('booking.repeat_last_order')}
             </button>
@@ -657,7 +655,7 @@ export default function BookingPage() {
             </div>
           )}
           {activeOrder && (
-            <div className="rounded-xl border border-violet-400 bg-black px-3 py-3">
+            <div className="theme-surface rounded-xl border border-violet-400 px-3 py-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs text-white/75 uppercase tracking-wide">{t('booking.active_order')}</span>
                 <span className="rounded-full border border-violet-400/80 bg-white/5 px-2 py-0.5 text-[11px] text-white/85">
@@ -668,19 +666,19 @@ export default function BookingPage() {
               <div className="mt-2 flex items-center gap-2">
                 <Link
                   href={`/orders/${activeOrder.id}`}
-                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
+                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 theme-hover"
                 >
                   {t('booking.details')}
                 </Link>
                 <Link
                   href={`/orders/${activeOrder.id}/chat`}
-                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
+                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 theme-hover"
                 >
                   {t('booking.chat')}
                 </Link>
                 <Link
                   href="/map"
-                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 hover:bg-white/10"
+                  className="inline-flex min-h-[38px] items-center rounded-md border border-violet-400/70 px-2.5 py-1 text-xs text-white/85 theme-hover"
                 >
                   {t('booking.map')}
                 </Link>
@@ -698,7 +696,7 @@ export default function BookingPage() {
                   className={`rounded-lg px-2.5 py-3 text-[17px] font-medium transition ${
                     service === option.id
                       ? 'bg-violet-600 text-white border border-violet-400'
-                      : 'bg-transparent text-white/80 border border-violet-400 hover:bg-white/10'
+                      : 'bg-transparent text-white/80 border border-violet-400 theme-hover'
                   }`}
                 >
                   <span className="inline-flex items-center justify-center gap-1.5">
@@ -763,21 +761,8 @@ export default function BookingPage() {
             placeholder={t('booking.address')}
             hasError={submitAttempted && !address.trim()}
           />
-          {address.trim() && missionHints && (
-            <div className="rounded-xl border border-violet-400 bg-black px-3 py-2.5">
-              <p className="text-[11px] text-white/75">{t('booking.detected_object')}</p>
-              <p className="mt-0.5 text-xs text-white/90">{missionHints.objectLabel}</p>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {missionHints.tasks.map((task) => (
-                  <span key={task} className="rounded-full border border-violet-400/70 bg-white/5 px-2 py-0.5 text-[10px] text-white/80">
-                    {task}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
           {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
-          <div className={`relative ${showMissionSheet ? 'z-50' : ''} rounded-xl bg-black border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
+          <div className={`theme-surface rounded-xl border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
             <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/85">
               <span className="inline-flex items-center gap-1.5 text-left text-white/85">
                 <Shield className="h-3.5 w-3.5" />
@@ -785,67 +770,34 @@ export default function BookingPage() {
               </span>
               <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowMissionSheet((v) => !v)}
-              className={`w-full border-t ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'} px-3 py-1.5 text-[11px] text-white/85 flex items-center justify-between hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80`}
-            >
-              <span className="truncate">{missionDescription ? t('booking.mission_description') : t('booking.mission_add_description')}</span>
-              <span className="inline-flex items-center gap-1">
-                {missionDescription.length}
-                {showMissionSheet ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-              </span>
-            </button>
-            {showMissionSheet && (
-              <div
-                className={`${
-                  paymentSheetIsFloating
-                    ? 'fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl'
-                    : 'absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
-                } border px-2 py-1.5 shadow-2xl ${
-                  submitAttempted && !price.trim()
-                    ? 'border-red-500/80 bg-[#0b0b0f]/95 ring-1 ring-red-500/20'
-                    : 'border-violet-300/80 bg-[#0b0b0f]/95 ring-1 ring-white/10'
-                }`}
-                style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 112}px` } : { transform: 'translateY(-112px)' }}
-              >
-                <div className="mb-1 flex items-center justify-end rounded-md border border-white/10 bg-white/5 px-2 py-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowMissionSheet(false)}
-                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
-                  >
-                    <ChevronUp className="h-3.5 w-3.5" />
-                    {t('booking.collapse')}
-                  </button>
-                </div>
-                <div className="mb-1 flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMissionTouched(false)
-                      setMissionDescription(autoMissionDescription)
-                    }}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
-                  >
-                    {t('booking.auto')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={restoreMissionDraft}
-                    disabled={!hasMissionDraft}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10 disabled:opacity-40"
-                  >
-                    {t('booking.restore')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={clearMissionText}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 hover:bg-white/10"
-                  >
-                    {t('booking.clear')}
-                  </button>
-                </div>
+            <div className="border-t border-violet-400 px-2 py-1.5">
+              <div className="mb-1 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMissionTouched(false)
+                    setMissionDescription(autoMissionDescription)
+                  }}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
+                >
+                  {t('booking.auto')}
+                </button>
+                <button
+                  type="button"
+                  onClick={restoreMissionDraft}
+                  disabled={!hasMissionDraft}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover disabled:opacity-40"
+                >
+                  {t('booking.restore')}
+                </button>
+                <button
+                  type="button"
+                  onClick={clearMissionText}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
+                >
+                  {t('booking.clear')}
+                </button>
+              </div>
               <textarea
                 value={missionDescription}
                 onChange={(e) => {
@@ -855,29 +807,28 @@ export default function BookingPage() {
                 maxLength={2500}
                 rows={4}
                 placeholder={t('booking.mission_placeholder')}
-                className="w-full resize-y rounded-lg bg-black border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
+                className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
               />
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
                 <span>{t('booking.mission_hint')}</span>
                 <span>{missionDescription.length}/2500</span>
               </div>
             </div>
-            )}
           </div>
-          <div className={`relative rounded-xl bg-black border ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'}`}>
-            <div className="rounded-t-xl bg-black flex items-center gap-2.5 min-h-[56px] px-3 py-3.5">
-              <span className="text-white/60 shrink-0 w-4 text-center text-sm" aria-hidden="true">€</span>
+          <div className={`theme-surface relative rounded-xl border ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'}`}>
+            <div className="theme-surface rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5">
+              <span className="text-white/85 shrink-0 w-4 text-center text-sm" aria-hidden="true">€</span>
               <InputWithClear
                 value={price}
                 onChange={(v) => setPrice(v.replace(',', '.'))}
                 placeholder={t('booking.your_price')}
                 wrapperClassName="flex-1 min-w-0"
-                className={DARK_INLINE_INPUT_CLASS}
-                clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                className={`${DARK_INLINE_INPUT_CLASS} placeholder:text-white/75`}
+                clearButtonClassName="text-white/60 hover:text-white theme-hover"
                 inputMode="decimal"
                 aria-label={t('booking.your_price')}
               />
-              <span className="text-white/60 text-[11px] shrink-0">{t('booking.per_hour')}</span>
+              <span className="text-white/80 text-[11px] shrink-0">{t('booking.per_hour')}</span>
             </div>
             <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/85`}>
               <button
@@ -899,7 +850,7 @@ export default function BookingPage() {
                     setShowPaymentSheet((v) => !v)
                     setShowOneTimeCardSheet(false)
                   }}
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] text-white/90 hover:bg-white/10 ${
+                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] text-white/90 theme-hover ${
                     paymentValidationError ? 'border-red-500/80' : 'border-violet-400/70'
                   }`}
                   aria-label={t('booking.select_saved_card_aria')}
@@ -912,17 +863,17 @@ export default function BookingPage() {
               <div
                 className={`${
                   paymentSheetIsFloating
-                    ? 'fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[52dvh] overflow-y-auto overscroll-contain rounded-xl'
-                    : 'absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
-                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 bg-[#0b0b0f]/95 ring-1 ring-red-500/20' : 'border-violet-300/80 bg-[#0b0b0f]/95 ring-1 ring-white/10'}`}
+                    ? 'theme-surface fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[52dvh] overflow-y-auto overscroll-contain rounded-xl'
+                    : 'theme-surface absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
+                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 ring-1 ring-red-500/20' : 'border-violet-300/80 ring-1 ring-white/10'}`}
                 style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 8}px` } : undefined}
               >
-                <div className="mb-1 flex items-center justify-between rounded-md border border-white/10 bg-white/5 px-2 py-1">
+                <div className="theme-surface-soft mb-1 flex items-center justify-between rounded-md border border-white/10 px-2 py-1">
                   <span className="text-[11px] text-white/70">{t('booking.saved_cards')}</span>
                   <button
                     type="button"
                     onClick={() => setShowPaymentSheet(false)}
-                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
+                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 theme-hover"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
                     {t('booking.collapse')}
@@ -943,8 +894,8 @@ export default function BookingPage() {
                               ? 'bg-red-500/20 border-red-500/80 text-white'
                               : 'bg-violet-500/30 border-violet-400 text-white'
                             : paymentValidationError
-                              ? 'bg-black border-red-500/80 text-white/90 hover:bg-black'
-                              : 'bg-black border-violet-400 text-white/90 hover:bg-black'
+                              ? 'theme-surface border-red-500/80 text-white/90'
+                              : 'theme-surface border-violet-400 text-white/90'
                         }`}
                       >
                         <span className="tabular-nums">•••• {card.last_four}</span>
@@ -959,16 +910,16 @@ export default function BookingPage() {
               <div
                 className={`${
                   paymentSheetIsFloating
-                    ? 'fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl'
-                    : 'absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
-                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 bg-[#0b0b0f]/95 ring-1 ring-red-500/20' : 'border-violet-300/80 bg-[#0b0b0f]/95 ring-1 ring-white/10'}`}
+                    ? 'theme-surface fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl'
+                    : 'theme-surface absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
+                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 ring-1 ring-red-500/20' : 'border-violet-300/80 ring-1 ring-white/10'}`}
                 style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 112}px` } : { transform: 'translateY(-112px)' }}
               >
-                <div className="mb-1 flex items-center justify-end rounded-md border border-white/10 bg-white/5 px-2 py-1">
+                <div className="theme-surface-soft mb-1 flex items-center justify-end rounded-md border border-white/10 px-2 py-1">
                   <button
                     type="button"
                     onClick={() => setShowOneTimeCardSheet(false)}
-                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 hover:bg-white/10"
+                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 theme-hover"
                   >
                     <ChevronUp className="h-3.5 w-3.5" />
                     {t('booking.collapse')}

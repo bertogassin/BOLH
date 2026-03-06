@@ -35,14 +35,14 @@ export const InputWithClear = forwardRef<HTMLInputElement, InputWithClearProps>(
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={showClear ? `${className} pr-10`.trim() : className}
+        className={`${className} pr-10`.trim()}
         {...rest}
       />
       {showClear && (
         <button
           type="button"
           onClick={() => onChange('')}
-          className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-400 ${clearButtonClassName}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md theme-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-violet-400 ${clearButtonClassName}`}
           aria-label={t('clear_aria')}
         >
           <X className="h-4 w-4" />

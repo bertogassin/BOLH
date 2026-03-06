@@ -12,7 +12,7 @@ import { BOLHNav } from '@/components/BOLHNav'
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => (
-    <div className="h-full min-h-[50vh] flex items-center justify-center bg-[#1a1b26]">
+    <div className="theme-page h-full min-h-[50vh] flex items-center justify-center">
       <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
     </div>
   ),
@@ -156,7 +156,7 @@ export default function MapPage() {
 
   return (
     <div
-      className="relative w-full overflow-hidden bg-[#1a1b26] text-white"
+      className="theme-page relative w-full overflow-hidden text-white"
       style={{ height: viewportHeight ? `${Math.max(320, viewportHeight)}px` : '100vh' }}
     >
       <div className="absolute inset-0 z-0">
@@ -164,7 +164,7 @@ export default function MapPage() {
       </div>
 
       <div className="absolute left-4 right-4 top-3 z-[1001]">
-        <div className="flex items-center justify-between rounded-xl bg-[#1a1b26]/90 border border-white/10 px-3 py-2 backdrop-blur">
+        <div className="theme-header flex items-center justify-between rounded-xl border border-white/10 px-3 py-2 backdrop-blur">
           <span className="text-sm font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
             <span className="text-white font-medium">{t('security')}</span>
@@ -173,7 +173,7 @@ export default function MapPage() {
             <button
               type="button"
               onClick={toggleMapTheme}
-              className="px-3 py-2 rounded-lg border border-violet-400 hover:bg-white/10 min-h-[44px] text-xs font-medium inline-flex items-center gap-1.5"
+              className="theme-surface-soft px-3 py-2 rounded-lg border border-violet-400 theme-hover min-h-[44px] text-xs font-medium inline-flex items-center gap-1.5"
               aria-label={t('map.toggle_tiles')}
             >
               {mapTileTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -182,7 +182,7 @@ export default function MapPage() {
             <button
               type="button"
               onClick={openChat}
-              className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={t('ai_chat.aria_chat')}
             >
               <Sparkles className="h-5 w-5 text-white/80" />
@@ -191,7 +191,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      <div className="absolute bottom-24 left-4 right-4 z-[1000] rounded-xl bg-[#1a1b26]/95 border border-white/10 px-4 py-3 backdrop-blur">
+      <div className="theme-header absolute bottom-24 left-4 right-4 z-[1000] rounded-xl border border-white/10 px-4 py-3 backdrop-blur">
         <p className="text-xs text-white/60 uppercase">{t('map.near_you')}</p>
         <p className="text-sm font-medium text-white mt-0.5">{t('map.legend')}</p>
       </div>

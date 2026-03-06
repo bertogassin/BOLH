@@ -5,17 +5,17 @@ plugins {
 }
 android {
     namespace = "com.guardian.android"
-    compileSdk = 34
+    compileSdk = 35
     val debugApiBaseUrl = providers.gradleProperty("DEBUG_API_BASE_URL").orElse("http://10.0.2.2:8080").get()
     val releaseApiBaseUrl = providers.gradleProperty("RELEASE_API_BASE_URL").orElse("https://api.bolhsecurity.com").get()
     val debugWebAppUrl = providers.gradleProperty("DEBUG_WEB_APP_URL").orElse("http://10.0.2.2:3003/").get()
     val releaseWebAppUrl = providers.gradleProperty("RELEASE_WEB_APP_URL").orElse("https://app.bolhsecurity.com/").get()
     defaultConfig {
-        applicationId = "com.guardian.android"
+        applicationId = "com.omnixius.bolh487373a"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 2
-        versionName = "1.0.1-beta1"
+        targetSdk = 35
+        versionCode = 6
+        versionName = "1.0.1-beta5"
         buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
         buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
     }

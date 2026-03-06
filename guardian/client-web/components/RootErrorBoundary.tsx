@@ -43,9 +43,9 @@ export class RootErrorBoundary extends React.Component<
 
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-[#1a1b26] text-white p-6">
+        <div className="theme-page min-h-screen flex flex-col items-center justify-center text-white p-6">
           <p className="text-lg font-medium mb-2">{copy.title}</p>
-          <p className="text-sm text-white/60 mb-4">{copy.subtitle}</p>
+          <p className="theme-text-muted text-sm mb-4">{copy.subtitle}</p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
@@ -56,7 +56,7 @@ export class RootErrorBoundary extends React.Component<
           <button
             type="button"
             onClick={() => window.location.href = '/'}
-            className="mt-3 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium hover:bg-white/20"
+            className="theme-surface-soft mt-3 rounded-xl px-4 py-2 text-sm font-medium theme-hover"
           >
             {copy.home}
           </button>

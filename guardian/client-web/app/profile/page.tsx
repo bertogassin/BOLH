@@ -154,7 +154,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] pb-24">
+      <div className="theme-page min-h-screen pb-24">
         <div className="animate-pulse space-y-5 px-4 py-5">
           <div className="h-24 rounded-2xl bg-white/10" />
           <div className="grid grid-cols-3 gap-3">
@@ -170,8 +170,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center justify-between px-4 py-2">
           <span className="text-base font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
@@ -184,7 +184,7 @@ export default function ProfilePage() {
               className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs border transition ${
                 details.online
                   ? 'bg-green-500/20 border-green-400/40 text-green-200 hover:bg-green-500/30'
-                  : 'bg-white/10 border-violet-400 text-white/90 hover:bg-white/15'
+                  : 'theme-surface border-violet-400 text-white/90 theme-hover'
               }`}
             >
               <span className={`inline-block h-2 w-2 rounded-full ${details.online ? 'bg-green-300 animate-pulse' : 'bg-white/70'}`} />
@@ -194,7 +194,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={openChat}
-              className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              className="p-2 rounded-lg theme-hover min-h-[44px] min-w-[44px] flex items-center justify-center"
               aria-label={t('ai_chat.aria_chat')}
             >
               <Sparkles className="h-5 w-5 text-white/80" />
@@ -223,7 +223,7 @@ export default function ProfilePage() {
             handleLogout={handleLogout}
           />
         ) : (
-          <div className="rounded-2xl bg-white/10 border border-violet-400 p-8 text-center">
+          <div className="theme-surface rounded-2xl border border-violet-400 p-8 text-center">
             <User className="h-12 w-12 text-white/30 mx-auto mb-3" />
             <p className="text-white/80">{t('profile.login_to_see')}</p>
             <Link href="/login" className="mt-4 inline-block text-violet-400 hover:underline min-h-[44px] flex items-center">{t('profile.login')}</Link>

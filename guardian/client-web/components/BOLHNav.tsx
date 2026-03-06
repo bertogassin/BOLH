@@ -34,14 +34,14 @@ export function BOLHNav({ current }: { current: Tab }) {
   }, [router])
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-white/10 bg-[#1a1b26]/95 backdrop-blur safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t theme-header backdrop-blur safe-area-pb">
       <div className="flex justify-around py-3">
         <Link
           href="/booking"
           className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
             current === 'booking'
               ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+              : 'text-white/70 hover:text-white theme-hover border border-transparent'
           }`}
         >
           <Shield className={`h-5 w-5 ${current === 'booking' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
@@ -52,7 +52,7 @@ export function BOLHNav({ current }: { current: Tab }) {
           className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
             current === 'map'
               ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+              : 'text-white/70 hover:text-white theme-hover border border-transparent'
           }`}
         >
           <MapPin className={`h-5 w-5 ${current === 'map' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
@@ -63,7 +63,7 @@ export function BOLHNav({ current }: { current: Tab }) {
           className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
             current === 'profile'
               ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+              : 'text-white/70 hover:text-white theme-hover border border-transparent'
           }`}
         >
           <User className={`h-5 w-5 ${current === 'profile' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />

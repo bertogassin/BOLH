@@ -53,7 +53,7 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="p-2 rounded-lg hover:bg-white/10 text-white/80 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center relative"
+        className="p-2 rounded-lg theme-hover text-white/80 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center relative"
         aria-label={t('notifications.title')}
       >
         <Bell className="h-5 w-5" />
@@ -64,12 +64,12 @@ export function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 w-80 max-h-96 overflow-auto rounded-xl bg-[#252530] border border-white/10 shadow-xl z-50">
-          <p className="px-4 py-2 text-xs font-semibold text-white/60 uppercase border-b border-white/10">
+        <div className="absolute right-0 top-full mt-1 w-80 max-h-96 overflow-auto rounded-xl theme-surface border border-white/10 shadow-xl z-50">
+          <p className="px-4 py-2 text-xs font-semibold theme-text-muted uppercase border-b border-white/10">
             {t('notifications.title')}
           </p>
           {safeList.length === 0 ? (
-            <p className="px-4 py-6 text-sm text-white/50 text-center">{t('notifications.empty_title')}</p>
+            <p className="px-4 py-6 text-sm theme-text-muted text-center">{t('notifications.empty_title')}</p>
           ) : (
             <ul>
               {safeList.map((n) => (
@@ -79,10 +79,10 @@ export function NotificationBell() {
                   tabIndex={0}
                   onClick={() => handleMark(n)}
                   onKeyDown={(e) => e.key === 'Enter' && handleMark(n)}
-                  className={`px-4 py-3 border-b border-white/5 hover:bg-white/10 cursor-pointer min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : ''}`}
+                  className={`px-4 py-3 border-b border-white/5 theme-hover cursor-pointer min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : ''}`}
                 >
                   <p className="font-medium text-white text-sm">{n.title}</p>
-                  <p className="text-xs text-white/60 mt-0.5">{n.body}</p>
+                  <p className="text-xs theme-text-muted mt-0.5">{n.body}</p>
                 </li>
               ))}
             </ul>
