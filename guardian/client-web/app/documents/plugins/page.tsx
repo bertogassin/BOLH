@@ -37,16 +37,16 @@ export default function PluginsPage() {
       .finally(() => setLoading(false))
   }, [user])
 
-  const handleCreateFromTemplate = async (t: PluginTemplate) => {
+  const handleCreateFromTemplate = async (template: PluginTemplate) => {
     if (!user) return
-    setCreating(t.id)
+    setCreating(template.id)
     try {
       const plugin = await createPlugin({
-        name: t.name,
-        description: t.description,
-        icon: t.icon,
+        name: template.name,
+        description: template.description,
+        icon: template.icon,
         plugin_type: 'agent',
-        components: t.components.map((c) => ({ type: c })),
+        components: template.components.map((c) => ({ type: c })),
       })
       setPlugins((prev) => [plugin, ...prev])
       router.push(`/documents/plugins/${plugin.id}`)
@@ -109,25 +109,25 @@ export default function PluginsPage() {
         <section>
           <h2 className="text-sm font-semibold text-white/70 mb-2">{t('plugins.templates')}</h2>
           <ul className="space-y-2">
-            {templates.map((t) => {
-              const Icon = TEMPLATE_ICONS[t.icon] || Puzzle
-              const isCreating = creating === t.id
+            {templates.map((template) => {
+              const Icon = TEMPLATE_ICONS[template.icon] || Puzzle
+              const isCreating = creating === template.id
               return (
                 <li
-                  key={t.id}
+                  key={template.id}
                   className="flex items-center gap-3 rounded-xl bg-white/10 p-4 hover:bg-white/15"
                 >
                   <div className="h-10 w-10 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
                     <Icon className="h-5 w-5 text-violet-400" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium">{t.name}</p>
-                    <p className="text-xs text-white/50 line-clamp-2">{t.description}</p>
+                    <p className="font-medium">{template.name}</p>
+                    <p className="text-xs text-white/50 line-clamp-2">{template.description}</p>
                   </div>
                   <button
                     type="button"
                     disabled={isCreating}
-                    onClick={() => handleCreateFromTemplate(t)}
+                    onClick={() => handleCreateFromTemplate(template)}
                     className="shrink-0 flex items-center gap-1 rounded-lg bg-violet-600 py-2 px-3 text-sm text-white disabled:opacity-50"
                   >
                     <Plus className="h-4 w-4" />

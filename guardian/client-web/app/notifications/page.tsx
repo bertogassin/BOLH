@@ -8,15 +8,7 @@ import { useLocale } from '@/context/LocaleContext'
 import { fetchNotifications, markNotificationRead, type Notification } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 import { ErrorRetry } from '@/components/ErrorRetry'
-
-function formatDate(s: string, locale: string): string {
-  try {
-    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : 'en-US'
-    return new Date(s).toLocaleString(loc, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
-  } catch {
-    return s
-  }
-}
+import { formatDateTime } from '@/lib/format/date'
 
 export default function NotificationsPage() {
   const { user } = useAuth()
@@ -113,7 +105,7 @@ export default function NotificationsPage() {
               >
                 <p className="font-medium text-white text-sm">{n.title}</p>
                 <p className="text-xs text-white/60 mt-0.5">{n.body}</p>
-                <p className="text-xs text-white/40 mt-1">{formatDate(n.created_at, locale)}</p>
+                <p className="text-xs text-white/40 mt-1">{formatDateTime(n.created_at, locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
               </li>
             ))}
           </ul>

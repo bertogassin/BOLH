@@ -2,6 +2,7 @@
 package main
 
 import (
+	"crypto/subtle"
 	"fmt"
 	"log"
 	"net/http"
@@ -49,11 +50,16 @@ func main() {
 	r := gin.Default()
 	requireInternalAuth := func(c *gin.Context) bool {
 		token := strings.TrimSpace(os.Getenv("INTERNAL_SERVICE_TOKEN"))
-		strict := strings.EqualFold(strings.TrimSpace(os.Getenv("STRICT_INTERNAL_AUTH")), "true")
-		if token == "" && !strict {
-			return true
+		allowInsecure := strings.EqualFold(strings.TrimSpace(os.Getenv("ALLOW_INSECURE_INTERNAL_AUTH")), "true")
+		if token == "" {
+			if allowInsecure {
+				return true
+			}
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "service auth required"})
+			return false
 		}
-		if c.GetHeader("X-Internal-Token") != token {
+		provided := c.GetHeader("X-Internal-Token")
+		if subtle.ConstantTimeCompare([]byte(provided), []byte(token)) != 1 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "service auth required"})
 			return false
 		}

@@ -10,24 +10,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/argon2"
 )
 
 type User struct {
-	ID          string    `json:"id"`
-	Email       string    `json:"email"`
-	Phone       string    `json:"phone"`
-	PasswordHash string   `json:"-"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	UserType    string    `json:"user_type"`
-	Verified    bool      `json:"verified"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID           string    `json:"id"`
+	Email        string    `json:"email"`
+	Phone        string    `json:"phone"`
+	PasswordHash string    `json:"-"`
+	FirstName    string    `json:"first_name"`
+	LastName     string    `json:"last_name"`
+	UserType     string    `json:"user_type"`
+	Verified     bool      `json:"verified"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type UserStore struct {
-	mu    sync.RWMutex
-	byID  map[string]*User
+	mu      sync.RWMutex
+	byID    map[string]*User
 	byEmail map[string]*User
 }
 
@@ -63,8 +62,15 @@ func (s *UserStore) ByEmail(email string) *User {
 	return s.byEmail[email]
 }
 
-func hashPassword(pass string) []byte {
-	return argon2.IDKey([]byte(pass), []byte("guardian-user-svc"), 1, 64*1024, 4, 32)
+func (s *UserStore) SetPasswordHash(userID, hash string) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	u, ok := s.byID[userID]
+	if !ok {
+		return false
+	}
+	u.PasswordHash = hash
+	return true
 }
 
 func main() {
@@ -91,10 +97,15 @@ func main() {
 			return
 		}
 		id := uuid.New().String()
+		passwordHash, err := hashPassword(req.Password)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to hash password"})
+			return
+		}
 		u := &User{
 			ID:           id,
 			Email:        req.Email,
-			PasswordHash: string(hashPassword(req.Password)),
+			PasswordHash: passwordHash,
 			FirstName:    req.FirstName,
 			LastName:     req.LastName,
 			UserType:     req.UserType,
@@ -103,6 +114,39 @@ func main() {
 		}
 		store.Create(u)
 		c.JSON(http.StatusCreated, gin.H{"user_id": id, "email": u.Email})
+	})
+
+	r.POST("/login", func(c *gin.Context) {
+		var req struct {
+			Email    string `json:"email" binding:"required,email"`
+			Password string `json:"password" binding:"required"`
+		}
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		u := store.ByEmail(req.Email)
+		if u == nil || !verifyPassword(req.Password, u.PasswordHash) {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid email or password"})
+			return
+		}
+		if !isPHCArgon2Hash(u.PasswordHash) {
+			if upgraded, err := hashPassword(req.Password); err == nil {
+				store.SetPasswordHash(u.ID, upgraded)
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"user": gin.H{
+				"id":         u.ID,
+				"email":      u.Email,
+				"phone":      u.Phone,
+				"first_name": u.FirstName,
+				"last_name":  u.LastName,
+				"user_type":  u.UserType,
+				"verified":   u.Verified,
+				"created_at": u.CreatedAt,
+			},
+		})
 	})
 
 	r.GET("/profile/:id", func(c *gin.Context) {
@@ -123,7 +167,6 @@ func main() {
 	if port == "" {
 		port = "8081"
 	}
-	_ = json.Marshal
 	log.Printf("user-service listening on :%s (HTTP)", port)
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal(err)

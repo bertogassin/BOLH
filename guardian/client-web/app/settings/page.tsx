@@ -1,11 +1,14 @@
 'use client'
 
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, Settings, Moon, Sun, Globe2, Vibrate, KeyRound, Trash2 } from 'lucide-react'
+import { ChevronLeft, Settings, Moon, Sun, Globe2, Vibrate, KeyRound, Paperclip } from 'lucide-react'
 import { AVAILABLE_LOCALES, LOCALE_OPTIONS, useLocale } from '@/context/LocaleContext'
 import { useSound } from '@/context/SoundContext'
+import { useAuth } from '@/context/AuthContext'
 import { BOLHNav } from '@/components/BOLHNav'
+import { FormField } from '@/components/FormField'
+import { DARK_FIELD_LABEL_CLASS } from '@/components/formStyles'
 
 type AppSettings = {
   vibrationEnabled: boolean
@@ -14,6 +17,8 @@ type AppSettings = {
   soundEnabled: boolean
   soundVolume: number
   soundPreset: 'soft' | 'classic' | 'arcade'
+  rib: string
+  ribAttachmentName: string
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
@@ -23,6 +28,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   soundEnabled: true,
   soundVolume: 0.55,
   soundPreset: 'classic',
+  rib: '',
+  ribAttachmentName: '',
 }
 
 function SwitchRow({
@@ -45,7 +52,7 @@ function SwitchRow({
           {icon}
           {title}
         </p>
-        {hint ? <p className="text-xs text-white/60 mt-0.5">{hint}</p> : null}
+        {hint ? <p className="text-xs text-white/75 mt-0.5">{hint}</p> : null}
       </div>
       <button
         type="button"
@@ -67,40 +74,67 @@ function SwitchRow({
 }
 
 export default function SettingsPage() {
+  const { user } = useAuth()
   const { t, locale, setLocale } = useLocale()
   const { soundEnabled, soundVolume, soundPreset, updateSoundSettings, playPreview } = useSound()
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
   const [saved, setSaved] = useState(false)
+  const ribFileInputRef = useRef<HTMLInputElement>(null)
 
   const storageKey = 'guardian_app_settings_v1'
+  const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
   const availableLocaleCodes = useMemo(() => new Set(LOCALE_OPTIONS.map((l) => l.code)), [])
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(storageKey)
-      const parsed = raw ? (JSON.parse(raw) as Partial<AppSettings>) : {}
+      const settingsRaw = localStorage.getItem(storageKey)
+      const parsedSettings = settingsRaw ? (JSON.parse(settingsRaw) as Partial<AppSettings>) : {}
+      const detailsRaw = localStorage.getItem(detailsStorageKey)
+      const parsedDetails = detailsRaw ? (JSON.parse(detailsRaw) as { rib?: string; ribAttachmentName?: string }) : {}
       const merged: AppSettings = {
         ...DEFAULT_SETTINGS,
-        ...parsed,
-        locale: locale || parsed.locale || DEFAULT_SETTINGS.locale,
-        soundEnabled: typeof parsed.soundEnabled === 'boolean' ? parsed.soundEnabled : soundEnabled,
-        soundVolume: typeof parsed.soundVolume === 'number' ? parsed.soundVolume : soundVolume,
+        ...parsedSettings,
+        locale: locale || parsedSettings.locale || DEFAULT_SETTINGS.locale,
+        soundEnabled: typeof parsedSettings.soundEnabled === 'boolean' ? parsedSettings.soundEnabled : soundEnabled,
+        soundVolume: typeof parsedSettings.soundVolume === 'number' ? parsedSettings.soundVolume : soundVolume,
         soundPreset:
-          parsed.soundPreset === 'soft' || parsed.soundPreset === 'classic' || parsed.soundPreset === 'arcade'
-            ? parsed.soundPreset
+          parsedSettings.soundPreset === 'soft' || parsedSettings.soundPreset === 'classic' || parsedSettings.soundPreset === 'arcade'
+            ? parsedSettings.soundPreset
             : soundPreset,
+        rib:
+          String(parsedDetails.rib || '').trim() ||
+          String(parsedSettings.rib || '').trim() ||
+          DEFAULT_SETTINGS.rib,
+        ribAttachmentName:
+          String(parsedDetails.ribAttachmentName || '').trim() ||
+          String(parsedSettings.ribAttachmentName || '').trim() ||
+          DEFAULT_SETTINGS.ribAttachmentName,
       }
       setSettings(merged)
       document.documentElement.setAttribute('data-theme', merged.theme)
     } catch {
       setSettings({ ...DEFAULT_SETTINGS, locale, soundEnabled, soundVolume, soundPreset })
     }
-  }, [locale, soundEnabled, soundPreset, soundVolume])
+  }, [detailsStorageKey, locale, soundEnabled, soundPreset, soundVolume])
 
   const persist = (next: AppSettings) => {
     setSettings(next)
     localStorage.setItem(storageKey, JSON.stringify(next))
     localStorage.setItem('bolh-theme', next.theme)
+    try {
+      const raw = localStorage.getItem(detailsStorageKey)
+      const base = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
+      localStorage.setItem(
+        detailsStorageKey,
+        JSON.stringify({
+          ...base,
+          rib: next.rib.trim(),
+          ribAttachmentName: next.ribAttachmentName.trim(),
+        })
+      )
+    } catch {
+      // Ignore local storage write errors in UI.
+    }
     updateSoundSettings({
       soundEnabled: next.soundEnabled,
       soundVolume: next.soundVolume,
@@ -137,13 +171,13 @@ export default function SettingsPage() {
             </div>
             {saved ? <span className="text-xs text-green-300">Saved</span> : null}
           </div>
-          <p className="text-xs text-white/60">
+          <p className="text-xs text-white/75">
             All settings are saved automatically.
           </p>
         </div>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/60 tracking-wide">Account</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">Account</h2>
           <Link href="/profile/change-password" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
             <span className="flex items-center gap-2 text-sm">
               <KeyRound className="h-4 w-4 text-violet-300" />
@@ -151,17 +185,60 @@ export default function SettingsPage() {
             </span>
             <span className="text-white/40">›</span>
           </Link>
-          <Link href="/profile/delete" className="rounded-xl bg-red-500/10 border border-red-400/40 px-4 py-3 flex items-center justify-between text-red-200 hover:bg-red-500/15">
-            <span className="flex items-center gap-2 text-sm">
-              <Trash2 className="h-4 w-4 text-red-300" />
-              Delete account
-            </span>
-            <span className="text-red-300/70">›</span>
-          </Link>
+          <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-3">
+            <p className="text-sm text-white inline-flex items-center gap-2">
+              <Paperclip className="h-4 w-4 text-violet-300" />
+              RIB details
+            </p>
+            <FormField
+              label="RIB / IBAN"
+              labelClassName={DARK_FIELD_LABEL_CLASS}
+            >
+              <input
+                type="text"
+                value={settings.rib}
+                onChange={(e) => update('rib', e.target.value.replace(/\s+/g, '').toUpperCase())}
+                placeholder="Enter your RIB / IBAN"
+                className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm text-white placeholder:text-white/50 outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80"
+              />
+            </FormField>
+            <input
+              ref={ribFileInputRef}
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg"
+              onChange={(e) => {
+                const nextFile = e.target.files?.[0]
+                if (!nextFile) return
+                update('ribAttachmentName', nextFile.name)
+              }}
+              className="hidden"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => ribFileInputRef.current?.click()}
+                className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+              >
+                Attach RIB file
+              </button>
+              {settings.ribAttachmentName ? (
+                <button
+                  type="button"
+                  onClick={() => update('ribAttachmentName', '')}
+                  className="rounded-lg border border-violet-400 px-3 py-2 text-sm bg-white/10 hover:bg-white/15"
+                >
+                  Remove
+                </button>
+              ) : null}
+            </div>
+            <p className="text-xs text-white/75">
+              {settings.ribAttachmentName ? `Attached: ${settings.ribAttachmentName}` : 'No file attached yet'}
+            </p>
+          </div>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/60 tracking-wide">Experience</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">Experience</h2>
           <SwitchRow
             title="Vibration"
             hint="Mobile haptic feedback"
@@ -215,7 +292,7 @@ export default function SettingsPage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xs uppercase text-white/60 tracking-wide">Appearance & Language</h2>
+          <h2 className="text-xs uppercase text-white/75 tracking-wide">Appearance & Language</h2>
           <div className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 space-y-2">
             <p className="text-sm text-white inline-flex items-center gap-2">
               {settings.theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
@@ -244,22 +321,27 @@ export default function SettingsPage() {
               <Globe2 className="h-4 w-4 text-violet-300" />
               Language
             </p>
-            <select
-              value={settings.locale}
-              onChange={(e) => {
-                const next = e.target.value
-                if (!availableLocaleCodes.has(next)) return
-                if (!AVAILABLE_LOCALES.has(next)) return
-                update('locale', next)
-              }}
-              className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm outline-none"
+            <FormField
+              label="App language"
+              labelClassName={DARK_FIELD_LABEL_CLASS}
             >
-              {LOCALE_OPTIONS.filter((o) => AVAILABLE_LOCALES.has(o.code)).map((opt) => (
-                <option key={opt.code} value={opt.code}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              <select
+                value={settings.locale}
+                onChange={(e) => {
+                  const next = e.target.value
+                  if (!availableLocaleCodes.has(next)) return
+                  if (!AVAILABLE_LOCALES.has(next)) return
+                  update('locale', next)
+                }}
+                className="w-full rounded-lg bg-white/10 border border-violet-400 px-3 py-2 text-sm outline-none"
+              >
+                {LOCALE_OPTIONS.filter((o) => AVAILABLE_LOCALES.has(o.code)).map((opt) => (
+                  <option key={opt.code} value={opt.code}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </FormField>
           </div>
         </section>
 

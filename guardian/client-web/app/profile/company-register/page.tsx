@@ -6,6 +6,7 @@ import { ChevronLeft, Building2, ShieldCheck, Search, AlertTriangle, CheckCircle
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
+import { includesNameHint, luhnCheck, normalize, onlyDigits } from '@/lib/company/registerUtils'
 
 type CompanyCheckResult = {
   checked: boolean
@@ -31,42 +32,6 @@ type PartnerApplication = {
   checkResult?: CompanyCheckResult
   submittedAt: string
   status: 'pending'
-}
-
-function normalize(v: string): string {
-  return v.trim().replace(/\s+/g, ' ')
-}
-
-function onlyDigits(v: string): string {
-  return v.replace(/\D/g, '')
-}
-
-function luhnCheck(digits: string): boolean {
-  let sum = 0
-  let alt = false
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let n = Number(digits[i])
-    if (alt) {
-      n *= 2
-      if (n > 9) n -= 9
-    }
-    sum += n
-    alt = !alt
-  }
-  return sum % 10 === 0
-}
-
-function includesNameHint(ownerFullName: string, payload: unknown): { match: boolean; evidence?: string } {
-  const raw = JSON.stringify(payload || '').toLowerCase()
-  const tokens = ownerFullName
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((t) => t.length >= 3)
-  const matched = tokens.filter((t) => raw.includes(t))
-  if (matched.length >= Math.min(2, tokens.length)) {
-    return { match: true, evidence: `Matched tokens: ${matched.join(', ')}` }
-  }
-  return { match: false }
 }
 
 export default function CompanyRegisterPage() {

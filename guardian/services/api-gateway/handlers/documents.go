@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -14,13 +16,31 @@ import (
 
 const downloadDisposition = "attachment"
 const maxUploadFileBytes = 10 * 1024 * 1024 // 10 MB
+const sniffHeaderBytes = 512
 
-var allowedMimeTypes = map[string]bool{
-	"application/pdf": true,
-	"image/png":       true,
-	"image/jpeg":      true,
-	"image/webp":      true,
-	"text/plain":      true,
+type documentResponse struct {
+	ID            string     `json:"id"`
+	UserID        string     `json:"user_id"`
+	UserType      string     `json:"user_type"`
+	DocType       string     `json:"doc_type"`
+	Title         string     `json:"title"`
+	Description   string     `json:"description"`
+	FileName      string     `json:"file_name"`
+	FileSize      int64      `json:"file_size"`
+	MimeType      string     `json:"mime_type"`
+	CreatedAt     time.Time  `json:"created_at"`
+	UpdatedAt     time.Time  `json:"updated_at"`
+	ExpiresAt     *time.Time `json:"expires_at,omitempty"`
+	Status        string     `json:"status"`
+	Tags          []string   `json:"tags"`
+	Version       int        `json:"version"`
+	ParentID      string     `json:"parent_id,omitempty"`
+	Signature     string     `json:"signature,omitempty"`
+	SignatureDate *time.Time `json:"signature_date,omitempty"`
+	SignedBy      string     `json:"signed_by,omitempty"`
+	OCRText       string     `json:"ocr_text,omitempty"`
+	ThumbnailPath string     `json:"thumbnail_path,omitempty"`
+	IsFavorite    bool       `json:"is_favorite"`
 }
 
 type DocumentHandlers struct {
@@ -46,7 +66,11 @@ func (h *DocumentHandlers) List(c *gin.Context) {
 		}
 		out = append(out, d)
 	}
-	c.JSON(http.StatusOK, gin.H{"documents": out})
+	safe := make([]documentResponse, 0, len(out))
+	for _, d := range out {
+		safe = append(safe, toDocumentResponse(&d))
+	}
+	c.JSON(http.StatusOK, gin.H{"documents": safe})
 }
 
 func (h *DocumentHandlers) Get(c *gin.Context) {
@@ -65,7 +89,7 @@ func (h *DocumentHandlers) Get(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "document not found"})
 		return
 	}
-	c.JSON(http.StatusOK, doc)
+	c.JSON(http.StatusOK, toDocumentResponse(doc))
 }
 
 func (h *DocumentHandlers) Upload(c *gin.Context) {
@@ -87,8 +111,20 @@ func (h *DocumentHandlers) Upload(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "file size exceeds limit"})
 		return
 	}
-	mimeType := strings.ToLower(strings.TrimSpace(file.Header.Get("Content-Type")))
-	if !allowedMimeTypes[mimeType] {
+	opened, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to open uploaded file"})
+		return
+	}
+	defer opened.Close()
+	head := make([]byte, sniffHeaderBytes)
+	n, readErr := opened.Read(head)
+	if readErr != nil && readErr != io.EOF {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to read uploaded file"})
+		return
+	}
+	mimeType, ext, ok := detectMagicFileType(head[:n])
+	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported file type"})
 		return
 	}
@@ -102,10 +138,6 @@ func (h *DocumentHandlers) Upload(c *gin.Context) {
 		return
 	}
 	docID := uuid.New().String()
-	ext := filepath.Ext(file.Filename)
-	if ext == "" {
-		ext = ".bin"
-	}
 	savePath := filepath.Join(dir, docID+ext)
 	if err := c.SaveUploadedFile(file, savePath); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save file"})
@@ -132,7 +164,7 @@ func (h *DocumentHandlers) Upload(c *gin.Context) {
 		doc.MimeType = "application/octet-stream"
 	}
 	h.Store.CreateDocument(doc)
-	c.JSON(http.StatusCreated, gin.H{"id": doc.ID, "document": doc})
+	c.JSON(http.StatusCreated, gin.H{"id": doc.ID, "document": toDocumentResponse(doc)})
 }
 
 func (h *DocumentHandlers) Sign(c *gin.Context) {
@@ -225,4 +257,66 @@ func safeDownloadName(name string) string {
 		return "document.bin"
 	}
 	return clean
+}
+
+func toDocumentResponse(doc *store.Document) documentResponse {
+	if doc == nil {
+		return documentResponse{}
+	}
+	return documentResponse{
+		ID:            doc.ID,
+		UserID:        doc.UserID,
+		UserType:      doc.UserType,
+		DocType:       doc.DocType,
+		Title:         doc.Title,
+		Description:   doc.Description,
+		FileName:      doc.FileName,
+		FileSize:      doc.FileSize,
+		MimeType:      doc.MimeType,
+		CreatedAt:     doc.CreatedAt,
+		UpdatedAt:     doc.UpdatedAt,
+		ExpiresAt:     doc.ExpiresAt,
+		Status:        doc.Status,
+		Tags:          doc.Tags,
+		Version:       doc.Version,
+		ParentID:      doc.ParentID,
+		Signature:     doc.Signature,
+		SignatureDate: doc.SignatureDate,
+		SignedBy:      doc.SignedBy,
+		OCRText:       doc.OCRText,
+		ThumbnailPath: doc.ThumbnailPath,
+		IsFavorite:    doc.IsFavorite,
+	}
+}
+
+func detectMagicFileType(sample []byte) (mimeType string, ext string, ok bool) {
+	if len(sample) >= 4 && string(sample[:4]) == "%PDF" {
+		return "application/pdf", ".pdf", true
+	}
+	if len(sample) >= 8 &&
+		sample[0] == 0x89 &&
+		sample[1] == 0x50 &&
+		sample[2] == 0x4E &&
+		sample[3] == 0x47 &&
+		sample[4] == 0x0D &&
+		sample[5] == 0x0A &&
+		sample[6] == 0x1A &&
+		sample[7] == 0x0A {
+		return "image/png", ".png", true
+	}
+	if len(sample) >= 3 && sample[0] == 0xFF && sample[1] == 0xD8 && sample[2] == 0xFF {
+		return "image/jpeg", ".jpg", true
+	}
+	if len(sample) >= 12 && string(sample[:4]) == "RIFF" && string(sample[8:12]) == "WEBP" {
+		return "image/webp", ".webp", true
+	}
+	if len(sample) > 0 && utf8.Valid(sample) {
+		for _, b := range sample {
+			if b == 0x00 {
+				return "", "", false
+			}
+		}
+		return "text/plain", ".txt", true
+	}
+	return "", "", false
 }

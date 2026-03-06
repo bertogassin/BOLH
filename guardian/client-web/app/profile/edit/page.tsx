@@ -7,6 +7,8 @@ import { ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
+import { FormField } from '@/components/FormField'
+import { DARK_CLEAR_BUTTON_CLASS, DARK_FIELD_LABEL_CLASS, DARK_INPUT_CLASS } from '@/components/formStyles'
 import { BOLHNav } from '@/components/BOLHNav'
 
 const QUICK_RADIUS = [5, 10, 25, 50]
@@ -194,14 +196,16 @@ export default function ProfileEditPage() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Radius (km)</label>
+              <FormField
+                label="Radius (km)"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={serviceRadiusKm}
                   onChange={(v) => setServiceRadiusKm(v.replace(/[^\d]/g, '').slice(0, 3))}
                   placeholder="e.g. 25"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
                 <div className="mt-2 flex flex-wrap gap-2">
                   {QUICK_RADIUS.map((km) => (
@@ -219,80 +223,92 @@ export default function ProfileEditPage() {
                     </button>
                   ))}
                 </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Preferred zone</label>
+              </FormField>
+              <FormField
+                label="Preferred zone"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={preferredZone}
                   onChange={setPreferredZone}
                   placeholder="District / area"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
+              </FormField>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Min price</label>
+              <FormField
+                label="Min price"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={searchMinPrice}
                   onChange={(v) => setSearchMinPrice(v.replace(',', '.').replace(/[^\d.]/g, ''))}
                   placeholder="e.g. 50"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Max price</label>
+              </FormField>
+              <FormField
+                label="Max price"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={searchMaxPrice}
                   onChange={(v) => setSearchMaxPrice(v.replace(',', '.').replace(/[^\d.]/g, ''))}
                   placeholder="e.g. 300"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
+              </FormField>
             </div>
             {priceRangeInvalid ? (
               <p className="text-xs text-amber-300">Min price should be less than or equal to Max price.</p>
             ) : null}
             {!isDemoUser ? (
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Base price</label>
+              <FormField
+                label="Base price"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={basePrice}
                   onChange={(v) => setBasePrice(v.replace(',', '.').replace(/[^\d.]/g, ''))}
                   placeholder="e.g. 100"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
+              </FormField>
             ) : null}
           </div>
           <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
             {!isDemoUser ? (
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Rate / hour</label>
+              <FormField
+                label="Rate / hour"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={hourlyRate}
                   onChange={(v) => setHourlyRate(v.replace(',', '.').replace(/[^\d.]/g, ''))}
                   placeholder="e.g. 25"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
+              </FormField>
             ) : null}
             {!isDemoUser ? (
-              <div>
-                <label className="block text-xs font-medium text-white/60 uppercase mb-1">Availability</label>
+              <FormField
+                label="Availability"
+                labelClassName={DARK_FIELD_LABEL_CLASS}
+              >
                 <InputWithClear
                   value={availability}
                   onChange={setAvailability}
                   placeholder="e.g. 09:00-18:00"
-                  className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-                  clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+                  className={DARK_INPUT_CLASS}
+                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
                 />
-              </div>
+              </FormField>
             ) : null}
           </div>
           <button

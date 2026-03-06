@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"html"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -179,6 +181,9 @@ func (h *PluginHandlers) Export(c *gin.Context) {
 			primary = v
 		}
 	}
+	escapedName := html.EscapeString(p.Name)
+	escapedDescription := html.EscapeString(p.Description)
+	fileName := safeExportFileName(p.Name)
 	html := fmt.Sprintf(`<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>%s</title>
 <style>body{font-family:system-ui;background:#1a1b26;color:#fff;padding:24px;max-width:600px;margin:0 auto;}
@@ -188,8 +193,19 @@ p{color:rgba(255,255,255,0.7);margin:0;}
 </style></head><body>
 <div class="plugin"><h1>%s</h1><p>%s</p></div>
 </body></html>`,
-		p.Name, primary, p.Name, p.Description)
+		escapedName, primary, escapedName, escapedDescription)
 	c.Header("Content-Type", "text/html; charset=utf-8")
-	c.Header("Content-Disposition", "attachment; filename=\""+p.Name+".html\"")
+	c.Header("Content-Disposition", "attachment; filename=\""+fileName+".html\"")
 	c.String(http.StatusOK, html)
+}
+
+func safeExportFileName(name string) string {
+	clean := strings.TrimSpace(name)
+	clean = strings.ReplaceAll(clean, "\r", "")
+	clean = strings.ReplaceAll(clean, "\n", "")
+	clean = strings.ReplaceAll(clean, "\"", "")
+	if clean == "" {
+		return "plugin"
+	}
+	return clean
 }

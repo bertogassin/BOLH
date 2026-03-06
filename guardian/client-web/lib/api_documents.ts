@@ -7,7 +7,6 @@ export type Document = {
   doc_type: string
   title: string
   description?: string
-  file_path: string
   file_name: string
   file_size: number
   mime_type: string

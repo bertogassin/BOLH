@@ -36,23 +36,35 @@ export function BOLHNav({ current }: { current: Tab }) {
       <div className="flex justify-around py-3">
         <Link
           href="/booking"
-          className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'booking' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
+          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+            current === 'booking'
+              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
+              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+          }`}
         >
-          <Shield className="h-5 w-5" />
+          <Shield className={`h-5 w-5 ${current === 'booking' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
           <span className="text-xs font-medium">Home</span>
         </Link>
         <Link
           href="/map"
-          className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'map' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
+          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+            current === 'map'
+              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
+              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+          }`}
         >
-          <MapPin className="h-5 w-5" />
+          <MapPin className={`h-5 w-5 ${current === 'map' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
           <span className="text-xs font-medium">Map</span>
         </Link>
         <Link
           href="/profile"
-          className={`flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center ${current === 'profile' ? 'text-violet-400 border-b-2 border-violet-400 pb-0.5' : 'text-white/50 hover:text-white'}`}
+          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+            current === 'profile'
+              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
+              : 'text-white/70 hover:text-white hover:bg-white/10 border border-transparent'
+          }`}
         >
-          <User className="h-5 w-5" />
+          <User className={`h-5 w-5 ${current === 'profile' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
           <span className="text-xs font-medium">Profile</span>
         </Link>
       </div>

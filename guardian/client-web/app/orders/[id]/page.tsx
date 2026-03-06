@@ -9,21 +9,7 @@ import { fetchOrderWithMatch, cancelOrder, type Order, type Match } from '@/lib/
 import { subscribeOrderSync } from '@/lib/order_sync'
 import { StatusBadge } from '@/components/StatusBadge'
 import { BOLHNav } from '@/components/BOLHNav'
-
-function formatDateTime(s: string, locale: string) {
-  try {
-    const normalized = locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : locale === 'fr' ? 'fr-FR' : 'en-US'
-    return new Date(s).toLocaleString(normalized, {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  } catch {
-    return s
-  }
-}
+import { formatDateTime } from '@/lib/format/date'
 
 const ORDER_TIMELINE = [
   { key: 'published', labelKey: 'order_detail.step_created' },
@@ -222,7 +208,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
             <Calendar className="h-4 w-4" /> {t('order_detail.schedule')}
           </p>
           <p className="mt-2 text-white/90">
-            {formatDateTime(order.start_time, locale)} – {formatDateTime(order.end_time, locale)}
+            {formatDateTime(order.start_time, locale, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })} – {formatDateTime(order.end_time, locale, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
 

@@ -10,15 +10,7 @@ import { subscribeOrderSync } from '@/lib/order_sync'
 import { StatusBadge } from '@/components/StatusBadge'
 import { InputWithClear } from '@/components/InputWithClear'
 import { AppNav } from '@/components/AppNav'
-
-function formatDate(s: string, locale: string) {
-  try {
-    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US'
-    return new Date(s).toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' })
-  } catch {
-    return s
-  }
-}
+import { formatDate } from '@/lib/format/date'
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All' },
@@ -182,7 +174,7 @@ export default function OrdersPage() {
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" />
-                          {formatDate(order.start_time, locale)}
+                          {formatDate(order.start_time, locale, { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
                       {order.guard_count > 0 && (

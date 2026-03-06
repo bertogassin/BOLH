@@ -8,22 +8,9 @@ import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { fetchDocument, deleteDocument, signDocument, getDocumentFileUrl, type Document } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
-
-function formatDate(s?: string, locale?: string): string {
-  if (!s) return '—'
-  try {
-    const loc = locale === 'ru' ? 'ru-RU' : locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US'
-    return new Date(s).toLocaleString(loc)
-  } catch {
-    return s
-  }
-}
-
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
+import { formatDateTime } from '@/lib/format/date'
+import { formatFileSize } from '@/lib/format/files'
+import { downloadDocumentFile, openDocumentInNewTab } from '@/lib/documents/fileActions'
 
 export default function DocumentDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
@@ -90,17 +77,12 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     setDownloading(true)
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('guardian_token') : null
-      const res = await fetch(getDocumentFileUrl(params.id), {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      if (!token) throw new Error('Missing auth token')
+      await downloadDocumentFile({
+        token,
+        url: getDocumentFileUrl(params.id),
+        fileName: doc.file_name || doc.title || 'document',
       })
-      if (!res.ok) throw new Error('Download failed')
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = doc.file_name || doc.title || 'document'
-      a.click()
-      URL.revokeObjectURL(url)
       const stamp = new Date().toISOString()
       setLastDownloadedAt(stamp)
       try {
@@ -163,14 +145,8 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     if (!params.id) return
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('guardian_token') : null
-      const res = await fetch(getDocumentFileUrl(params.id), {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      })
-      if (!res.ok) return
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      window.open(url, '_blank', 'noopener,noreferrer')
-      setTimeout(() => URL.revokeObjectURL(url), 15000)
+      if (!token) return
+      await openDocumentInNewTab(token, getDocumentFileUrl(params.id))
       setActionHint(t('documents_detail.opened_new_tab'))
     } catch {
       // ignore
@@ -276,10 +252,10 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
             <FileText className="h-8 w-8 text-white/60" />
           </div>
           <p className="font-medium text-center">{doc.title}</p>
-          <p className="text-sm text-white/50">{doc.doc_type} · {formatSize(doc.file_size)}</p>
+          <p className="text-sm text-white/50">{doc.doc_type} · {formatFileSize(doc.file_size)}</p>
           {doc.status === 'signed' && (
             <span className="rounded bg-green-500/20 text-green-300 text-sm px-3 py-1">
-              {t('documents_hub.signed')}{doc.signed_by ? ` · ${formatDate(doc.signature_date, locale)}` : ''}
+              {t('documents_hub.signed')}{doc.signed_by && doc.signature_date ? ` · ${formatDateTime(doc.signature_date, locale)}` : ''}
             </span>
           )}
           {savedLocally && (
@@ -295,7 +271,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-xl bg-white/5 p-3">
             <p className="text-xs text-white/50">{t('documents_detail.created')}</p>
-            <p className="text-sm">{formatDate(doc.created_at, locale)}</p>
+            <p className="text-sm">{formatDateTime(doc.created_at, locale)}</p>
           </div>
           <div className="rounded-xl bg-white/5 p-3">
             <p className="text-xs text-white/50">{t('documents_detail.version')}</p>
@@ -307,7 +283,7 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
           </div>
           <div className="rounded-xl bg-white/5 p-3">
             <p className="text-xs text-white/50">{t('documents_detail.last_updated')}</p>
-            <p className="text-sm">{formatDate(doc.updated_at, locale)}</p>
+            <p className="text-sm">{formatDateTime(doc.updated_at, locale)}</p>
           </div>
         </div>
 
@@ -415,10 +391,10 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
               <Mail className="h-3.5 w-3.5" />
               {t('documents_detail.send_by_email')}
             </button>
-            {lastDownloadedAt && <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.last_download')}: {formatDate(lastDownloadedAt, locale)}</span>}
+            {lastDownloadedAt && <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.last_download')}: {formatDateTime(lastDownloadedAt, locale)}</span>}
             <span className="rounded-lg bg-white/10 px-3 py-1.5">ID: {doc.id.slice(0, 8)}...</span>
             <span className="rounded-lg bg-white/10 px-3 py-1.5">MIME: {doc.mime_type || 'unknown'}</span>
-            {doc.expires_at ? <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.expires')}: {formatDate(doc.expires_at, locale)}</span> : null}
+            {doc.expires_at ? <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.expires')}: {formatDateTime(doc.expires_at, locale)}</span> : null}
             <span className="rounded-lg bg-white/10 px-3 py-1.5">{t('documents_detail.hotkeys')}</span>
           </div>
         </div>

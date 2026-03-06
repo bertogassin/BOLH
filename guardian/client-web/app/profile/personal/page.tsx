@@ -7,6 +7,8 @@ import { ChevronLeft } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
+import { FormField } from '@/components/FormField'
+import { DARK_CLEAR_BUTTON_CLASS, DARK_FIELD_LABEL_CLASS, DARK_INPUT_CLASS } from '@/components/formStyles'
 import { updateProfile } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 
@@ -72,37 +74,43 @@ export default function ProfilePersonalPage() {
           {error ? (
             <div className="rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-200">{error}</div>
           ) : null}
-          <div>
-            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile.first_name')}</label>
+          <FormField
+            label={t('profile.first_name')}
+            labelClassName={DARK_FIELD_LABEL_CLASS}
+          >
             <InputWithClear
               value={firstName}
               onChange={setFirstName}
               placeholder={t('profile.first_name')}
-              className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-              clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+              className={DARK_INPUT_CLASS}
+              clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
             />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile.last_name')}</label>
+          </FormField>
+          <FormField
+            label={t('profile.last_name')}
+            labelClassName={DARK_FIELD_LABEL_CLASS}
+          >
             <InputWithClear
               value={lastName}
               onChange={setLastName}
               placeholder={t('profile.last_name')}
-              className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-              clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+              className={DARK_INPUT_CLASS}
+              clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
             />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-white/60 uppercase mb-1">{t('profile.phone')}</label>
+          </FormField>
+          <FormField
+            label={t('profile.phone')}
+            labelClassName={DARK_FIELD_LABEL_CLASS}
+          >
             <InputWithClear
               value={phone}
               onChange={setPhone}
               type="tel"
               placeholder={t('profile.placeholder_phone')}
-              className="w-full rounded-xl bg-white/10 px-4 py-3 text-white placeholder:text-white/40 outline-none border border-white/10 focus:border-violet-400 min-h-[44px]"
-              clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
+              className={DARK_INPUT_CLASS}
+              clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
             />
-          </div>
+          </FormField>
           <button
             type="submit"
             disabled={loading || success}

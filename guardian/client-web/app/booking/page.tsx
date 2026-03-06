@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react'
+import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { useAIChat } from '@/context/AIChatContext'
@@ -11,8 +11,15 @@ import { createOrder, fetchCards, fetchOrders, type PaymentCard, type Order } fr
 import { subscribeOrderSync } from '@/lib/order_sync'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
 import { InputWithClear } from '@/components/InputWithClear'
+import { FieldError, FormErrorSummary } from '@/components/FormErrors'
 import { BOLHNav } from '@/components/BOLHNav'
 import { statusLabel } from '@/components/StatusBadge'
+import { DARK_COMPACT_INPUT_BASE_CLASS, DARK_INLINE_INPUT_CLASS } from '@/components/formStyles'
+import { getDaysInMonth } from '@/lib/datetime/timeUtils'
+import { detectPlaceType, missionHintsByPlaceType } from '@/lib/booking/missionHints'
+import { isExpiryValid, isValidLuhn } from '@/lib/payment/cardUtils'
+import { Selector } from '@/components/booking/Selector'
+import { TimeSelector } from '@/components/booking/TimeSelector'
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sep', 'Oct', 'Nov', 'Dec']
 const SERVICES = [
@@ -22,86 +29,6 @@ const SERVICES = [
 ]
 const PANEL_CLASS = 'rounded-xl bg-black border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
 const DRAFT_WRITE_DEBOUNCE_MS = 250
-
-function getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month + 1, 0).getDate()
-}
-
-function timeToMinutes(value: string): number {
-  const [h, m] = value.split(':').map((v) => parseInt(v, 10))
-  if (Number.isNaN(h) || Number.isNaN(m)) return 0
-  return h * 60 + m
-}
-
-function minutesToTime(totalMinutes: number): string {
-  const safe = Math.max(0, Math.min(23 * 60 + 59, totalMinutes))
-  const h = Math.floor(safe / 60)
-  const m = safe % 60
-  return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`
-}
-
-function sanitizeTimeDraft(raw: string): string {
-  const cleaned = raw.replace(/[^\d:]/g, '')
-  if (cleaned.includes(':')) {
-    const [h = '', m = ''] = cleaned.split(':')
-    return `${h.slice(0, 2)}:${m.slice(0, 2)}`
-  }
-  const digits = cleaned.replace(/\D/g, '').slice(0, 4)
-  if (digits.length <= 2) return digits
-  return `${digits.slice(0, 2)}:${digits.slice(2)}`
-}
-
-function normalizeTime(raw: string): string | null {
-  const match = raw.match(/^(\d{1,2}):(\d{1,2})$/)
-  if (!match) return null
-  const hh = parseInt(match[1], 10)
-  const mm = parseInt(match[2], 10)
-  if (Number.isNaN(hh) || Number.isNaN(mm)) return null
-  if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null
-  return `${hh.toString().padStart(2, '0')}:${mm.toString().padStart(2, '0')}`
-}
-
-function isLuhnValid(cardNumber: string): boolean {
-  const digits = cardNumber.replace(/\D/g, '')
-  if (digits.length < 13 || digits.length > 19) return false
-  let sum = 0
-  let shouldDouble = false
-  for (let i = digits.length - 1; i >= 0; i -= 1) {
-    let digit = parseInt(digits[i], 10)
-    if (Number.isNaN(digit)) return false
-    if (shouldDouble) {
-      digit *= 2
-      if (digit > 9) digit -= 9
-    }
-    sum += digit
-    shouldDouble = !shouldDouble
-  }
-  return sum % 10 === 0
-}
-
-function isExpiryValid(expiry: string): boolean {
-  const match = expiry.match(/^(\d{2})\/(\d{2})$/)
-  if (!match) return false
-  const month = parseInt(match[1], 10)
-  const year2 = parseInt(match[2], 10)
-  if (Number.isNaN(month) || Number.isNaN(year2) || month < 1 || month > 12) return false
-
-  const now = new Date()
-  const fullYear = 2000 + year2
-  const expiryEnd = new Date(fullYear, month, 0, 23, 59, 59, 999)
-  return expiryEnd.getTime() >= now.getTime()
-}
-
-function detectPlaceType(address: string): string {
-  const v = address.toLowerCase()
-  if (/villa|maison|house/.test(v)) return 'villa_house'
-  if (/apartment|flat|residence/.test(v)) return 'residential'
-  if (/shop|store|market|boutique|supermarket/.test(v)) return 'store_commercial'
-  if (/office|business|company/.test(v)) return 'office_business'
-  if (/hotel|otel/.test(v)) return 'hotel'
-  if (/warehouse/.test(v)) return 'warehouse'
-  return 'generic'
-}
 
 export default function BookingPage() {
   const { user } = useAuth()
@@ -162,24 +89,23 @@ export default function BookingPage() {
     () => `${String(safeDay).padStart(2, '0')} ${MONTHS[month]}`,
     [safeDay, month]
   )
-  const placeType = useMemo(
-    () => t(`booking.place_type_${detectPlaceType(address)}`),
-    [address, t]
-  )
+  const placeTypeId = useMemo(() => detectPlaceType(address), [address])
+  const missionHints = useMemo(() => missionHintsByPlaceType(placeTypeId), [placeTypeId])
   const autoMissionDescription = useMemo(
-    () =>
-      [
-        `${t('booking.mission_prefix')}: ${selectedServiceLabel}.`,
-        `${t('booking.place_type_short')}: ${placeType}.`,
-        `${t('booking.address')}: ${address.trim() || t('booking.address_pending')}.`,
-        `${t('booking.period')}: ${missionDateLabel}, ${t('booking.from')} ${fromTime} ${t('booking.to')} ${toTime}.`,
-        t('booking.mission_task_default'),
-        t('booking.mission_additional_default'),
-      ].join(' '),
-    [t, selectedServiceLabel, placeType, address, missionDateLabel, fromTime, toTime]
+    () => {
+      if (!address.trim() || !missionHints) return ''
+      return [
+        `${selectedServiceLabel}.`,
+        `${missionHints.objectLabel}.`,
+        `${address.trim()}.`,
+        `${missionDateLabel} ${fromTime}-${toTime}.`,
+        `Tasks: ${missionHints.tasks.join(', ')}.`,
+      ].join(' ')
+    },
+    [selectedServiceLabel, address, missionDateLabel, fromTime, toTime, missionHints]
   )
   const canUseOneTimeCard =
-    isLuhnValid(cardDigits) &&
+    isValidLuhn(cardDigits) &&
     isExpiryValid(oneTimeCardExpiry) &&
     /^\d{3,4}$/.test(oneTimeCardCvc) &&
     oneTimeCardHolder.trim().length >= 2
@@ -194,6 +120,10 @@ export default function BookingPage() {
   const paymentSheetIsFloating = keyboardInset > 0
   const isAnyDrawerOpen = showMissionSheet || showPaymentSheet || showOneTimeCardSheet
   const shouldHideBottomNav = showMissionSheet || showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
+  const addressError = submitAttempted && !address.trim()
+  const termsError = submitAttempted && !acceptTerms
+  const onlineError = submitAttempted && !isOnline
+  const priceError = submitAttempted && !price.trim()
 
   useEffect(() => {
     if (day > maxDay) setDay(maxDay)
@@ -449,6 +379,20 @@ export default function BookingPage() {
     if (!user) return
     const detailsStorageKey = `guardian_profile_details_${user.id}`
     setIsOnline((prev) => {
+      if (!prev) {
+        try {
+          const raw = window.localStorage.getItem(detailsStorageKey)
+          const parsed = raw ? (JSON.parse(raw) as { rib?: string }) : {}
+          const rib = String(parsed.rib || '').trim()
+          if (!rib) {
+            setError('Add your RIB in Settings before switching to Online mode.')
+            return prev
+          }
+        } catch {
+          setError('Add your RIB in Settings before switching to Online mode.')
+          return prev
+        }
+      }
       const next = !prev
       try {
         const raw = window.localStorage.getItem(detailsStorageKey)
@@ -457,6 +401,7 @@ export default function BookingPage() {
       } catch {
         // Ignore local storage write errors in UI.
       }
+      if (next) setError('')
       return next
     })
   }
@@ -471,22 +416,28 @@ export default function BookingPage() {
       return
     }
     if (!address.trim()) {
+      setError('Please enter an address.')
       return
     }
     if (!acceptTerms) {
+      setError('Please accept terms and privacy policy.')
       return
     }
     if (!isOnline) {
+      setError('Switch to Online mode before creating an order.')
       return
     }
     if (!hasSelectedPaymentMethod) {
+      setError('Please select a payment method.')
       return
     }
     const p = parseFloat(price) || 0
     if (!price.trim()) {
+      setError('Please enter your price per hour.')
       return
     }
     if (p < 0) {
+      setError('Price cannot be negative.')
       return
     }
     setLoading(true)
@@ -497,6 +448,7 @@ export default function BookingPage() {
       const start = new Date(y, m, d, parseInt(fromTime.slice(0, 2), 10), parseInt(fromTime.slice(3), 10))
       let end = new Date(y, m, d, parseInt(toTime.slice(0, 2), 10), parseInt(toTime.slice(3), 10))
       if (start <= new Date()) {
+        setError('Start time must be in the future.')
         return
       }
       if (end <= start) end = new Date(end.getTime() + 24 * 60 * 60 * 1000)
@@ -601,11 +553,11 @@ export default function BookingPage() {
   if (!user) {
     return (
       <div className="min-h-dvh bg-black p-4 flex flex-col items-center justify-center gap-4 pb-32">
-        <p className="text-white/60 text-center">Log in to create a security order.</p>
+        <p className="text-white/75 text-center">Log in to create a security order.</p>
         <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
           Log in
         </Link>
-        <Link href="/register" className="text-sm text-white/50 hover:text-white/80">Create account</Link>
+        <Link href="/register" className="text-sm text-white/70 hover:text-white">Create account</Link>
       </div>
     )
   }
@@ -641,7 +593,7 @@ export default function BookingPage() {
               {isOnline ? <Wifi className="h-3.5 w-3.5" /> : <WifiOff className="h-3.5 w-3.5" />}
               {isOnline ? 'Online' : 'Offline'}
             </button>
-            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="BOLH AI chat">
+            <button type="button" onClick={openChat} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label="BOLH AI chat">
               <Sparkles className="h-5 w-5 text-white/80" />
             </button>
           </div>
@@ -667,15 +619,18 @@ export default function BookingPage() {
             </button>
           )}
           {error && (
-            <div ref={errorRef} role="alert" className="rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-200 flex items-center justify-between gap-2">
-              <span>{error}</span>
+            <div ref={errorRef} className="flex items-center justify-between gap-2 rounded-xl bg-red-500/20 border border-red-500/40 p-3">
+              <FormErrorSummary
+                message={error}
+                className="border-0 bg-transparent p-0 text-sm text-red-200"
+              />
               <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label="Close">×</button>
             </div>
           )}
           {activeOrder && (
             <div className="rounded-xl border border-violet-400 bg-black px-3 py-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-white/60 uppercase tracking-wide">Active order</span>
+                <span className="text-xs text-white/75 uppercase tracking-wide">Active order</span>
                 <span className="rounded-full border border-violet-400/80 bg-white/5 px-2 py-0.5 text-[11px] text-white/85">
                   {statusLabel(activeOrder.status, t)}
                 </span>
@@ -762,28 +717,48 @@ export default function BookingPage() {
 
           <AddressAutocomplete
             value={address}
-            onChange={(v) => { setAddress(v); if (error) setError('') }}
+            onChange={(v) => {
+              setAddress(v)
+              // Keep mission in live auto mode while user edits address.
+              setMissionTouched(false)
+              if (error) setError('')
+            }}
             onSelect={(r) => {
               setLat(r.latitude)
               setLon(r.longitude)
               setAddress(r.display)
+              setMissionTouched(false)
               if (error) setError('')
             }}
             placeholder={t('booking.address')}
             hasError={submitAttempted && !address.trim()}
           />
+          {address.trim() && missionHints && (
+            <div className="rounded-xl border border-violet-400 bg-black px-3 py-2.5">
+              <p className="text-[11px] text-white/75">Detected object</p>
+              <p className="mt-0.5 text-xs text-white/90">{missionHints.objectLabel}</p>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {missionHints.tasks.map((task) => (
+                  <span key={task} className="rounded-full border border-violet-400/70 bg-white/5 px-2 py-0.5 text-[10px] text-white/80">
+                    {task}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {addressError ? <FieldError message="Address is required." className="mt-1 text-xs text-red-300" /> : null}
           <div className={`relative ${showMissionSheet ? 'z-50' : ''} rounded-xl bg-black border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
-            <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/75">
+            <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/85">
               <span className="inline-flex items-center gap-1.5 text-left text-white/85">
                 <Shield className="h-3.5 w-3.5" />
                 Mission
               </span>
-              <span className="text-[10px] text-white/50">{missionDescription.length}/2500</span>
+              <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
             </div>
             <button
               type="button"
               onClick={() => setShowMissionSheet((v) => !v)}
-              className={`w-full border-t ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'} px-3 py-1.5 text-[11px] text-white/70 flex items-center justify-between hover:bg-white/5`}
+              className={`w-full border-t ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'} px-3 py-1.5 text-[11px] text-white/85 flex items-center justify-between hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/80`}
             >
               <span className="truncate">{missionDescription ? t('booking.mission_description') : t('booking.mission_add_description')}</span>
               <span className="inline-flex items-center gap-1">
@@ -852,7 +827,7 @@ export default function BookingPage() {
                 placeholder={t('booking.mission_placeholder')}
                 className="w-full resize-y rounded-lg bg-black border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
               />
-              <div className="mt-1 flex items-center justify-between text-[10px] text-white/45">
+              <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
                 <span>You can keep this text or add details. Draft is saved automatically.</span>
                 <span>{missionDescription.length}/2500</span>
               </div>
@@ -867,14 +842,14 @@ export default function BookingPage() {
                 onChange={(v) => setPrice(v.replace(',', '.'))}
                 placeholder={t('booking.your_price')}
                 wrapperClassName="flex-1 min-w-0"
-                className="w-full bg-transparent text-white placeholder:text-white/50 outline-none text-sm"
+                className={DARK_INLINE_INPUT_CLASS}
                 clearButtonClassName="text-white/60 hover:text-white hover:bg-white/10"
                 inputMode="decimal"
                 aria-label={t('booking.your_price')}
               />
               <span className="text-white/60 text-[11px] shrink-0">/ hour</span>
             </div>
-            <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/75`}>
+            <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/85`}>
               <button
                 type="button"
                 onClick={() => {
@@ -887,7 +862,7 @@ export default function BookingPage() {
                 Payment card
               </button>
               <div className="inline-flex items-center gap-1.5">
-                <span className="tabular-nums text-white/70">{paymentPreview}</span>
+                <span className="tabular-nums text-white/85">{paymentPreview}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -982,8 +957,8 @@ export default function BookingPage() {
                       setOneTimeCard(null)
                     }}
                     placeholder={t('booking.card_number')}
-                    className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
-                      submitAttempted && oneTimeCardNumber.trim().length > 0 && !isLuhnValid(cardDigits)
+                    className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                      submitAttempted && oneTimeCardNumber.trim().length > 0 && !isValidLuhn(cardDigits)
                         ? 'border-red-500/80 focus:border-red-500/80'
                         : 'border-violet-400 focus:border-violet-400'
                     }`}
@@ -1001,7 +976,7 @@ export default function BookingPage() {
                         setOneTimeCard(null)
                       }}
                       placeholder="MM/YY"
-                      className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
+                      className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                         submitAttempted && oneTimeCardExpiry.trim().length > 0 && !isExpiryValid(oneTimeCardExpiry)
                           ? 'border-red-500/80 focus:border-red-500/80'
                           : 'border-violet-400 focus:border-violet-400'
@@ -1017,7 +992,7 @@ export default function BookingPage() {
                         setOneTimeCard(null)
                       }}
                       placeholder="CVC"
-                      className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
+                      className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                         submitAttempted && oneTimeCardCvc.trim().length > 0 && !/^\d{3,4}$/.test(oneTimeCardCvc)
                           ? 'border-red-500/80 focus:border-red-500/80'
                           : 'border-violet-400 focus:border-violet-400'
@@ -1032,7 +1007,7 @@ export default function BookingPage() {
                       setOneTimeCard(null)
                     }}
                     placeholder="Cardholder name"
-                    className={`w-full rounded-lg bg-black border px-2.5 py-2 text-sm text-white placeholder:text-white/40 outline-none ${
+                    className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
                       submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
                         ? 'border-red-500/80 focus:border-red-500/80'
                         : 'border-violet-400 focus:border-violet-400'
@@ -1056,6 +1031,9 @@ export default function BookingPage() {
               </div>
             )}
           </div>
+          {priceError ? <FieldError message="Price is required." className="mt-1 text-xs text-red-300" /> : null}
+          {paymentValidationError ? <FieldError message="Please choose at least one payment method." className="mt-1 text-xs text-red-300" /> : null}
+          {onlineError ? <FieldError message="You need to be online to publish an order." className="mt-1 text-xs text-red-300" /> : null}
 
           <label className="flex items-start gap-3 cursor-pointer">
             <input
@@ -1072,11 +1050,12 @@ export default function BookingPage() {
               <Link href="/legal/privacy" className="text-violet-400 hover:underline">{t('booking.privacy_link')}</Link>
             </span>
           </label>
+          {termsError ? <FieldError message="Please accept terms and privacy policy." className="mt-1 text-xs text-red-300" /> : null}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-[#6b21a8] hover:bg-[#7c3aed] py-3.5 font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors min-h-[46px] active:scale-[0.98]"
+            className="w-full rounded-xl bg-[#6b21a8] hover:bg-[#7c3aed] py-3.5 font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors min-h-[46px] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
             aria-busy={loading}
           >
             {loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" aria-hidden /> : <MapPin className="h-5 w-5" />}
@@ -1086,59 +1065,6 @@ export default function BookingPage() {
         </div>
       </main>
       {!shouldHideBottomNav && <BOLHNav current="booking" />}
-    </div>
-  )
-}
-
-function Selector({ label, value, onPrev, onNext, disablePrev, disableNext, ariaLabelPrev, ariaLabelNext, panelClass }: { label: string; value: string; onPrev: () => void; onNext: () => void; disablePrev?: boolean; disableNext?: boolean; ariaLabelPrev?: string; ariaLabelNext?: string; panelClass?: string }) {
-  return (
-    <div className={panelClass || PANEL_CLASS}>
-      <button type="button" onClick={onPrev} disabled={disablePrev} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0 disabled:opacity-30 disabled:cursor-not-allowed" aria-label={ariaLabelPrev}><ChevronLeft className="h-4 w-4 text-white/70" /></button>
-      <div className="text-center min-w-0 flex-1 leading-tight">
-        <p className="text-xs uppercase text-white/50 truncate">{label}</p>
-        <p className="mt-1 text-[17px] font-semibold truncate tabular-nums">{value}</p>
-      </div>
-      <button type="button" onClick={onNext} disabled={disableNext} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0 disabled:opacity-30 disabled:cursor-not-allowed" aria-label={ariaLabelNext}><ChevronRight className="h-4 w-4 text-white/70" /></button>
-    </div>
-  )
-}
-
-function TimeSelector({ label, value, onChange, panelClass }: { label: string; value: string; onChange: (v: string) => void; panelClass?: string }) {
-  const cur = /^\d{2}:\d{2}$/.test(value) ? value : '00:00'
-  const curMinutes = timeToMinutes(cur)
-  const prevMinutes = (curMinutes - 15 + 24 * 60) % (24 * 60)
-  const nextMinutes = (curMinutes + 15) % (24 * 60)
-  const [draft, setDraft] = useState(cur)
-
-  useEffect(() => {
-    setDraft(cur)
-  }, [cur])
-
-  return (
-    <div className={panelClass || PANEL_CLASS}>
-      <button type="button" onClick={() => onChange(minutesToTime(prevMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Previous time"><ChevronLeft className="h-4 w-4 text-white/70" /></button>
-      <div className="text-center min-w-0 flex-1 leading-tight">
-        <p className="h-3 flex items-center justify-center text-xs text-white/50">{label}</p>
-        <input
-          type="text"
-          value={draft}
-          inputMode="numeric"
-          placeholder="00:00"
-          onChange={(e) => {
-            const nextDraft = sanitizeTimeDraft(e.target.value)
-            setDraft(nextDraft)
-            const normalized = normalizeTime(nextDraft)
-            if (normalized) onChange(normalized)
-          }}
-          onBlur={() => {
-            const normalized = normalizeTime(draft)
-            setDraft(normalized ?? cur)
-            if (normalized) onChange(normalized)
-          }}
-          className="mt-1 h-7 w-full bg-transparent text-center text-[17px] font-semibold tabular-nums tracking-wide outline-none"
-        />
-      </div>
-      <button type="button" onClick={() => onChange(minutesToTime(nextMinutes))} className="h-11 w-11 rounded-lg hover:bg-white/10 flex items-center justify-center shrink-0" aria-label="Next time"><ChevronRight className="h-4 w-4 text-white/70" /></button>
     </div>
   )
 }

@@ -8,48 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { addCard } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
-
-function digitsOnly(v: string): string {
-  return v.replace(/\D/g, '')
-}
-
-function formatCardNumber(value: string): string {
-  const d = digitsOnly(value).slice(0, 19)
-  return d.replace(/(.{4})/g, '$1 ').trim()
-}
-
-function formatExpiry(value: string): string {
-  const d = digitsOnly(value).slice(0, 4)
-  if (d.length <= 2) return d
-  return `${d.slice(0, 2)}/${d.slice(2)}`
-}
-
-function detectBrand(cardNumber: string): string {
-  const d = digitsOnly(cardNumber)
-  if (/^4/.test(d)) return 'Visa'
-  if (/^(5[1-5]|2[2-7])/.test(d)) return 'Mastercard'
-  if (/^3[47]/.test(d)) return 'Amex'
-  if (/^6(?:011|5)/.test(d)) return 'Discover'
-  if (/^35/.test(d)) return 'JCB'
-  return 'card'
-}
-
-function isValidLuhn(cardNumber: string): boolean {
-  const digits = digitsOnly(cardNumber)
-  if (digits.length < 13) return false
-  let sum = 0
-  let shouldDouble = false
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let n = Number(digits[i])
-    if (shouldDouble) {
-      n *= 2
-      if (n > 9) n -= 9
-    }
-    sum += n
-    shouldDouble = !shouldDouble
-  }
-  return sum % 10 === 0
-}
+import { detectCardBrand, digitsOnly, formatCardNumber, formatExpiry, isValidLuhn } from '@/lib/payment/cardUtils'
 
 export default function AddCardPage() {
   const { user } = useAuth()
@@ -61,7 +20,7 @@ export default function AddCardPage() {
   const [cvc, setCvc] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const brand = detectBrand(cardNumber)
+  const brand = detectCardBrand(cardNumber)
   const lastFour = digitsOnly(cardNumber).slice(-4).padStart(4, '•')
 
   const handleSubmit = async (e: React.FormEvent) => {

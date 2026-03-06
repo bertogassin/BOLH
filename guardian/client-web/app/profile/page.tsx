@@ -186,7 +186,7 @@ export default function ProfilePage() {
               className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs border transition ${
                 details.online
                   ? 'bg-green-500/20 border-green-400/40 text-green-200 hover:bg-green-500/30'
-                  : 'bg-white/10 border-violet-400 text-white/80 hover:bg-white/15'
+                  : 'bg-white/10 border-violet-400 text-white/90 hover:bg-white/15'
               }`}
             >
               <span className={`inline-block h-2 w-2 rounded-full ${details.online ? 'bg-green-300 animate-pulse' : 'bg-white/70'}`} />
@@ -227,7 +227,7 @@ export default function ProfilePage() {
         ) : (
           <div className="rounded-2xl bg-white/10 border border-violet-400 p-8 text-center">
             <User className="h-12 w-12 text-white/30 mx-auto mb-3" />
-            <p className="text-white/70">{t('profile.login_to_see')}</p>
+            <p className="text-white/80">{t('profile.login_to_see')}</p>
             <Link href="/login" className="mt-4 inline-block text-violet-400 hover:underline min-h-[44px] flex items-center">{t('profile.login')}</Link>
           </div>
         )}

@@ -238,24 +238,24 @@ async fn get_bid_auth(
 }
 
 fn internal_auth_allowed(headers: &HeaderMap) -> bool {
-    let token = std::env::var("INTERNAL_SERVICE_TOKEN")
-        .ok()
-        .map(|v| v.trim().to_string())
-        .filter(|v| !v.is_empty());
-    let strict = std::env::var("STRICT_INTERNAL_AUTH")
+    let allow_insecure = std::env::var("ALLOW_INSECURE_INTERNAL_AUTH")
         .ok()
         .map(|v| {
             let x = v.to_lowercase();
             x == "1" || x == "true" || x == "yes"
         })
         .unwrap_or(false);
+    let token = std::env::var("INTERNAL_SERVICE_TOKEN")
+        .ok()
+        .map(|v| v.trim().to_string())
+        .filter(|v| !v.is_empty());
     match token {
         Some(expected) => headers
             .get("X-Internal-Token")
             .and_then(|v| v.to_str().ok())
             .map(|v| v == expected)
             .unwrap_or(false),
-        None => !strict,
+        None => allow_insecure,
     }
 }
 

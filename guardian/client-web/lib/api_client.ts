@@ -2,7 +2,10 @@ export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:808
 const BUILD_INTEGRITY_SEED = process.env.NEXT_PUBLIC_APP_BUILD_ID || 'dev-build'
 const SIGNED_MODE = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_MODE || 'partial').toLowerCase()
 const SIGNED_ENABLED = (process.env.NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED || '1').toLowerCase() !== '0'
-const SIGNED_PARTIAL_PATHS = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_PARTIAL_PATHS || '/api/v1/auth/me/password,/api/v1/documents/upload')
+const SIGNED_PARTIAL_PATHS = (
+  process.env.NEXT_PUBLIC_SIGNED_REQUEST_PARTIAL_PATHS ||
+  '/api/v1/auth/me/password,/api/v1/orders,/api/v1/bids,/api/v1/documents/upload'
+)
   .split(',')
   .map((v) => v.trim())
   .filter(Boolean)

@@ -7,6 +7,8 @@ import { Shield, Mail, Lock, User, Check } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
+import { FieldError, FormErrorSummary } from '@/components/FormErrors'
+import { FormField } from '@/components/FormField'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -17,6 +19,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitAttempted, setSubmitAttempted] = useState(false)
   const [acceptedLegal, setAcceptedLegal] = useState(false)
   const [typingCount, setTypingCount] = useState(0)
   const [autofillUsed, setAutofillUsed] = useState(false)
@@ -40,7 +43,20 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitAttempted(true)
     setError('')
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
+      setError('Please fill all required fields.')
+      return
+    }
+    if (!/\S+@\S+\.\S+/.test(email.trim().toLowerCase())) {
+      setError(t('auth.invalid_email'))
+      return
+    }
+    if (!passwordLongEnough) {
+      setError(t('auth.password_min'))
+      return
+    }
     if (!acceptedLegal) {
       setError('Please accept the Terms and Privacy Policy to continue.')
       return
@@ -74,6 +90,13 @@ export default function RegisterPage() {
     }
   }
 
+  const firstNameError = submitAttempted && !firstName.trim()
+  const lastNameError = submitAttempted && !lastName.trim()
+  const emailError = submitAttempted && (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim().toLowerCase()))
+  const passwordError = submitAttempted && !passwordLongEnough
+  const confirmError = submitAttempted && (!confirmPassword || !passwordsMatch)
+  const legalError = submitAttempted && !acceptedLegal
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-guardian-bg p-4 py-8">
       <div className="w-full max-w-md rounded-2xl border border-gray-200/80 bg-white p-8 shadow-xl">
@@ -87,45 +110,60 @@ export default function RegisterPage() {
         <p className="mb-6 text-center text-sm text-gray-500">{t('auth.register_subtitle')}</p>
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           {error && (
-            <div ref={errorRef} role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700 border border-red-100">
-              {error}
+            <div ref={errorRef}>
+              <FormErrorSummary message={error} />
             </div>
           )}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="reg-first">{t('auth.first_name')}</label>
+              <FormField
+                label={t('auth.first_name')}
+                htmlFor="reg-first"
+                error={firstNameError ? `${t('auth.first_name')} is required.` : ''}
+              >
               <div className="relative">
                 <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
                 <InputWithClear
                   ref={firstInputRef}
                   value={firstName}
                   onChange={(v) => { setFirstName(v); setTypingCount((x) => x + 1) }}
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${firstNameError ? 'border-red-400 focus:ring-red-400' : ''}`}
                   required
                   placeholder={t('auth.placeholder_first')}
                   autoComplete="given-name"
                   id="reg-first"
+                  aria-invalid={firstNameError}
                 />
               </div>
+              </FormField>
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="reg-last">{t('auth.last_name')}</label>
+              <FormField
+                label={t('auth.last_name')}
+                htmlFor="reg-last"
+                error={lastNameError ? `${t('auth.last_name')} is required.` : ''}
+              >
               <div className="relative">
                 <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
                 <InputWithClear
                   value={lastName}
                   onChange={(v) => { setLastName(v); setTypingCount((x) => x + 1) }}
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${lastNameError ? 'border-red-400 focus:ring-red-400' : ''}`}
                   required
                   placeholder={t('auth.placeholder_last')}
                   autoComplete="family-name"
                   id="reg-last"
+                  aria-invalid={lastNameError}
                 />
               </div>
+              </FormField>
             </div>
           </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="reg-email">{t('auth.email')}</label>
+          <FormField
+            label={t('auth.email')}
+            htmlFor="reg-email"
+            error={emailError ? t('auth.invalid_email') : ''}
+          >
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
               <InputWithClear
@@ -136,16 +174,20 @@ export default function RegisterPage() {
                   if (v.includes('@') && v.length > 8 && typingCount === 0) setAutofillUsed(true)
                 }}
                 type="email"
-                className="input-field pl-10"
+                className={`input-field pl-10 ${emailError ? 'border-red-400 focus:ring-red-400' : ''}`}
                 required
                 placeholder={t('auth.placeholder_email')}
                 autoComplete="email"
                 id="reg-email"
+                aria-invalid={emailError}
               />
             </div>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="reg-password">{t('auth.password_min')}</label>
+          </FormField>
+          <FormField
+            label={t('auth.password_min')}
+            htmlFor="reg-password"
+            error={passwordError ? t('auth.password_min') : ''}
+          >
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
               <input
@@ -153,20 +195,24 @@ export default function RegisterPage() {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setTypingCount((x) => x + 1) }}
-                className="input-field pl-10"
+                className={`input-field pl-10 ${passwordError ? 'border-red-400 focus:ring-red-400' : ''}`}
                 required
                 minLength={6}
                 placeholder="••••••••"
                 autoComplete="new-password"
+                aria-invalid={passwordError}
               />
             </div>
             <p className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
               {passwordLongEnough ? <Check className="h-3.5 w-3.5 text-green-600" /> : <span className="w-3.5 h-3.5" />}
               {t('auth.password_ok')}
             </p>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="reg-confirm">{t('auth.confirm_password')}</label>
+          </FormField>
+          <FormField
+            label={t('auth.confirm_password')}
+            htmlFor="reg-confirm"
+            error={confirmError ? t('auth.confirm_password_mismatch') : ''}
+          >
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
               <input
@@ -179,12 +225,10 @@ export default function RegisterPage() {
                 minLength={6}
                 placeholder="••••••••"
                 autoComplete="new-password"
+                aria-invalid={confirmError}
               />
             </div>
-            {confirmPassword && !passwordsMatch && (
-              <p className="mt-1 text-xs text-red-600">{t('auth.confirm_password_mismatch')}</p>
-            )}
-          </div>
+          </FormField>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -200,13 +244,14 @@ export default function RegisterPage() {
             {' · '}
             <Link href="/legal/privacy" className="text-guardian-blue hover:underline">{t('booking.privacy_link')}</Link>
           </p>
-          <label className="flex items-start gap-2 rounded-xl border border-gray-200 p-3 bg-gray-50/70 cursor-pointer">
+          <label className={`flex items-start gap-2 rounded-xl border p-3 bg-gray-50/70 cursor-pointer ${legalError ? 'border-red-300' : 'border-gray-200'}`}>
             <input
               type="checkbox"
               checked={acceptedLegal}
               onChange={(e) => setAcceptedLegal(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-gray-300 text-guardian-blue focus:ring-guardian-blue"
               required
+              aria-invalid={legalError}
             />
             <span className="text-sm text-gray-700">
               I confirm that I have read and accept the{' '}
@@ -219,9 +264,10 @@ export default function RegisterPage() {
               </Link>.
             </span>
           </label>
+          {legalError ? <FieldError message="Please accept legal terms to continue." /> : null}
           <button
             type="submit"
-            disabled={loading || (!!confirmPassword && !passwordsMatch) || !acceptedLegal}
+            disabled={loading}
             className="btn-primary w-full py-3"
           >
             {loading ? t('auth.registering') : t('auth.register_btn')}

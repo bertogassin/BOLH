@@ -7,6 +7,8 @@ import { Shield, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
+import { FormErrorSummary } from '@/components/FormErrors'
+import { FormField } from '@/components/FormField'
 
 const REMEMBER_EMAIL_KEY = 'guardian_remember_email'
 const SAVED_EMAIL_KEY = 'guardian_saved_email'
@@ -19,6 +21,7 @@ export default function LoginPage() {
   const [capsLockOn, setCapsLockOn] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitAttempted, setSubmitAttempted] = useState(false)
   const [typingCount, setTypingCount] = useState(0)
   const [autofillUsed, setAutofillUsed] = useState(false)
   const emailInputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +49,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitAttempted(true)
     const normalizedEmail = email.trim().toLowerCase()
     if (!normalizedEmail || !/\S+@\S+\.\S+/.test(normalizedEmail)) {
       setError(t('auth.invalid_email'))
@@ -109,6 +113,9 @@ export default function LoginPage() {
     if (error) setError('')
   }
 
+  const emailInvalid = submitAttempted && (!email.trim() || !/\S+@\S+\.\S+/.test(email.trim().toLowerCase()))
+  const passwordMissing = submitAttempted && !password
+
   const handlePasswordKeyEvent = (e: React.KeyboardEvent<HTMLInputElement>) => {
     setCapsLockOn(e.getModifierState('CapsLock'))
   }
@@ -126,10 +133,13 @@ export default function LoginPage() {
         <p className="mb-6 text-center text-sm text-gray-500">{t('auth.login_subtitle')}</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="rounded-xl bg-red-50 p-3 text-sm text-red-700 border border-red-100">{error}</div>
+            <FormErrorSummary message={error} />
           )}
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="login-email">{t('auth.email')}</label>
+          <FormField
+            label={t('auth.email')}
+            htmlFor="login-email"
+            error={emailInvalid ? t('auth.invalid_email') : ''}
+          >
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
               <InputWithClear
@@ -138,15 +148,19 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={handleEmailChange}
-                className="input-field pl-10"
+                className={`input-field pl-10 ${emailInvalid ? 'border-red-400 focus:ring-red-400' : ''}`}
                 required
                 placeholder={t('auth.placeholder_email')}
                 autoComplete="email"
+                aria-invalid={emailInvalid}
               />
             </div>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700" htmlFor="login-password">{t('auth.password')}</label>
+          </FormField>
+          <FormField
+            label={t('auth.password')}
+            htmlFor="login-password"
+            error={passwordMissing ? t('auth.password_required') : ''}
+          >
             <div className="relative overflow-visible">
               <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10 pointer-events-none" />
               <input
@@ -158,10 +172,11 @@ export default function LoginPage() {
                 onKeyDown={handlePasswordKeyEvent}
                 onKeyUp={handlePasswordKeyEvent}
                 onBlur={() => setCapsLockOn(false)}
-                className="input-field pl-10 pr-12 relative z-0"
+                className={`input-field pl-10 pr-12 relative z-0 ${passwordMissing ? 'border-red-400 focus:ring-red-400' : ''}`}
                 required
                 placeholder="••••••••"
                 autoComplete="current-password"
+                aria-invalid={passwordMissing}
               />
               <button
                 type="button"
@@ -182,7 +197,7 @@ export default function LoginPage() {
             {capsLockOn && (
               <p className="mt-1 text-xs text-amber-600">{t('auth.caps_lock_on')}</p>
             )}
-          </div>
+          </FormField>
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
