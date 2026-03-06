@@ -529,7 +529,6 @@ export default function BookingPage() {
       if (!raw?.trim()) return
       setMissionDescription(raw)
       setMissionTouched(true)
-      setShowMissionSheet(true)
     } catch {
       // Ignore restore errors in UI.
     }
