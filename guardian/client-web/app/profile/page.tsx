@@ -42,10 +42,7 @@ export default function ProfilePage() {
   })
 
   const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
-  const isDemoUser = user?.id === 'demo'
-  const defaultDisplayName = isDemoUser
-    ? t('profile.user')
-    : `${user?.first_name || ''} ${user?.last_name || ''}`.trim()
+  const defaultDisplayName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
 
   useEffect(() => {
     if (!user) return
@@ -83,17 +80,14 @@ export default function ProfilePage() {
       const requiredForOnline = [
         details.displayName,
         details.city,
+        details.availability,
+        details.serviceRadiusKm,
+        details.basePrice,
+        details.hourlyRate,
       ]
-      if (!isDemoUser) {
-        requiredForOnline.push(details.availability, details.serviceRadiusKm, details.basePrice, details.hourlyRate)
-      }
       const missingRequired = requiredForOnline.some((v) => String(v || '').trim().length === 0)
       if (missingRequired) {
-        setOnlineHint(
-          isDemoUser
-            ? t('profile.online_hint_demo')
-            : t('profile.online_hint_full')
-        )
+        setOnlineHint(t('profile.online_hint_full'))
         return
       }
     }
@@ -134,9 +128,7 @@ export default function ProfilePage() {
 
   const initial = user ? (user.first_name?.[0] || user.email?.[0] || 'U').toUpperCase() : 'U'
   const isAgency = user?.user_type === 'agency'
-  const fallbackDisplayName = isDemoUser
-    ? t('profile.user')
-    : `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
+  const fallbackDisplayName = `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
   const displayName = (details.displayName || fallbackDisplayName).trim()
   const roleLabel =
     user?.user_type === 'agency'

@@ -43,7 +43,6 @@ export default function ProfileEditPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const isDemoUser = user?.id === 'demo'
   const minPrice = Number(searchMinPrice || 0)
   const maxPrice = Number(searchMaxPrice || 0)
   const priceRangeInvalid = searchMinPrice !== '' && searchMaxPrice !== '' && minPrice > maxPrice
@@ -266,50 +265,44 @@ export default function ProfileEditPage() {
             {priceRangeInvalid ? (
               <p className="text-xs text-amber-300">{t('profile_edit.error_price_range_inline')}</p>
             ) : null}
-            {!isDemoUser ? (
-              <FormField
-                label={t('profile_edit.base_price')}
-                labelClassName={DARK_FIELD_LABEL_CLASS}
-              >
-                <InputWithClear
-                  value={basePrice}
-                  onChange={(v) => setBasePrice(v.replace(',', '.').replace(/[^\d.]/g, ''))}
-                  placeholder={t('profile_edit.placeholder_base_price')}
-                  className={DARK_INPUT_CLASS}
-                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
-                />
-              </FormField>
-            ) : null}
+            <FormField
+              label={t('profile_edit.base_price')}
+              labelClassName={DARK_FIELD_LABEL_CLASS}
+            >
+              <InputWithClear
+                value={basePrice}
+                onChange={(v) => setBasePrice(v.replace(',', '.').replace(/[^\d.]/g, ''))}
+                placeholder={t('profile_edit.placeholder_base_price')}
+                className={DARK_INPUT_CLASS}
+                clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
+              />
+            </FormField>
           </div>
           <div className="grid gap-3 grid-cols-1 md:grid-cols-2">
-            {!isDemoUser ? (
-              <FormField
-                label={t('profile_edit.rate_per_hour')}
-                labelClassName={DARK_FIELD_LABEL_CLASS}
-              >
-                <InputWithClear
-                  value={hourlyRate}
-                  onChange={(v) => setHourlyRate(v.replace(',', '.').replace(/[^\d.]/g, ''))}
-                  placeholder={t('profile_edit.placeholder_rate')}
-                  className={DARK_INPUT_CLASS}
-                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
-                />
-              </FormField>
-            ) : null}
-            {!isDemoUser ? (
-              <FormField
-                label={t('profile_edit.availability')}
-                labelClassName={DARK_FIELD_LABEL_CLASS}
-              >
-                <InputWithClear
-                  value={availability}
-                  onChange={setAvailability}
-                  placeholder={t('profile_edit.placeholder_availability')}
-                  className={DARK_INPUT_CLASS}
-                  clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
-                />
-              </FormField>
-            ) : null}
+            <FormField
+              label={t('profile_edit.rate_per_hour')}
+              labelClassName={DARK_FIELD_LABEL_CLASS}
+            >
+              <InputWithClear
+                value={hourlyRate}
+                onChange={(v) => setHourlyRate(v.replace(',', '.').replace(/[^\d.]/g, ''))}
+                placeholder={t('profile_edit.placeholder_rate')}
+                className={DARK_INPUT_CLASS}
+                clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
+              />
+            </FormField>
+            <FormField
+              label={t('profile_edit.availability')}
+              labelClassName={DARK_FIELD_LABEL_CLASS}
+            >
+              <InputWithClear
+                value={availability}
+                onChange={setAvailability}
+                placeholder={t('profile_edit.placeholder_availability')}
+                className={DARK_INPUT_CLASS}
+                clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
+              />
+            </FormField>
           </div>
           <button
             type="submit"
