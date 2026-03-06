@@ -22,7 +22,7 @@ export function ProfileCardsSection({ cards, t }: Props) {
       >
         <span className="inline-flex items-center gap-2">
           <CreditCard className="h-4.5 w-4.5 text-white/80" />
-          My cards
+          {t('profile.my_cards')}
         </span>
         <span className="inline-flex items-center gap-2 text-sm text-white/80">
           {cards.length}
