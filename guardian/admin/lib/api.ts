@@ -17,18 +17,34 @@ function getToken(): string | null {
   return localStorage.getItem(ADMIN_TOKEN_KEY)
 }
 
+function getTokenFromCookie(): string | null {
+  if (typeof document === 'undefined') return null
+  const prefix = `${ADMIN_TOKEN_KEY}=`
+  const entry = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix))
+  if (!entry) return null
+  return decodeURIComponent(entry.slice(prefix.length))
+}
+
 export function setAdminToken(token: string): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(ADMIN_TOKEN_KEY, token)
+  document.cookie = `${ADMIN_TOKEN_KEY}=${encodeURIComponent(token)}; Path=/; Max-Age=86400; SameSite=Lax`
 }
 
 export function clearAdminToken(): void {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem(ADMIN_TOKEN_KEY)
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem(ADMIN_TOKEN_KEY)
+  }
+  if (typeof document !== 'undefined') {
+    document.cookie = `${ADMIN_TOKEN_KEY}=; Path=/; Max-Age=0; SameSite=Lax`
+  }
 }
 
 export function hasAdminToken(): boolean {
-  return !!getToken()
+  return !!(getToken() || getTokenFromCookie())
 }
 
 export async function login(email: string, password: string): Promise<{ token: string; user: User }> {
