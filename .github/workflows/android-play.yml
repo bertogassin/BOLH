@@ -13,6 +13,19 @@ on:
           - closed
           - open
           - production
+      release_api_base_url:
+        description: "Release API base URL"
+        required: true
+        default: "https://api.bolhsecurity.com"
+        type: string
+      release_web_app_url:
+        description: "Release web app URL"
+        required: true
+        default: "https://app.bolhsecurity.com/"
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   publish:
@@ -30,6 +43,15 @@ jobs:
           java-version: "17"
           cache: gradle
 
+      - name: Validate required secrets
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEYSTORE_BASE64 }}")) { throw "Missing secret: ANDROID_KEYSTORE_BASE64" }
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}")) { throw "Missing secret: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" }
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEY_ALIAS }}")) { throw "Missing secret: ANDROID_KEY_ALIAS" }
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEYSTORE_PASSWORD }}")) { throw "Missing secret: ANDROID_KEYSTORE_PASSWORD" }
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.ANDROID_KEY_PASSWORD }}")) { throw "Missing secret: ANDROID_KEY_PASSWORD" }
+
       - name: Prepare signing and Play credentials
         shell: pwsh
         run: |
@@ -41,6 +63,25 @@ jobs:
           )
           Set-Content -Path "guardian/GuardianAndroid/keys/play-service-account.json" -Value '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}' -NoNewline
 
+      - name: Build release bundle
+        working-directory: guardian/GuardianAndroid
+        shell: pwsh
+        run: |
+          .\gradlew.bat :app:bundleRelease `
+            -PRELEASE_STORE_FILE=app/keystore/upload-keystore.jks `
+            -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" `
+            -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
+            -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}" `
+            -PRELEASE_API_BASE_URL="${{ github.event.inputs.release_api_base_url }}" `
+            -PRELEASE_WEB_APP_URL="${{ github.event.inputs.release_web_app_url }}"
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bolh-release-aab
+          path: guardian/GuardianAndroid/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
       - name: Publish AAB to Google Play
         working-directory: guardian/GuardianAndroid
         shell: pwsh
@@ -50,5 +91,7 @@ jobs:
             -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" `
             -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
             -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}" `
+            -PRELEASE_API_BASE_URL="${{ github.event.inputs.release_api_base_url }}" `
+            -PRELEASE_WEB_APP_URL="${{ github.event.inputs.release_web_app_url }}" `
             -PPLAY_SERVICE_ACCOUNT_FILE=keys/play-service-account.json `
             -PPLAY_TRACK="${{ github.event.inputs.track }}"
