@@ -43,6 +43,9 @@ export default function ProfilePage() {
 
   const detailsStorageKey = `guardian_profile_details_${user?.id || 'guest'}`
   const isDemoUser = user?.id === 'demo'
+  const defaultDisplayName = isDemoUser
+    ? t('profile.user')
+    : `${user?.first_name || ''} ${user?.last_name || ''}`.trim()
 
   useEffect(() => {
     if (!user) return
@@ -55,25 +58,25 @@ export default function ProfilePage() {
           ...parsed,
           displayName:
             String(parsed.displayName || '').trim() ||
-            `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+            defaultDisplayName,
           phoneAlt: String(parsed.phoneAlt || '').trim() || user.phone || '',
         }))
       } else {
         setDetails((prev) => ({
           ...prev,
-          displayName: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+          displayName: defaultDisplayName,
           phoneAlt: user.phone || '',
         }))
       }
     } catch {
       setDetails((prev) => ({
         ...prev,
-        displayName: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        displayName: defaultDisplayName,
         phoneAlt: user.phone || '',
       }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id])
+  }, [defaultDisplayName, user?.id])
 
   const toggleOnlineStatus = () => {
     if (!details.online) {
@@ -131,7 +134,10 @@ export default function ProfilePage() {
 
   const initial = user ? (user.first_name?.[0] || user.email?.[0] || 'U').toUpperCase() : 'U'
   const isAgency = user?.user_type === 'agency'
-  const displayName = (details.displayName || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')).trim()
+  const fallbackDisplayName = isDemoUser
+    ? t('profile.user')
+    : `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.email || t('profile.user')
+  const displayName = (details.displayName || fallbackDisplayName).trim()
   const roleLabel =
     user?.user_type === 'agency'
       ? t('profile.role_agency')
