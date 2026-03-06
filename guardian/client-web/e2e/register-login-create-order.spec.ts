@@ -25,15 +25,41 @@ async function loginViaUi(email: string, password: string, page: Page) {
 }
 
 async function createOrderViaBooking(page: Page): Promise<{ id: string; title: string }> {
+  const meRes = await page.request.get('http://localhost:8080/api/v1/auth/me')
+  expect(meRes.ok()).toBeTruthy()
+  const mePayload = (await meRes.json()) as { id?: string; user?: { id?: string } }
+  const userId = mePayload?.id || mePayload?.user?.id
+  expect(userId).toBeTruthy()
+  await page.evaluate((id) => {
+    const key = `guardian_profile_details_${id}`
+    let base: Record<string, unknown> = {}
+    try {
+      const raw = localStorage.getItem(key)
+      base = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
+    } catch {
+      base = {}
+    }
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        ...base,
+        online: true,
+        rib: String(base.rib || 'FR7630006000011234567890189'),
+      })
+    )
+  }, userId as string)
   await page.goto('/booking')
   await expect(page.getByText(/BOLH|Booking|Address/i).first()).toBeVisible({ timeout: 10000 })
-  const onlineToggle = page.getByRole('button', { name: /Online|Offline/i })
-  if (await onlineToggle.isVisible()) {
-    const label = await onlineToggle.innerText()
-    if (/offline/i.test(label)) {
-      await onlineToggle.click()
-    }
+  const onlineToggle = page.getByRole('button', { name: /Online|Offline|Онлайн|Оффлайн|En ligne|Hors ligne/i })
+  const onlineToggleText = (await onlineToggle.innerText()).toLowerCase()
+  if (onlineToggleText.includes('offline') || onlineToggleText.includes('оффлайн') || onlineToggleText.includes('hors ligne')) {
+    await onlineToggle.click()
   }
+  await expect(onlineToggle).toContainText(/Online|Онлайн|En ligne/i, { timeout: 5000 })
+  // New booking flow requires explicit valid time range.
+  const timeInputs = page.locator('input[placeholder="00:00"]')
+  await timeInputs.nth(0).fill('09:00')
+  await timeInputs.nth(1).fill('10:00')
   await page.getByRole('button', { name: /Next day/i }).click()
   await page
     .locator('input[placeholder*="Address"], input[placeholder*="address"], input[placeholder*="adresse"], input[placeholder*="адрес"], input[role="combobox"]')
