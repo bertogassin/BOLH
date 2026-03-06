@@ -104,6 +104,7 @@ jobs:
         run: |
           $args = @(
             ":app:publishReleaseBundle",
+            "--release-status", "draft",
             "--project-prop", "RELEASE_STORE_FILE=app/keystore/upload-keystore.jks",
             "--project-prop", "RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}",
             "--project-prop", "RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}",
