@@ -80,13 +80,16 @@ jobs:
         working-directory: guardian/GuardianAndroid
         shell: pwsh
         run: |
-          .\gradlew.bat :app:bundleRelease `
-            -PRELEASE_STORE_FILE=app/keystore/upload-keystore.jks `
-            -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" `
-            -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
-            -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}" `
-            -PRELEASE_API_BASE_URL="${{ github.event.inputs.release_api_base_url }}" `
-            -PRELEASE_WEB_APP_URL="${{ github.event.inputs.release_web_app_url }}"
+          $args = @(
+            ":app:bundleRelease",
+            "--project-prop", "RELEASE_STORE_FILE=app/keystore/upload-keystore.jks",
+            "--project-prop", "RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}",
+            "--project-prop", "RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}",
+            "--project-prop", "RELEASE_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}",
+            "--project-prop", "RELEASE_API_BASE_URL=${{ github.event.inputs.release_api_base_url }}",
+            "--project-prop", "RELEASE_WEB_APP_URL=${{ github.event.inputs.release_web_app_url }}"
+          )
+          & .\gradlew.bat @args
 
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
@@ -99,12 +102,15 @@ jobs:
         working-directory: guardian/GuardianAndroid
         shell: pwsh
         run: |
-          .\gradlew.bat :app:publishReleaseBundle `
-            -PRELEASE_STORE_FILE=app/keystore/upload-keystore.jks `
-            -PRELEASE_KEY_ALIAS="${{ secrets.ANDROID_KEY_ALIAS }}" `
-            -PRELEASE_STORE_PASSWORD="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" `
-            -PRELEASE_KEY_PASSWORD="${{ secrets.ANDROID_KEY_PASSWORD }}" `
-            -PRELEASE_API_BASE_URL="${{ github.event.inputs.release_api_base_url }}" `
-            -PRELEASE_WEB_APP_URL="${{ github.event.inputs.release_web_app_url }}" `
-            -PPLAY_SERVICE_ACCOUNT_FILE=keys/play-service-account.json `
-            -PPLAY_TRACK="${{ github.event.inputs.track }}"
+          $args = @(
+            ":app:publishReleaseBundle",
+            "--project-prop", "RELEASE_STORE_FILE=app/keystore/upload-keystore.jks",
+            "--project-prop", "RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}",
+            "--project-prop", "RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}",
+            "--project-prop", "RELEASE_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}",
+            "--project-prop", "RELEASE_API_BASE_URL=${{ github.event.inputs.release_api_base_url }}",
+            "--project-prop", "RELEASE_WEB_APP_URL=${{ github.event.inputs.release_web_app_url }}",
+            "--project-prop", "PLAY_SERVICE_ACCOUNT_FILE=keys/play-service-account.json",
+            "--project-prop", "PLAY_TRACK=${{ github.event.inputs.track }}"
+          )
+          & .\gradlew.bat @args
