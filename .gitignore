@@ -17,6 +17,8 @@ go.work
 # Rust
 /target/
 Cargo.lock
+!Cargo.lock
+!**/Cargo.lock
 
 # IDE / OS
 .idea/
