@@ -13,6 +13,14 @@ on:
           - closed
           - open
           - production
+      release_status:
+        description: "Google Play release status"
+        required: true
+        default: "completed"
+        type: choice
+        options:
+          - draft
+          - completed
       release_api_base_url:
         description: "Release API base URL"
         required: true
@@ -104,7 +112,7 @@ jobs:
         run: |
           $args = @(
             ":app:publishReleaseBundle",
-            "--release-status", "draft",
+            "--release-status", "${{ github.event.inputs.release_status }}",
             "--project-prop", "RELEASE_STORE_FILE=app/keystore/upload-keystore.jks",
             "--project-prop", "RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}",
             "--project-prop", "RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}",
