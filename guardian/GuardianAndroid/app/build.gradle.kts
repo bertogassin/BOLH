@@ -14,8 +14,8 @@ android {
         applicationId = "com.omnixius.bolh487373a"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "1.0.1-beta9"
+        versionCode = 11
+        versionName = "1.0.1-beta10"
         buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
         buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
     }
