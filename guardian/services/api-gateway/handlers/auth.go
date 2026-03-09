@@ -25,6 +25,7 @@ const accessCookieName = "guardian_access_token"
 const accessTokenTTL = 30 * 24 * time.Hour
 const loginMaxFailures = 5
 const loginLockoutDuration = 15 * time.Minute
+const betaDefaultUserType = "client"
 
 type loginAttemptState struct {
 	failures   int
@@ -124,7 +125,8 @@ func (h *AuthHandlers) Register(c *gin.Context) {
 
 	setAccessCookie(c, token)
 	c.JSON(http.StatusCreated, gin.H{
-		"id": u.ID,
+		"id":    u.ID,
+		"token": token,
 		"user": gin.H{
 			"id":         u.ID,
 			"email":      u.Email,
@@ -190,6 +192,65 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 	log.Printf("audit=login_success user_id=%s user_type=%s ip=%s", u.ID, u.UserType, c.ClientIP())
 	middleware.ResetRiskScore(c.ClientIP())
 	c.JSON(http.StatusOK, gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":         u.ID,
+			"email":      u.Email,
+			"first_name": u.FirstName,
+			"last_name":  u.LastName,
+			"user_type":  u.UserType,
+			"verified":   u.Verified,
+		},
+	})
+}
+
+func (h *AuthHandlers) BetaLogin(c *gin.Context) {
+	if !betaLoginEnabled() {
+		c.JSON(http.StatusForbidden, gin.H{"error": "beta login disabled"})
+		return
+	}
+
+	var req struct {
+		UserType string `json:"user_type"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	userType := strings.TrimSpace(req.UserType)
+	if userType != "client" && userType != "guard" {
+		userType = betaDefaultUserType
+	}
+	email := betaLoginEmail(userType)
+
+	u := h.Store.UserByEmailWithPassword(email)
+	if u == nil {
+		hash, err := bcrypt.GenerateFromPassword([]byte(uuid.NewString()), bcryptCost)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to prepare beta login"})
+			return
+		}
+		u = &store.User{
+			ID:           uuid.New().String(),
+			Email:        email,
+			PasswordHash: string(hash),
+			FirstName:    "Beta",
+			LastName:     "User",
+			UserType:     userType,
+			Verified:     true,
+			CreatedAt:    time.Now(),
+		}
+		h.Store.CreateUser(u)
+	}
+
+	token, err := h.generateToken(u.ID, u.UserType)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create token"})
+		return
+	}
+
+	setAccessCookie(c, token)
+	log.Printf("audit=beta_login user_id=%s user_type=%s ip=%s", u.ID, u.UserType, c.ClientIP())
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
 		"user": gin.H{
 			"id":         u.ID,
 			"email":      u.Email,
@@ -425,4 +486,23 @@ func applyBehaviorSignals(c *gin.Context) {
 	if strings.EqualFold(strings.TrimSpace(c.GetHeader("X-Behavior-FastSubmit")), "1") {
 		middleware.AddRiskScore(ip, 2, "behavior_fast_submit")
 	}
+}
+
+func betaLoginEnabled() bool {
+	raw := strings.ToLower(strings.TrimSpace(os.Getenv("BETA_LOGIN_ENABLED")))
+	if raw == "" {
+		return true
+	}
+	return raw == "1" || raw == "true" || raw == "yes"
+}
+
+func betaLoginEmail(userType string) string {
+	raw := strings.TrimSpace(os.Getenv("BETA_LOGIN_EMAIL"))
+	if raw != "" {
+		return strings.ToLower(raw)
+	}
+	if userType == "guard" {
+		return "beta-guard@bolhsecurity.local"
+	}
+	return "beta-client@bolhsecurity.local"
 }

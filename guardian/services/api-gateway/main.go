@@ -127,6 +127,7 @@ func (s *Server) setupRoutes() {
 	authAdaptiveLimiter := middleware.AdaptiveAuthRateLimit(12, time.Minute)
 	s.router.POST("/api/v1/auth/register", authAdaptiveLimiter, authBurstLimiter, s.authHandler.Register)
 	s.router.POST("/api/v1/auth/login", authAdaptiveLimiter, authLoginLimiter, authAccountLimiter, s.authHandler.Login)
+	s.router.POST("/api/v1/auth/beta-login", authAdaptiveLimiter, authBurstLimiter, s.authHandler.BetaLogin)
 
 	authorized := s.router.Group("/api/v1")
 	authorized.Use(s.authRequired())

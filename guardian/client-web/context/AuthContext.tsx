@@ -2,13 +2,14 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { User } from '@/lib/api'
-import { fetchMe, login as apiLogin, logoutSession, register as apiRegister } from '@/lib/api'
+import { betaLogin as apiBetaLogin, fetchMe, login as apiLogin, logoutSession, register as apiRegister } from '@/lib/api'
 
 type AuthContextType = {
   user: User | null
   token: string | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
+  betaLogin: (userType?: 'client' | 'guard') => Promise<void>
   register: (params: { email: string; password: string; first_name: string; last_name: string; user_type?: string }) => Promise<void>
   logout: () => void
   refreshUser: () => Promise<void>
@@ -82,6 +83,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u)
   }, [])
 
+  const betaLogin = useCallback(async (userType: 'client' | 'guard' = 'client') => {
+    const { user: u } = await apiBetaLogin(userType)
+    clearStoredToken()
+    setToken(null)
+    setUser(u)
+  }, [])
+
   const register = useCallback(
     async (params: { email: string; password: string; first_name: string; last_name: string; user_type?: string }) => {
       const { user: u } = await apiRegister(params)
@@ -102,7 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, betaLogin, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   )

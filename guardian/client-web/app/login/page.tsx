@@ -27,9 +27,10 @@ export default function LoginPage() {
   const emailInputRef = useRef<HTMLInputElement>(null)
   const passwordInputRef = useRef<HTMLInputElement>(null)
   const startedAtRef = useRef<number>(Date.now())
-  const { login } = useAuth()
+  const { login, betaLogin } = useAuth()
   const { t } = useLocale()
   const router = useRouter()
+  const betaLoginEnabled = (process.env.NEXT_PUBLIC_BETA_LOGIN_ENABLED || '1').toLowerCase() !== '0'
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -111,6 +112,20 @@ export default function LoginPage() {
 
   const handlePasswordKeyEvent = (e: React.KeyboardEvent<HTMLInputElement>) => {
     setCapsLockOn(e.getModifierState('CapsLock'))
+  }
+
+  const handleBetaLogin = async () => {
+    setError('')
+    setLoading(true)
+    try {
+      await betaLogin('client')
+      router.push('/profile')
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Beta login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -203,6 +218,16 @@ export default function LoginPage() {
           <button type="submit" disabled={loading || !email.trim() || !password} className="btn-primary w-full py-3">
             {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
+          {betaLoginEnabled && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={handleBetaLogin}
+              className="w-full rounded-lg border border-guardian-blue px-4 py-3 text-sm font-medium text-guardian-blue hover:bg-guardian-blue/5 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Beta access (no registration)
+            </button>
+          )}
         </form>
         <p className="mt-6 text-center text-sm text-gray-500">
           {t('auth.no_account')}{' '}
