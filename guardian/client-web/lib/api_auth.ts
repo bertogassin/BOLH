@@ -45,13 +45,6 @@ export async function login(email: string, password: string): Promise<{ user: Us
   })
 }
 
-export async function betaLogin(user_type: 'client' | 'guard' = 'client'): Promise<{ user: User }> {
-  return api('/api/v1/auth/beta-login', {
-    method: 'POST',
-    body: JSON.stringify({ user_type }),
-  })
-}
-
 export async function register(params: {
   email: string
   password: string
