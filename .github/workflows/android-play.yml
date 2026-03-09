@@ -16,7 +16,7 @@ on:
       release_status:
         description: "Google Play release status"
         required: true
-        default: "completed"
+        default: "draft"
         type: choice
         options:
           - draft
