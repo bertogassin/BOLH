@@ -14,14 +14,19 @@ services:
       branch: main
       deploy_on_push: true
     dockerfile_path: Dockerfile
-    source_dir: .
+    source_dir: guardian/services/api-gateway
     routes:
       - path: /api
       - path: /health
-      - path: /users
     envs:
-      - key: API_ADDR
-        value: ":8080"
+      - key: APP_ENV
+        value: production
+        scope: RUN_TIME
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://app.omnixius.com,https://www.omnixius.com,https://omnixius.com
+        scope: RUN_TIME
+      - key: AUTH_COOKIE_DOMAIN
+        value: .omnixius.com
         scope: RUN_TIME
 
   - name: web
