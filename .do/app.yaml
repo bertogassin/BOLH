@@ -13,7 +13,7 @@ services:
       repo: bertogassin/BOLH
       branch: main
       deploy_on_push: true
-    dockerfile_path: Dockerfile
+    dockerfile_path: guardian/services/api-gateway/Dockerfile
     source_dir: guardian/services/api-gateway
     routes:
       - path: /api
