@@ -4,6 +4,10 @@ region: lon1
 services:
   - name: api
     http_port: 8080
+    github:
+      repo: bertogassin/BOLH
+      branch: main
+      deploy_on_push: true
     dockerfile_path: Dockerfile
     source_dir: .
     routes:
@@ -17,6 +21,10 @@ services:
 
   - name: web
     http_port: 3003
+    github:
+      repo: bertogassin/BOLH
+      branch: main
+      deploy_on_push: true
     source_dir: guardian/client-web
     build_command: npm ci && npm run build
     run_command: npm run start
