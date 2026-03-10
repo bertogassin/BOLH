@@ -7,9 +7,9 @@ android {
     namespace = "com.guardian.android"
     compileSdk = 35
     val debugApiBaseUrl = providers.gradleProperty("DEBUG_API_BASE_URL").orElse("http://10.0.2.2:8080").get()
-    val releaseApiBaseUrl = providers.gradleProperty("RELEASE_API_BASE_URL").orElse("https://api.bolhsecurity.com").get()
+    val releaseApiBaseUrl = providers.gradleProperty("RELEASE_API_BASE_URL").orElse("https://api.omnixius.com").get()
     val debugWebAppUrl = providers.gradleProperty("DEBUG_WEB_APP_URL").orElse("http://10.0.2.2:3003/").get()
-    val releaseWebAppUrl = providers.gradleProperty("RELEASE_WEB_APP_URL").orElse("https://app.bolhsecurity.com/").get()
+    val releaseWebAppUrl = providers.gradleProperty("RELEASE_WEB_APP_URL").orElse("https://app.omnixius.com/").get()
     defaultConfig {
         applicationId = "com.omnixius.bolh487373a"
         minSdk = 26

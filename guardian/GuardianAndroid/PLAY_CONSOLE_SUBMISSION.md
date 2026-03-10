@@ -65,8 +65,8 @@ These are starter answers. Keep only what is true for your app.
 
 ## Legal URLs
 
-- Privacy Policy URL: `https://app.bolhsecurity.com/legal/privacy`
-- Terms URL: `https://app.bolhsecurity.com/legal/terms`
+- Privacy Policy URL: `https://app.omnixius.com/legal/privacy`
+- Terms URL: `https://app.omnixius.com/legal/terms`
 
 ## Required Graphics and Assets
 

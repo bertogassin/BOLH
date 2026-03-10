@@ -1,9 +1,9 @@
 name: bolh
 region: lon1
 domains:
-  - domain: app.bolhsecurity.com
+  - domain: app.omnixius.com
     type: PRIMARY
-  - domain: api.bolhsecurity.com
+  - domain: api.omnixius.com
     type: ALIAS
 
 services:

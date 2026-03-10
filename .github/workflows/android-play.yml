@@ -24,12 +24,12 @@ on:
       release_api_base_url:
         description: "Release API base URL"
         required: true
-        default: "https://api.bolhsecurity.com"
+        default: "https://api.omnixius.com"
         type: string
       release_web_app_url:
         description: "Release web app URL"
         required: true
-        default: "https://app.bolhsecurity.com/"
+        default: "https://app.omnixius.com/"
         type: string
 
 permissions:
