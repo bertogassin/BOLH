@@ -1,5 +1,10 @@
 name: bolh
 region: lon1
+domains:
+  - domain: app.bolhsecurity.com
+    type: PRIMARY
+  - domain: api.bolhsecurity.com
+    type: ALIAS
 
 services:
   - name: api
