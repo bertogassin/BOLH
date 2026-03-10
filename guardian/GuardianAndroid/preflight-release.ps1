@@ -32,7 +32,8 @@ if ([string]::IsNullOrWhiteSpace($env:JAVA_HOME)) {
 }
 
 if (Get-Command java -ErrorAction SilentlyContinue) {
-  $javaVersion = (& java -version 2>&1 | Select-Object -First 1)
+  # java -version writes to stderr on many JDKs; use cmd redirection to keep preflight stable.
+  $javaVersion = (cmd /c "java -version 2>&1" | Select-Object -First 1)
   Write-Ok "Java available: $javaVersion"
 } else {
   Write-Fail "java command not found in PATH."

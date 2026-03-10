@@ -2,6 +2,8 @@ param(
   [string]$EnvFile = ".\release-signing.local.env",
   [ValidateSet("internal", "closed", "open", "production")]
   [string]$Track = "internal",
+  [ValidateSet("draft", "completed")]
+  [string]$ReleaseStatus = "draft",
   [switch]$SkipBuild
 )
 
@@ -48,8 +50,9 @@ if (-not $SkipBuild) {
   if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-Write-Host "Step 2/2: Publish to Google Play track '$Track'" -ForegroundColor Cyan
+Write-Host "Step 2/2: Publish to Google Play track '$Track' (status: $ReleaseStatus)" -ForegroundColor Cyan
 .\gradlew.bat :app:publishReleaseBundle `
+  "--release-status" "$ReleaseStatus" `
   "-PRELEASE_STORE_FILE=$($pairs["RELEASE_STORE_FILE"])" `
   "-PRELEASE_KEY_ALIAS=$($pairs["RELEASE_KEY_ALIAS"])" `
   "-PRELEASE_STORE_PASSWORD=$($pairs["RELEASE_STORE_PASSWORD"])" `

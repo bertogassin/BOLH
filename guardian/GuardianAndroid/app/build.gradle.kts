@@ -14,8 +14,8 @@ android {
         applicationId = "com.omnixius.bolh487373a"
         minSdk = 26
         targetSdk = 35
-        versionCode = 11
-        versionName = "1.0.1-beta10"
+        versionCode = 12
+        versionName = "1.0.1-beta11"
         buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
         buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
     }
@@ -80,7 +80,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs += listOf("-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+        freeCompilerArgs += listOf("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
     }
     buildFeatures {
         compose = true
