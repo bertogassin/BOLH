@@ -8,6 +8,12 @@ BOLH currently remains a legacy-source repository while functionality is
 decomposed into ecosystem-aligned services (`core-*`, `marketplace-*`,
 `notification-routing`, `payment-gateway`) with Rust-first targets.
 
+### Write policy (important)
+
+- Do not add new backend/runtime modules in this repository.
+- New implementation work must go to dedicated target repositories.
+- This repository keeps legacy structure and migration references.
+
 ## Rust-first policy
 
 - Ядро платформы и доменные сервисы развиваются в модели **Rust-first**.
