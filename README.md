@@ -2,6 +2,12 @@
 
 Платформа закрытых тендеров охранных услуг. Соответствует [ABSOLUTE_STANDARD.md](./ABSOLUTE_STANDARD.md) и [docs/BOLH_TECH_ARCHITECTURE.md](./docs/BOLH_TECH_ARCHITECTURE.md).
 
+## Legacy migration status
+
+BOLH currently remains a legacy-source repository while functionality is
+decomposed into ecosystem-aligned services (`core-*`, `marketplace-*`,
+`notification-routing`, `payment-gateway`) with Rust-first targets.
+
 ## Rust-first policy
 
 - Ядро платформы и доменные сервисы развиваются в модели **Rust-first**.
