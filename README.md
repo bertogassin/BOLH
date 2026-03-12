@@ -2,6 +2,11 @@
 
 Платформа закрытых тендеров охранных услуг. Соответствует [ABSOLUTE_STANDARD.md](./ABSOLUTE_STANDARD.md) и [docs/BOLH_TECH_ARCHITECTURE.md](./docs/BOLH_TECH_ARCHITECTURE.md).
 
+## Rust-first policy
+
+- Ядро платформы и доменные сервисы развиваются в модели **Rust-first**.
+- Go используется для совместимости и текущих API-слоев, с поэтапным усилением Rust-компонентов.
+
 ## Структура
 
 - **Rust (ядро):** домен и Matching Engine в `crates/`:
