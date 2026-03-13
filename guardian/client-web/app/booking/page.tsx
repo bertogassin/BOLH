@@ -756,61 +756,61 @@ export default function BookingPage() {
             }}
             placeholder={t('booking.address')}
             hasError={submitAttempted && !address.trim()}
-            footer={
-              <>
-                <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-white/85">
-                  <span className="inline-flex items-center gap-1.5 text-left text-white/85">
-                    <Shield className="h-3.5 w-3.5" />
-                    {t('booking.mission_title')}
-                  </span>
-                  <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
-                </div>
-                <div className="mb-1 flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMissionTouched(false)
-                      setMissionDescription(autoMissionDescription)
-                    }}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
-                  >
-                    {t('booking.auto')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={restoreMissionDraft}
-                    disabled={!hasMissionDraft}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover disabled:opacity-40"
-                  >
-                    {t('booking.restore')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={clearMissionText}
-                    className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
-                  >
-                    {t('booking.clear')}
-                  </button>
-                </div>
-                <textarea
-                  value={missionDescription}
-                  onChange={(e) => {
-                    setMissionTouched(true)
-                    setMissionDescription(e.target.value)
-                  }}
-                  maxLength={2500}
-                  rows={4}
-                  placeholder={t('booking.mission_placeholder')}
-                  className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
-                />
-                <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
-                  <span>{t('booking.mission_hint')}</span>
-                  <span>{missionDescription.length}/2500</span>
-                </div>
-              </>
-            }
           />
           {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
+          <div className="rounded-xl theme-surface border border-violet-400 overflow-hidden">
+            <div className="rounded-t-xl flex items-center justify-between gap-2.5 min-h-[50px] px-3 py-2.5">
+              <span className="inline-flex items-center gap-2 text-white/90">
+                <Shield className="h-4 w-4 theme-text-muted shrink-0" />
+                <span className="text-sm">{t('booking.mission_title')}</span>
+              </span>
+              <span className="text-[11px] text-white/65">{missionDescription.length}/2500</span>
+            </div>
+            <div className="border-t border-violet-400 px-2 py-1.5">
+              <div className="mb-1 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMissionTouched(false)
+                    setMissionDescription(autoMissionDescription)
+                  }}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
+                >
+                  {t('booking.auto')}
+                </button>
+                <button
+                  type="button"
+                  onClick={restoreMissionDraft}
+                  disabled={!hasMissionDraft}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover disabled:opacity-40"
+                >
+                  {t('booking.restore')}
+                </button>
+                <button
+                  type="button"
+                  onClick={clearMissionText}
+                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
+                >
+                  {t('booking.clear')}
+                </button>
+              </div>
+              <textarea
+                value={missionDescription}
+                onChange={(e) => {
+                  setMissionTouched(true)
+                  setMissionDescription(e.target.value)
+                }}
+                maxLength={2500}
+                rows={4}
+                placeholder={t('booking.mission_placeholder')}
+                className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
+              />
+              <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
+                <span>{t('booking.mission_hint')}</span>
+                <span>{missionDescription.length}/2500</span>
+              </div>
+            </div>
+          </div>
           <div className={`theme-surface relative rounded-xl border ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'}`}>
             <div className="theme-surface rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5">
               <span className="text-white/85 shrink-0 w-4 text-center text-sm" aria-hidden="true">€</span>
