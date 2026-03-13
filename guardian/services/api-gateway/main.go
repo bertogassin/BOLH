@@ -112,7 +112,15 @@ func NewServer() *Server {
 	s.router.Use(middleware.Cors(allowedOriginsFromEnv()))
 	s.router.Use(s.authMiddleware())
 	s.setupRoutes()
-	s.router.GET("/health", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"status": "ok"}) })
+	s.router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":   "ok",
+			"service":  "guardian-api-gateway",
+			"env":      strings.ToLower(strings.TrimSpace(os.Getenv("APP_ENV"))),
+			"build_id": appBuildID(),
+			"commit":   appCommitSHA(),
+		})
+	})
 	// Honeypot route: any hit is treated as hostile probing.
 	s.router.Any("/api/v1/admin/root-shell", s.handleHoneypot)
 	s.router.Any(canaryPathFromEnv(), s.handleCanaryToken)
@@ -782,6 +790,32 @@ func canaryPathFromEnv() string {
 		raw = "/" + raw
 	}
 	return raw
+}
+
+func appBuildID() string {
+	for _, key := range []string{"APP_BUILD_ID", "RELEASE_ID", "GITHUB_SHA"} {
+		if value := strings.TrimSpace(os.Getenv(key)); value != "" {
+			if key == "GITHUB_SHA" && len(value) > 12 {
+				return value[:12]
+			}
+			return value
+		}
+	}
+	return "dev"
+}
+
+func appCommitSHA() string {
+	sha := strings.TrimSpace(os.Getenv("GITHUB_SHA"))
+	if sha == "" {
+		sha = strings.TrimSpace(os.Getenv("COMMIT_SHA"))
+	}
+	if len(sha) > 40 {
+		sha = sha[:40]
+	}
+	if sha == "" {
+		return "unknown"
+	}
+	return sha
 }
 
 func notifyCanaryAlert(ip, path, userAgent string) {

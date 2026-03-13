@@ -12,6 +12,11 @@ npm run dev   # запуск на http://localhost:3003
 
 Открой в браузере: **http://localhost:3003**
 
+## Build visibility
+
+- UI shows `build <id>` in the bottom-left corner.
+- Set `NEXT_PUBLIC_APP_BUILD_ID` in deployment env to trace exact build on live.
+
 ## Что есть
 
 - **Главная** — приветствие, быстрые действия (Новый заказ, Мои заказы, Платежи, Чаты), активные заказы, плавающая кнопка «+», нижняя навигация.

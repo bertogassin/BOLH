@@ -18,6 +18,11 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const buildId =
+    process.env.NEXT_PUBLIC_APP_BUILD_ID ||
+    (process.env.GITHUB_SHA ? process.env.GITHUB_SHA.slice(0, 7) : '') ||
+    'dev'
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen antialiased bg-[#1a1b26] text-white">
@@ -29,6 +34,9 @@ export default function RootLayout({
                   <AIChatShell>
                     <ApiHealthBanner />
                     {children}
+                    <div className="pointer-events-none fixed bottom-2 left-2 z-[70] rounded border border-white/25 bg-black/45 px-2 py-1 text-[10px] uppercase tracking-wide text-white/75">
+                      build {buildId}
+                    </div>
                   </AIChatShell>
                 </SoundProvider>
               </AuthProvider>

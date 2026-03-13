@@ -18,6 +18,8 @@
 - **docs/** — [ARCHITECTURE_SECURITY_BACKEND.md](docs/ARCHITECTURE_SECURITY_BACKEND.md)
 - **Language policy** — [ARCHITECTURE_LANG_POLICY.md](ARCHITECTURE_LANG_POLICY.md)
 - **migrations/** — PostgreSQL (002_full_schema_guardian.sql: users, profiles, licenses, orders, bids, matches, documents)
+- **release process** — [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)
+- **repo boundaries** — [REPO_BOUNDARIES.md](REPO_BOUNDARIES.md)
 
 ## Запуск
 
@@ -32,6 +34,11 @@ chmod +x scripts/start-dev.sh && ./scripts/start-dev.sh
 ```
 
 Поднимает Postgres, Redis, API Gateway в Docker, затем запускает client-web на http://localhost:3003. API: http://localhost:8080.
+
+## Runtime transparency
+
+- Web UI shows active build id (`build <id>`) in the bottom-left corner.
+- API `GET /health` returns `build_id` and `commit` for live verification.
 
 ### Вручную
 
