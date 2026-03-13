@@ -794,17 +794,21 @@ export default function BookingPage() {
                   {t('booking.clear')}
                 </button>
               </div>
-              <textarea
-                value={missionDescription}
-                onChange={(e) => {
-                  setMissionTouched(true)
-                  setMissionDescription(e.target.value)
-                }}
-                maxLength={2500}
-                rows={4}
-                placeholder={t('booking.mission_placeholder')}
-                className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
-              />
+              <div className="rounded-lg border border-violet-400 px-2 py-1.5">
+                <InputWithClear
+                  value={missionDescription}
+                  onChange={(v) => {
+                    setMissionTouched(true)
+                    setMissionDescription(v)
+                  }}
+                  maxLength={2500}
+                  placeholder={t('booking.mission_placeholder')}
+                  wrapperClassName="w-full"
+                  className={`${DARK_INLINE_INPUT_CLASS} text-xs placeholder:text-white/40`}
+                  clearButtonClassName="text-white/60 hover:text-white theme-hover"
+                  aria-label={t('booking.mission_title')}
+                />
+              </div>
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
                 <span>{t('booking.mission_hint')}</span>
                 <span>{missionDescription.length}/2500</span>
