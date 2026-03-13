@@ -138,7 +138,6 @@ export default function BookingPage() {
   const priceValueError = submitAttempted && priceNotPositive
   const timeError = submitAttempted && timeRangeInvalid
   const submitDisabled = loading || timeRangeInvalid || priceNotPositive
-  const missionFillPercent = Math.min(100, Math.round((missionDescription.length / 2500) * 100))
 
   useEffect(() => {
     if (day > maxDay) setDay(maxDay)
@@ -651,25 +650,6 @@ export default function BookingPage() {
               <ErrorBanner message={error} onDismiss={() => setError('')} />
             </div>
           )}
-          <div className="theme-surface rounded-xl border border-violet-400 px-3 py-2.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs uppercase tracking-wide text-white/70">Home panel</span>
-              <span className="rounded-md border border-violet-400/70 px-1.5 py-0.5 text-[10px] text-white/80">v3</span>
-            </div>
-            <p className="mt-1 text-sm text-white/90">{selectedServiceLabel} · {String(safeDay).padStart(2, '0')} {MONTHS[month]} · {fromTime}-{toTime}</p>
-            <p className="mt-1 truncate text-xs text-white/60">{address.trim() || t('booking.address')}</p>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <Link href="/orders" className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-violet-400/70 text-xs text-white/85 theme-hover">
-              {t('booking.details')}
-            </Link>
-            <Link href="/map" className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-violet-400/70 text-xs text-white/85 theme-hover">
-              {t('booking.map')}
-            </Link>
-            <Link href="/profile" className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-violet-400/70 text-xs text-white/85 theme-hover">
-              Profile
-            </Link>
-          </div>
           {activeOrder && (
             <div className="theme-surface rounded-xl border border-violet-400 px-3 py-3">
               <div className="flex items-center justify-between gap-2">
@@ -778,23 +758,13 @@ export default function BookingPage() {
             hasError={submitAttempted && !address.trim()}
           />
           {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
-          <div className="rounded-xl theme-surface border border-violet-400 overflow-hidden">
-            <div className="rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5">
-              <Shield className="h-4 w-4 theme-text-muted shrink-0" />
-              <InputWithClear
-                value={missionDescription}
-                onChange={(v) => {
-                  setMissionTouched(true)
-                  setMissionDescription(v)
-                }}
-                maxLength={2500}
-                placeholder={t('booking.mission_placeholder')}
-                wrapperClassName="flex-1 min-w-0"
-                className={`${DARK_INLINE_INPUT_CLASS} text-sm placeholder:text-white/50`}
-                clearButtonClassName="text-white/60 hover:text-white theme-hover"
-                aria-label={t('booking.mission_title')}
-              />
-              <span className="text-[11px] text-white/65">{missionDescription.length}/2500</span>
+          <div className={`theme-surface rounded-xl border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
+            <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/85">
+              <span className="inline-flex items-center gap-1.5 text-left text-white/85">
+                <Shield className="h-3.5 w-3.5" />
+                {t('booking.mission_title')}
+              </span>
+              <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
             </div>
             <div className="border-t border-violet-400 px-2 py-1.5">
               <div className="mb-1 flex items-center gap-1">
@@ -824,12 +794,20 @@ export default function BookingPage() {
                   {t('booking.clear')}
                 </button>
               </div>
+              <textarea
+                value={missionDescription}
+                onChange={(e) => {
+                  setMissionTouched(true)
+                  setMissionDescription(e.target.value)
+                }}
+                maxLength={2500}
+                rows={4}
+                placeholder={t('booking.mission_placeholder')}
+                className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
+              />
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
                 <span>{t('booking.mission_hint')}</span>
                 <span>{missionDescription.length}/2500</span>
-              </div>
-              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                <div className="h-full rounded-full bg-violet-400 transition-all" style={{ width: `${missionFillPercent}%` }} />
               </div>
             </div>
           </div>

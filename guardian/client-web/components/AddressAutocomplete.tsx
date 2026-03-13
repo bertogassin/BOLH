@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { MapPin, X, ChevronDown, ChevronUp } from 'lucide-react'
 import { useLocale } from '@/context/LocaleContext'
 import { useAuth } from '@/context/AuthContext'
@@ -75,7 +75,6 @@ type AddressAutocompleteProps = {
   showHistoryPanel?: boolean
   showSuggestions?: boolean
   hasError?: boolean
-  footer?: ReactNode
 }
 
 const RECENT_STORAGE_KEY = 'guardian_recent_addresses_v1'
@@ -90,7 +89,6 @@ export function AddressAutocomplete({
   showHistoryPanel = true,
   showSuggestions = true,
   hasError = false,
-  footer,
 }: AddressAutocompleteProps) {
   const [suggestions, setSuggestions] = useState<AddressResult[]>([])
   const [recent, setRecent] = useState<RecentAddress[]>([])
@@ -372,11 +370,6 @@ export function AddressAutocomplete({
             )}
           </>
         )}
-        {footer ? (
-          <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5`}>
-            {footer}
-          </div>
-        ) : null}
       </div>
       {showSuggestions && open && suggestions.length > 0 && !suggestions.some((s) => s.display.trim() === value.trim()) && (
         <ul
