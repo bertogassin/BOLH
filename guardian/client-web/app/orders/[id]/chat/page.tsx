@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { fetchOrder, fetchOrderMessages, sendOrderMessage, type ChatMessage } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
+import { ErrorBanner } from '@/components/ErrorBanner'
 
 const CHAT_POLL_MS = 5000
 
@@ -17,6 +18,8 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
+  const [loadError, setLoadError] = useState('')
+  const [sendError, setSendError] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,9 +47,12 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
         : fetchOrder(params.id).then(() => fetchOrderMessages(params.id))
       request
         .then((next) => {
+          setLoadError('')
           applyMessages(Array.isArray(next) ? next : [])
         })
-        .catch(() => {})
+        .catch((err) => {
+          setLoadError(err instanceof Error ? err.message : 'Failed to load chat messages.')
+        })
         .finally(() => {
           inFlight = false
           if (!silent) setLoading(false)
@@ -77,11 +83,13 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
     if (!text || sending) return
     setInput('')
     setSending(true)
+    setSendError('')
     try {
       const msg = await sendOrderMessage(params.id, text)
       setMessages((prev) => [...prev, msg])
-    } catch {
+    } catch (err) {
       setInput(text)
+      setSendError(err instanceof Error ? err.message : 'Failed to send message.')
     } finally {
       setSending(false)
     }
@@ -115,6 +123,9 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
       </header>
 
       <main className="flex-1 overflow-auto p-4 space-y-3">
+        {loadError && (
+          <ErrorBanner message={loadError} onDismiss={() => setLoadError('')} className="text-xs" />
+        )}
         {messages.map((m) => (
           <div
             key={m.id}
@@ -156,6 +167,11 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
             <Send className="h-5 w-5" />
           </button>
         </div>
+        {sendError && (
+          <div className="mx-auto mt-2 max-w-lg">
+            <ErrorBanner message={sendError} onDismiss={() => setSendError('')} className="text-xs" />
+          </div>
+        )}
       </div>
 
       <BOLHNav current="booking" />

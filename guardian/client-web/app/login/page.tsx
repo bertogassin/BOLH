@@ -7,7 +7,7 @@ import { Shield, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
-import { FormErrorSummary } from '@/components/FormErrors'
+import { ErrorBanner } from '@/components/ErrorBanner'
 import { FormField } from '@/components/FormField'
 
 const REMEMBER_EMAIL_KEY = 'guardian_remember_email'
@@ -126,7 +126,7 @@ export default function LoginPage() {
         <p className="mb-6 text-center text-sm text-gray-500">{t('auth.login_subtitle')}</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <FormErrorSummary message={error} />
+            <ErrorBanner message={error} onDismiss={() => setError('')} />
           )}
           <FormField
             label={t('auth.email')}

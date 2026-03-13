@@ -10,6 +10,7 @@ import { subscribeOrderSync } from '@/lib/order_sync'
 import { StatusBadge } from '@/components/StatusBadge'
 import { BOLHNav } from '@/components/BOLHNav'
 import { formatDateTime } from '@/lib/format/date'
+import { ErrorBanner } from '@/components/ErrorBanner'
 
 const ORDER_TIMELINE = [
   { key: 'published', labelKey: 'order_detail.step_created' },
@@ -32,6 +33,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const [match, setMatch] = useState<Match | null>(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(false)
+  const [loadError, setLoadError] = useState('')
   const orderStatusRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -53,10 +55,12 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       inFlight = true
       fetchOrderWithMatch(params.id)
         .then((data) => {
+          setLoadError('')
           setOrder(data.order)
           setMatch(data.match ?? null)
         })
-        .catch(() => {
+        .catch((err) => {
+          setLoadError(err instanceof Error ? err.message : 'Failed to load order details.')
           if (!silent) setOrder(null)
         })
         .finally(() => {
@@ -94,6 +98,20 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       setMatch(null)
     } finally {
       setCancelling(false)
+    }
+  }
+
+  const retryLoad = async () => {
+    setLoading(true)
+    try {
+      const data = await fetchOrderWithMatch(params.id)
+      setOrder(data.order)
+      setMatch(data.match ?? null)
+      setLoadError('')
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : 'Failed to load order details.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -137,6 +155,9 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       </header>
 
       <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
+        {loadError && (
+          <ErrorBanner message={loadError} onRetry={retryLoad} onDismiss={() => setLoadError('')} />
+        )}
         <div className="rounded-2xl bg-white/10 p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-white/50">{t('order_detail.status')}</p>
           <div className="mt-1">

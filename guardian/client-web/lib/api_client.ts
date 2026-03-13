@@ -16,6 +16,15 @@ type BehaviorSignals = {
   fastSubmit: boolean
 }
 
+type ApiRequestOptions = RequestInit & {
+  idempotencyKey?: string
+  timeoutMs?: number
+  retries?: number
+}
+
+const DEFAULT_TIMEOUT_MS = 12000
+const DEFAULT_RETRIES = 2
+
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null
   const sessionToken = sessionStorage.getItem('guardian_token')
@@ -33,6 +42,13 @@ export function getToken(): string | null {
     }
   }
   return null
+}
+
+export function newIdempotencyKey(prefix = 'req'): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return `${prefix}_${crypto.randomUUID()}`
+  }
+  return `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`
 }
 
 function isNetworkError(e: unknown): boolean {
@@ -84,10 +100,14 @@ function readBehaviorSignals(path: string): BehaviorSignals | null {
 }
 
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const requestOptions = options as ApiRequestOptions
   const token = getToken()
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(options.headers as Record<string, string>),
+    ...(requestOptions.headers as Record<string, string>),
+  }
+  if (requestOptions.idempotencyKey) {
+    headers['Idempotency-Key'] = requestOptions.idempotencyKey
   }
   const behavior = readBehaviorSignals(path)
   if (behavior) {
@@ -111,18 +131,75 @@ export async function api<T>(path: string, options: RequestInit = {}): Promise<T
     }
   }
 
-  let res: Response
-  try {
-    res = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials: 'include' })
-  } catch (e) {
-    if (isNetworkError(e)) {
-      throw new Error('Server unavailable. Start API Gateway on port 8080.')
+  const method = (requestOptions.method || 'GET').toUpperCase()
+  const safeToRetry =
+    method === 'GET' ||
+    method === 'HEAD' ||
+    method === 'OPTIONS' ||
+    Boolean(requestOptions.idempotencyKey)
+  const retries = Math.max(0, requestOptions.retries ?? DEFAULT_RETRIES)
+  const timeoutMs = Math.max(2000, requestOptions.timeoutMs ?? DEFAULT_TIMEOUT_MS)
+
+  let attempt = 0
+  for (;;) {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      const res = await fetch(`${API_BASE}${path}`, {
+        ...requestOptions,
+        headers,
+        credentials: 'include',
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+      const text = await res.text().catch(() => '')
+      let data: unknown = {}
+      if (text) {
+        try {
+          data = JSON.parse(text)
+        } catch {
+          data = { raw: text }
+        }
+      }
+      if (!res.ok) {
+        const status = res.status
+        const retryableStatus = status === 408 || status === 425 || status === 429 || status >= 500
+        if (safeToRetry && retryableStatus && attempt < retries) {
+          attempt += 1
+          await new Promise((r) => setTimeout(r, 200 * attempt))
+          continue
+        }
+        const serverMessage =
+          (data as { error?: string; message?: string }).error ||
+          (data as { error?: string; message?: string }).message ||
+          ''
+        if (status === 401) throw new Error(serverMessage || 'Session expired. Please sign in again.')
+        if (status === 403) throw new Error(serverMessage || 'Access denied for this action.')
+        if (status === 404) throw new Error(serverMessage || 'Requested item was not found.')
+        if (status === 409) throw new Error(serverMessage || 'Request conflict. Please refresh and try again.')
+        if (status === 422) throw new Error(serverMessage || 'Validation failed. Check required fields.')
+        if (status === 429) throw new Error(serverMessage || 'Too many requests. Please wait and retry.')
+        if (status >= 500) throw new Error(serverMessage || 'Service is temporarily unavailable. Try again.')
+        throw new Error(serverMessage || res.statusText || 'Request failed')
+      }
+      return data as T
+    } catch (e) {
+      clearTimeout(timeout)
+      const isAbort = e instanceof DOMException && e.name === 'AbortError'
+      if (safeToRetry && attempt < retries && (isAbort || isNetworkError(e))) {
+        attempt += 1
+        await new Promise((r) => setTimeout(r, 200 * attempt))
+        continue
+      }
+      if (isAbort) {
+        throw new Error('Request timed out. Please check your connection and try again.')
+      }
+      if (isNetworkError(e)) {
+        throw new Error('Server unavailable. Start API Gateway on port 8080.')
+      }
+      throw e
     }
-    throw e
   }
-  const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error((data as { error?: string }).error || res.statusText || 'Request failed')
-  return data as T
 }
 
 export async function apiHealth(): Promise<boolean> {

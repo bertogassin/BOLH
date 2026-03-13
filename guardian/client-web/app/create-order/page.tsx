@@ -9,6 +9,7 @@ import { useLocale } from '@/context/LocaleContext'
 import { createOrder } from '@/lib/api'
 import { AppNav } from '@/components/AppNav'
 import { InputWithClear } from '@/components/InputWithClear'
+import { ErrorBanner } from '@/components/ErrorBanner'
 
 export default function CreateOrderPage() {
   const { user } = useAuth()
@@ -122,7 +123,7 @@ export default function CreateOrderPage() {
       <main className="mx-auto max-w-lg px-4 py-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="rounded-xl border border-red-100 bg-red-50 p-3 text-sm text-red-700">{error}</div>
+            <ErrorBanner message={error} onDismiss={() => setError('')} />
           )}
 
           <div className="card space-y-4">

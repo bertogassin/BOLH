@@ -11,7 +11,7 @@ import { createOrder, fetchCards, fetchOrders, type PaymentCard, type Order } fr
 import { subscribeOrderSync } from '@/lib/order_sync'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
 import { InputWithClear } from '@/components/InputWithClear'
-import { FieldError, FormErrorSummary } from '@/components/FormErrors'
+import { FieldError } from '@/components/FormErrors'
 import { BOLHNav } from '@/components/BOLHNav'
 import { statusLabel } from '@/components/StatusBadge'
 import { DARK_COMPACT_INPUT_BASE_CLASS, DARK_INLINE_INPUT_CLASS } from '@/components/formStyles'
@@ -21,6 +21,7 @@ import { isExpiryValid, isValidLuhn } from '@/lib/payment/cardUtils'
 import { Selector } from '@/components/booking/Selector'
 import { TimeSelector } from '@/components/booking/TimeSelector'
 import { getBankDetailsMode } from '@/lib/bankDetails'
+import { ErrorBanner } from '@/components/ErrorBanner'
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aout', 'Sep', 'Oct', 'Nov', 'Dec']
 const SERVICES = [
@@ -645,12 +646,8 @@ export default function BookingPage() {
             </button>
           )}
           {error && (
-            <div ref={errorRef} className="flex items-center justify-between gap-2 rounded-xl bg-red-500/20 border border-red-500/40 p-3">
-              <FormErrorSummary
-                message={error}
-                className="border-0 bg-transparent p-0 text-sm text-red-200"
-              />
-              <button type="button" onClick={() => setError('')} className="shrink-0 p-1 rounded hover:bg-red-500/20 text-red-200" aria-label={t('booking.close')}>×</button>
+            <div ref={errorRef}>
+              <ErrorBanner message={error} onDismiss={() => setError('')} />
             </div>
           )}
           {activeOrder && (

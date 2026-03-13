@@ -1,4 +1,4 @@
-import { api } from './api_client'
+import { api, newIdempotencyKey } from './api_client'
 import { emitOrderSync } from './order_sync'
 
 export type Order = {
@@ -64,6 +64,7 @@ export async function fetchOrderMessages(orderId: string): Promise<ChatMessage[]
 export async function sendOrderMessage(orderId: string, text: string): Promise<ChatMessage> {
   const data = await api<{ message: ChatMessage }>(`/api/v1/orders/${orderId}/messages`, {
     method: 'POST',
+    idempotencyKey: newIdempotencyKey('msg'),
     body: JSON.stringify({ text }),
   })
   emitOrderSync({ reason: 'message', orderId })
@@ -84,6 +85,7 @@ export async function createOrder(body: {
 }): Promise<Order> {
   const data = await api<{ order?: Order } & Order>('/api/v1/orders', {
     method: 'POST',
+    idempotencyKey: newIdempotencyKey('order'),
     body: JSON.stringify(body),
   })
   const order = (data as { order?: Order }).order ?? (data as Order)
