@@ -774,6 +774,9 @@ export default function BookingPage() {
                 clearButtonClassName="text-white/60 hover:text-white theme-hover"
                 aria-label={t('booking.mission_title')}
               />
+              <span className="shrink-0 rounded-md border border-amber-300/60 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-amber-200">
+                MISSION-MARKER-v2
+              </span>
             </div>
             <div className="border-t border-violet-400 px-2 py-1.5">
               <div className="mb-1 flex items-center gap-1">
