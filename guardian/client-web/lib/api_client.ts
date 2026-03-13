@@ -99,8 +99,8 @@ function readBehaviorSignals(path: string): BehaviorSignals | null {
   }
 }
 
-export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const requestOptions = options as ApiRequestOptions
+export async function api<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const requestOptions = options
   const token = getToken()
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
