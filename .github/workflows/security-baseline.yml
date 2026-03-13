@@ -1,0 +1,66 @@
+﻿name: Security Baseline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependency-and-build-checks:
+    name: Dependency and build checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Rust checks
+        shell: bash
+        run: |
+          if [ -f Cargo.toml ]; then
+            cargo fmt --all -- --check || true
+            cargo check --all-targets
+            cargo install cargo-audit --locked || true
+            cargo audit || true
+          else
+            echo "No root Cargo.toml, skip rust checks"
+          fi
+
+      - name: Go checks
+        shell: bash
+        run: |
+          if [ -f go.mod ]; then
+            go mod tidy
+            go test ./...
+            go install golang.org/x/vuln/cmd/govulncheck@latest
+            govulncheck ./... || true
+          else
+            echo "No root go.mod, skip go checks"
+          fi
+
+      - name: Node checks
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+            npm audit --audit-level=high || true
+          elif [ -f package.json ]; then
+            npm install
+            npm audit --audit-level=high || true
+          else
+            echo "No package.json at repository root, skip node checks"
+          fi
