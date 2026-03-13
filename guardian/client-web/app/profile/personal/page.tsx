@@ -65,7 +65,7 @@ export default function ProfilePersonalPage() {
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {success ? (
             <div className="rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-sm text-emerald-200">
               {t('profile.saved')}
@@ -111,13 +111,15 @@ export default function ProfilePersonalPage() {
               clearButtonClassName={DARK_CLEAR_BUTTON_CLASS}
             />
           </FormField>
-          <button
-            type="submit"
-            disabled={loading || success}
-            className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
-          >
-            {loading ? t('profile.saving') : t('profile.save')}
-          </button>
+          <div className="border-t border-white/10 pt-3">
+            <button
+              type="submit"
+              disabled={loading || success}
+              className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
+            >
+              {loading ? t('profile.saving') : t('profile.save')}
+            </button>
+          </div>
         </form>
       </main>
       <BOLHNav current="profile" />

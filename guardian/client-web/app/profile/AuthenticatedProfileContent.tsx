@@ -5,6 +5,7 @@ import { ProfileAddressesSection } from './ProfileAddressesSection'
 import { ProfileBusinessSection } from './ProfileBusinessSection'
 import { ProfileCardsSection } from './ProfileCardsSection'
 import { ProfileDataLinksSection } from './ProfileDataLinksSection'
+import { ProfileDangerSection } from './ProfileDangerSection'
 import { ProfileGeneralSection } from './ProfileGeneralSection'
 import { ProfileIdentityStats } from './ProfileIdentityStats'
 import { ProfileLogoutSection } from './ProfileLogoutSection'
@@ -43,12 +44,17 @@ export function AuthenticatedProfileContent({
         completionPercent={completionPercent}
         t={t}
       />
-      <ProfileDataLinksSection />
-      <ProfileCardsSection cards={cards} t={t} />
-      <ProfileAddressesSection />
-      <ProfileBusinessSection isAgency={isAgency} />
-      <ProfileGeneralSection t={t} />
-      <ProfileLogoutSection showLogoutConfirm={showLogoutConfirm} setShowLogoutConfirm={setShowLogoutConfirm} handleLogout={handleLogout} />
+      <div className="space-y-3">
+        <ProfileDataLinksSection />
+        <ProfileCardsSection cards={cards} t={t} />
+        <ProfileAddressesSection />
+        <ProfileBusinessSection isAgency={isAgency} />
+        <ProfileGeneralSection t={t} />
+      </div>
+      <div className="space-y-2 border-t border-white/10 pt-3">
+        <ProfileLogoutSection showLogoutConfirm={showLogoutConfirm} setShowLogoutConfirm={setShowLogoutConfirm} handleLogout={handleLogout} />
+        <ProfileDangerSection />
+      </div>
     </>
   )
 }

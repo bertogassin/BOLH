@@ -682,7 +682,7 @@ export default function BookingPage() {
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <div className="grid grid-cols-3 gap-3">
               {SERVICES.map((option) => (
                 <button
@@ -1013,32 +1013,34 @@ export default function BookingPage() {
           {paymentValidationError ? <FieldError message={t('booking.error_payment_required')} className="mt-1 text-xs text-red-300" /> : null}
           {onlineError ? <FieldError message={t('booking.error_online_required')} className="mt-1 text-xs text-red-300" /> : null}
 
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={e => { setAcceptTerms(e.target.checked); if (error) setError('') }}
-              className={`mt-1 rounded bg-white/10 text-violet-500 focus:ring-violet-500 ${submitAttempted && !acceptTerms ? 'border-red-500 ring-1 ring-red-500/70' : 'border-white'}`}
-              aria-describedby="terms-desc"
-            />
-            <span id="terms-desc" className={`text-sm ${submitAttempted && !acceptTerms ? 'text-red-300' : 'text-white/80'}`}>
-              {t('booking.accept_terms')}{' '}
-              <Link href="/legal/terms" className="text-violet-400 hover:underline">{t('booking.terms_link')}</Link>
-              {' · '}
-              <Link href="/legal/privacy" className="text-violet-400 hover:underline">{t('booking.privacy_link')}</Link>
-            </span>
-          </label>
-          {termsError ? <FieldError message={t('booking.error_terms_required')} className="mt-1 text-xs text-red-300" /> : null}
+          <div className="space-y-3 border-t border-white/10 pt-3">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={e => { setAcceptTerms(e.target.checked); if (error) setError('') }}
+                className={`mt-1 rounded bg-white/10 text-violet-500 focus:ring-violet-500 ${submitAttempted && !acceptTerms ? 'border-red-500 ring-1 ring-red-500/70' : 'border-white'}`}
+                aria-describedby="terms-desc"
+              />
+              <span id="terms-desc" className={`text-sm ${submitAttempted && !acceptTerms ? 'text-red-300' : 'text-white/80'}`}>
+                {t('booking.accept_terms')}{' '}
+                <Link href="/legal/terms" className="text-violet-400 hover:underline">{t('booking.terms_link')}</Link>
+                {' · '}
+                <Link href="/legal/privacy" className="text-violet-400 hover:underline">{t('booking.privacy_link')}</Link>
+              </span>
+            </label>
+            {termsError ? <FieldError message={t('booking.error_terms_required')} className="text-xs text-red-300" /> : null}
 
-          <button
-            type="submit"
-            disabled={submitDisabled}
-            className="w-full rounded-xl bg-[#6b21a8] hover:bg-[#7c3aed] py-3.5 font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors min-h-[46px] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
-            aria-busy={loading}
-          >
-            {loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" aria-hidden /> : <MapPin className="h-5 w-5" />}
-            {address ? (loading ? t('booking.sending') : t('booking.confirm')) : t('booking.enter_address')}
-          </button>
+            <button
+              type="submit"
+              disabled={submitDisabled}
+              className="w-full rounded-xl bg-[#6b21a8] hover:bg-[#7c3aed] py-3.5 font-medium text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors min-h-[46px] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+              aria-busy={loading}
+            >
+              {loading ? <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" aria-hidden /> : <MapPin className="h-5 w-5" />}
+              {address ? (loading ? t('booking.sending') : t('booking.confirm')) : t('booking.enter_address')}
+            </button>
+          </div>
         </form>
         </div>
       </main>

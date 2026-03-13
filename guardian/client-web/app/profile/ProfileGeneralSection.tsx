@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { FileText, HelpCircle, Settings, Trash2 } from 'lucide-react'
+import { Bell, FileText, HelpCircle, Settings } from 'lucide-react'
 
 type Props = {
   t: (key: string) => string
@@ -21,7 +21,7 @@ export function ProfileGeneralSection({ t }: Props) {
         </Link>
         <Link href="/notifications" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-white hover:bg-white/15">
           <span className="flex items-center gap-3">
-            <HelpCircle className="h-5 w-5 text-white/60" />
+            <Bell className="h-5 w-5 text-white/60" />
             {t('notifications.title')}
           </span>
           <span className="text-white/40">›</span>
@@ -37,13 +37,6 @@ export function ProfileGeneralSection({ t }: Props) {
           <span className="flex items-center gap-3">
             <Settings className="h-5 w-5 text-white/60" />
             {t('profile.settings')}
-          </span>
-          <span className="text-white/40">›</span>
-        </Link>
-        <Link href="/profile/delete" className="rounded-xl bg-white/10 border border-violet-400 px-4 py-3 flex items-center justify-between text-red-400 hover:bg-white/15">
-          <span className="flex items-center gap-3">
-            <Trash2 className="h-5 w-5" />
-            {t('profile.delete_account')}
           </span>
           <span className="text-white/40">›</span>
         </Link>

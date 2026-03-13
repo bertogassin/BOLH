@@ -122,7 +122,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto p-4 space-y-3">
+      <main className="flex-1 space-y-4 overflow-auto p-4">
         {loadError && (
           <ErrorBanner message={loadError} onDismiss={() => setLoadError('')} className="text-xs" />
         )}
@@ -139,7 +139,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
               }`}
             >
               <p className="text-sm">{m.text}</p>
-              <p className="text-[10px] opacity-70 mt-0.5">
+              <p className="mt-1 text-[10px] opacity-70">
                 {new Date(m.created_at).toLocaleTimeString(locale === 'ru' ? 'ru-RU' : locale === 'de' ? 'de-DE' : locale === 'fr' ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
@@ -148,8 +148,8 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
         <div ref={bottomRef} />
       </main>
 
-      <div className="fixed bottom-20 left-0 right-0 p-4 bg-[#1a1b26]/95 border-t border-white/10">
-        <div className="mx-auto max-w-lg flex gap-2">
+      <div className="fixed bottom-20 left-0 right-0 border-t border-white/10 bg-[#1a1b26]/95 p-4">
+        <div className="mx-auto flex max-w-lg gap-2">
           <input
             type="text"
             value={input}
@@ -168,7 +168,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
           </button>
         </div>
         {sendError && (
-          <div className="mx-auto mt-2 max-w-lg">
+          <div className="mx-auto mt-3 max-w-lg">
             <ErrorBanner message={sendError} onDismiss={() => setSendError('')} className="text-xs" />
           </div>
         )}

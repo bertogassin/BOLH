@@ -74,9 +74,9 @@ export default function NotificationsPage() {
           <h1 className="text-lg font-semibold">{t('navigation.notifications')}</h1>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 py-4">
+      <main className="mx-auto max-w-lg px-4 py-5">
         {loading ? (
-          <div className="animate-pulse space-y-2">
+          <div className="animate-pulse space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-20 rounded-xl bg-white/10" />
             ))}
@@ -93,7 +93,7 @@ export default function NotificationsPage() {
             <Link href="/profile" className="mt-6 text-violet-400 hover:underline text-sm">{t('notifications.to_profile')}</Link>
           </div>
         ) : (
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {list.map((n) => (
               <li
                 key={n.id}
@@ -101,11 +101,11 @@ export default function NotificationsPage() {
                 tabIndex={0}
                 onClick={() => handleMark(n)}
                 onKeyDown={(e) => e.key === 'Enter' && handleMark(n)}
-                className={`rounded-xl px-4 py-3 border border-white/5 theme-hover min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : 'theme-surface-soft'}`}
+                className={`rounded-xl border border-white/5 px-4 py-3 theme-hover min-h-[44px] flex flex-col justify-center ${!n.read ? 'bg-violet-500/10' : 'theme-surface-soft'}`}
               >
                 <p className="font-medium text-white text-sm">{n.title}</p>
-                <p className="text-xs text-white/60 mt-0.5">{n.body}</p>
-                <p className="text-xs text-white/40 mt-1">{formatDateTime(n.created_at, locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
+                <p className="mt-1 text-xs text-white/60">{n.body}</p>
+                <p className="mt-1.5 text-xs text-white/40">{formatDateTime(n.created_at, locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
               </li>
             ))}
           </ul>

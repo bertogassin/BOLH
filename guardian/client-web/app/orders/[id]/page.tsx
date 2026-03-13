@@ -154,7 +154,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         </div>
       </header>
 
-      <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
+      <main className="mx-auto max-w-lg space-y-5 px-4 py-6">
         {loadError && (
           <ErrorBanner message={loadError} onRetry={retryLoad} onDismiss={() => setLoadError('')} />
         )}
@@ -252,18 +252,20 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
         )}
 
         {canCancel && (
-          <button
-            type="button"
-            onClick={handleCancel}
-            disabled={cancelling}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-red-400/50 bg-red-500/20 py-3.5 text-red-300 hover:bg-red-500/30 disabled:opacity-50 min-h-[44px]"
-          >
-            <XCircle className="h-5 w-5" />
-            {cancelling ? t('order_detail.cancelling') : t('order_detail.cancel_order')}
-          </button>
+          <div className="border-t border-white/10 pt-3">
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-red-400/50 bg-red-500/20 py-3.5 text-red-300 hover:bg-red-500/30 disabled:opacity-50 min-h-[44px]"
+            >
+              <XCircle className="h-5 w-5" />
+              {cancelling ? t('order_detail.cancelling') : t('order_detail.cancel_order')}
+            </button>
+          </div>
         )}
 
-        <p>
+        <p className="pt-1">
           <Link href="/orders" className="text-violet-400 hover:underline">← {t('order_detail.back_to_orders')}</Link>
         </p>
       </main>

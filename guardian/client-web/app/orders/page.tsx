@@ -111,15 +111,15 @@ export default function OrdersPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-lg px-4 py-6">
+      <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
         {showCreatedBanner && (
-          <div role="status" className="mb-4 flex items-center gap-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 px-4 py-3 text-emerald-200">
+          <div role="status" className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-4 py-3 text-emerald-200">
             <Check className="h-5 w-5 shrink-0" />
             <span>{t('orders.created_banner')}</span>
           </div>
         )}
         {user && orders.length > 0 && (
-          <div className="mb-4 flex flex-col gap-2 sm:flex-row">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -188,7 +188,7 @@ export default function OrdersPage() {
             ))}
           </ul>
         )}
-        <p className="mt-6">
+        <p className="pt-1">
           <Link href="/booking" className="text-guardian-blue hover:underline">← Back to home</Link>
         </p>
       </main>

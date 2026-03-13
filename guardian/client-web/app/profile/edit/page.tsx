@@ -137,7 +137,7 @@ export default function ProfileEditPage() {
         </div>
       </header>
       <main className="mx-auto max-w-lg px-4 py-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {success && (
             <div className="rounded-xl bg-emerald-500/20 border border-emerald-500/40 p-3 text-sm text-emerald-200">
               {t('profile.saved')}
@@ -146,7 +146,7 @@ export default function ProfileEditPage() {
           {error && (
             <div className="rounded-xl bg-red-500/20 border border-red-500/40 p-3 text-sm text-red-200">{error}</div>
           )}
-          <div className="rounded-xl border border-violet-400/60 bg-white/5 p-3 space-y-3">
+          <div className="rounded-xl border border-violet-400/60 bg-white/5 p-3 space-y-4">
             <p className="text-sm font-semibold text-white">{t('profile_edit.search_instruments')}</p>
             <div>
               <p className="block text-xs font-medium text-white/60 uppercase mb-2">{t('profile_edit.preferred_service')}</p>
@@ -304,13 +304,15 @@ export default function ProfileEditPage() {
               />
             </FormField>
           </div>
-          <button
-            type="submit"
-            disabled={loading || success}
-            className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
-          >
-            {loading ? t('profile.saving') : t('profile.save')}
-          </button>
+          <div className="border-t border-white/10 pt-3">
+            <button
+              type="submit"
+              disabled={loading || success}
+              className="w-full rounded-xl bg-violet-600 hover:bg-violet-500 py-3.5 font-medium text-white min-h-[44px] disabled:opacity-50"
+            >
+              {loading ? t('profile.saving') : t('profile.save')}
+            </button>
+          </div>
         </form>
       </main>
       <BOLHNav current="profile" />

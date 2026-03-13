@@ -239,13 +239,13 @@ export default function MapPage() {
 
       <div className="theme-header absolute bottom-24 left-4 right-4 z-[1000] rounded-xl border border-white/10 px-4 py-3 backdrop-blur">
         <p className="text-xs text-white/60 uppercase">{t('map.near_you')}</p>
-        <p className="text-sm font-medium text-white mt-0.5">{t('map.legend')}</p>
+        <p className="mt-1 text-sm font-medium text-white">{t('map.legend')}</p>
       </div>
 
       {user?.user_type === 'guard' && (
-        <div className="theme-header absolute bottom-44 left-4 right-4 z-[1000] rounded-xl border border-white/10 px-3 py-3 backdrop-blur">
+        <div className="theme-header absolute bottom-44 left-4 right-4 z-[1000] space-y-2 rounded-xl border border-white/10 px-3 py-3 backdrop-blur">
           <p className="text-xs uppercase text-white/60">Quick Bid</p>
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <input
               type="number"
               min="1"
@@ -276,14 +276,14 @@ export default function MapPage() {
             type="button"
             onClick={handleQuickBid}
             disabled={bidSubmitting}
-            className="mt-2 inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400 bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
+            className="inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400 bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
           >
             <SendHorizontal className="h-4 w-4" />
             {bidSubmitting ? 'Publishing...' : 'Publish bid'}
           </button>
-          {bidError && <ErrorBanner message={bidError} onDismiss={() => setBidError('')} className="mt-2 text-xs" />}
+          {bidError && <ErrorBanner message={bidError} onDismiss={() => setBidError('')} className="text-xs" />}
           {bidSuccess && (
-            <p className="mt-2 rounded-lg border border-emerald-400/40 bg-emerald-500/20 px-3 py-2 text-xs text-emerald-200">
+            <p className="rounded-lg border border-emerald-400/40 bg-emerald-500/20 px-3 py-2 text-xs text-emerald-200">
               {bidSuccess}
             </p>
           )}

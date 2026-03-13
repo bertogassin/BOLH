@@ -176,7 +176,7 @@ export default function SettingsPage() {
           <h1 className="text-lg font-semibold">{t('settings.title')}</h1>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 py-6 space-y-4">
+      <main className="mx-auto max-w-lg px-4 py-6 space-y-5">
         <div className="theme-surface rounded-2xl border border-violet-400 p-5 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2">
@@ -190,7 +190,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <section className="space-y-2">
+        <section className="space-y-3">
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.account')}</h2>
           <Link href="/profile/change-password" className="theme-surface rounded-xl border border-violet-400 px-4 py-3 flex items-center justify-between text-white theme-hover">
             <span className="flex items-center gap-2 text-sm">
@@ -253,7 +253,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="space-y-2">
+        <section className="space-y-3">
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.experience')}</h2>
           <SwitchRow
             title={t('settings.vibration')}
@@ -307,9 +307,9 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="space-y-2">
+        <section className="space-y-3">
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.appearance_language')}</h2>
-          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-2">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
               {settings.theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
               {t('settings.theme')}
@@ -332,7 +332,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-2">
+          <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
               <Globe2 className="h-4 w-4 text-violet-300" />
               {t('settings.language')}
