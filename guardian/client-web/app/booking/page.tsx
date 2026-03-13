@@ -759,12 +759,21 @@ export default function BookingPage() {
           />
           {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
           <div className="rounded-xl theme-surface border border-violet-400 overflow-hidden">
-            <div className="rounded-t-xl flex items-center justify-between gap-2.5 min-h-[50px] px-3 py-2.5">
-              <span className="inline-flex items-center gap-2 text-white/90">
-                <Shield className="h-4 w-4 theme-text-muted shrink-0" />
-                <span className="text-sm">{t('booking.mission_title')}</span>
-              </span>
-              <span className="text-[11px] text-white/65">{missionDescription.length}/2500</span>
+            <div className="rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5">
+              <Shield className="h-4 w-4 theme-text-muted shrink-0" />
+              <InputWithClear
+                value={missionDescription}
+                onChange={(v) => {
+                  setMissionTouched(true)
+                  setMissionDescription(v)
+                }}
+                maxLength={2500}
+                placeholder={t('booking.mission_placeholder')}
+                wrapperClassName="flex-1 min-w-0"
+                className={`${DARK_INLINE_INPUT_CLASS} text-sm placeholder:text-white/50`}
+                clearButtonClassName="text-white/60 hover:text-white theme-hover"
+                aria-label={t('booking.mission_title')}
+              />
             </div>
             <div className="border-t border-violet-400 px-2 py-1.5">
               <div className="mb-1 flex items-center gap-1">
@@ -793,21 +802,6 @@ export default function BookingPage() {
                 >
                   {t('booking.clear')}
                 </button>
-              </div>
-              <div className="rounded-lg border border-violet-400 px-2 py-1.5">
-                <InputWithClear
-                  value={missionDescription}
-                  onChange={(v) => {
-                    setMissionTouched(true)
-                    setMissionDescription(v)
-                  }}
-                  maxLength={2500}
-                  placeholder={t('booking.mission_placeholder')}
-                  wrapperClassName="w-full"
-                  className={`${DARK_INLINE_INPUT_CLASS} text-xs placeholder:text-white/40`}
-                  clearButtonClassName="text-white/60 hover:text-white theme-hover"
-                  aria-label={t('booking.mission_title')}
-                />
               </div>
               <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
                 <span>{t('booking.mission_hint')}</span>
