@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Bell } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -18,7 +18,7 @@ export default function NotificationsPage() {
   const [fetchError, setFetchError] = useState(false)
   const inFlightRef = useRef(false)
 
-  const load = () => {
+  const load = useCallback(() => {
     if (!user || inFlightRef.current) return
     setFetchError(false)
     setLoading(true)
@@ -39,12 +39,12 @@ export default function NotificationsPage() {
         inFlightRef.current = false
         setLoading(false)
       })
-  }
+  }, [user])
 
   useEffect(() => {
     if (!user) return
     load()
-  }, [user])
+  }, [user, load])
 
   const handleMark = async (n: Notification) => {
     if (n.read) return

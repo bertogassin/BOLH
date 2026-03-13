@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ShieldCheck, Upload, RefreshCw, CheckCircle2, Clock3, AlertTriangle } from 'lucide-react'
 import { useLocale } from '@/context/LocaleContext'
@@ -17,7 +17,7 @@ export default function VerificationPage() {
   const [fileName, setFileName] = useState('')
   const [docBase64, setDocBase64] = useState('')
 
-  const loadStatus = async () => {
+  const loadStatus = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
@@ -29,11 +29,11 @@ export default function VerificationPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
 
   useEffect(() => {
     loadStatus()
-  }, [])
+  }, [loadStatus])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

@@ -2,12 +2,13 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Sparkles, Sun, Moon } from 'lucide-react'
-import { fetchOrders, fetchBids } from '@/lib/api'
+import { Sparkles, Sun, Moon, SendHorizontal } from 'lucide-react'
+import { fetchOrders, fetchBids, createBid } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { useAIChat } from '@/context/AIChatContext'
 import { BOLHNav } from '@/components/BOLHNav'
+import { ErrorBanner } from '@/components/ErrorBanner'
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -38,6 +39,11 @@ export default function MapPage() {
   const [bids, setBids] = useState<Awaited<ReturnType<typeof fetchBids>>>([])
   const [mapTileTheme, setMapTileTheme] = useState<'dark' | 'light'>('dark')
   const [viewportHeight, setViewportHeight] = useState<number | null>(null)
+  const [quickBidPrice, setQuickBidPrice] = useState('40')
+  const [quickBidRadius, setQuickBidRadius] = useState('15')
+  const [bidSubmitting, setBidSubmitting] = useState(false)
+  const [bidError, setBidError] = useState('')
+  const [bidSuccess, setBidSuccess] = useState('')
   const inFlightRef = useRef(false)
 
   const load = useCallback((opts?: { force?: boolean }) => {
@@ -154,6 +160,46 @@ export default function MapPage() {
     }
   }
 
+  const handleQuickBid = async () => {
+    if (!user) return
+    if (user.user_type !== 'guard') {
+      setBidError('Quick bid is available only for guard accounts.')
+      return
+    }
+    const priceValue = Number.parseFloat(quickBidPrice)
+    const radiusValue = Number.parseFloat(quickBidRadius)
+    if (!Number.isFinite(priceValue) || priceValue <= 0) {
+      setBidError('Enter valid hourly price.')
+      return
+    }
+    if (!Number.isFinite(radiusValue) || radiusValue < 1 || radiusValue > 100) {
+      setBidError('Radius must be between 1 and 100 km.')
+      return
+    }
+
+    const seedLat = bids[0]?.latitude ?? 48.8566
+    const seedLon = bids[0]?.longitude ?? 2.3522
+    setBidSubmitting(true)
+    setBidError('')
+    setBidSuccess('')
+    try {
+      await createBid({
+        title: 'Available guard',
+        licenses: [],
+        price_per_hour: priceValue,
+        latitude: seedLat,
+        longitude: seedLon,
+        radius_km: radiusValue,
+      })
+      setBidSuccess('Bid published successfully.')
+      load({ force: true })
+    } catch (err) {
+      setBidError(err instanceof Error ? err.message : 'Failed to publish bid.')
+    } finally {
+      setBidSubmitting(false)
+    }
+  }
+
   return (
     <div
       className="theme-page relative w-full overflow-hidden text-white"
@@ -195,6 +241,54 @@ export default function MapPage() {
         <p className="text-xs text-white/60 uppercase">{t('map.near_you')}</p>
         <p className="text-sm font-medium text-white mt-0.5">{t('map.legend')}</p>
       </div>
+
+      {user?.user_type === 'guard' && (
+        <div className="theme-header absolute bottom-44 left-4 right-4 z-[1000] rounded-xl border border-white/10 px-3 py-3 backdrop-blur">
+          <p className="text-xs uppercase text-white/60">Quick Bid</p>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <input
+              type="number"
+              min="1"
+              step="1"
+              value={quickBidPrice}
+              onChange={(e) => {
+                setQuickBidPrice(e.target.value)
+                if (bidError) setBidError('')
+              }}
+              className="rounded-lg border border-violet-400 bg-black/20 px-3 py-2 text-sm text-white outline-none"
+              placeholder="Price/hour"
+            />
+            <input
+              type="number"
+              min="1"
+              max="100"
+              step="1"
+              value={quickBidRadius}
+              onChange={(e) => {
+                setQuickBidRadius(e.target.value)
+                if (bidError) setBidError('')
+              }}
+              className="rounded-lg border border-violet-400 bg-black/20 px-3 py-2 text-sm text-white outline-none"
+              placeholder="Radius km"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleQuickBid}
+            disabled={bidSubmitting}
+            className="mt-2 inline-flex min-h-[40px] w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400 bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
+          >
+            <SendHorizontal className="h-4 w-4" />
+            {bidSubmitting ? 'Publishing...' : 'Publish bid'}
+          </button>
+          {bidError && <ErrorBanner message={bidError} onDismiss={() => setBidError('')} className="mt-2 text-xs" />}
+          {bidSuccess && (
+            <p className="mt-2 rounded-lg border border-emerald-400/40 bg-emerald-500/20 px-3 py-2 text-xs text-emerald-200">
+              {bidSuccess}
+            </p>
+          )}
+        </div>
+      )}
 
       <BOLHNav current="map" />
     </div>
