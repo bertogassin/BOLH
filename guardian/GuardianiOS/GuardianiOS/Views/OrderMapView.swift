@@ -46,6 +46,22 @@ struct OrderMapView: View {
         .sheet(isPresented: $viewModel.showingOrderForm) {
             CreateOrderView()
         }
+        .onReceive(viewModel.$userCoordinate.compactMap { $0 }) { coordinate in
+            region.center = coordinate
+            region.span = MKCoordinateSpan(latitudeDelta: 0.02, longitudeDelta: 0.02)
+        }
+        .overlay(alignment: .top) {
+            if let error = viewModel.locationError {
+                Text(error)
+                    .font(.footnote)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.red.opacity(0.85))
+                    .cornerRadius(10)
+                    .padding(.top, 12)
+            }
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   LineChart,
   Line,
@@ -19,39 +19,116 @@ import {
 
 const COLORS = ['#0055FF', '#00C48C', '#FF9500', '#FF3B30', '#AF52DE']
 
-const defaultOrdersByDay = [
-  { date: '01.06', created: 12, completed: 10 },
-  { date: '05.06', created: 18, completed: 20 },
-  { date: '10.06', created: 25, completed: 22 },
-  { date: '15.06', created: 30, completed: 28 },
-]
-const defaultUserDistribution = [
-  { name: 'Clients', value: 450 },
-  { name: 'Guards', value: 280 },
-  { name: 'Agencies', value: 70 },
-]
-const defaultRevenueByMonth = [
-  { month: 'Jan', revenue: 12000 },
-  { month: 'Feb', revenue: 15000 },
-  { month: 'Mar', revenue: 18000 },
-  { month: 'Apr', revenue: 22000 },
-  { month: 'May', revenue: 25000 },
-  { month: 'Jun', revenue: 28000 },
-]
-const defaultTopLocations = [
-  { city: 'Moscow', orders: 1200, growth: 15 },
-  { city: 'Saint Petersburg', orders: 450, growth: 8 },
-  { city: 'Kazan', orders: 180, growth: 22 },
-]
+type AdminUser = {
+  id: string
+  userType: string
+}
+
+type AdminOrder = {
+  id: string
+  status: string
+  created_at: string
+  budget_min?: number
+  budget_max?: number
+}
+
+const PERIOD_TO_DAYS: Record<string, number> = {
+  '7d': 7,
+  '30d': 30,
+  '90d': 90,
+  '365d': 365,
+}
 
 export default function AnalyticsPage() {
   const [period, setPeriod] = useState('30d')
-  const analytics = {
-    ordersByDay: defaultOrdersByDay,
-    userDistribution: defaultUserDistribution,
-    revenueByMonth: defaultRevenueByMonth,
-    topLocations: defaultTopLocations,
-  }
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [orders, setOrders] = useState<AdminOrder[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    setLoading(true)
+    setError('')
+    Promise.all([fetch('/api/users?filter=all'), fetch('/api/admin-orders')])
+      .then(async ([usersRes, ordersRes]) => {
+        if (!usersRes.ok) {
+          const data = await usersRes.json().catch(() => ({}))
+          throw new Error((data as { error?: string }).error || 'Failed to load users')
+        }
+        if (!ordersRes.ok) {
+          const data = await ordersRes.json().catch(() => ({}))
+          throw new Error((data as { error?: string }).error || 'Failed to load orders')
+        }
+        const rawUsers = (await usersRes.json()) as Array<{
+          id: string
+          userType: string
+        }>
+        const ordersPayload = (await ordersRes.json()) as { orders?: AdminOrder[] }
+        if (!alive) return
+        setUsers(Array.isArray(rawUsers) ? rawUsers : [])
+        setOrders(Array.isArray(ordersPayload.orders) ? ordersPayload.orders : [])
+      })
+      .catch((err) => {
+        if (!alive) return
+        setError(err instanceof Error ? err.message : 'Failed to load analytics')
+      })
+      .finally(() => {
+        if (alive) setLoading(false)
+      })
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const analytics = useMemo(() => {
+    const now = Date.now()
+    const days = PERIOD_TO_DAYS[period] || 30
+    const startTime = now - days * 24 * 60 * 60 * 1000
+    const filteredOrders = orders.filter((o) => {
+      const ts = new Date(o.created_at || 0).getTime()
+      return Number.isFinite(ts) && ts >= startTime
+    })
+
+    const byDay = new Map<string, { created: number; completed: number }>()
+    for (const order of filteredOrders) {
+      const date = new Date(order.created_at)
+      const key = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}`
+      const row = byDay.get(key) || { created: 0, completed: 0 }
+      row.created += 1
+      if (String(order.status || '').toLowerCase() === 'completed') row.completed += 1
+      byDay.set(key, row)
+    }
+    const ordersByDay = Array.from(byDay.entries()).map(([date, row]) => ({
+      date,
+      created: row.created,
+      completed: row.completed,
+    }))
+
+    const userDistribution = [
+      { name: 'Clients', value: users.filter((u) => u.userType === 'client').length },
+      { name: 'Guards', value: users.filter((u) => u.userType === 'guard').length },
+      { name: 'Agencies', value: users.filter((u) => u.userType === 'agency').length },
+    ]
+
+    const monthlyRevenue = new Map<string, number>()
+    for (const order of filteredOrders) {
+      const date = new Date(order.created_at)
+      const monthKey = date.toLocaleString('en-US', { month: 'short' })
+      const avgBudget = (Number(order.budget_min || 0) + Number(order.budget_max || 0)) / 2
+      monthlyRevenue.set(monthKey, (monthlyRevenue.get(monthKey) || 0) + avgBudget)
+    }
+    const revenueByMonth = Array.from(monthlyRevenue.entries()).map(([month, revenue]) => ({
+      month,
+      revenue: Math.round(revenue),
+    }))
+
+    return {
+      ordersByDay,
+      userDistribution,
+      revenueByMonth,
+    }
+  }, [orders, period, users])
 
   return (
     <div className="space-y-6 p-6">
@@ -71,6 +148,7 @@ export default function AnalyticsPage() {
 
       <div className="rounded-lg border bg-white p-6 dark:bg-gray-800">
         <h3 className="mb-4 text-lg font-semibold">Order trend</h3>
+        {error && <p className="mb-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={analytics.ordersByDay}>
@@ -84,6 +162,7 @@ export default function AnalyticsPage() {
             </LineChart>
           </ResponsiveContainer>
         </div>
+        {loading && <p className="mt-3 text-sm text-gray-500">Loading analytics...</p>}
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -129,18 +208,11 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="rounded-lg border bg-white p-6 dark:bg-gray-800">
-        <h3 className="mb-4 text-lg font-semibold">Top locations</h3>
-        <div className="space-y-4">
-          {analytics.topLocations.map((location, index) => (
-            <div key={location.city} className="flex items-center">
-              <span className="w-8 font-medium">{index + 1}.</span>
-              <span className="flex-1">{location.city}</span>
-              <span className="font-medium">{location.orders} orders</span>
-              <span className="ml-4 w-32 text-right text-green-600">
-                +{location.growth}%
-              </span>
-            </div>
-          ))}
+        <h3 className="mb-4 text-lg font-semibold">Dataset health</h3>
+        <div className="space-y-2 text-sm">
+          <p>Total users: <span className="font-semibold">{users.length}</span></p>
+          <p>Total orders in period: <span className="font-semibold">{analytics.ordersByDay.reduce((s, d) => s + d.created, 0)}</span></p>
+          <p>Completed orders in period: <span className="font-semibold">{analytics.ordersByDay.reduce((s, d) => s + d.completed, 0)}</span></p>
         </div>
       </div>
     </div>

@@ -19,6 +19,27 @@ func (s *PostgresStore) UserByID(id string) *User {
 	return &u
 }
 
+func (s *PostgresStore) AllUsers() []User {
+	rows, err := s.pool.Query(context.Background(),
+		`SELECT id, email, COALESCE(phone,''), password_hash, first_name, last_name, user_type, verified, created_at
+		 FROM gateway_users ORDER BY created_at DESC`)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+
+	var out []User
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&u.ID, &u.Email, &u.Phone, &u.PasswordHash, &u.FirstName, &u.LastName, &u.UserType, &u.Verified, &u.CreatedAt); err != nil {
+			continue
+		}
+		u.PasswordHash = ""
+		out = append(out, u)
+	}
+	return out
+}
+
 func (s *PostgresStore) UserByEmail(email string) *User {
 	u := s.UserByEmailWithPassword(email)
 	if u == nil {

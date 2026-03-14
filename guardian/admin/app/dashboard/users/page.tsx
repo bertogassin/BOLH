@@ -22,43 +22,19 @@ interface User {
 async function fetchUsers(params: { search: string; filter: string }): Promise<User[]> {
   const res = await fetch(
     `/api/users?search=${encodeURIComponent(params.search)}&filter=${params.filter}`
-  ).catch(() => ({ ok: false }))
-  if (!res || !('ok' in res) || !res.ok) {
-    return [
-      {
-        id: '1',
-        firstName: 'Alex',
-        lastName: 'Taylor',
-        email: 'alex.taylor@example.com',
-        userType: 'client',
-        verified: true,
-        blocked: false,
-        reputationScore: 4.8,
-        completedOrders: 12,
-        createdAt: '2024-01-15',
-      },
-      {
-        id: '2',
-        firstName: 'Alexey',
-        lastName: 'Sidorov',
-        email: 'alex@example.com',
-        userType: 'guard',
-        verified: true,
-        blocked: false,
-        reputationScore: 4.9,
-        completedOrders: 124,
-        createdAt: '2024-02-01',
-      },
-    ]
+  )
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error((data as { error?: string }).error || 'Failed to load users')
   }
-  return (res as Response).json()
+  return res.json()
 }
 
 export default function UsersPage() {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [], isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ['users', search, filter],
     queryFn: () => fetchUsers({ search, filter }),
   })
@@ -97,6 +73,21 @@ export default function UsersPage() {
       </div>
 
       <div className="overflow-x-auto rounded-lg border bg-white dark:bg-gray-800">
+        {error ? (
+          <div className="space-y-3 p-4">
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {error instanceof Error ? error.message : 'Failed to load users'}
+            </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs hover:bg-gray-100 disabled:opacity-60 dark:border-gray-600 dark:hover:bg-gray-700"
+            >
+              {isFetching ? 'Retrying...' : 'Retry'}
+            </button>
+          </div>
+        ) : (
         <table className="w-full">
           <thead>
             <tr className="border-b dark:border-gray-700">
@@ -110,6 +101,20 @@ export default function UsersPage() {
             </tr>
           </thead>
           <tbody>
+            {isLoading && (
+              <tr>
+                <td colSpan={7} className="p-4 text-sm text-gray-500">
+                  Loading users...
+                </td>
+              </tr>
+            )}
+            {!isLoading && users.length === 0 && (
+              <tr>
+                <td colSpan={7} className="p-4 text-sm text-gray-500">
+                  No users found.
+                </td>
+              </tr>
+            )}
             {users.map((user) => (
               <tr key={user.id} className="border-b dark:border-gray-700">
                 <TableCell>
@@ -177,6 +182,7 @@ export default function UsersPage() {
             ))}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   )

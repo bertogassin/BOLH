@@ -385,7 +385,7 @@ const DEFAULT_MESSAGES: Messages = {
     faq_order: 'How to create an order? - Select date, time, and address on the home screen, then confirm.',
     faq_contact_guard: 'How to contact a guard? - Open chat from the order card after matching.',
     faq_cancel: 'How to cancel an order? - Open order details and tap cancel before shift start.',
-    contact: 'For other questions: support@bolh-security.com',
+    contact: 'For other questions: bolh@gmail.com',
   },
   legal: {
     terms_title: 'Terms and Conditions',
@@ -404,8 +404,8 @@ const DEFAULT_MESSAGES: Messages = {
     privacy_security_title: 'Security and Retention',
     privacy_security_text: 'Data is transmitted over secure channels. We retain data only as needed for legal and operational purposes.',
     privacy_delete_title: 'Data Deletion Requests',
-    privacy_delete_text: 'To request account or data deletion, contact support@bolh-security.com from your account email.',
-    contact: 'Contact: support@bolh-security.com',
+    privacy_delete_text: 'To request account or data deletion, contact bolh@gmail.com from your account email.',
+    contact: 'Contact: bolh@gmail.com',
   },
   company_register: {
     pending: 'pending',

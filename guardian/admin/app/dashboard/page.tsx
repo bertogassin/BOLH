@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import { StatsCards } from '@/components/dashboard/StatsCards'
 import { RecentOrders } from '@/components/dashboard/RecentOrders'
 import { ActivityChart } from '@/components/dashboard/ActivityChart'
@@ -10,24 +11,89 @@ export const metadata: Metadata = {
 }
 
 async function getDashboardStats() {
-  return {
-    totalUsers: 12580,
-    activeOrders: 342,
-    totalMatches: 8940,
-    revenue: 125000,
-    growth: { users: 12, orders: 5, matches: 8, revenue: 15 },
-    activity: [],
-    topGuards: [
-      { id: '1', name: 'Alex Taylor', rating: 4.9, completedOrders: 124 },
-      { id: '2', name: 'Alexey Sidorov', rating: 4.8, completedOrders: 98 },
-      { id: '3', name: 'Dmitry Kozlov', rating: 4.8, completedOrders: 87 },
-    ],
-    recentOrders: [
-      { id: '1', title: 'Event security', status: 'In progress', createdAt: '15.06.2024 20:00' },
-      { id: '2', title: 'Night security', status: 'Matching', createdAt: '15.06.2024 18:30' },
-      { id: '3', title: 'Conference', status: 'Completed', createdAt: '14.06.2024 22:00' },
-    ],
+  const cookieStore = await cookies()
+  const token = cookieStore.get('guardian_admin_token')?.value?.trim()
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+
+  const emptyStats = {
+    totalUsers: 0,
+    activeOrders: 0,
+    totalMatches: 0,
+    revenue: 0,
+    growth: { users: 0, orders: 0, matches: 0, revenue: 0 },
+    activity: [] as { date: string; created: number; completed: number }[],
+    topGuards: [] as { id: string; name: string; rating: number; completedOrders: number }[],
+    recentOrders: [] as { id: string; title: string; status: string; createdAt: string }[],
     recentMatches: [] as { id: string; orderId: string; guardName: string }[],
+  }
+  if (!token) return emptyStats
+
+  try {
+    const [ordersRes, usersRes] = await Promise.all([
+      fetch(`${apiBase}/api/v1/admin/orders`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      }),
+      fetch(`${apiBase}/api/v1/admin/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: 'no-store',
+      }),
+    ])
+    if (!ordersRes.ok) return emptyStats
+
+    const ordersData = (await ordersRes.json()) as {
+      orders?: Array<{
+        id?: string
+        title?: string
+        status?: string
+        created_at?: string
+      }>
+    }
+    const usersData = usersRes.ok
+      ? ((await usersRes.json()) as { users?: Array<{ id?: string }> })
+      : { users: [] as Array<{ id?: string }> }
+    const orders = Array.isArray(ordersData.orders) ? ordersData.orders : []
+    const users = Array.isArray(usersData.users) ? usersData.users : []
+
+    const activeStatuses = new Set(['published', 'searching', 'matched', 'in_progress'])
+    const completedStatuses = new Set(['completed'])
+    const activeOrders = orders.filter((o) => activeStatuses.has(String(o.status || '').toLowerCase())).length
+    const totalMatches = orders.filter((o) => completedStatuses.has(String(o.status || '').toLowerCase())).length
+
+    const byDay = new Map<string, { created: number; completed: number }>()
+    for (const o of orders) {
+      const date = new Date(String(o.created_at || new Date().toISOString()))
+      const key = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}`
+      const current = byDay.get(key) || { created: 0, completed: 0 }
+      current.created += 1
+      if (completedStatuses.has(String(o.status || '').toLowerCase())) current.completed += 1
+      byDay.set(key, current)
+    }
+    const activity = Array.from(byDay.entries())
+      .slice(-7)
+      .map(([date, v]) => ({ date, created: v.created, completed: v.completed }))
+
+    const recentOrders = orders
+      .slice()
+      .sort((a, b) => new Date(String(b.created_at || 0)).getTime() - new Date(String(a.created_at || 0)).getTime())
+      .slice(0, 6)
+      .map((o) => ({
+        id: String(o.id || ''),
+        title: String(o.title || 'Order'),
+        status: String(o.status || 'unknown'),
+        createdAt: new Date(String(o.created_at || Date.now())).toLocaleString('en-US'),
+      }))
+
+    return {
+      ...emptyStats,
+      totalUsers: users.length,
+      activeOrders,
+      totalMatches,
+      activity,
+      recentOrders,
+    }
+  } catch {
+    return emptyStats
   }
 }
 

@@ -13,6 +13,14 @@ struct OrderDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                if viewModel.isLoading {
+                    ProgressView("Загрузка заказа...")
+                }
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                }
                 StatusHeader(status: viewModel.order.status)
                 OrderMapPreview(location: viewModel.order.location)
                     .frame(height: 200)
@@ -31,6 +39,9 @@ struct OrderDetailView: View {
         }
         .navigationTitle("Заказ")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.load(orderId: orderId)
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {

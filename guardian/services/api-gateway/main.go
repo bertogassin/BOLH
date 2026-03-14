@@ -22,8 +22,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/redis/go-redis/v9"
+	"golang.org/x/crypto/bcrypt"
 	"guardian/api-gateway/handlers"
 	"guardian/api-gateway/middleware"
 	"guardian/api-gateway/store"
@@ -87,6 +89,7 @@ func NewServer() *Server {
 		st = store.NewStore()
 		log.Println("using in-memory store (set DATABASE_URL for persistence)")
 	}
+	seedE2EAdminUser(st)
 	s := &Server{
 		router:              gin.New(),
 		redis:               redis.NewClient(&redis.Options{Addr: addr}),
@@ -126,6 +129,37 @@ func NewServer() *Server {
 	s.router.Any(canaryPathFromEnv(), s.handleCanaryToken)
 	s.router.Any("/api/v1/documents/export-all.zip", s.handleDocumentCanary)
 	return s
+}
+
+func seedE2EAdminUser(st store.Store) {
+	email := strings.TrimSpace(os.Getenv("E2E_ADMIN_EMAIL"))
+	password := os.Getenv("E2E_ADMIN_PASSWORD")
+	if email == "" || password == "" {
+		return
+	}
+
+	if existing := st.UserByEmailWithPassword(email); existing != nil {
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("e2e admin seed failed: password hash error: %v", err)
+		return
+	}
+
+	now := time.Now()
+	st.CreateUser(&store.User{
+		ID:           uuid.New().String(),
+		Email:        email,
+		PasswordHash: string(hash),
+		FirstName:    "E2E",
+		LastName:     "Admin",
+		UserType:     "admin",
+		Verified:     true,
+		CreatedAt:    now,
+	})
+	log.Printf("e2e admin user seeded: %s", email)
 }
 
 func (s *Server) setupRoutes() {
@@ -205,6 +239,8 @@ func (s *Server) setupRoutes() {
 		admin := s.router.Group(base + "/admin")
 		admin.Use(s.adminRequired())
 		{
+			admin.GET("/users", s.handleAdminListUsers)
+			admin.GET("/users/:id", s.handleAdminGetUser)
 			admin.GET("/orders", s.handleAdminListOrders)
 			admin.GET("/security/summary", s.handleAdminSecuritySummary)
 		}
@@ -627,7 +663,7 @@ func (s *Server) adminRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		key := c.GetHeader("X-Admin-Key")
 		secret := getSecret("ADMIN_SECRET", "admin-dev-secret")
-		if subtle.ConstantTimeCompare([]byte(key), []byte(secret)) != 1 {
+		if subtle.ConstantTimeCompare([]byte(key), []byte(secret)) != 1 && c.GetString("user_type") != "admin" {
 			log.Printf("audit=admin_access_denied ip=%s path=%s", c.ClientIP(), c.FullPath())
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin required"})
 			return
@@ -705,6 +741,56 @@ func loginRateLimitKey(c *gin.Context) string {
 func (s *Server) handleAdminListOrders(c *gin.Context) {
 	orders := s.st.AllOrders()
 	c.JSON(http.StatusOK, gin.H{"orders": orders})
+}
+
+func (s *Server) handleAdminListUsers(c *gin.Context) {
+	search := strings.ToLower(strings.TrimSpace(c.Query("search")))
+	filter := strings.ToLower(strings.TrimSpace(c.Query("filter")))
+	users := s.st.AllUsers()
+
+	out := make([]store.User, 0, len(users))
+	for _, u := range users {
+		if search != "" {
+			fullName := strings.ToLower(strings.TrimSpace(u.FirstName + " " + u.LastName))
+			email := strings.ToLower(strings.TrimSpace(u.Email))
+			phone := strings.ToLower(strings.TrimSpace(u.Phone))
+			if !strings.Contains(fullName, search) && !strings.Contains(email, search) && !strings.Contains(phone, search) {
+				continue
+			}
+		}
+
+		switch filter {
+		case "", "all":
+		case "client", "guard", "agency":
+			if strings.ToLower(strings.TrimSpace(u.UserType)) != filter {
+				continue
+			}
+		case "verified":
+			if !u.Verified {
+				continue
+			}
+		case "blocked":
+			// Blocked flag is not yet implemented in user domain model.
+			continue
+		}
+		out = append(out, u)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": out})
+}
+
+func (s *Server) handleAdminGetUser(c *gin.Context) {
+	id := strings.TrimSpace(c.Param("id"))
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
+		return
+	}
+	u := s.st.UserByID(id)
+	if u == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, u)
 }
 
 func (s *Server) handleAdminSecuritySummary(c *gin.Context) {

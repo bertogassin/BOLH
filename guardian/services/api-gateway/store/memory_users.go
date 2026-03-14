@@ -12,6 +12,21 @@ func (s *MemoryStore) UserByID(id string) *User {
 	return &u2
 }
 
+func (s *MemoryStore) AllUsers() []User {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	out := make([]User, 0, len(s.users))
+	for _, u := range s.users {
+		if u == nil {
+			continue
+		}
+		clone := *u
+		clone.PasswordHash = ""
+		out = append(out, clone)
+	}
+	return out
+}
+
 func (s *MemoryStore) UserByEmail(email string) *User {
 	s.mu.RLock()
 	defer s.mu.RUnlock()

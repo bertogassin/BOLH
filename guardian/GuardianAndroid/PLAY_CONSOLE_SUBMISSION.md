@@ -28,7 +28,7 @@ Privacy and safety:
 - Data is transmitted using secure HTTPS connections in production
 - Users can request account and data deletion from within the app or via support
 
-Support: support@bolh-security.com
+Support: bolh@gmail.com
 
 ## Release Notes (Internal Testing)
 
