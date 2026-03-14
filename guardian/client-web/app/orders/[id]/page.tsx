@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { ArrowLeft, MapPin, Calendar, Wallet, Users, FileText, XCircle, MessageCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
@@ -26,7 +27,9 @@ function timelineIndex(status: string): number {
   return idx >= 0 ? idx : 0
 }
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage() {
+  const params = useParams<{ id: string }>()
+  const orderId = typeof params?.id === 'string' ? params.id : ''
   const { user } = useAuth()
   const { t, locale } = useLocale()
   const [order, setOrder] = useState<Order | null>(null)
@@ -41,7 +44,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   }, [order?.status])
 
   useEffect(() => {
-    if (!user || typeof document === 'undefined') {
+    if (!user || !orderId || typeof document === 'undefined') {
       setLoading(false)
       return
     }
@@ -53,7 +56,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       if (inFlight) return
       if (silent && isTerminal(orderStatusRef.current)) return
       inFlight = true
-      fetchOrderWithMatch(params.id)
+      fetchOrderWithMatch(orderId)
         .then((data) => {
           setLoadError('')
           setOrder(data.order)
@@ -86,7 +89,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
       document.removeEventListener('visibilitychange', onVisible)
       unsubscribe()
     }
-  }, [user, params.id])
+  }, [user, orderId])
 
   const handleCancel = async () => {
     if (!order || order.status === 'cancelled') return
@@ -104,7 +107,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const retryLoad = async () => {
     setLoading(true)
     try {
-      const data = await fetchOrderWithMatch(params.id)
+      const data = await fetchOrderWithMatch(orderId)
       setOrder(data.order)
       setMatch(data.match ?? null)
       setLoadError('')

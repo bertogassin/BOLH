@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 
 interface User {
@@ -30,14 +31,13 @@ async function fetchUser(id: string): Promise<User | null> {
   return (res as Response).json()
 }
 
-export default function UserDetailPage({
-  params,
-}: {
-  params: { id: string }
-}) {
+export default function UserDetailPage() {
+  const params = useParams<{ id: string }>()
+  const userId = typeof params?.id === 'string' ? params.id : ''
   const { data: user } = useQuery({
-    queryKey: ['user', params.id],
-    queryFn: () => fetchUser(params.id),
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    enabled: Boolean(userId),
   })
 
   if (!user) return <div className="p-6">Loading...</div>
