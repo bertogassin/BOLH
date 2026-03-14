@@ -38,6 +38,12 @@ services:
       - key: REDIS_ADDR
         value: ${redis-staging.HOSTNAME}:${redis-staging.PORT}
         scope: RUN_TIME
+      - key: JWT_SECRET
+        value: CHANGE_ME_IN_DO_SECRETS
+        scope: RUN_TIME
+      - key: ADMIN_SECRET
+        value: CHANGE_ME_IN_DO_SECRETS
+        scope: RUN_TIME
       - key: CORS_ALLOWED_ORIGINS
         value: https://staging-app.omnixius.com
         scope: RUN_TIME
