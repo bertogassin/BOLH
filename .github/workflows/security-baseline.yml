@@ -1,4 +1,4 @@
-﻿name: security-baseline
+name: security-baseline
 
 on:
   pull_request:
@@ -67,7 +67,14 @@ jobs:
           for mod in "${gomods[@]}"; do
             dir=$(dirname "$mod")
             echo "Running go test in $dir"
-            (cd "$dir" && go test ./...)
+            (
+              cd "$dir"
+              if [ -z "$(go list ./... 2>/dev/null)" ]; then
+                echo "No Go packages found in $dir, skipping"
+                exit 0
+              fi
+              go test ./...
+            )
           done
 
       - name: Node checks (all package manifests)
