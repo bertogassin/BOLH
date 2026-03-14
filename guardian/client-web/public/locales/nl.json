@@ -94,5 +94,19 @@
     "reserve": "Reserveren",
     "near_you": "Bij jou in de buurt",
     "legend": "Blauw - jij · Groen - bestellingen · Paars - beveiligers"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
   }
 }

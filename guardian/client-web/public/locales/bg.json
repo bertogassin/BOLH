@@ -4,13 +4,108 @@
   "security": "Sigurnost",
   "clear_aria": "Izchisti",
   "back_home": "← Nachalo",
-  "navigation": { "home": "Nachalo", "orders": "Porachki", "profile": "Profil", "settings": "Nastroiki", "map": "Karta", "notifications": "Izvestiya" },
-  "actions": { "save": "Zapazi", "cancel": "Otmeni", "search": "Tarsi", "logout": "Izhod" },
-  "auth": { "login_title": "Vhod", "email": "Email", "password": "Parola", "login_btn": "Vlez", "logging_in": "Vlizane...", "register_title": "Registraciya", "register_btn": "Registrirai se", "registering": "Registraciya...", "show_password": "Pokazhi parola", "invalid_email": "Vavedete validen email", "password_required": "Vavedete parola" },
-  "booking": { "title": "Rezervaciya", "address": "Adres", "your_price": "Vashata cena", "per_guard": "na ohranitely", "payment": "Plashtane", "accept_terms": "Priemam usloviyata", "terms_link": "Usloviya", "privacy_link": "Poveritelnost", "confirm": "Potvardi rezervaciya", "enter_address": "Vavedete adres", "sending": "Izprashtane...", "day": "den", "month": "mesec", "time_from": "Chas ot", "time_to": "Chas do", "guards": "ohraniteli", "price_positive": "Vavedete validna cena" },
-  "profile": { "title": "Profil", "user": "Potrebitel", "member_since": "Chlen ot", "unverified": "Neverificiran", "level": "Nivo", "orders": "porachki", "rating": "ocenka", "my_cards": "Moite karti", "no_cards": "Nyama karti", "add_card": "Dobavi karta", "settings": "Nastroiki", "delete_account": "Iztrii akaunt", "login_to_see": "Vlezte za da vidite profila.", "login": "Vhod" },
-  "orders": { "my_orders": "Moite porachki", "guest_msg": "Vlezte za da vidite porachki.", "search_placeholder": "Tarsi", "created_banner": "Porachkata e sazdadena.", "no_orders": "Nyama porachki.", "create_order": "Sazdai porachka" },
-  "settings": { "title": "Nastroiki", "intro": "Izvestiya, ezik, poveritelnost.", "lang_note": "Mozhete da smenite ezika v profila.", "privacy_link": "Politika za poveritelnost" },
-  "errors": { "load_failed": "Zarezhdaneto se provali.", "retry": "Opitai otnovo" },
-  "map": { "my_location_aria": "Moeto mestopolozhenie", "you_here": "Vie ste tuk", "guard": "Ohranitely", "order": "Porachka", "available": "Nalichen", "reserve": "Rezervirai", "near_you": "Blizo do vas", "legend": "Sinyo - vie · Zeleno - porachki · Lilavo - ohraniteli" }
+  "navigation": {
+    "home": "Nachalo",
+    "orders": "Porachki",
+    "profile": "Profil",
+    "settings": "Nastroiki",
+    "map": "Karta",
+    "notifications": "Izvestiya"
+  },
+  "actions": {
+    "save": "Zapazi",
+    "cancel": "Otmeni",
+    "search": "Tarsi",
+    "logout": "Izhod"
+  },
+  "auth": {
+    "login_title": "Vhod",
+    "email": "Email",
+    "password": "Parola",
+    "login_btn": "Vlez",
+    "logging_in": "Vlizane...",
+    "register_title": "Registraciya",
+    "register_btn": "Registrirai se",
+    "registering": "Registraciya...",
+    "show_password": "Pokazhi parola",
+    "invalid_email": "Vavedete validen email",
+    "password_required": "Vavedete parola"
+  },
+  "booking": {
+    "title": "Rezervaciya",
+    "address": "Adres",
+    "your_price": "Vashata cena",
+    "per_guard": "na ohranitely",
+    "payment": "Plashtane",
+    "accept_terms": "Priemam usloviyata",
+    "terms_link": "Usloviya",
+    "privacy_link": "Poveritelnost",
+    "confirm": "Potvardi rezervaciya",
+    "enter_address": "Vavedete adres",
+    "sending": "Izprashtane...",
+    "day": "den",
+    "month": "mesec",
+    "time_from": "Chas ot",
+    "time_to": "Chas do",
+    "guards": "ohraniteli",
+    "price_positive": "Vavedete validna cena"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Potrebitel",
+    "member_since": "Chlen ot",
+    "unverified": "Neverificiran",
+    "level": "Nivo",
+    "orders": "porachki",
+    "rating": "ocenka",
+    "my_cards": "Moite karti",
+    "no_cards": "Nyama karti",
+    "add_card": "Dobavi karta",
+    "settings": "Nastroiki",
+    "delete_account": "Iztrii akaunt",
+    "login_to_see": "Vlezte za da vidite profila.",
+    "login": "Vhod"
+  },
+  "orders": {
+    "my_orders": "Moite porachki",
+    "guest_msg": "Vlezte za da vidite porachki.",
+    "search_placeholder": "Tarsi",
+    "created_banner": "Porachkata e sazdadena.",
+    "no_orders": "Nyama porachki.",
+    "create_order": "Sazdai porachka"
+  },
+  "settings": {
+    "title": "Nastroiki",
+    "intro": "Izvestiya, ezik, poveritelnost.",
+    "lang_note": "Mozhete da smenite ezika v profila.",
+    "privacy_link": "Politika za poveritelnost"
+  },
+  "errors": {
+    "load_failed": "Zarezhdaneto se provali.",
+    "retry": "Opitai otnovo"
+  },
+  "map": {
+    "my_location_aria": "Moeto mestopolozhenie",
+    "you_here": "Vie ste tuk",
+    "guard": "Ohranitely",
+    "order": "Porachka",
+    "available": "Nalichen",
+    "reserve": "Rezervirai",
+    "near_you": "Blizo do vas",
+    "legend": "Sinyo - vie · Zeleno - porachki · Lilavo - ohraniteli"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

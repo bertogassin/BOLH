@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
 	"guardian/api-gateway/handlers"
@@ -44,6 +44,7 @@ type Server struct {
 	documentHandler     *handlers.DocumentHandlers
 	pluginHandler       *handlers.PluginHandlers
 	planHandler         *handlers.PlanHandlers
+	companyHandler      *handlers.CompanyHandlers
 }
 
 type Claims struct {
@@ -103,6 +104,7 @@ func NewServer() *Server {
 		documentHandler:     &handlers.DocumentHandlers{Store: st},
 		pluginHandler:       &handlers.PluginHandlers{Store: st},
 		planHandler:         &handlers.PlanHandlers{Store: st},
+		companyHandler:      &handlers.CompanyHandlers{Store: st},
 	}
 	if err := s.router.SetTrustedProxies(trustedProxiesFromEnv()); err != nil {
 		log.Fatalf("trusted proxies: %v", err)
@@ -205,6 +207,7 @@ func (s *Server) setupRoutes() {
 
 			authorized.GET("/verification/status", s.verificationHandler.Status)
 			authorized.POST("/verification", s.verificationHandler.Submit)
+			authorized.POST("/company/register", s.requireUserTypes("client", "agency"), s.signedRequestRequired(), s.companyHandler.Register)
 
 			authorized.GET("/documents", s.documentHandler.List)
 			authorized.GET("/documents/:id/file", s.documentHandler.GetFile)
@@ -561,6 +564,7 @@ func partialSigningPaths() map[string]bool {
 		"/api/v1/orders":           true,
 		"/api/v1/bids":             true,
 		"/api/v1/documents/upload": true,
+		"/api/v1/company/register": true,
 	}
 	if raw := strings.TrimSpace(os.Getenv("SIGNED_REQUEST_PARTIAL_PATHS")); raw != "" {
 		custom := map[string]bool{}

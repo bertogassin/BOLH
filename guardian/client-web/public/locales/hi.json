@@ -4,13 +4,108 @@
   "security": "सुरक्षा",
   "clear_aria": "साफ करें",
   "back_home": "← होम",
-  "navigation": { "home": "होम", "orders": "ऑर्डर", "profile": "प्रोफाइल", "settings": "सेटिंग्स", "map": "मैप", "notifications": "नोटिफिकेशन" },
-  "actions": { "save": "सेव", "cancel": "रद्द करें", "search": "खोज", "logout": "लॉगआउट" },
-  "auth": { "login_title": "लॉगिन", "email": "ईमेल", "password": "पासवर्ड", "login_btn": "लॉगिन", "logging_in": "लॉगिन हो रहा है...", "register_title": "रजिस्टर", "register_btn": "रजिस्टर", "registering": "रजिस्टर हो रहा है...", "show_password": "पासवर्ड दिखाएं", "invalid_email": "सही ईमेल दर्ज करें", "password_required": "पासवर्ड दर्ज करें" },
-  "booking": { "title": "बुकिंग", "address": "पता", "your_price": "आपकी कीमत", "per_guard": "प्रति गार्ड", "payment": "भुगतान", "accept_terms": "मैं शर्तें स्वीकार करता/करती हूं", "terms_link": "शर्तें", "privacy_link": "प्राइवेसी", "confirm": "बुकिंग पुष्टि करें", "enter_address": "पता दर्ज करें", "sending": "भेजा जा रहा है...", "day": "दिन", "month": "महीना", "time_from": "समय से", "time_to": "समय तक", "guards": "गार्ड", "price_positive": "मान्य कीमत दर्ज करें" },
-  "profile": { "title": "प्रोफाइल", "user": "यूज़र", "member_since": "सदस्य कब से", "unverified": "असत्यापित", "level": "लेवल", "orders": "ऑर्डर", "rating": "रेटिंग", "my_cards": "मेरे कार्ड", "no_cards": "कोई कार्ड नहीं", "add_card": "कार्ड जोड़ें", "settings": "सेटिंग्स", "delete_account": "अकाउंट हटाएं", "login_to_see": "प्रोफाइल देखने के लिए लॉगिन करें।", "login": "लॉगिन" },
-  "orders": { "my_orders": "मेरे ऑर्डर", "guest_msg": "ऑर्डर देखने के लिए लॉगिन करें।", "search_placeholder": "खोज", "created_banner": "ऑर्डर बन गया।", "no_orders": "कोई ऑर्डर नहीं।", "create_order": "ऑर्डर बनाएं" },
-  "settings": { "title": "सेटिंग्स", "intro": "नोटिफिकेशन, भाषा, प्राइवेसी।", "lang_note": "भाषा प्रोफाइल से बदली जा सकती है।", "privacy_link": "प्राइवेसी नीति" },
-  "errors": { "load_failed": "लोड नहीं हो पाया।", "retry": "फिर से कोशिश करें" },
-  "map": { "my_location_aria": "मेरी लोकेशन", "you_here": "आप यहां हैं", "guard": "गार्ड", "order": "ऑर्डर", "available": "उपलब्ध", "reserve": "रिजर्व", "near_you": "आपके पास", "legend": "नीला-आप · हरा-ऑर्डर · बैंगनी-गार्ड" }
+  "navigation": {
+    "home": "होम",
+    "orders": "ऑर्डर",
+    "profile": "प्रोफाइल",
+    "settings": "सेटिंग्स",
+    "map": "मैप",
+    "notifications": "नोटिफिकेशन"
+  },
+  "actions": {
+    "save": "सेव",
+    "cancel": "रद्द करें",
+    "search": "खोज",
+    "logout": "लॉगआउट"
+  },
+  "auth": {
+    "login_title": "लॉगिन",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "login_btn": "लॉगिन",
+    "logging_in": "लॉगिन हो रहा है...",
+    "register_title": "रजिस्टर",
+    "register_btn": "रजिस्टर",
+    "registering": "रजिस्टर हो रहा है...",
+    "show_password": "पासवर्ड दिखाएं",
+    "invalid_email": "सही ईमेल दर्ज करें",
+    "password_required": "पासवर्ड दर्ज करें"
+  },
+  "booking": {
+    "title": "बुकिंग",
+    "address": "पता",
+    "your_price": "आपकी कीमत",
+    "per_guard": "प्रति गार्ड",
+    "payment": "भुगतान",
+    "accept_terms": "मैं शर्तें स्वीकार करता/करती हूं",
+    "terms_link": "शर्तें",
+    "privacy_link": "प्राइवेसी",
+    "confirm": "बुकिंग पुष्टि करें",
+    "enter_address": "पता दर्ज करें",
+    "sending": "भेजा जा रहा है...",
+    "day": "दिन",
+    "month": "महीना",
+    "time_from": "समय से",
+    "time_to": "समय तक",
+    "guards": "गार्ड",
+    "price_positive": "मान्य कीमत दर्ज करें"
+  },
+  "profile": {
+    "title": "प्रोफाइल",
+    "user": "यूज़र",
+    "member_since": "सदस्य कब से",
+    "unverified": "असत्यापित",
+    "level": "लेवल",
+    "orders": "ऑर्डर",
+    "rating": "रेटिंग",
+    "my_cards": "मेरे कार्ड",
+    "no_cards": "कोई कार्ड नहीं",
+    "add_card": "कार्ड जोड़ें",
+    "settings": "सेटिंग्स",
+    "delete_account": "अकाउंट हटाएं",
+    "login_to_see": "प्रोफाइल देखने के लिए लॉगिन करें।",
+    "login": "लॉगिन"
+  },
+  "orders": {
+    "my_orders": "मेरे ऑर्डर",
+    "guest_msg": "ऑर्डर देखने के लिए लॉगिन करें।",
+    "search_placeholder": "खोज",
+    "created_banner": "ऑर्डर बन गया।",
+    "no_orders": "कोई ऑर्डर नहीं।",
+    "create_order": "ऑर्डर बनाएं"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "intro": "नोटिफिकेशन, भाषा, प्राइवेसी।",
+    "lang_note": "भाषा प्रोफाइल से बदली जा सकती है।",
+    "privacy_link": "प्राइवेसी नीति"
+  },
+  "errors": {
+    "load_failed": "लोड नहीं हो पाया।",
+    "retry": "फिर से कोशिश करें"
+  },
+  "map": {
+    "my_location_aria": "मेरी लोकेशन",
+    "you_here": "आप यहां हैं",
+    "guard": "गार्ड",
+    "order": "ऑर्डर",
+    "available": "उपलब्ध",
+    "reserve": "रिजर्व",
+    "near_you": "आपके पास",
+    "legend": "नीला-आप · हरा-ऑर्डर · बैंगनी-गार्ड"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

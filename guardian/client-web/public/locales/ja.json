@@ -4,13 +4,108 @@
   "security": "警備",
   "clear_aria": "クリア",
   "back_home": "← ホームへ",
-  "navigation": { "home": "ホーム", "orders": "注文", "profile": "プロフィール", "settings": "設定", "map": "マップ", "notifications": "通知" },
-  "actions": { "save": "保存", "cancel": "キャンセル", "search": "検索", "logout": "ログアウト" },
-  "auth": { "login_title": "ログイン", "email": "メール", "password": "パスワード", "login_btn": "ログイン", "logging_in": "ログイン中...", "register_title": "登録", "register_btn": "登録", "registering": "登録中...", "show_password": "パスワード表示", "invalid_email": "有効なメールを入力", "password_required": "パスワードを入力" },
-  "booking": { "title": "予約", "address": "住所", "your_price": "あなたの価格", "per_guard": "警備員あたり", "payment": "支払い", "accept_terms": "利用規約に同意します", "terms_link": "利用規約", "privacy_link": "プライバシー", "confirm": "予約を確認", "enter_address": "住所を入力", "sending": "送信中...", "day": "日", "month": "月", "time_from": "開始時刻", "time_to": "終了時刻", "guards": "警備員", "price_positive": "有効な価格を入力" },
-  "profile": { "title": "プロフィール", "user": "ユーザー", "member_since": "登録日", "unverified": "未認証", "level": "レベル", "orders": "注文", "rating": "評価", "my_cards": "カード", "no_cards": "カードなし", "add_card": "カード追加", "settings": "設定", "delete_account": "アカウント削除", "login_to_see": "プロフィールを見るにはログインしてください。", "login": "ログイン" },
-  "orders": { "my_orders": "注文一覧", "guest_msg": "注文を見るにはログインしてください。", "search_placeholder": "検索", "created_banner": "注文を作成しました。", "no_orders": "注文はありません。", "create_order": "注文作成" },
-  "settings": { "title": "設定", "intro": "通知、言語、プライバシー。", "lang_note": "プロフィールで言語を変更できます。", "privacy_link": "プライバシーポリシー" },
-  "errors": { "load_failed": "読み込みに失敗しました。", "retry": "再試行" },
-  "map": { "my_location_aria": "現在地", "you_here": "ここにいます", "guard": "警備員", "order": "注文", "available": "利用可能", "reserve": "予約", "near_you": "近く", "legend": "青-あなた · 緑-注文 · 紫-警備員" }
+  "navigation": {
+    "home": "ホーム",
+    "orders": "注文",
+    "profile": "プロフィール",
+    "settings": "設定",
+    "map": "マップ",
+    "notifications": "通知"
+  },
+  "actions": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "search": "検索",
+    "logout": "ログアウト"
+  },
+  "auth": {
+    "login_title": "ログイン",
+    "email": "メール",
+    "password": "パスワード",
+    "login_btn": "ログイン",
+    "logging_in": "ログイン中...",
+    "register_title": "登録",
+    "register_btn": "登録",
+    "registering": "登録中...",
+    "show_password": "パスワード表示",
+    "invalid_email": "有効なメールを入力",
+    "password_required": "パスワードを入力"
+  },
+  "booking": {
+    "title": "予約",
+    "address": "住所",
+    "your_price": "あなたの価格",
+    "per_guard": "警備員あたり",
+    "payment": "支払い",
+    "accept_terms": "利用規約に同意します",
+    "terms_link": "利用規約",
+    "privacy_link": "プライバシー",
+    "confirm": "予約を確認",
+    "enter_address": "住所を入力",
+    "sending": "送信中...",
+    "day": "日",
+    "month": "月",
+    "time_from": "開始時刻",
+    "time_to": "終了時刻",
+    "guards": "警備員",
+    "price_positive": "有効な価格を入力"
+  },
+  "profile": {
+    "title": "プロフィール",
+    "user": "ユーザー",
+    "member_since": "登録日",
+    "unverified": "未認証",
+    "level": "レベル",
+    "orders": "注文",
+    "rating": "評価",
+    "my_cards": "カード",
+    "no_cards": "カードなし",
+    "add_card": "カード追加",
+    "settings": "設定",
+    "delete_account": "アカウント削除",
+    "login_to_see": "プロフィールを見るにはログインしてください。",
+    "login": "ログイン"
+  },
+  "orders": {
+    "my_orders": "注文一覧",
+    "guest_msg": "注文を見るにはログインしてください。",
+    "search_placeholder": "検索",
+    "created_banner": "注文を作成しました。",
+    "no_orders": "注文はありません。",
+    "create_order": "注文作成"
+  },
+  "settings": {
+    "title": "設定",
+    "intro": "通知、言語、プライバシー。",
+    "lang_note": "プロフィールで言語を変更できます。",
+    "privacy_link": "プライバシーポリシー"
+  },
+  "errors": {
+    "load_failed": "読み込みに失敗しました。",
+    "retry": "再試行"
+  },
+  "map": {
+    "my_location_aria": "現在地",
+    "you_here": "ここにいます",
+    "guard": "警備員",
+    "order": "注文",
+    "available": "利用可能",
+    "reserve": "予約",
+    "near_you": "近く",
+    "legend": "青-あなた · 緑-注文 · 紫-警備員"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

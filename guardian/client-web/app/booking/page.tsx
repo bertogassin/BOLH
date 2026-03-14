@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react'
@@ -17,7 +17,7 @@ import { statusLabel } from '@/components/StatusBadge'
 import { DARK_COMPACT_INPUT_BASE_CLASS, DARK_INLINE_INPUT_CLASS } from '@/components/formStyles'
 import { getDaysInMonth } from '@/lib/datetime/timeUtils'
 import { detectPlaceType, missionHintsByPlaceType } from '@/lib/booking/missionHints'
-import { isExpiryValid, isValidLuhn } from '@/lib/payment/cardUtils'
+import { isExpiryValid, isLikelyRealCardNumber } from '@/lib/payment/cardUtils'
 import { Selector } from '@/components/booking/Selector'
 import { TimeSelector } from '@/components/booking/TimeSelector'
 import { getBankDetailsMode } from '@/lib/bankDetails'
@@ -31,6 +31,16 @@ const SERVICES = [
 ]
 const PANEL_CLASS = 'theme-surface rounded-xl border border-violet-400 flex items-center justify-between min-h-[62px] px-4 py-2.5'
 const DRAFT_WRITE_DEBOUNCE_MS = 250
+
+function withDetectedObjectLine(text: string, detectedPrefix: string, detectedLine: string): string {
+  const prefix = detectedPrefix.toLowerCase()
+  const lines = text
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim().toLowerCase().indexOf(prefix) !== 0)
+  const base = lines.join('\n').trimEnd()
+  return base ? `${base}\n${detectedLine}` : detectedLine
+}
 
 export default function BookingPage() {
   const { user } = useAuth()
@@ -54,7 +64,7 @@ export default function BookingPage() {
   const [price, setPrice] = useState('')
   const [missionDescription, setMissionDescription] = useState('')
   const [missionTouched, setMissionTouched] = useState(false)
-  const [hasMissionDraft, setHasMissionDraft] = useState(false)
+  const [, setHasMissionDraft] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [savedCards, setSavedCards] = useState<PaymentCard[]>([])
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
@@ -93,21 +103,61 @@ export default function BookingPage() {
   )
   const placeTypeId = useMemo(() => detectPlaceType(address), [address])
   const missionHints = useMemo(() => missionHintsByPlaceType(placeTypeId), [placeTypeId])
+  const detectedObjectKind = useMemo<'store' | 'hotel' | 'residential'>(() => {
+    if (placeTypeId === 'store_commercial') return 'store'
+    if (placeTypeId === 'hotel') return 'hotel'
+    return 'residential'
+  }, [placeTypeId])
+  const detectedObjectLabel = useMemo(() => {
+    if (!address.trim()) return '—'
+    if (detectedObjectKind === 'store') return t('booking.detected_object_store')
+    if (detectedObjectKind === 'hotel') return t('booking.detected_object_hotel')
+    return t('booking.detected_object_residential')
+  }, [address, detectedObjectKind, t])
+  const appendObjectToAddress = useCallback(
+    (input: string): string => {
+      const raw = input.trim()
+      if (!raw) return ''
+      const store = t('booking.detected_object_store')
+      const hotel = t('booking.detected_object_hotel')
+      const residential = t('booking.detected_object_residential')
+      let core = raw
+      for (const label of [store, hotel, residential]) {
+        const suffix = ` — ${label}`
+        if (core.endsWith(suffix)) {
+          core = core.slice(0, -suffix.length).trim()
+          break
+        }
+      }
+      const placeType = detectPlaceType(core)
+      const objectLabel =
+        placeType === 'store_commercial'
+          ? store
+          : placeType === 'hotel'
+          ? hotel
+          : residential
+      return `${core} — ${objectLabel}`
+    },
+    [t]
+  )
   const autoMissionDescription = useMemo(
     () => {
-      if (!address.trim() || !missionHints) return ''
+      if (!address.trim()) return ''
+      const tasks = missionHints?.tasks?.length
+        ? missionHints.tasks
+        : [t('booking.mission_task_default')]
       return [
         `${selectedServiceLabel}.`,
-        `${missionHints.objectLabel}.`,
+        `${t('booking.detected_object')}: ${detectedObjectLabel}.`,
         `${address.trim()}.`,
         `${missionDateLabel} ${fromTime}-${toTime}.`,
-        `Tasks: ${missionHints.tasks.join(', ')}.`,
+        `Tasks: ${tasks.join(', ')}.`,
       ].join(' ')
     },
-    [selectedServiceLabel, address, missionDateLabel, fromTime, toTime, missionHints]
+    [selectedServiceLabel, address, missionDateLabel, fromTime, toTime, missionHints, detectedObjectLabel, t]
   )
   const canUseOneTimeCard =
-    isValidLuhn(cardDigits) &&
+    isLikelyRealCardNumber(cardDigits) &&
     isExpiryValid(oneTimeCardExpiry) &&
     /^\d{3,4}$/.test(oneTimeCardCvc) &&
     oneTimeCardHolder.trim().length >= 2
@@ -117,11 +167,11 @@ export default function BookingPage() {
   const paymentPreview = useMemo(() => {
     if (selectedSavedCard) return `•••• ${selectedSavedCard.last_four}`
     if (oneTimeCard) return `•••• ${oneTimeCard.last_four}`
-    return '—'
+    return ''
   }, [selectedSavedCard, oneTimeCard])
-  const paymentSheetIsFloating = keyboardInset > 0
   const isAnyDrawerOpen = showPaymentSheet || showOneTimeCardSheet
   const shouldHideBottomNav = showPaymentSheet || showOneTimeCardSheet || keyboardInset > 0
+  const paymentSheetBottomOffset = keyboardInset > 0 ? keyboardInset + 8 : 74
   const fromParts = fromTime.split(':')
   const toParts = toTime.split(':')
   const fromMinutes =
@@ -200,6 +250,16 @@ export default function BookingPage() {
       setMissionDescription(autoMissionDescription)
     }
   }, [autoMissionDescription, missionTouched])
+
+  useEffect(() => {
+    const detectedPrefix = `${t('booking.detected_object')}:`
+    const detectedLine = `${detectedPrefix} ${address.trim() ? detectedObjectLabel : '—'}`
+    setMissionDescription((prev) => {
+      if (!prev.trim() && !address.trim()) return prev
+      const next = withDetectedObjectLine(prev, detectedPrefix, detectedLine)
+      return next === prev ? prev : next
+    })
+  }, [address, detectedObjectLabel, t])
 
   useEffect(() => {
     try {
@@ -524,22 +584,6 @@ export default function BookingPage() {
     }
   }
 
-  const restoreMissionDraft = () => {
-    try {
-      const raw = window.localStorage.getItem(missionDraftKey)
-      if (!raw?.trim()) return
-      setMissionDescription(raw)
-      setMissionTouched(true)
-    } catch {
-      // Ignore restore errors in UI.
-    }
-  }
-
-  const clearMissionText = () => {
-    setMissionTouched(true)
-    setMissionDescription('')
-  }
-
   const applyLastOrderTemplate = () => {
     if (!user) return
     try {
@@ -747,10 +791,24 @@ export default function BookingPage() {
               setMissionTouched(false)
               if (error) setError('')
             }}
+            onBlur={() => {
+              setAddress((prev) => appendObjectToAddress(prev))
+            }}
+            extraValue={missionDescription}
+            onExtraChange={(value) => {
+              setMissionTouched(true)
+              setMissionDescription(value)
+            }}
+            onExtraAutofill={() => {
+              setMissionTouched(false)
+              setMissionDescription(autoMissionDescription)
+            }}
+            extraPlaceholder={t('booking.mission_placeholder')}
+            extraMaxLength={2500}
             onSelect={(r) => {
               setLat(r.latitude)
               setLon(r.longitude)
-              setAddress(r.display)
+              setAddress(appendObjectToAddress(r.display))
               setMissionTouched(false)
               if (error) setError('')
             }}
@@ -758,59 +816,6 @@ export default function BookingPage() {
             hasError={submitAttempted && !address.trim()}
           />
           {addressError ? <FieldError message={t('booking.error_address_required')} className="mt-1 text-xs text-red-300" /> : null}
-          <div className={`theme-surface rounded-xl border ${submitAttempted && !price.trim() ? 'border-red-500/80' : 'border-violet-400'}`}>
-            <div className="min-h-[56px] px-3 py-3.5 border-b border-violet-400 flex items-center justify-between text-[11px] text-white/85">
-              <span className="inline-flex items-center gap-1.5 text-left text-white/85">
-                <Shield className="h-3.5 w-3.5" />
-                {t('booking.mission_title')}
-              </span>
-              <span className="text-[10px] text-white/65">{missionDescription.length}/2500</span>
-            </div>
-            <div className="border-t border-violet-400 px-2 py-1.5">
-              <div className="mb-1 flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMissionTouched(false)
-                    setMissionDescription(autoMissionDescription)
-                  }}
-                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
-                >
-                  {t('booking.auto')}
-                </button>
-                <button
-                  type="button"
-                  onClick={restoreMissionDraft}
-                  disabled={!hasMissionDraft}
-                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover disabled:opacity-40"
-                >
-                  {t('booking.restore')}
-                </button>
-                <button
-                  type="button"
-                  onClick={clearMissionText}
-                  className="rounded px-2 py-0.5 text-xs border border-violet-400/60 text-white/70 theme-hover"
-                >
-                  {t('booking.clear')}
-                </button>
-              </div>
-              <textarea
-                value={missionDescription}
-                onChange={(e) => {
-                  setMissionTouched(true)
-                  setMissionDescription(e.target.value)
-                }}
-                maxLength={2500}
-                rows={4}
-                placeholder={t('booking.mission_placeholder')}
-                className="theme-input w-full resize-y rounded-lg border border-violet-400 px-2 py-1.5 text-xs text-white placeholder:text-white/40 outline-none focus:border-violet-300"
-              />
-              <div className="mt-1 flex items-center justify-between text-[10px] text-white/65">
-                <span>{t('booking.mission_hint')}</span>
-                <span>{missionDescription.length}/2500</span>
-              </div>
-            </div>
-          </div>
           <div className={`theme-surface relative rounded-xl border ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'}`}>
             <div className="theme-surface rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5">
               <span className="text-white/85 shrink-0 w-4 text-center text-sm" aria-hidden="true">€</span>
@@ -826,57 +831,56 @@ export default function BookingPage() {
               />
               <span className="text-white/80 text-[11px] shrink-0">{t('booking.per_hour')}</span>
             </div>
-            <div className={`px-3 py-1.5 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[11px] text-white/85`}>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowOneTimeCardSheet((v) => !v)
-                  setShowPaymentSheet(false)
-                }}
-                className="inline-flex items-center gap-1.5 text-white/85 hover:text-white"
-              >
+            <button
+              type="button"
+              onClick={() => {
+                setShowPaymentSheet((v) => {
+                  const next = !v
+                  if (next) setShowOneTimeCardSheet(false)
+                  if (!next) setShowOneTimeCardSheet(false)
+                  return next
+                })
+              }}
+              className={`w-full min-h-[44px] px-3 py-2 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[12px] text-white/85 theme-hover`}
+              aria-label={t('booking.select_saved_card_aria')}
+              aria-expanded={showPaymentSheet}
+            >
+              <span className="inline-flex items-center gap-1.5">
                 <CreditCard className="h-3 w-3" />
                 {t('booking.payment_card')}
-              </button>
-              <div className="inline-flex items-center gap-1.5">
-                <span className="tabular-nums text-white/85">{paymentPreview}</span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowPaymentSheet((v) => !v)
-                    setShowOneTimeCardSheet(false)
-                  }}
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] text-white/90 theme-hover ${
-                    paymentValidationError ? 'border-red-500/80' : 'border-violet-400/70'
-                  }`}
-                  aria-label={t('booking.select_saved_card_aria')}
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                {paymentPreview ? <span className="tabular-nums text-white/85">{paymentPreview}</span> : null}
+                <span
+                  className="inline-flex items-center text-white/90"
+                  aria-hidden="true"
                 >
                   {showPaymentSheet ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-                </button>
-              </div>
-            </div>
+                </span>
+              </span>
+            </button>
             {showPaymentSheet && (
               <div
-                className={`${
-                  paymentSheetIsFloating
-                    ? 'theme-surface fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[52dvh] overflow-y-auto overscroll-contain rounded-xl'
-                    : 'theme-surface absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
-                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 ring-1 ring-red-500/20' : 'border-violet-300/80 ring-1 ring-white/10'}`}
-                style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 8}px` } : undefined}
+                className={`theme-surface fixed left-2 right-2 z-[70] mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl border px-3 py-2 shadow-2xl ${
+                  paymentValidationError ? 'border-red-500/80' : 'border-violet-400'
+                }`}
+                style={{ bottom: `${paymentSheetBottomOffset}px`, paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 4px)' }}
               >
-                <div className="theme-surface-soft mb-1 flex items-center justify-between rounded-md border border-white/10 px-2 py-1">
-                  <span className="text-[11px] text-white/70">{t('booking.saved_cards')}</span>
+                <div className="mb-2 flex items-center justify-between pb-2 border-b border-violet-400/60">
+                  <span className="text-[12px] text-white/80">{t('booking.payment_card')}</span>
                   <button
                     type="button"
-                    onClick={() => setShowPaymentSheet(false)}
-                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 theme-hover"
+                    onClick={() => {
+                      setShowPaymentSheet(false)
+                      setShowOneTimeCardSheet(false)
+                    }}
+                    className="rounded px-2 py-1 text-[11px] text-white/85 theme-hover"
                   >
-                    <ChevronUp className="h-3.5 w-3.5" />
-                    {t('booking.collapse')}
+                    {t('booking.close')}
                   </button>
                 </div>
                 {savedCards.length === 0 ? (
-                  <p className="mt-1 text-[11px] text-white/50">{t('booking.no_saved_cards')}</p>
+                  <p className="mt-1 text-[12px] text-white/50">{t('booking.no_saved_cards')}</p>
                 ) : (
                   <div className="mt-1 flex gap-1.5 overflow-x-auto pb-0.5">
                     {savedCards.map((card) => (
@@ -884,127 +888,121 @@ export default function BookingPage() {
                         key={card.id}
                         type="button"
                         onClick={() => { setSelectedCardId(card.id); setOneTimeCard(null); setShowPaymentSheet(false) }}
-                        className={`shrink-0 rounded-lg border px-2 py-1 text-xs transition-colors ${
+                        className={`shrink-0 rounded-lg border px-2.5 py-1.5 text-[12px] transition-colors ${
                           selectedCardId === card.id
                             ? paymentValidationError
                               ? 'bg-red-500/20 border-red-500/80 text-white'
-                              : 'bg-violet-500/30 border-violet-400 text-white'
+                              : 'bg-violet-500/25 border-violet-400 text-white'
                             : paymentValidationError
                               ? 'theme-surface border-red-500/80 text-white/90'
-                              : 'theme-surface border-violet-400 text-white/90'
+                              : 'theme-surface border-violet-400/80 text-white/90'
                         }`}
                       >
                         <span className="tabular-nums">•••• {card.last_four}</span>
-                        <span className="ml-1 text-[9px] text-white/60 uppercase">{card.brand}</span>
+                        <span className="ml-1 text-[10px] text-white/60 uppercase">{card.brand}</span>
                       </button>
                     ))}
                   </div>
                 )}
-              </div>
-            )}
-            {showOneTimeCardSheet && (
-              <div
-                className={`${
-                  paymentSheetIsFloating
-                    ? 'theme-surface fixed left-2 right-2 z-50 mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl'
-                    : 'theme-surface absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl'
-                } border px-2 py-1.5 shadow-2xl ${paymentValidationError ? 'border-red-500/80 ring-1 ring-red-500/20' : 'border-violet-300/80 ring-1 ring-white/10'}`}
-                style={paymentSheetIsFloating ? { bottom: `${keyboardInset + 112}px` } : { transform: 'translateY(-112px)' }}
-              >
-                <div className="theme-surface-soft mb-1 flex items-center justify-end rounded-md border border-white/10 px-2 py-1">
-                  <button
-                    type="button"
-                    onClick={() => setShowOneTimeCardSheet(false)}
-                    className="inline-flex items-center gap-1 rounded border border-violet-400/60 px-1.5 py-0.5 text-[11px] text-white/85 theme-hover"
-                  >
-                    <ChevronUp className="h-3.5 w-3.5" />
-                    {t('booking.collapse')}
-                  </button>
-                </div>
-                <div className="mt-1 grid grid-cols-1 gap-1.5">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={19}
-                    value={oneTimeCardNumber}
-                    onChange={e => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 16)
-                      const grouped = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim()
-                      setOneTimeCardNumber(grouped)
-                      setOneTimeCard(null)
-                    }}
-                    placeholder={t('booking.card_number')}
-                    className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
-                      submitAttempted && oneTimeCardNumber.trim().length > 0 && !isValidLuhn(cardDigits)
-                        ? 'border-red-500/80 focus:border-red-500/80'
-                        : 'border-violet-400 focus:border-violet-400'
-                    }`}
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={5}
-                      value={oneTimeCardExpiry}
-                      onChange={e => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
-                        const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits
-                        setOneTimeCardExpiry(formatted)
-                        setOneTimeCard(null)
-                      }}
-                      placeholder={t('booking.expiry_placeholder')}
-                      className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
-                        submitAttempted && oneTimeCardExpiry.trim().length > 0 && !isExpiryValid(oneTimeCardExpiry)
-                          ? 'border-red-500/80 focus:border-red-500/80'
-                          : 'border-violet-400 focus:border-violet-400'
-                      }`}
-                    />
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={4}
-                      value={oneTimeCardCvc}
-                      onChange={e => {
-                        setOneTimeCardCvc(e.target.value.replace(/\D/g, '').slice(0, 4))
-                        setOneTimeCard(null)
-                      }}
-                      placeholder={t('booking.cvc_placeholder')}
-                      className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
-                        submitAttempted && oneTimeCardCvc.trim().length > 0 && !/^\d{3,4}$/.test(oneTimeCardCvc)
-                          ? 'border-red-500/80 focus:border-red-500/80'
-                          : 'border-violet-400 focus:border-violet-400'
-                      }`}
-                    />
+                <button
+                  type="button"
+                  onClick={() => setShowOneTimeCardSheet((v) => !v)}
+                  className="mt-2 inline-flex w-full min-h-[42px] items-center justify-center gap-1 rounded-lg border border-violet-400/70 px-2 py-1.5 text-[12px] text-white/85 theme-hover"
+                >
+                  <CreditCard className="h-3.5 w-3.5" />
+                  {t('booking.payment_one_time')}
+                  {showOneTimeCardSheet ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </button>
+                {(showOneTimeCardSheet || savedCards.length === 0) && (
+                  <div className="mt-2 border-t border-white/10 pt-2">
+                    <p className="mb-1 px-1 text-[11px] text-white/55">{t('booking.payment_one_time')}</p>
+                    <div className="mt-1 grid grid-cols-1 gap-1.5">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={19}
+                        value={oneTimeCardNumber}
+                        onChange={e => {
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 16)
+                          const grouped = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim()
+                          setOneTimeCardNumber(grouped)
+                          setOneTimeCard(null)
+                        }}
+                        placeholder={t('booking.card_number')}
+                        className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                          submitAttempted && oneTimeCardNumber.trim().length > 0 && !isLikelyRealCardNumber(cardDigits)
+                            ? 'border-red-500/80 focus:border-red-500/80'
+                            : 'border-violet-400 focus:border-violet-400'
+                        }`}
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={5}
+                          value={oneTimeCardExpiry}
+                          onChange={e => {
+                            const digits = e.target.value.replace(/\D/g, '').slice(0, 4)
+                            const formatted = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits
+                            setOneTimeCardExpiry(formatted)
+                            setOneTimeCard(null)
+                          }}
+                          placeholder={t('booking.expiry_placeholder')}
+                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                            submitAttempted && oneTimeCardExpiry.trim().length > 0 && !isExpiryValid(oneTimeCardExpiry)
+                              ? 'border-red-500/80 focus:border-red-500/80'
+                              : 'border-violet-400 focus:border-violet-400'
+                          }`}
+                        />
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={4}
+                          value={oneTimeCardCvc}
+                          onChange={e => {
+                            setOneTimeCardCvc(e.target.value.replace(/\D/g, '').slice(0, 4))
+                            setOneTimeCard(null)
+                          }}
+                          placeholder={t('booking.cvc_placeholder')}
+                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                            submitAttempted && oneTimeCardCvc.trim().length > 0 && !/^\d{3,4}$/.test(oneTimeCardCvc)
+                              ? 'border-red-500/80 focus:border-red-500/80'
+                              : 'border-violet-400 focus:border-violet-400'
+                          }`}
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        value={oneTimeCardHolder}
+                        onChange={e => {
+                          setOneTimeCardHolder(e.target.value)
+                          setOneTimeCard(null)
+                        }}
+                        placeholder={t('booking.cardholder_name')}
+                        className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                          submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
+                            ? 'border-red-500/80 focus:border-red-500/80'
+                            : 'border-violet-400 focus:border-violet-400'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (canUseOneTimeCard && cardLastFour.length === 4) {
+                            setOneTimeCard({ last_four: cardLastFour, brand: 'card' })
+                            setSelectedCardId(null)
+                            setShowOneTimeCardSheet(false)
+                            setShowPaymentSheet(false)
+                          }
+                        }}
+                        disabled={!canUseOneTimeCard}
+                        className="w-full rounded-lg bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
+                      >
+                        {t('booking.use_this_card')}
+                      </button>
+                    </div>
                   </div>
-                  <input
-                    type="text"
-                    value={oneTimeCardHolder}
-                    onChange={e => {
-                      setOneTimeCardHolder(e.target.value)
-                      setOneTimeCard(null)
-                    }}
-                      placeholder={t('booking.cardholder_name')}
-                    className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
-                      submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
-                        ? 'border-red-500/80 focus:border-red-500/80'
-                        : 'border-violet-400 focus:border-violet-400'
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (canUseOneTimeCard && cardLastFour.length === 4) {
-                        setOneTimeCard({ last_four: cardLastFour, brand: 'card' })
-                        setSelectedCardId(null)
-                        setShowOneTimeCardSheet(false)
-                      }
-                    }}
-                    disabled={!canUseOneTimeCard}
-                    className="w-full rounded-lg bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
-                  >
-                    {t('booking.use_this_card')}
-                  </button>
-                </div>
+                )}
               </div>
             )}
           </div>

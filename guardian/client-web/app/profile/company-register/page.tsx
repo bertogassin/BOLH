@@ -1,12 +1,13 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, Building2, ShieldCheck, Search, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
 import { includesNameHint, luhnCheck, normalize, onlyDigits } from '@/lib/company/registerUtils'
+import { submitCompanyApplication } from '@/lib/api_company'
 
 type CompanyCheckResult = {
   checked: boolean
@@ -19,20 +20,17 @@ type CompanyCheckResult = {
   note?: string
 }
 
-type PartnerApplication = {
-  companyName: string
-  registrationNumber: string
-  countryCode: string
-  ownerFullName: string
-  ownerRole: string
-  contactEmail: string
-  contactPhone: string
-  website: string
-  checkedAt?: string
-  checkResult?: CompanyCheckResult
-  submittedAt: string
-  status: 'pending'
-}
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com',
+  'yahoo.com',
+  'hotmail.com',
+  'outlook.com',
+  'icloud.com',
+  'mail.ru',
+  'yandex.ru',
+  'proton.me',
+  'protonmail.com',
+])
 
 export default function CompanyRegisterPage() {
   const { user } = useAuth()
@@ -51,7 +49,36 @@ export default function CompanyRegisterPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  const storageKey = useMemo(() => `guardian_partner_application_${user?.id || 'guest'}`, [user?.id])
+  const formatSubmitError = (rawMessage: string) => {
+    const msg = rawMessage.trim()
+    const lower = msg.toLowerCase()
+    if (!msg) return t('company_register.save_failed')
+
+    if (lower.includes('auth required')) return t('company_register.login_required')
+    if (lower.includes('forbidden')) return t('company_register.error_account_type_forbidden')
+
+    if (lower.includes('invalid company name')) return t('company_register.error_invalid_company_name')
+    if (lower.includes('invalid country code')) return t('company_register.error_invalid_country')
+    if (lower.includes('invalid owner full name')) return t('company_register.error_invalid_owner_name')
+    if (lower.includes('invalid owner role')) return t('company_register.error_invalid_owner_role')
+    if (lower.includes('invalid company email')) return t('company_register.error_invalid_company_email')
+    if (lower.includes('corporate email required')) return t('company_register.error_corporate_email_required')
+    if (lower.includes('invalid business phone')) return t('company_register.error_invalid_business_phone')
+    if (lower.includes('invalid company website')) return t('company_register.error_invalid_website')
+    if (lower.includes('invalid registration number')) {
+      return countryCode === 'FR' ? t('company_register.error_siren_format') : t('company_register.error_reg_too_short')
+    }
+
+    if (lower.includes('signed request required') || lower.includes('invalid request signature') || lower.includes('expired signature')) {
+      return t('company_register.error_security_check_failed')
+    }
+    if (lower.includes('too many requests')) return t('company_register.error_too_many_attempts')
+    if (lower.includes('server unavailable') || lower.includes('temporarily unavailable')) {
+      return t('company_register.error_server_temporarily_unavailable')
+    }
+
+    return msg
+  }
 
   const runAutomaticCheck = async () => {
     setError('')
@@ -59,9 +86,35 @@ export default function CompanyRegisterPage() {
     const company = normalize(companyName)
     const owner = normalize(ownerFullName)
     const regRaw = normalize(registrationNumber)
+    const email = normalize(contactEmail).toLowerCase()
+    const phoneDigits = onlyDigits(contactPhone)
+    const websiteValue = normalize(website)
     if (!company || !owner || !regRaw) {
       setError(t('company_register.error_fill_required'))
       return
+    }
+    const strictEmailRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
+    if (!strictEmailRegex.test(email)) {
+      setError(t('company_register.error_invalid_company_email'))
+      return
+    }
+    const domain = email.split('@')[1] || ''
+    if (FREE_EMAIL_DOMAINS.has(domain)) {
+      setError(t('company_register.error_corporate_email_required'))
+      return
+    }
+    if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+      setError(t('company_register.error_invalid_business_phone'))
+      return
+    }
+    if (websiteValue) {
+      try {
+        const u = new URL(websiteValue.startsWith('http') ? websiteValue : `https://${websiteValue}`)
+        if (!u.hostname.includes('.')) throw new Error('invalid_host')
+      } catch {
+        setError(t('company_register.error_invalid_website'))
+        return
+      }
     }
 
     setChecking(true)
@@ -186,26 +239,48 @@ export default function CompanyRegisterPage() {
       setError(t('company_register.company_not_verified'))
       return
     }
+    const email = normalize(contactEmail).toLowerCase()
+    const strictEmailRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
+    if (!strictEmailRegex.test(email)) {
+      setError(t('company_register.error_invalid_company_email'))
+      return
+    }
+    const domain = email.split('@')[1] || ''
+    if (FREE_EMAIL_DOMAINS.has(domain)) {
+      setError(t('company_register.error_corporate_email_required'))
+      return
+    }
+    const phoneDigits = onlyDigits(contactPhone)
+    if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+      setError(t('company_register.error_invalid_business_phone'))
+      return
+    }
     setSubmitting(true)
     try {
-      const payload: PartnerApplication = {
+      const payload = {
         companyName: normalize(companyName),
         registrationNumber: normalize(registrationNumber),
         countryCode,
         ownerFullName: normalize(ownerFullName),
         ownerRole: normalize(ownerRole) || 'Owner',
-        contactEmail: normalize(contactEmail),
+        contactEmail: email,
         contactPhone: normalize(contactPhone),
         website: normalize(website),
-        checkedAt: new Date().toISOString(),
-        checkResult,
-        submittedAt: new Date().toISOString(),
-        status: 'pending',
       }
-      localStorage.setItem(storageKey, JSON.stringify(payload))
+      await submitCompanyApplication({
+        companyName: payload.companyName,
+        registrationNumber: payload.registrationNumber,
+        countryCode: payload.countryCode,
+        ownerFullName: payload.ownerFullName,
+        ownerRole: payload.ownerRole,
+        contactEmail: payload.contactEmail,
+        contactPhone: payload.contactPhone,
+        website: payload.website,
+      })
       setSuccess(t('company_register.submitted_pending'))
-    } catch {
-      setError(t('company_register.save_failed'))
+    } catch (e) {
+      const raw = e instanceof Error ? e.message : ''
+      setError(formatSubmitError(raw))
     } finally {
       setSubmitting(false)
     }

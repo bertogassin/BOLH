@@ -16,6 +16,7 @@ type Props = {
   displayName: string
   roleLabel: string
   completionPercent: number
+  avatarUrl?: string | null
   cards: PaymentCard[]
   isAgency: boolean
   showLogoutConfirm: boolean
@@ -29,6 +30,7 @@ export function AuthenticatedProfileContent({
   displayName,
   roleLabel,
   completionPercent,
+  avatarUrl,
   cards,
   isAgency,
   showLogoutConfirm,
@@ -42,6 +44,7 @@ export function AuthenticatedProfileContent({
         displayName={displayName}
         roleLabel={roleLabel}
         completionPercent={completionPercent}
+        avatarUrl={avatarUrl}
         t={t}
       />
       <div className="space-y-3">

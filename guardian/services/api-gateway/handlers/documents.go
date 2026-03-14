@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -17,6 +16,16 @@ import (
 const downloadDisposition = "attachment"
 const maxUploadFileBytes = 10 * 1024 * 1024 // 10 MB
 const sniffHeaderBytes = 512
+
+var allowedDocumentTypes = map[string]bool{
+	"document":        true,
+	"passport":        true,
+	"contract":        true,
+	"receipt":         true,
+	"invoice":         true,
+	"daily_report":    true,
+	"incident_report": true,
+}
 
 type documentResponse struct {
 	ID            string     `json:"id"`
@@ -102,6 +111,11 @@ func (h *DocumentHandlers) Upload(c *gin.Context) {
 	if docType == "" {
 		docType = "document"
 	}
+	docType = strings.ToLower(strings.TrimSpace(docType))
+	if !allowedDocumentTypes[docType] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid document type"})
+		return
+	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "file required"})
@@ -109,6 +123,10 @@ func (h *DocumentHandlers) Upload(c *gin.Context) {
 	}
 	if file.Size <= 0 || file.Size > maxUploadFileBytes {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "file size exceeds limit"})
+		return
+	}
+	if strings.TrimSpace(file.Filename) == "" || len(file.Filename) > 180 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid file name"})
 		return
 	}
 	opened, err := file.Open()
@@ -309,14 +327,6 @@ func detectMagicFileType(sample []byte) (mimeType string, ext string, ok bool) {
 	}
 	if len(sample) >= 12 && string(sample[:4]) == "RIFF" && string(sample[8:12]) == "WEBP" {
 		return "image/webp", ".webp", true
-	}
-	if len(sample) > 0 && utf8.Valid(sample) {
-		for _, b := range sample {
-			if b == 0x00 {
-				return "", "", false
-			}
-		}
-		return "text/plain", ".txt", true
 	}
 	return "", "", false
 }

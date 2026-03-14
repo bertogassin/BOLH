@@ -64,6 +64,17 @@ func (h *AuthHandlers) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	req.Email = normalizeEmailStrict(req.Email)
+	req.FirstName = normalizeName(req.FirstName)
+	req.LastName = normalizeName(req.LastName)
+	if !isStrictEmail(req.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
+		return
+	}
+	if !isReasonableName(req.FirstName) || !isReasonableName(req.LastName) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid name"})
+		return
+	}
 	if isHoneypotTriggered(req.Website) {
 		middleware.QuarantineIP(c.ClientIP(), "honeypot_form_register")
 		log.Printf("audit=register_blocked reason=honeypot_trigger ip=%s", c.ClientIP())
@@ -75,6 +86,10 @@ func (h *AuthHandlers) Register(c *gin.Context) {
 	}
 	if req.UserType != "client" && req.UserType != "guard" {
 		req.UserType = "client"
+	}
+	if len(req.Password) > 128 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
+		return
 	}
 
 	existing := h.Store.UserByEmailWithPassword(req.Email)
@@ -148,6 +163,11 @@ func (h *AuthHandlers) Login(c *gin.Context) {
 		middleware.AddRiskScore(c.ClientIP(), 1, "login_invalid_payload")
 		log.Printf("audit=login_failed reason=invalid_payload ip=%s", c.ClientIP())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	req.Email = normalizeEmailStrict(req.Email)
+	if !isStrictEmail(req.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email"})
 		return
 	}
 	if isHoneypotTriggered(req.CompanyURL) {
@@ -240,6 +260,30 @@ func (h *AuthHandlers) UpdateMe(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if req.FirstName != nil {
+		normalized := normalizeName(*req.FirstName)
+		if normalized != "" && !isReasonableName(normalized) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid first_name"})
+			return
+		}
+		req.FirstName = &normalized
+	}
+	if req.LastName != nil {
+		normalized := normalizeName(*req.LastName)
+		if normalized != "" && !isReasonableName(normalized) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid last_name"})
+			return
+		}
+		req.LastName = &normalized
+	}
+	if req.Phone != nil {
+		phone := strings.TrimSpace(*req.Phone)
+		if len(phone) > 32 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid phone"})
+			return
+		}
+		req.Phone = &phone
+	}
 	updated := *u
 	if req.FirstName != nil {
 		updated.FirstName = *req.FirstName
@@ -283,6 +327,10 @@ func (h *AuthHandlers) ChangePassword(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if len(req.NewPassword) > 128 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid new password"})
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(req.CurrentPassword)); err != nil {

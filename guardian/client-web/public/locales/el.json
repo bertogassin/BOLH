@@ -4,13 +4,108 @@
   "security": "Asfaleia",
   "clear_aria": "Katharismos",
   "back_home": "← Arxiki",
-  "navigation": { "home": "Arxiki", "orders": "Paraggelies", "profile": "Profil", "settings": "Rythmiseis", "map": "Xartis", "notifications": "Eidopoiiseis" },
-  "actions": { "save": "Apothikefsi", "cancel": "Akyrosi", "search": "Anazitisi", "logout": "Aposyndesi" },
-  "auth": { "login_title": "Syndesi", "email": "Email", "password": "Kodikos", "login_btn": "Syndesi", "logging_in": "Syndesi...", "register_title": "Eggrafi", "register_btn": "Eggrafi", "registering": "Eggrafi...", "show_password": "Emfanisi kodikou", "invalid_email": "Dose egkyro email", "password_required": "Dose kodiko" },
-  "booking": { "title": "Kratisi", "address": "Dieythynsi", "your_price": "Timi sou", "per_guard": "ana fylaka", "payment": "Pliromi", "accept_terms": "Symfono me tous orous", "terms_link": "Oroi", "privacy_link": "Aporrito", "confirm": "Epivevaiosi kratisis", "enter_address": "Dose dieythynsi", "sending": "Apostoli...", "day": "mera", "month": "minas", "time_from": "Ora apo", "time_to": "Ora eos", "guards": "fylakes", "price_positive": "Dose egkyri timi" },
-  "profile": { "title": "Profil", "user": "Xristis", "member_since": "Melos apo", "unverified": "Mi epivevaiomenos", "level": "Epipedo", "orders": "paraggelies", "rating": "axiologisi", "my_cards": "Oi kartes mou", "no_cards": "Xoris kartes", "add_card": "Prosthiki kartas", "settings": "Rythmiseis", "delete_account": "Diagrafi logariasmou", "login_to_see": "Syndetheite gia na deite to profil.", "login": "Syndesi" },
-  "orders": { "my_orders": "Oi paraggelies mou", "guest_msg": "Syndetheite gia na deite paraggelies.", "search_placeholder": "Anazitisi", "created_banner": "I paraggelia dimiourgithike.", "no_orders": "Den yparxoun paraggelies.", "create_order": "Dimiourgia paraggelias" },
-  "settings": { "title": "Rythmiseis", "intro": "Eidopoiiseis, glossa, aporrito.", "lang_note": "Allagi glossas apo to profil.", "privacy_link": "Politiki aporritou" },
-  "errors": { "load_failed": "Apetyxe i fortosi.", "retry": "Dokimase xana" },
-  "map": { "my_location_aria": "I topothesia mou", "you_here": "Eiste edo", "guard": "Fylakas", "order": "Paraggelia", "available": "Diathesimos", "reserve": "Kratisi", "near_you": "Konta sas", "legend": "Mple - esi · Prasino - paraggelies · Mov - fylakes" }
+  "navigation": {
+    "home": "Arxiki",
+    "orders": "Paraggelies",
+    "profile": "Profil",
+    "settings": "Rythmiseis",
+    "map": "Xartis",
+    "notifications": "Eidopoiiseis"
+  },
+  "actions": {
+    "save": "Apothikefsi",
+    "cancel": "Akyrosi",
+    "search": "Anazitisi",
+    "logout": "Aposyndesi"
+  },
+  "auth": {
+    "login_title": "Syndesi",
+    "email": "Email",
+    "password": "Kodikos",
+    "login_btn": "Syndesi",
+    "logging_in": "Syndesi...",
+    "register_title": "Eggrafi",
+    "register_btn": "Eggrafi",
+    "registering": "Eggrafi...",
+    "show_password": "Emfanisi kodikou",
+    "invalid_email": "Dose egkyro email",
+    "password_required": "Dose kodiko"
+  },
+  "booking": {
+    "title": "Kratisi",
+    "address": "Dieythynsi",
+    "your_price": "Timi sou",
+    "per_guard": "ana fylaka",
+    "payment": "Pliromi",
+    "accept_terms": "Symfono me tous orous",
+    "terms_link": "Oroi",
+    "privacy_link": "Aporrito",
+    "confirm": "Epivevaiosi kratisis",
+    "enter_address": "Dose dieythynsi",
+    "sending": "Apostoli...",
+    "day": "mera",
+    "month": "minas",
+    "time_from": "Ora apo",
+    "time_to": "Ora eos",
+    "guards": "fylakes",
+    "price_positive": "Dose egkyri timi"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Xristis",
+    "member_since": "Melos apo",
+    "unverified": "Mi epivevaiomenos",
+    "level": "Epipedo",
+    "orders": "paraggelies",
+    "rating": "axiologisi",
+    "my_cards": "Oi kartes mou",
+    "no_cards": "Xoris kartes",
+    "add_card": "Prosthiki kartas",
+    "settings": "Rythmiseis",
+    "delete_account": "Diagrafi logariasmou",
+    "login_to_see": "Syndetheite gia na deite to profil.",
+    "login": "Syndesi"
+  },
+  "orders": {
+    "my_orders": "Oi paraggelies mou",
+    "guest_msg": "Syndetheite gia na deite paraggelies.",
+    "search_placeholder": "Anazitisi",
+    "created_banner": "I paraggelia dimiourgithike.",
+    "no_orders": "Den yparxoun paraggelies.",
+    "create_order": "Dimiourgia paraggelias"
+  },
+  "settings": {
+    "title": "Rythmiseis",
+    "intro": "Eidopoiiseis, glossa, aporrito.",
+    "lang_note": "Allagi glossas apo to profil.",
+    "privacy_link": "Politiki aporritou"
+  },
+  "errors": {
+    "load_failed": "Apetyxe i fortosi.",
+    "retry": "Dokimase xana"
+  },
+  "map": {
+    "my_location_aria": "I topothesia mou",
+    "you_here": "Eiste edo",
+    "guard": "Fylakas",
+    "order": "Paraggelia",
+    "available": "Diathesimos",
+    "reserve": "Kratisi",
+    "near_you": "Konta sas",
+    "legend": "Mple - esi · Prasino - paraggelies · Mov - fylakes"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

@@ -4,13 +4,108 @@
   "security": "Izwahilli",
   "clear_aria": "Dela",
   "back_home": "← Cyga",
-  "navigation": { "home": "Cyga", "orders": "Zakazash", "profile": "Profil", "settings": "Nastroikash", "map": "Karta", "notifications": "Xabarnash" },
-  "actions": { "save": "Dazdar", "cancel": "Tokha", "search": "Lakhara", "logout": "Arxga yaha" },
-  "auth": { "login_title": "Daxar", "email": "Email", "password": "Parol", "login_btn": "Daxar", "logging_in": "Daxar... ", "register_title": "Registraci", "register_btn": "Registraci ya", "registering": "Registraci...", "show_password": "Parol gaita", "invalid_email": "Dogu email yazi", "password_required": "Parol yazi" },
-  "booking": { "title": "Bron", "address": "Adres", "your_price": "Hila tsina", "per_guard": "har ohrannikah", "payment": "Oplata", "accept_terms": "Usloviyash qobal do", "terms_link": "Usloviyash", "privacy_link": "Konfidencialnost", "confirm": "Bron tadar", "enter_address": "Adres yazi", "sending": "Yohu...", "day": "de", "month": "butt", "time_from": "Sah delara", "time_to": "Sah xila", "guards": "ohrannikhash", "price_positive": "Dogu tsina yazi" },
-  "profile": { "title": "Profil", "user": "Polzovatel", "member_since": "Xila yuz", "unverified": "Ne verif", "level": "Darja", "orders": "zakazash", "rating": "reyting", "my_cards": "San kartash", "no_cards": "Karta yotsu", "add_card": "Karta qeta", "settings": "Nastroikash", "delete_account": "Akaunt doxka", "login_to_see": "Profil gaita daxar de.", "login": "Daxar" },
-  "orders": { "my_orders": "San zakazash", "guest_msg": "Zakazash gaita daxar de.", "search_placeholder": "Lakhara", "created_banner": "Zakaz darsina.", "no_orders": "Zakaz yotsu.", "create_order": "Zakaz dara" },
-  "settings": { "title": "Nastroikash", "intro": "Xabarnash, mott, konf.", "lang_note": "Mott profil yitxina.", "privacy_link": "Konfidencialnost politika" },
-  "errors": { "load_failed": "Zagruzka xila.", "retry": "Dukha tobo" },
-  "map": { "my_location_aria": "San moxk", "you_here": "Huna hio", "guard": "Ohrannik", "order": "Zakaz", "available": "Yolush", "reserve": "Rezerv", "near_you": "Huna lagga", "legend": "Sin - huna · Zel - zakazash · Fiolet - ohrannikhash" }
+  "navigation": {
+    "home": "Cyga",
+    "orders": "Zakazash",
+    "profile": "Profil",
+    "settings": "Nastroikash",
+    "map": "Karta",
+    "notifications": "Xabarnash"
+  },
+  "actions": {
+    "save": "Dazdar",
+    "cancel": "Tokha",
+    "search": "Lakhara",
+    "logout": "Arxga yaha"
+  },
+  "auth": {
+    "login_title": "Daxar",
+    "email": "Email",
+    "password": "Parol",
+    "login_btn": "Daxar",
+    "logging_in": "Daxar... ",
+    "register_title": "Registraci",
+    "register_btn": "Registraci ya",
+    "registering": "Registraci...",
+    "show_password": "Parol gaita",
+    "invalid_email": "Dogu email yazi",
+    "password_required": "Parol yazi"
+  },
+  "booking": {
+    "title": "Bron",
+    "address": "Adres",
+    "your_price": "Hila tsina",
+    "per_guard": "har ohrannikah",
+    "payment": "Oplata",
+    "accept_terms": "Usloviyash qobal do",
+    "terms_link": "Usloviyash",
+    "privacy_link": "Konfidencialnost",
+    "confirm": "Bron tadar",
+    "enter_address": "Adres yazi",
+    "sending": "Yohu...",
+    "day": "de",
+    "month": "butt",
+    "time_from": "Sah delara",
+    "time_to": "Sah xila",
+    "guards": "ohrannikhash",
+    "price_positive": "Dogu tsina yazi"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Polzovatel",
+    "member_since": "Xila yuz",
+    "unverified": "Ne verif",
+    "level": "Darja",
+    "orders": "zakazash",
+    "rating": "reyting",
+    "my_cards": "San kartash",
+    "no_cards": "Karta yotsu",
+    "add_card": "Karta qeta",
+    "settings": "Nastroikash",
+    "delete_account": "Akaunt doxka",
+    "login_to_see": "Profil gaita daxar de.",
+    "login": "Daxar"
+  },
+  "orders": {
+    "my_orders": "San zakazash",
+    "guest_msg": "Zakazash gaita daxar de.",
+    "search_placeholder": "Lakhara",
+    "created_banner": "Zakaz darsina.",
+    "no_orders": "Zakaz yotsu.",
+    "create_order": "Zakaz dara"
+  },
+  "settings": {
+    "title": "Nastroikash",
+    "intro": "Xabarnash, mott, konf.",
+    "lang_note": "Mott profil yitxina.",
+    "privacy_link": "Konfidencialnost politika"
+  },
+  "errors": {
+    "load_failed": "Zagruzka xila.",
+    "retry": "Dukha tobo"
+  },
+  "map": {
+    "my_location_aria": "San moxk",
+    "you_here": "Huna hio",
+    "guard": "Ohrannik",
+    "order": "Zakaz",
+    "available": "Yolush",
+    "reserve": "Rezerv",
+    "near_you": "Huna lagga",
+    "legend": "Sin - huna · Zel - zakazash · Fiolet - ohrannikhash"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

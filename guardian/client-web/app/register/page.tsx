@@ -49,7 +49,9 @@ export default function RegisterPage() {
       setError('Please fill all required fields.')
       return
     }
-    if (!/\S+@\S+\.\S+/.test(email.trim().toLowerCase())) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const strictEmailRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
+    if (!strictEmailRegex.test(normalizedEmail)) {
       setError(t('auth.invalid_email'))
       return
     }
@@ -80,7 +82,7 @@ export default function RegisterPage() {
       )
     }
     try {
-      await register({ email, password, first_name: firstName, last_name: lastName })
+      await register({ email: normalizedEmail, password, first_name: firstName, last_name: lastName })
       router.push('/profile')
       router.refresh()
     } catch (err) {

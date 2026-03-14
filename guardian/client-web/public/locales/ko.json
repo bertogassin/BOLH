@@ -4,13 +4,108 @@
   "security": "보안",
   "clear_aria": "지우기",
   "back_home": "← 홈으로",
-  "navigation": { "home": "홈", "orders": "주문", "profile": "프로필", "settings": "설정", "map": "지도", "notifications": "알림" },
-  "actions": { "save": "저장", "cancel": "취소", "search": "검색", "logout": "로그아웃" },
-  "auth": { "login_title": "로그인", "email": "이메일", "password": "비밀번호", "login_btn": "로그인", "logging_in": "로그인 중...", "register_title": "회원가입", "register_btn": "가입하기", "registering": "가입 중...", "show_password": "비밀번호 표시", "invalid_email": "유효한 이메일을 입력하세요", "password_required": "비밀번호를 입력하세요" },
-  "booking": { "title": "예약", "address": "주소", "your_price": "희망 가격", "per_guard": "경비원 1인당", "payment": "결제", "accept_terms": "약관에 동의합니다", "terms_link": "약관", "privacy_link": "개인정보", "confirm": "예약 확인", "enter_address": "주소를 입력하세요", "sending": "전송 중...", "day": "일", "month": "월", "time_from": "시작 시간", "time_to": "종료 시간", "guards": "경비원", "price_positive": "유효한 가격을 입력하세요" },
-  "profile": { "title": "프로필", "user": "사용자", "member_since": "가입일", "unverified": "미인증", "level": "레벨", "orders": "주문", "rating": "평점", "my_cards": "내 카드", "no_cards": "카드 없음", "add_card": "카드 추가", "settings": "설정", "delete_account": "계정 삭제", "login_to_see": "프로필을 보려면 로그인하세요.", "login": "로그인" },
-  "orders": { "my_orders": "내 주문", "guest_msg": "주문을 보려면 로그인하세요.", "search_placeholder": "검색", "created_banner": "주문이 생성되었습니다.", "no_orders": "주문이 없습니다.", "create_order": "주문 생성" },
-  "settings": { "title": "설정", "intro": "알림, 언어, 개인정보.", "lang_note": "프로필에서 언어를 변경할 수 있습니다.", "privacy_link": "개인정보처리방침" },
-  "errors": { "load_failed": "불러오기에 실패했습니다.", "retry": "다시 시도" },
-  "map": { "my_location_aria": "내 위치", "you_here": "현재 위치", "guard": "경비원", "order": "주문", "available": "가능", "reserve": "예약", "near_you": "내 주변", "legend": "파랑-나 · 초록-주문 · 보라-경비원" }
+  "navigation": {
+    "home": "홈",
+    "orders": "주문",
+    "profile": "프로필",
+    "settings": "설정",
+    "map": "지도",
+    "notifications": "알림"
+  },
+  "actions": {
+    "save": "저장",
+    "cancel": "취소",
+    "search": "검색",
+    "logout": "로그아웃"
+  },
+  "auth": {
+    "login_title": "로그인",
+    "email": "이메일",
+    "password": "비밀번호",
+    "login_btn": "로그인",
+    "logging_in": "로그인 중...",
+    "register_title": "회원가입",
+    "register_btn": "가입하기",
+    "registering": "가입 중...",
+    "show_password": "비밀번호 표시",
+    "invalid_email": "유효한 이메일을 입력하세요",
+    "password_required": "비밀번호를 입력하세요"
+  },
+  "booking": {
+    "title": "예약",
+    "address": "주소",
+    "your_price": "희망 가격",
+    "per_guard": "경비원 1인당",
+    "payment": "결제",
+    "accept_terms": "약관에 동의합니다",
+    "terms_link": "약관",
+    "privacy_link": "개인정보",
+    "confirm": "예약 확인",
+    "enter_address": "주소를 입력하세요",
+    "sending": "전송 중...",
+    "day": "일",
+    "month": "월",
+    "time_from": "시작 시간",
+    "time_to": "종료 시간",
+    "guards": "경비원",
+    "price_positive": "유효한 가격을 입력하세요"
+  },
+  "profile": {
+    "title": "프로필",
+    "user": "사용자",
+    "member_since": "가입일",
+    "unverified": "미인증",
+    "level": "레벨",
+    "orders": "주문",
+    "rating": "평점",
+    "my_cards": "내 카드",
+    "no_cards": "카드 없음",
+    "add_card": "카드 추가",
+    "settings": "설정",
+    "delete_account": "계정 삭제",
+    "login_to_see": "프로필을 보려면 로그인하세요.",
+    "login": "로그인"
+  },
+  "orders": {
+    "my_orders": "내 주문",
+    "guest_msg": "주문을 보려면 로그인하세요.",
+    "search_placeholder": "검색",
+    "created_banner": "주문이 생성되었습니다.",
+    "no_orders": "주문이 없습니다.",
+    "create_order": "주문 생성"
+  },
+  "settings": {
+    "title": "설정",
+    "intro": "알림, 언어, 개인정보.",
+    "lang_note": "프로필에서 언어를 변경할 수 있습니다.",
+    "privacy_link": "개인정보처리방침"
+  },
+  "errors": {
+    "load_failed": "불러오기에 실패했습니다.",
+    "retry": "다시 시도"
+  },
+  "map": {
+    "my_location_aria": "내 위치",
+    "you_here": "현재 위치",
+    "guard": "경비원",
+    "order": "주문",
+    "available": "가능",
+    "reserve": "예약",
+    "near_you": "내 주변",
+    "legend": "파랑-나 · 초록-주문 · 보라-경비원"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

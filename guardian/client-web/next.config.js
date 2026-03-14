@@ -23,6 +23,7 @@ const csp = [
 
 const nextConfig = {
   reactStrictMode: false,
+  devIndicators: false,
   async headers() {
     return [
       {

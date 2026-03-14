@@ -4,13 +4,108 @@
   "security": "الأمن",
   "clear_aria": "مسح",
   "back_home": "← الصفحة الرئيسية",
-  "navigation": { "home": "الرئيسية", "orders": "الطلبات", "profile": "الملف الشخصي", "settings": "الإعدادات", "map": "الخريطة", "notifications": "الإشعارات" },
-  "actions": { "save": "حفظ", "cancel": "إلغاء", "search": "بحث", "logout": "تسجيل الخروج" },
-  "auth": { "login_title": "تسجيل الدخول", "email": "البريد الإلكتروني", "password": "كلمة المرور", "login_btn": "دخول", "logging_in": "جارٍ تسجيل الدخول...", "register_title": "إنشاء حساب", "register_btn": "تسجيل", "registering": "جارٍ التسجيل...", "show_password": "إظهار كلمة المرور", "invalid_email": "أدخل بريداً صحيحاً", "password_required": "أدخل كلمة المرور" },
-  "booking": { "title": "الحجز", "address": "العنوان", "your_price": "سعرك", "per_guard": "لكل حارس", "payment": "الدفع", "accept_terms": "أوافق على الشروط", "terms_link": "الشروط", "privacy_link": "الخصوصية", "confirm": "تأكيد الحجز", "enter_address": "أدخل العنوان", "sending": "جارٍ الإرسال...", "day": "يوم", "month": "شهر", "time_from": "من", "time_to": "إلى", "guards": "الحراس", "price_positive": "أدخل سعراً صحيحاً" },
-  "profile": { "title": "الملف الشخصي", "user": "المستخدم", "member_since": "عضو منذ", "unverified": "غير موثق", "level": "المستوى", "orders": "طلبات", "rating": "التقييم", "my_cards": "بطاقاتي", "no_cards": "لا توجد بطاقات", "add_card": "إضافة بطاقة", "settings": "الإعدادات", "delete_account": "حذف الحساب", "login_to_see": "سجل الدخول لعرض ملفك.", "login": "تسجيل الدخول" },
-  "orders": { "my_orders": "طلباتي", "guest_msg": "سجل الدخول لعرض الطلبات.", "search_placeholder": "بحث", "created_banner": "تم إنشاء الطلب.", "no_orders": "لا توجد طلبات.", "create_order": "إنشاء طلب" },
-  "settings": { "title": "الإعدادات", "intro": "الإشعارات، اللغة، الخصوصية.", "lang_note": "يمكنك تغيير اللغة من الملف الشخصي.", "privacy_link": "سياسة الخصوصية" },
-  "errors": { "load_failed": "فشل التحميل.", "retry": "إعادة المحاولة" },
-  "map": { "my_location_aria": "موقعي", "you_here": "أنت هنا", "guard": "حارس", "order": "طلب", "available": "متاح", "reserve": "حجز", "near_you": "بالقرب منك", "legend": "أزرق-أنت · أخضر-الطلبات · بنفسجي-الحراس" }
+  "navigation": {
+    "home": "الرئيسية",
+    "orders": "الطلبات",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "map": "الخريطة",
+    "notifications": "الإشعارات"
+  },
+  "actions": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "search": "بحث",
+    "logout": "تسجيل الخروج"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "login_btn": "دخول",
+    "logging_in": "جارٍ تسجيل الدخول...",
+    "register_title": "إنشاء حساب",
+    "register_btn": "تسجيل",
+    "registering": "جارٍ التسجيل...",
+    "show_password": "إظهار كلمة المرور",
+    "invalid_email": "أدخل بريداً صحيحاً",
+    "password_required": "أدخل كلمة المرور"
+  },
+  "booking": {
+    "title": "الحجز",
+    "address": "العنوان",
+    "your_price": "سعرك",
+    "per_guard": "لكل حارس",
+    "payment": "الدفع",
+    "accept_terms": "أوافق على الشروط",
+    "terms_link": "الشروط",
+    "privacy_link": "الخصوصية",
+    "confirm": "تأكيد الحجز",
+    "enter_address": "أدخل العنوان",
+    "sending": "جارٍ الإرسال...",
+    "day": "يوم",
+    "month": "شهر",
+    "time_from": "من",
+    "time_to": "إلى",
+    "guards": "الحراس",
+    "price_positive": "أدخل سعراً صحيحاً"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "user": "المستخدم",
+    "member_since": "عضو منذ",
+    "unverified": "غير موثق",
+    "level": "المستوى",
+    "orders": "طلبات",
+    "rating": "التقييم",
+    "my_cards": "بطاقاتي",
+    "no_cards": "لا توجد بطاقات",
+    "add_card": "إضافة بطاقة",
+    "settings": "الإعدادات",
+    "delete_account": "حذف الحساب",
+    "login_to_see": "سجل الدخول لعرض ملفك.",
+    "login": "تسجيل الدخول"
+  },
+  "orders": {
+    "my_orders": "طلباتي",
+    "guest_msg": "سجل الدخول لعرض الطلبات.",
+    "search_placeholder": "بحث",
+    "created_banner": "تم إنشاء الطلب.",
+    "no_orders": "لا توجد طلبات.",
+    "create_order": "إنشاء طلب"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "intro": "الإشعارات، اللغة، الخصوصية.",
+    "lang_note": "يمكنك تغيير اللغة من الملف الشخصي.",
+    "privacy_link": "سياسة الخصوصية"
+  },
+  "errors": {
+    "load_failed": "فشل التحميل.",
+    "retry": "إعادة المحاولة"
+  },
+  "map": {
+    "my_location_aria": "موقعي",
+    "you_here": "أنت هنا",
+    "guard": "حارس",
+    "order": "طلب",
+    "available": "متاح",
+    "reserve": "حجز",
+    "near_you": "بالقرب منك",
+    "legend": "أزرق-أنت · أخضر-الطلبات · بنفسجي-الحراس"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }

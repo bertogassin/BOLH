@@ -23,6 +23,29 @@ export function detectCardBrand(cardNumber: string): string {
   return 'card'
 }
 
+function isAllSameDigits(digits: string): boolean {
+  return /^(\d)\1+$/.test(digits)
+}
+
+function hasValidLengthForBrand(digits: string, brand: string): boolean {
+  if (brand === 'Amex') return digits.length === 15
+  if (brand === 'Visa') return digits.length === 13 || digits.length === 16 || digits.length === 19
+  if (brand === 'Mastercard') return digits.length === 16
+  if (brand === 'Discover') return digits.length === 16 || digits.length === 19
+  if (brand === 'JCB') return digits.length === 16 || digits.length === 19
+  return digits.length >= 13 && digits.length <= 19
+}
+
+const KNOWN_TEST_CARDS = new Set([
+  '4242424242424242',
+  '4000056655665556',
+  '5555555555554444',
+  '378282246310005',
+  '6011111111111117',
+  '3566002020360505',
+  '4111111111111111',
+])
+
 export function isValidLuhn(cardNumber: string): boolean {
   const digits = digitsOnly(cardNumber)
   if (digits.length < 13 || digits.length > 19) return false
@@ -39,6 +62,17 @@ export function isValidLuhn(cardNumber: string): boolean {
     shouldDouble = !shouldDouble
   }
   return sum % 10 === 0
+}
+
+export function isLikelyRealCardNumber(cardNumber: string): boolean {
+  const digits = digitsOnly(cardNumber)
+  if (!digits) return false
+  if (!isValidLuhn(digits)) return false
+  if (isAllSameDigits(digits)) return false
+  if (KNOWN_TEST_CARDS.has(digits)) return false
+  const brand = detectCardBrand(digits)
+  if (!hasValidLengthForBrand(digits, brand)) return false
+  return true
 }
 
 export function isExpiryValid(expiry: string): boolean {

@@ -4,13 +4,108 @@
   "security": "Bezbednost",
   "clear_aria": "Ocisti",
   "back_home": "← Pocetna",
-  "navigation": { "home": "Pocetna", "orders": "Porudzbine", "profile": "Profil", "settings": "Podesavanja", "map": "Mapa", "notifications": "Obavestenja" },
-  "actions": { "save": "Sacuvaj", "cancel": "Otkaži", "search": "Pretrazi", "logout": "Odjava" },
-  "auth": { "login_title": "Prijava", "email": "Email", "password": "Lozinka", "login_btn": "Prijavi se", "logging_in": "Prijava...", "register_title": "Registracija", "register_btn": "Registruj se", "registering": "Registracija...", "show_password": "Prikazi lozinku", "invalid_email": "Unesite ispravan email", "password_required": "Unesite lozinku" },
-  "booking": { "title": "Rezervacija", "address": "Adresa", "your_price": "Vasa cena", "per_guard": "po cuvaru", "payment": "Placanje", "accept_terms": "Prihvatam uslove", "terms_link": "Uslovi", "privacy_link": "Privatnost", "confirm": "Potvrdi rezervaciju", "enter_address": "Unesite adresu", "sending": "Slanje...", "day": "dan", "month": "mesec", "time_from": "Vreme od", "time_to": "Vreme do", "guards": "cuvari", "price_positive": "Unesite ispravnu cenu" },
-  "profile": { "title": "Profil", "user": "Korisnik", "member_since": "Clan od", "unverified": "Nije verifikovan", "level": "Nivo", "orders": "porudzbina", "rating": "ocena", "my_cards": "Moje kartice", "no_cards": "Nema kartica", "add_card": "Dodaj karticu", "settings": "Podesavanja", "delete_account": "Obrisi nalog", "login_to_see": "Prijavite se da vidite profil.", "login": "Prijava" },
-  "orders": { "my_orders": "Moje porudzbine", "guest_msg": "Prijavite se da vidite porudzbine.", "search_placeholder": "Pretrazi", "created_banner": "Porudzbina je kreirana.", "no_orders": "Nema porudzbina.", "create_order": "Kreiraj porudzbinu" },
-  "settings": { "title": "Podesavanja", "intro": "Obavestenja, jezik, privatnost.", "lang_note": "Jezik mozete promeniti u profilu.", "privacy_link": "Pravila privatnosti" },
-  "errors": { "load_failed": "Ućitavanje nije uspelo.", "retry": "Pokusaj ponovo" },
-  "map": { "my_location_aria": "Moja lokacija", "you_here": "Vi ste ovde", "guard": "Cuvar", "order": "Porudzbina", "available": "Dostupan", "reserve": "Rezervisi", "near_you": "U blizini", "legend": "Plavo - vi · Zeleno - porudzbine · Ljubicasto - cuvari" }
+  "navigation": {
+    "home": "Pocetna",
+    "orders": "Porudzbine",
+    "profile": "Profil",
+    "settings": "Podesavanja",
+    "map": "Mapa",
+    "notifications": "Obavestenja"
+  },
+  "actions": {
+    "save": "Sacuvaj",
+    "cancel": "Otkaži",
+    "search": "Pretrazi",
+    "logout": "Odjava"
+  },
+  "auth": {
+    "login_title": "Prijava",
+    "email": "Email",
+    "password": "Lozinka",
+    "login_btn": "Prijavi se",
+    "logging_in": "Prijava...",
+    "register_title": "Registracija",
+    "register_btn": "Registruj se",
+    "registering": "Registracija...",
+    "show_password": "Prikazi lozinku",
+    "invalid_email": "Unesite ispravan email",
+    "password_required": "Unesite lozinku"
+  },
+  "booking": {
+    "title": "Rezervacija",
+    "address": "Adresa",
+    "your_price": "Vasa cena",
+    "per_guard": "po cuvaru",
+    "payment": "Placanje",
+    "accept_terms": "Prihvatam uslove",
+    "terms_link": "Uslovi",
+    "privacy_link": "Privatnost",
+    "confirm": "Potvrdi rezervaciju",
+    "enter_address": "Unesite adresu",
+    "sending": "Slanje...",
+    "day": "dan",
+    "month": "mesec",
+    "time_from": "Vreme od",
+    "time_to": "Vreme do",
+    "guards": "cuvari",
+    "price_positive": "Unesite ispravnu cenu"
+  },
+  "profile": {
+    "title": "Profil",
+    "user": "Korisnik",
+    "member_since": "Clan od",
+    "unverified": "Nije verifikovan",
+    "level": "Nivo",
+    "orders": "porudzbina",
+    "rating": "ocena",
+    "my_cards": "Moje kartice",
+    "no_cards": "Nema kartica",
+    "add_card": "Dodaj karticu",
+    "settings": "Podesavanja",
+    "delete_account": "Obrisi nalog",
+    "login_to_see": "Prijavite se da vidite profil.",
+    "login": "Prijava"
+  },
+  "orders": {
+    "my_orders": "Moje porudzbine",
+    "guest_msg": "Prijavite se da vidite porudzbine.",
+    "search_placeholder": "Pretrazi",
+    "created_banner": "Porudzbina je kreirana.",
+    "no_orders": "Nema porudzbina.",
+    "create_order": "Kreiraj porudzbinu"
+  },
+  "settings": {
+    "title": "Podesavanja",
+    "intro": "Obavestenja, jezik, privatnost.",
+    "lang_note": "Jezik mozete promeniti u profilu.",
+    "privacy_link": "Pravila privatnosti"
+  },
+  "errors": {
+    "load_failed": "Ućitavanje nije uspelo.",
+    "retry": "Pokusaj ponovo"
+  },
+  "map": {
+    "my_location_aria": "Moja lokacija",
+    "you_here": "Vi ste ovde",
+    "guard": "Cuvar",
+    "order": "Porudzbina",
+    "available": "Dostupan",
+    "reserve": "Rezervisi",
+    "near_you": "U blizini",
+    "legend": "Plavo - vi · Zeleno - porudzbine · Ljubicasto - cuvari"
+  },
+  "company_register": {
+    "error_account_type_forbidden": "This account type cannot submit company applications.",
+    "error_invalid_company_name": "Enter a valid company name.",
+    "error_invalid_country": "Select a valid country.",
+    "error_invalid_owner_name": "Enter a valid owner full name.",
+    "error_invalid_owner_role": "Enter a valid owner role.",
+    "error_invalid_company_email": "Enter a valid company email.",
+    "error_corporate_email_required": "Use a corporate company email (not public mailbox).",
+    "error_invalid_business_phone": "Enter a valid business phone number.",
+    "error_invalid_website": "Enter a valid company website URL.",
+    "error_security_check_failed": "Security check failed. Please refresh and try again.",
+    "error_too_many_attempts": "Too many attempts. Please wait and try again.",
+    "error_server_temporarily_unavailable": "Server is temporarily unavailable. Please try again shortly."
+  }
 }
