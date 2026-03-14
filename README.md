@@ -1,65 +1,51 @@
-# BOLH SECURITY
+# BOLH
 
-Платформа закрытых тендеров охранных услуг. Соответствует [ABSOLUTE_STANDARD.md](./ABSOLUTE_STANDARD.md) и [docs/BOLH_TECH_ARCHITECTURE.md](./docs/BOLH_TECH_ARCHITECTURE.md).
+Единый репозиторий для самостоятельной работы платформы BOLH (Guardian stack): web, API, мобильные клиенты, инфраструктурные конфиги и CI/CD.
 
-## Legacy migration status
+## Основной рабочий стек
 
-BOLH currently remains a legacy-source repository while functionality is
-decomposed into ecosystem-aligned services (`core-*`, `marketplace-*`,
-`notification-routing`, `payment-gateway`) with Rust-first targets.
+- `guardian/client-web` — Next.js frontend.
+- `guardian/services/api-gateway` — основной API gateway (Go).
+- `guardian/services/*` — сервисы домена (matching, order, bid, user, notifications).
+- `guardian/docker-compose.yml` — локальный подъем зависимостей и API.
+- `.do/app.yaml` / `.do/app-staging.yaml` — DigitalOcean App Platform конфиги.
 
-### Write policy (important)
+`guardian` — главный runtime-контур для запуска и деплоя.
 
-- Do not add new backend/runtime modules in this repository.
-- New implementation work must go to dedicated target repositories.
-- This repository keeps legacy structure and migration references.
+## Быстрый локальный запуск
 
-## Rust-first policy
-
-- Ядро платформы и доменные сервисы развиваются в модели **Rust-first**.
-- Go используется для совместимости и текущих API-слоев, с поэтапным усилением Rust-компонентов.
-
-## Структура
-
-- **Rust (ядро):** домен и Matching Engine в `crates/`:
-  - `bolh-domain` — сущности (Money, License, Client, Guard, Agency, Order, Bid, Match), инварианты.
-  - `matching-engine` — подбор заказов и предложений (заготовка под индексы и Kafka).
-- **Go (API):** модульный монолит в `internal/`, `cmd/api` — точка входа.
-- **БД:** PostgreSQL-схема и миграции в `migrations/`.
-- **Документация:** `docs/` — архитектура, OpenAPI, C4.
-
-```
-crates/
-  bolh-domain/      # Rust: домен (типы, бизнес-правила)
-  matching-engine/  # Rust: движок подбора
-internal/
-  user/             # Go: User context (domain, application, infrastructure)
-cmd/api/            # Go: HTTP API
-migrations/         # SQL
-docs/
+```powershell
+cd guardian
+.\scripts\start-dev.ps1
 ```
 
-## Требования
-
-- Go 1.21+ (и/или Rust, см. стандарт)
-- Переменные окружения для секретов (без хардкода)
-
-## Локальная проверка
+Или на Linux/macOS:
 
 ```bash
-# Go
-go fmt ./...
-go vet ./...
-staticcheck ./...
-go test ./...
-
-# Rust (если используется)
-cargo fmt --check
-cargo clippy -- -D warnings
-cargo test
-cargo audit
+cd guardian
+chmod +x scripts/start-dev.sh
+./scripts/start-dev.sh
 ```
 
-## CI
+После запуска:
+- web: `http://localhost:3003`
+- api: `http://localhost:8080`
 
-См. `.github/workflows/` — линтер, сборка, тесты, аудит безопасности на каждый PR.
+## Переменные окружения
+
+- Шаблон: `.env.example` (в корне репозитория).
+- Для production обязательно задать секреты: `JWT_SECRET`, `ADMIN_SECRET`.
+- Для API persistence обязательно задать: `DATABASE_URL`, `REDIS_ADDR`.
+
+## DigitalOcean деплой
+
+- Production: `.do/app.yaml` (ветка `main`, домены `app.omnixius.com` и `api.omnixius.com`).
+- Staging: `.do/app-staging.yaml` (ветка `main`, staging-домены).
+- Перед первым деплоем обнови placeholder-секреты в DO (`JWT_SECRET`, `ADMIN_SECRET`) и проверь env.
+
+## CI/CD
+
+Workflows в `.github/workflows/` покрывают:
+- Go/Rust проверки,
+- сборку и проверку `guardian/client-web`,
+- Android release pipeline в Google Play.

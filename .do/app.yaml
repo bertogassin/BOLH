@@ -6,6 +6,16 @@ domains:
   - domain: api.omnixius.com
     type: ALIAS
 
+databases:
+  - name: db
+    engine: PG
+    version: "15"
+    production: true
+  - name: redis
+    engine: REDIS
+    version: "7"
+    production: true
+
 services:
   - name: api
     http_port: 8080
@@ -21,6 +31,18 @@ services:
     envs:
       - key: APP_ENV
         value: production
+        scope: RUN_TIME
+      - key: DATABASE_URL
+        value: ${db.DATABASE_URL}
+        scope: RUN_TIME
+      - key: REDIS_ADDR
+        value: ${redis.HOSTNAME}:${redis.PORT}
+        scope: RUN_TIME
+      - key: JWT_SECRET
+        value: CHANGE_ME_IN_DO_SECRETS
+        scope: RUN_TIME
+      - key: ADMIN_SECRET
+        value: CHANGE_ME_IN_DO_SECRETS
         scope: RUN_TIME
       - key: APP_BUILD_ID
         value: production
@@ -46,6 +68,12 @@ services:
     envs:
       - key: NEXT_PUBLIC_API_URL
         value: ${api.PUBLIC_URL}
+        scope: RUN_AND_BUILD_TIME
+      - key: NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED
+        value: "1"
+        scope: RUN_AND_BUILD_TIME
+      - key: NEXT_PUBLIC_SIGNED_REQUEST_MODE
+        value: partial
         scope: RUN_AND_BUILD_TIME
       - key: NEXT_PUBLIC_APP_BUILD_ID
         value: production
