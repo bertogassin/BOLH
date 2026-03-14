@@ -138,7 +138,7 @@ async fn list_bids(State(state): State<AppState>, Query(q): Query<ListQuery>) ->
                 .read()
                 .await
                 .values()
-                .filter(|b| q.guard_id.map_or(true, |g| g == b.guard_id))
+                .filter(|b| q.guard_id.is_none_or(|g| g == b.guard_id))
                 .cloned()
                 .collect();
             Json(bids).into_response()

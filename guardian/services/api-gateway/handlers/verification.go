@@ -45,7 +45,25 @@ func (h *VerificationHandlers) Submit(c *gin.Context) {
 	var req struct {
 		DocumentBase64 string `json:"document_base64"`
 	}
-	_ = c.ShouldBindJSON(&req)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	payload, err := decodeBase64Payload(req.DocumentBase64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid document payload"})
+		return
+	}
+	const maxVerificationBytes = 8 * 1024 * 1024
+	if len(payload) < 32 || len(payload) > maxVerificationBytes {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid document size"})
+		return
+	}
+	_, _, ok := detectMagicFileType(payload)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported document type"})
+		return
+	}
 	// We don't store the document for now; just create a pending request.
 	v := &store.VerificationRequest{
 		ID:        uuid.New().String(),

@@ -37,14 +37,20 @@ func (h *CardHandlers) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if req.Brand == "" {
-		req.Brand = "card"
+	if !isFourDigits(req.LastFour) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid last_four"})
+		return
+	}
+	brand, ok := sanitizeCardBrand(req.Brand)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid brand"})
+		return
 	}
 	card := &store.PaymentCard{
 		ID:        uuid.New().String(),
 		UserID:    userID,
 		LastFour:  req.LastFour,
-		Brand:     req.Brand,
+		Brand:     brand,
 		CreatedAt: time.Now(),
 	}
 	h.Store.CreateCard(card)

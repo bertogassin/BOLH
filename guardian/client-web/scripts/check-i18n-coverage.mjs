@@ -3,10 +3,15 @@ import path from 'node:path'
 
 const root = process.cwd()
 const scanDirs = ['app', 'components'].map((d) => path.join(root, d))
-const localeFiles = ['en', 'fr', 'de', 'ru'].map((l) => ({
-  code: l,
-  file: path.join(root, 'public', 'locales', `${l}.json`),
-}))
+const localesDir = path.join(root, 'public', 'locales')
+const localeFiles = fs
+  .readdirSync(localesDir)
+  .filter((name) => name.endsWith('.json'))
+  .map((name) => ({
+    code: path.basename(name, '.json'),
+    file: path.join(localesDir, name),
+  }))
+  .sort((a, b) => a.code.localeCompare(b.code))
 const exts = new Set(['.ts', '.tsx'])
 const skipDirs = new Set(['node_modules', '.next'])
 

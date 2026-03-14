@@ -1,7 +1,6 @@
 // Best-candidate selection algorithm.
 
-use domain::{Bid, BidderType, Money, Order};
-use rust_decimal::Decimal;
+use domain::{Money, Order};
 use std::cmp::Ordering;
 
 use crate::models::Candidate;
@@ -24,8 +23,7 @@ fn cmp_candidate_by_price(a: &Candidate, b: &Candidate) -> Ordering {
 }
 
 /// Final client price (platform/agency fee can be applied when needed).
-pub fn calculate_price(order: &Order, candidate: &Candidate) -> Money {
-    let price = candidate.bid.price;
+pub fn calculate_price(_order: &Order, candidate: &Candidate) -> Money {
     // Simplified: return bid price. In production: + platform_fee, + agency commission.
-    price
+    candidate.bid.price
 }

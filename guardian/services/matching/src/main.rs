@@ -8,14 +8,12 @@ use tokio::sync::mpsc;
 use tracing::{error, info};
 
 mod algo;
-mod config;
-mod events;
 mod index;
 mod models;
 mod sharding;
 
 use domain::{Bid, BidId, BidderType, Match, Order, OrderId};
-use index::{LicenseIndex, PriceIndex, SpatialIndex};
+use index::{LicenseIndex, PriceIndex};
 use models::{BidEvent, Candidate, OrderEvent};
 
 struct MatchingEngine {

@@ -5,6 +5,7 @@ use std::hash::{Hash, Hasher};
 use domain::OrderId;
 
 /// Returns shard number by order ID (consistent hashing).
+#[cfg_attr(not(test), allow(dead_code))]
 pub fn shard_for_order(order_id: &OrderId, shard_count: usize) -> usize {
     if shard_count == 0 {
         return 0;

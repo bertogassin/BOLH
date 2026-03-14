@@ -52,6 +52,7 @@ type Bid struct {
 // Store is the interface for user/order/bid persistence (memory or PostgreSQL).
 type Store interface {
 	UserByID(id string) *User
+	AllUsers() []User
 	UserByEmail(email string) *User
 	UserByEmailWithPassword(email string) *User
 	CreateUser(u *User)
