@@ -369,7 +369,7 @@
                  "faq_order":  "How to create an order? — Select date, time, and address on the home screen, then confirm.",
                  "faq_contact_guard":  "How to contact a guard? — Open chat from the order card after matching.",
                  "faq_cancel":  "How to cancel an order? — Open order details and tap cancel before shift start.",
-                 "contact":  "For other questions: bolh@gmail.com"
+                 "contact":  "For other questions: bolhbuy@gmail.com"
              },
     "legal":  {
                   "terms_title":  "Terms and Conditions",
@@ -388,8 +388,8 @@
                   "privacy_security_title":  "Security and Retention",
                   "privacy_security_text":  "Data is transmitted over secure channels. We retain data only as needed for legal and operational purposes.",
                   "privacy_delete_title":  "Data Deletion Requests",
-                  "privacy_delete_text":  "To request account or data deletion, contact bolh@gmail.com from your account email.",
-                  "contact":  "Contact: bolh@gmail.com"
+                  "privacy_delete_text":  "To request account or data deletion, contact bolhbuy@gmail.com from your account email.",
+                  "contact":  "Contact: bolhbuy@gmail.com"
               },
     "documents_hub":  {
                           "title":  "Document Hub",

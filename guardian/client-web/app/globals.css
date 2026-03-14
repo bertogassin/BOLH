@@ -117,6 +117,18 @@ textarea {
     color: var(--bolh-text);
     border-color: var(--bolh-input-border);
   }
+.theme-input option {
+  background-color: var(--bolh-input-bg);
+  color: var(--bolh-text);
+}
+[data-theme='light'] .theme-input option {
+  background-color: #ffffff;
+  color: #111827;
+}
+[data-theme='dark'] .theme-input option {
+  background-color: #111827;
+  color: #f9fafb;
+}
 .theme-input[aria-invalid='true'] {
   border-color: var(--bolh-danger);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--bolh-danger) 40%, transparent);
