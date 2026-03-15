@@ -125,12 +125,13 @@ jobs:
           E2E_ADMIN_PASSWORD: AdminE2E!123
           ADMIN_SECRET: admin-e2e-secret
           JWT_SECRET: ci-jwt-secret
+          PLAYWRIGHT_BASE_URL: http://localhost:3001
         run: |
           set -euo pipefail
           cd guardian/services/api-gateway
           go run . > /tmp/api-gateway.log 2>&1 &
           API_PID=$!
-          trap "kill $API_PID" EXIT
+          trap 'kill ${API_PID:-} ${ADMIN_PID:-} 2>/dev/null || true' EXIT
           for i in {1..30}; do
             if curl -fsS http://localhost:8080/health >/dev/null; then
               break
@@ -138,7 +139,18 @@ jobs:
             sleep 1
           done
           curl -fsS http://localhost:8080/health >/dev/null
+
           cd ../../admin
+          npm run dev -- -p 3001 > /tmp/admin.log 2>&1 &
+          ADMIN_PID=$!
+          for i in {1..45}; do
+            if curl -fsS http://localhost:3001/login >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://localhost:3001/login >/dev/null
+
           npx playwright test --reporter=line
 
   rust:
