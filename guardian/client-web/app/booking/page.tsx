@@ -862,7 +862,7 @@ export default function BookingPage() {
             </button>
             {showPaymentSheet && (
               <div
-                className={`theme-surface fixed left-2 right-2 z-[70] mx-auto w-auto max-w-lg max-h-[56dvh] overflow-y-auto overscroll-contain rounded-xl border px-3 py-2 shadow-2xl ${
+                 className={`theme-surface fixed left-1/2 -translate-x-1/2 z-[70] w-[calc(min(100vw,430px)-1rem)] max-h-[78dvh] overflow-y-auto overscroll-contain rounded-xl border px-4 py-3 shadow-2xl ${
                   paymentValidationError ? 'border-red-500/80' : 'border-violet-400'
                 }`}
                 style={{ bottom: `${paymentSheetBottomOffset}px`, paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 4px)' }}
@@ -931,7 +931,7 @@ export default function BookingPage() {
                           setOneTimeCard(null)
                         }}
                         placeholder={t('booking.card_number')}
-                        className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} min-h-[48px] py-3 text-base ${
                           submitAttempted && oneTimeCardNumber.trim().length > 0 && !isLikelyRealCardNumber(cardDigits)
                             ? 'border-red-500/80 focus:border-red-500/80'
                             : 'border-violet-400 focus:border-violet-400'
@@ -951,7 +951,7 @@ export default function BookingPage() {
                             setOneTimeCard(null)
                           }}
                           placeholder={t('booking.expiry_placeholder')}
-                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                            className={`${DARK_COMPACT_INPUT_BASE_CLASS} min-h-[48px] py-3 text-base ${
                             submitAttempted && oneTimeCardExpiry.trim().length > 0 && !isExpiryValid(oneTimeCardExpiry)
                               ? 'border-red-500/80 focus:border-red-500/80'
                               : 'border-violet-400 focus:border-violet-400'
@@ -968,7 +968,7 @@ export default function BookingPage() {
                             setOneTimeCard(null)
                           }}
                           placeholder={t('booking.cvc_placeholder')}
-                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                            className={`${DARK_COMPACT_INPUT_BASE_CLASS} min-h-[48px] py-3 text-base ${
                             submitAttempted && oneTimeCardCvc.trim().length > 0 && !/^\d{3,4}$/.test(oneTimeCardCvc)
                               ? 'border-red-500/80 focus:border-red-500/80'
                               : 'border-violet-400 focus:border-violet-400'
@@ -984,7 +984,7 @@ export default function BookingPage() {
                           setOneTimeCard(null)
                         }}
                         placeholder={t('booking.cardholder_name')}
-                        className={`${DARK_COMPACT_INPUT_BASE_CLASS} ${
+                          className={`${DARK_COMPACT_INPUT_BASE_CLASS} min-h-[48px] py-3 text-base ${
                           submitAttempted && oneTimeCardHolder.trim().length > 0 && oneTimeCardHolder.trim().length < 2
                             ? 'border-red-500/80 focus:border-red-500/80'
                             : 'border-violet-400 focus:border-violet-400'
