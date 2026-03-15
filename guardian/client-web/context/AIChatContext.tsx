@@ -134,7 +134,7 @@ function buildReply(
   add('Booking', '/booking')
   add('Map', '/map')
   add('Documents', '/documents')
-  add('Help', '')
+  add('Help', '/help')
   return {
     text: 'I can help with booking, map, documents, or profile actions. Ask a more specific question or choose an action below.',
     generated: suggestions.filter((s) => s.payload?.path),
@@ -158,14 +158,20 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const persist = useCallback((next: ChatMessage[]) => {
-    setMessages(next)
-    try {
-      localStorage.setItem('bolh_ai_chat', JSON.stringify(next.slice(-100)))
-    } catch {
-      // ignore
-    }
-  }, [])
+  const appendMessages = useCallback(
+    (updater: (prev: ChatMessage[]) => ChatMessage[]) => {
+      setMessages((prev) => {
+        const next = updater(prev)
+        try {
+          localStorage.setItem('bolh_ai_chat', JSON.stringify(next.slice(-100)))
+        } catch {
+          // ignore
+        }
+        return next
+      })
+    },
+    []
+  )
 
   const openChat = useCallback(() => setIsOpen(true), [])
   const closeChat = useCallback(() => setIsOpen(false), [])
@@ -191,7 +197,7 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
         text: trimmed,
         at: Date.now(),
       }
-      persist([...messages, userMsg])
+      appendMessages((prev) => [...prev, userMsg])
       setIsLoading(true)
 
       try {
@@ -205,7 +211,7 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
           generated: generated.length > 0 ? generated : undefined,
           at: Date.now(),
         }
-        persist([...messages, userMsg, assistantMsg])
+        appendMessages((prev) => [...prev, assistantMsg])
       } catch {
         const errMsg: ChatMessage = {
           id: generateId(),
@@ -213,12 +219,12 @@ export function AIChatProvider({ children }: { children: React.ReactNode }) {
           text: 'An error occurred. Please try again.',
           at: Date.now(),
         }
-        persist([...messages, userMsg, errMsg])
+        appendMessages((prev) => [...prev, errMsg])
       } finally {
         setIsLoading(false)
       }
     },
-    [messages, persist]
+    [appendMessages]
   )
 
   const value: AIChatContextType = {

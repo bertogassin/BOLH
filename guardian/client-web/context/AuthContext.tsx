@@ -16,6 +16,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 const TOKEN_KEY = 'guardian_token'
+const SESSION_HINT_KEY = 'guardian_session_hint'
 
 function readStoredToken(): string | null {
   if (typeof window === 'undefined') return null
@@ -46,6 +47,20 @@ function clearStoredToken() {
   window.localStorage.removeItem(TOKEN_KEY)
 }
 
+function hasSessionHint(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.localStorage.getItem(SESSION_HINT_KEY) === '1'
+}
+
+function setSessionHint(enabled: boolean) {
+  if (typeof window === 'undefined') return
+  if (enabled) {
+    window.localStorage.setItem(SESSION_HINT_KEY, '1')
+  } else {
+    window.localStorage.removeItem(SESSION_HINT_KEY)
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -53,6 +68,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     const t = readStoredToken()
+    // Avoid noisy 401 calls for unauthenticated visitors.
+    if (!t && !hasSessionHint()) {
+      setToken(null)
+      setUser(null)
+      setLoading(false)
+      return
+    }
     try {
       const u = await fetchMe()
       if (t) {
@@ -64,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(u)
     } catch {
       clearStoredToken()
+      setSessionHint(false)
       setToken(null)
       setUser(null)
     } finally {
@@ -78,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const { user: u } = await apiLogin(email, password)
     clearStoredToken()
+    setSessionHint(true)
     setToken(null)
     setUser(u)
   }, [])
@@ -86,6 +110,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (params: { email: string; password: string; first_name: string; last_name: string; user_type?: string }) => {
       const { user: u } = await apiRegister(params)
       clearStoredToken()
+      setSessionHint(true)
       setToken(null)
       setUser(u)
     },
@@ -94,6 +119,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     clearStoredToken()
+    setSessionHint(false)
     logoutSession().catch(() => {
       // Ignore API logout errors on client-side logout.
     })

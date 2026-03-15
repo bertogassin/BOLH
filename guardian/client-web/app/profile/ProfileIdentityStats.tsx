@@ -1,23 +1,36 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Props = {
   initial: string
   displayName: string
   roleLabel: string
   completionPercent: number
+  avatarUrl?: string | null
   t: (key: string) => string
 }
 
-export function ProfileIdentityStats({ initial, displayName, roleLabel, completionPercent, t }: Props) {
+export function ProfileIdentityStats({ initial, displayName, roleLabel, completionPercent, avatarUrl, t }: Props) {
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
         <Link href="/profile/personal" className="inline-flex items-center hover:opacity-90 transition-opacity">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-violet-500/40 text-2xl font-bold text-white">
-            {initial}
-          </span>
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt="Profile avatar"
+              width={64}
+              height={64}
+              unoptimized
+              className="h-16 w-16 shrink-0 rounded-full border border-violet-400/60 object-cover"
+            />
+          ) : (
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-violet-500/40 text-2xl font-bold text-white">
+              {initial}
+            </span>
+          )}
         </Link>
         <div className="min-w-0">
           <p className="truncate text-base font-semibold text-white">{displayName || t('profile.user')}</p>

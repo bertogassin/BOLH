@@ -52,11 +52,26 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
 }
 
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Allow selecting/copying visible UI text even inside clickable rows */
+button,
+a,
+span,
+p,
+div {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* Remove native inner input frame (notably on Windows) */
@@ -117,6 +132,18 @@ textarea {
     color: var(--bolh-text);
     border-color: var(--bolh-input-border);
   }
+.theme-input option {
+  background-color: var(--bolh-input-bg);
+  color: var(--bolh-text);
+}
+[data-theme='light'] .theme-input option {
+  background-color: #ffffff;
+  color: #111827;
+}
+[data-theme='dark'] .theme-input option {
+  background-color: #111827;
+  color: #f9fafb;
+}
 .theme-input[aria-invalid='true'] {
   border-color: var(--bolh-danger);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--bolh-danger) 40%, transparent);
@@ -266,4 +293,9 @@ input[type='radio'].border-violet-400\/50 {
 
 .min-h-screen {
   background-color: var(--bolh-bg) !important;
+}
+
+/* Hide Next.js devtools launcher in local dev */
+button[aria-label='Open Next.js Dev Tools'] {
+  display: none !important;
 }

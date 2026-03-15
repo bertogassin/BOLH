@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ChevronLeft, FileText, Star, Trash2, PenLine, Download, Share2, Copy, ExternalLink, Mail, Printer, ClipboardList } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
@@ -12,10 +12,12 @@ import { formatDateTime } from '@/lib/format/date'
 import { formatFileSize } from '@/lib/format/files'
 import { downloadDocumentFile, openDocumentInNewTab } from '@/lib/documents/fileActions'
 
-export default function DocumentDetailPage({ params }: { params: { id: string } }) {
+export default function DocumentDetailPage() {
   const { user } = useAuth()
   const { t, locale } = useLocale()
   const router = useRouter()
+  const params = useParams<{ id: string }>()
+  const documentId = typeof params?.id === 'string' ? params.id : ''
   const [doc, setDoc] = useState<Document | null>(null)
   const [loading, setLoading] = useState(true)
   const [signing, setSigning] = useState(false)
@@ -26,32 +28,32 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
   const [actionHint, setActionHint] = useState('')
 
   useEffect(() => {
-    if (!user || !params.id) return
-    fetchDocument(params.id)
+    if (!user || !documentId) return
+    fetchDocument(documentId)
       .then(setDoc)
       .catch(() => setDoc(null))
       .finally(() => setLoading(false))
-  }, [user, params.id])
+  }, [user, documentId])
 
   useEffect(() => {
-    if (!params.id || typeof window === 'undefined') return
+    if (!documentId || typeof window === 'undefined') return
     try {
       const raw = localStorage.getItem('dochub_saved_ids')
       const list = raw ? (JSON.parse(raw) as string[]) : []
-      setSavedLocally(Array.isArray(list) && list.includes(params.id))
-      const stamp = localStorage.getItem(`dochub_downloaded_${params.id}`)
+      setSavedLocally(Array.isArray(list) && list.includes(documentId))
+      const stamp = localStorage.getItem(`dochub_downloaded_${documentId}`)
       setLastDownloadedAt(stamp)
     } catch {
       // ignore
     }
-  }, [params.id])
+  }, [documentId])
 
   const handleSign = async () => {
-    if (!params.id || !signText.trim()) return
+    if (!documentId || !signText.trim()) return
     setSigning(true)
     try {
-      await signDocument(params.id, signText.trim())
-      const updated = await fetchDocument(params.id)
+      await signDocument(documentId, signText.trim())
+      const updated = await fetchDocument(documentId)
       setDoc(updated)
       setSignText('')
     } catch {
@@ -62,9 +64,9 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
   }
 
   const handleDelete = async () => {
-    if (!params.id || !confirm(t('documents_detail.delete_confirm'))) return
+    if (!documentId || !confirm(t('documents_detail.delete_confirm'))) return
     try {
-      await deleteDocument(params.id)
+      await deleteDocument(documentId)
       router.push('/documents')
       router.refresh()
     } catch {
@@ -73,20 +75,20 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
   }
 
   const handleDownload = useCallback(async () => {
-    if (!params.id || !doc) return
+    if (!documentId || !doc) return
     setDownloading(true)
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('guardian_token') : null
       if (!token) throw new Error('Missing auth token')
       await downloadDocumentFile({
         token,
-        url: getDocumentFileUrl(params.id),
+        url: getDocumentFileUrl(documentId),
         fileName: doc.file_name || doc.title || 'document',
       })
       const stamp = new Date().toISOString()
       setLastDownloadedAt(stamp)
       try {
-        localStorage.setItem(`dochub_downloaded_${params.id}`, stamp)
+        localStorage.setItem(`dochub_downloaded_${documentId}`, stamp)
       } catch {
         // ignore
       }
@@ -95,22 +97,22 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
     } finally {
       setDownloading(false)
     }
-  }, [params.id, doc])
+  }, [documentId, doc])
 
   const handleToggleSaveLocal = () => {
-    if (!params.id || typeof window === 'undefined') return
+    if (!documentId || typeof window === 'undefined') return
     try {
       const raw = localStorage.getItem('dochub_saved_ids')
       const list = raw ? (JSON.parse(raw) as string[]) : []
       let next: string[]
-      if (list.includes(params.id)) {
-        next = list.filter((x) => x !== params.id)
+      if (list.includes(documentId)) {
+        next = list.filter((x) => x !== documentId)
       } else {
-        next = [...list, params.id]
+        next = [...list, documentId]
       }
       localStorage.setItem('dochub_saved_ids', JSON.stringify(next.slice(-500)))
-      setSavedLocally(next.includes(params.id))
-      setActionHint(next.includes(params.id) ? t('documents_detail.saved_local') : t('documents_detail.removed_local'))
+      setSavedLocally(next.includes(documentId))
+      setActionHint(next.includes(documentId) ? t('documents_detail.saved_local') : t('documents_detail.removed_local'))
     } catch {
       // ignore
     }
@@ -142,11 +144,11 @@ export default function DocumentDetailPage({ params }: { params: { id: string } 
   }
 
   const openInNewTab = async () => {
-    if (!params.id) return
+    if (!documentId) return
     try {
       const token = typeof window !== 'undefined' ? localStorage.getItem('guardian_token') : null
       if (!token) return
-      await openDocumentInNewTab(token, getDocumentFileUrl(params.id))
+      await openDocumentInNewTab(token, getDocumentFileUrl(documentId))
       setActionHint(t('documents_detail.opened_new_tab'))
     } catch {
       // ignore

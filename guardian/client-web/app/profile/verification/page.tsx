@@ -7,6 +7,15 @@ import { useLocale } from '@/context/LocaleContext'
 import { BOLHNav } from '@/components/BOLHNav'
 import { fetchVerificationStatus, submitVerification } from '@/lib/api'
 
+const MAX_VERIFY_FILE_BYTES = 8 * 1024 * 1024
+const ALLOWED_VERIFY_EXTENSIONS = new Set(['pdf', 'jpg', 'jpeg', 'png', 'webp'])
+
+function getFileExtension(name: string): string {
+  const idx = name.lastIndexOf('.')
+  if (idx < 0) return ''
+  return name.slice(idx + 1).toLowerCase()
+}
+
 export default function VerificationPage() {
   const { t } = useLocale()
   const [status, setStatus] = useState<Awaited<ReturnType<typeof fetchVerificationStatus>> | null>(null)
@@ -41,7 +50,13 @@ export default function VerificationPage() {
     setError('')
     setSuccess('')
     setFileName(file.name)
-    if (file.size > 8 * 1024 * 1024) {
+    const ext = getFileExtension(file.name)
+    if (!ALLOWED_VERIFY_EXTENSIONS.has(ext)) {
+      setDocBase64('')
+      setError('Unsupported document format. Allowed: PDF, JPG, PNG, WEBP.')
+      return
+    }
+    if (file.size <= 0 || file.size > MAX_VERIFY_FILE_BYTES) {
       setDocBase64('')
       setError(t('verification.file_too_large'))
       return

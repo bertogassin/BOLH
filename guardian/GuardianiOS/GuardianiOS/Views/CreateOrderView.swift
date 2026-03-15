@@ -37,14 +37,25 @@ struct CreateOrderView: View {
                         .tint(Color(hex: "0055FF"))
                     } else {
                         Button("Создать заказ") {
-                            viewModel.createOrder()
-                            dismiss()
+                            Task {
+                                let success = await viewModel.createOrder()
+                                if success {
+                                    dismiss()
+                                }
+                            }
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Color(hex: "0055FF"))
+                        .disabled(viewModel.isLoading)
                     }
                 }
                 .padding()
+                if let errorMessage = viewModel.errorMessage {
+                    Text(errorMessage)
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                        .padding(.horizontal)
+                }
             }
             .navigationTitle("Новый заказ")
             .navigationBarTitleDisplayMode(.inline)

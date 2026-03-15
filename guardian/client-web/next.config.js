@@ -1,18 +1,29 @@
 /** @type {import('next').NextConfig} */
 const buildId = process.env.NEXT_PUBLIC_APP_BUILD_ID || process.env.GITHUB_SHA || 'dev'
+const scriptSrc =
+  process.env.NODE_ENV === 'production'
+    ? "script-src 'self' 'unsafe-inline'"
+    : "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+const connectSrc =
+  process.env.NODE_ENV === 'production'
+    ? "connect-src 'self' https: wss:"
+    : "connect-src 'self' https: http: ws: wss:"
+
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  scriptSrc,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data: https:",
-  "connect-src 'self' https: wss:",
+  connectSrc,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
 ].join('; ')
 
 const nextConfig = {
+  reactStrictMode: false,
+  devIndicators: false,
   async headers() {
     return [
       {

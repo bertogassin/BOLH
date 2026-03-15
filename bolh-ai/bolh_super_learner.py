@@ -5,6 +5,8 @@ BOLH SUPER LEARNER v1.0
 Зависимости: aiohttp (остальное опционально).
 """
 import asyncio
+import hashlib
+import json
 from datetime import datetime
 from typing import Any, Dict, List
 
@@ -174,10 +176,55 @@ class BOLHSuperLearner:
                     print("{}: {}".format(name, e))
 
     async def _sync_knowledge(self) -> None:
-        """Синхронизация/дедубликация знаний (заглушка под Часть 6 Purifier)."""
-        keys = list(self.knowledge_base.keys())
-        if keys:
-            print("База знаний: {} записей".format(len(keys)))
+        """
+        Синхронизация/дедубликация знаний:
+        - оставляет только последнюю запись с одинаковым контентом;
+        - помечает необработанные элементы как processed;
+        - сохраняет мета-информацию последнего sync.
+        """
+        deduped: Dict[str, Dict[str, Any]] = {}
+        seen_hashes: Dict[str, str] = {}
+
+        for key, item in list(self.knowledge_base.items()):
+            if not isinstance(item, dict):
+                continue
+            if key.startswith("_sync_meta"):
+                continue
+
+            payload = item.get("data")
+            payload_hash = self._stable_hash(payload)
+            ts = item.get("timestamp", "")
+
+            if payload_hash in seen_hashes:
+                existing_key = seen_hashes[payload_hash]
+                existing_ts = deduped[existing_key].get("timestamp", "")
+                if str(ts) > str(existing_ts):
+                    deduped[key] = {
+                        **item,
+                        "processed": True,
+                        "content_hash": payload_hash,
+                    }
+                    deduped.pop(existing_key, None)
+                    seen_hashes[payload_hash] = key
+            else:
+                deduped[key] = {
+                    **item,
+                    "processed": True,
+                    "content_hash": payload_hash,
+                }
+                seen_hashes[payload_hash] = key
+
+        self.knowledge_base = deduped
+        self.knowledge_base["_sync_meta"] = {
+            "timestamp": datetime.now().isoformat(),
+            "records": len(deduped),
+            "unique_payloads": len(seen_hashes),
+        }
+        print(
+            "База знаний: {} записей ({} уникальных)".format(
+                len(deduped), len(seen_hashes)
+            )
+        )
 
     def _process_knowledge(self, source: str, data: Any) -> None:
         """Обрабатывает и сохраняет знания с метаданными."""
@@ -186,6 +233,14 @@ class BOLHSuperLearner:
             "timestamp": datetime.now().isoformat(),
             "processed": True,
         }
+
+    @staticmethod
+    def _stable_hash(value: Any) -> str:
+        try:
+            normalized = json.dumps(value, sort_keys=True, ensure_ascii=False, default=str)
+        except Exception:
+            normalized = str(value)
+        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def main() -> None:

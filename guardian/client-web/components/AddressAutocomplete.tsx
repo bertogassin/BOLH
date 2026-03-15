@@ -1,12 +1,14 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { MapPin, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { MapPin, X, ChevronDown, ChevronUp, LocateFixed } from 'lucide-react'
 import { useLocale } from '@/context/LocaleContext'
 import { useAuth } from '@/context/AuthContext'
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org/search'
+const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse'
 const DEBOUNCE_MS = 400
+const GEOLOCATION_TIMEOUT_MS = 12000
 
 type NominatimAddress = {
   road?: string
@@ -47,6 +49,12 @@ function shortAddress(addr?: NominatimAddress | null, fallback?: string): string
   return parts.join(', ') || fb
 }
 
+function geolocationErrorCode(err: unknown): number | null {
+  if (typeof err !== 'object' || err == null) return null
+  const code = (err as { code?: unknown }).code
+  return typeof code === 'number' ? code : null
+}
+
 export type AddressResult = {
   display: string
   latitude: number
@@ -70,6 +78,12 @@ type AddressAutocompleteProps = {
   value: string
   onChange: (value: string) => void
   onSelect?: (result: AddressResult) => void
+  onBlur?: () => void
+  extraValue?: string
+  onExtraChange?: (value: string) => void
+  onExtraAutofill?: () => void
+  extraPlaceholder?: string
+  extraMaxLength?: number
   placeholder?: string
   className?: string
   showHistoryPanel?: boolean
@@ -84,6 +98,12 @@ export function AddressAutocomplete({
   value,
   onChange,
   onSelect,
+  onBlur,
+  extraValue = '',
+  onExtraChange,
+  onExtraAutofill,
+  extraPlaceholder = '',
+  extraMaxLength = 2500,
   placeholder = 'Address',
   className = '',
   showHistoryPanel = true,
@@ -95,7 +115,10 @@ export function AddressAutocomplete({
   const [saved, setSaved] = useState<AddressResult[]>([])
   const [open, setOpen] = useState(false)
   const [showSavedHistory, setShowSavedHistory] = useState(false)
+  const [showExtraPanel, setShowExtraPanel] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState('')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const lastSelectedRef = useRef<string | null>(null)
@@ -225,31 +248,31 @@ export function AddressAutocomplete({
   }, [])
 
   const { t } = useLocale()
-  const persistRecent = (list: RecentAddress[]) => {
+  const persistRecent = useCallback((list: RecentAddress[]) => {
     setRecent(list)
     try {
       window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(list))
     } catch {
       // Ignore storage write errors.
     }
-  }
+  }, [])
 
-  const addToRecent = (result: AddressResult) => {
+  const addToRecent = useCallback((result: AddressResult) => {
     const normalized = result.display.trim().toLowerCase()
     const next = [
       { ...result, usedAt: Date.now() },
       ...recent.filter((item) => item.display.trim().toLowerCase() !== normalized),
     ].slice(0, MAX_RECENT_ADDRESSES)
     persistRecent(next)
-  }
+  }, [recent, persistRecent])
 
-  const removeRecent = (display: string) => {
+  const removeRecent = useCallback((display: string) => {
     const normalized = display.trim().toLowerCase()
     const next = recent.filter((item) => item.display.trim().toLowerCase() !== normalized)
     persistRecent(next)
-  }
+  }, [recent, persistRecent])
 
-  const handleSelect = (result: AddressResult) => {
+  const handleSelect = useCallback((result: AddressResult) => {
     onChange(result.display)
     onSelect?.(result)
     addToRecent(result)
@@ -257,7 +280,81 @@ export function AddressAutocomplete({
     setShowSavedHistory(false)
     setOpen(false)
     setSuggestions([])
-  }
+  }, [onChange, onSelect, addToRecent])
+
+  const resolveAddressFromCoords = useCallback(async (latitude: number, longitude: number): Promise<string> => {
+    const params = new URLSearchParams({
+      lat: String(latitude),
+      lon: String(longitude),
+      format: 'json',
+      addressdetails: '1',
+    })
+    const res = await fetch(`${NOMINATIM_REVERSE}?${params}`, {
+      headers: { Accept: 'application/json' },
+    })
+    if (!res.ok) throw new Error('reverse_geocode_failed')
+    const raw = await res.json()
+    if (!raw || typeof raw !== 'object') throw new Error('reverse_geocode_invalid')
+    const display = shortAddress(
+      (raw as { address?: NominatimAddress }).address,
+      (raw as { display_name?: string }).display_name
+    )
+    return display || `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+  }, [])
+
+  const handleUseCurrentLocation = useCallback(async () => {
+    if (locating || typeof navigator === 'undefined' || !navigator.geolocation) return
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      setLocationError(t('address_autocomplete.location_requires_secure_context'))
+      return
+    }
+    setLocating(true)
+    setLocationError('')
+    try {
+      if ('permissions' in navigator && navigator.permissions?.query) {
+        try {
+          const p = await navigator.permissions.query({ name: 'geolocation' })
+          if (p.state === 'denied') {
+            setLocationError(t('address_autocomplete.location_permission_blocked'))
+            return
+          }
+        } catch {
+          // Some browsers may not support this query reliably.
+        }
+      }
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: GEOLOCATION_TIMEOUT_MS,
+          maximumAge: 60000,
+        })
+      })
+      const latitude = position.coords.latitude
+      const longitude = position.coords.longitude
+      const fallbackDisplay = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
+      // Fill immediately so user sees instant result even if reverse geocoding is slow.
+      onChange(fallbackDisplay)
+      onSelect?.({ display: fallbackDisplay, latitude, longitude })
+      let display = fallbackDisplay
+      try {
+        display = await resolveAddressFromCoords(latitude, longitude)
+      } catch {
+        // Fall back to coordinates if reverse geocoding is unavailable.
+      }
+      handleSelect({ display, latitude, longitude })
+    } catch (err) {
+      const code = geolocationErrorCode(err)
+      if (code === 1) {
+        setLocationError(t('address_autocomplete.location_permission_blocked'))
+      } else if (code === 3) {
+        setLocationError(t('address_autocomplete.location_timeout'))
+      } else {
+        setLocationError(t('address_autocomplete.location_failed'))
+      }
+    } finally {
+      setLocating(false)
+    }
+  }, [locating, resolveAddressFromCoords, handleSelect, onChange, onSelect, t])
 
   const borderClass = hasError ? 'border-red-500/80' : 'border-violet-400'
   const inputRowClass = 'rounded-t-xl flex items-center gap-2.5 min-h-[50px] px-3 py-2.5'
@@ -273,6 +370,7 @@ export function AddressAutocomplete({
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
+              onBlur={() => onBlur?.()}
               onFocus={() => {
                 if (showSuggestions && suggestions.length > 0 && value.trim() !== lastSelectedRef.current?.trim()) {
                   setOpen(true)
@@ -296,22 +394,70 @@ export function AddressAutocomplete({
               <div className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
             )}
           </div>
+          <button
+            type="button"
+            onClick={handleUseCurrentLocation}
+            disabled={locating}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-violet-400/70 text-white/80 theme-hover disabled:opacity-50"
+            aria-label={t('address_autocomplete.use_my_location')}
+            title={t('address_autocomplete.use_my_location')}
+          >
+            {locating ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-violet-300 border-t-transparent" />
+            ) : (
+              <LocateFixed className="h-4 w-4" />
+            )}
+          </button>
         </div>
         {showHistoryPanel && (
           <>
-            <button
-              type="button"
-              onClick={() => {
-                if (totalHistoryCount > 0) setShowSavedHistory((v) => !v)
-              }}
-              className={`w-full border-t ${borderClass} px-3 py-1 text-[11px] text-white/70 flex items-center justify-between theme-hover`}
-            >
-              <span>{t('address_autocomplete.saved_recent')}</span>
-              <span className="inline-flex items-center gap-1">
-                {totalHistoryCount}
-                {showSavedHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-              </span>
-            </button>
+            <div className={`grid grid-cols-2 border-t ${borderClass}`}>
+              <button
+                type="button"
+                onClick={() => setShowExtraPanel((v) => !v)}
+                className="px-3 py-1 text-[11px] text-white/70 flex items-center justify-between theme-hover border-r border-violet-400/50"
+              >
+                <span>{t('booking.mission_add_description')}</span>
+                {showExtraPanel ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (totalHistoryCount > 0) setShowSavedHistory((v) => !v)
+                }}
+                className="px-3 py-1 text-[11px] text-white/70 flex items-center justify-between theme-hover"
+              >
+                <span>{t('address_autocomplete.saved_recent')}</span>
+                <span className="inline-flex items-center gap-1">
+                  {totalHistoryCount}
+                  {showSavedHistory ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </span>
+              </button>
+            </div>
+            {showExtraPanel && onExtraChange && (
+              <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5 theme-surface-soft`}>
+                <textarea
+                  value={extraValue}
+                  onChange={(e) => onExtraChange(e.target.value)}
+                  rows={3}
+                  maxLength={extraMaxLength}
+                  placeholder={extraPlaceholder || t('booking.mission_placeholder')}
+                  className="theme-input w-full resize-y rounded border border-violet-400 px-2 py-1 text-[11px] text-white placeholder:text-white/45 outline-none focus:border-violet-300"
+                />
+                <div className="mt-1 flex items-center justify-between text-[10px] text-white/55">
+                  <span>{extraValue.length}/{extraMaxLength}</span>
+                  {onExtraAutofill ? (
+                    <button
+                      type="button"
+                      onClick={onExtraAutofill}
+                      className="rounded border border-violet-400/60 px-1.5 py-0.5 text-[10px] text-white/80 theme-hover"
+                    >
+                      {t('booking.auto')}
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            )}
             {showSavedHistory && !open && (
               <div className={`border-t ${hasError ? 'border-red-500/60' : 'border-violet-400/60'} px-2 py-1.5 theme-surface-soft`}>
                 {saved.length > 0 && (
@@ -389,6 +535,7 @@ export function AddressAutocomplete({
           ))}
         </ul>
       )}
+      {locationError ? <p className="mt-1 px-1 text-xs text-red-300">{locationError}</p> : null}
     </div>
   )
 }

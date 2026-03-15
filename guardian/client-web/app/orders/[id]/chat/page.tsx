@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { ChevronLeft, Send } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
@@ -11,7 +12,9 @@ import { ErrorBanner } from '@/components/ErrorBanner'
 
 const CHAT_POLL_MS = 5000
 
-export default function OrderChatPage({ params }: { params: { id: string } }) {
+export default function OrderChatPage() {
+  const params = useParams<{ id: string }>()
+  const orderId = typeof params?.id === 'string' ? params.id : ''
   const { user } = useAuth()
   const { t, locale } = useLocale()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -23,7 +26,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!user || typeof document === 'undefined') {
+    if (!user || !orderId || typeof document === 'undefined') {
       setLoading(false)
       return
     }
@@ -43,8 +46,8 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
       if (inFlight) return
       inFlight = true
       const request = silent
-        ? fetchOrderMessages(params.id)
-        : fetchOrder(params.id).then(() => fetchOrderMessages(params.id))
+        ? fetchOrderMessages(orderId)
+        : fetchOrder(orderId).then(() => fetchOrderMessages(orderId))
       request
         .then((next) => {
           setLoadError('')
@@ -72,7 +75,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
       if (intervalId) clearInterval(intervalId)
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [user, params.id])
+  }, [user, orderId])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -80,12 +83,12 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
 
   const handleSend = async () => {
     const text = input.trim()
-    if (!text || sending) return
+    if (!orderId || !text || sending) return
     setInput('')
     setSending(true)
     setSendError('')
     try {
-      const msg = await sendOrderMessage(params.id, text)
+      const msg = await sendOrderMessage(orderId, text)
       setMessages((prev) => [...prev, msg])
     } catch (err) {
       setInput(text)
@@ -115,7 +118,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-[#1a1b26] text-white flex flex-col pb-24">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3">
-          <Link href={`/orders/${params.id}`} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
+          <Link href={`/orders/${orderId}`} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-lg font-semibold">{t('order_chat.title')}</h1>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import {
   ChevronLeft,
   Puzzle,
@@ -32,9 +33,11 @@ import { BOLHNav } from '@/components/BOLHNav'
 
 type Tab = 'info' | 'team' | 'comments' | 'export'
 
-export default function PluginDetailPage({ params }: { params: { id: string } }) {
+export default function PluginDetailPage() {
   const { user } = useAuth()
   const { t, locale } = useLocale()
+  const params = useParams<{ id: string }>()
+  const pluginId = typeof params?.id === 'string' ? params.id : ''
   const [plugin, setPlugin] = useState<Plugin | null>(null)
   const [loading, setLoading] = useState(true)
   const [publishing, setPublishing] = useState(false)
@@ -54,41 +57,41 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   const [exporting, setExporting] = useState(false)
 
   const loadPlugin = useCallback(() => {
-    if (!user || !params.id) return
+    if (!user || !pluginId) return
     setLoading(true)
-    getPlugin(params.id)
+    getPlugin(pluginId)
       .then(setPlugin)
       .catch(() => setPlugin(null))
       .finally(() => setLoading(false))
-  }, [user, params.id])
+  }, [user, pluginId])
 
   useEffect(() => {
     loadPlugin()
   }, [loadPlugin])
 
   useEffect(() => {
-    if (tab !== 'team' || !params.id) return
+    if (tab !== 'team' || !pluginId) return
     setMembersLoading(true)
-    listPluginTeam(params.id)
+    listPluginTeam(pluginId)
       .then(setMembers)
       .catch(() => setMembers([]))
       .finally(() => setMembersLoading(false))
-  }, [tab, params.id])
+  }, [tab, pluginId])
 
   useEffect(() => {
-    if (tab !== 'comments' || !params.id) return
+    if (tab !== 'comments' || !pluginId) return
     setCommentsLoading(true)
-    listPluginComments(params.id)
+    listPluginComments(pluginId)
       .then(setComments)
       .catch(() => setComments([]))
       .finally(() => setCommentsLoading(false))
-  }, [tab, params.id])
+  }, [tab, pluginId])
 
   const handlePublish = async () => {
-    if (!params.id) return
+    if (!pluginId) return
     setPublishing(true)
     try {
-      await publishPlugin(params.id, true)
+      await publishPlugin(pluginId, true)
       setPlugin((p) => (p ? { ...p, status: 'active', is_public: true } : null))
     } catch {
       // ignore
@@ -98,12 +101,12 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const handleAddMember = async () => {
-    if (!params.id || !addEmail.trim()) return
+    if (!pluginId || !addEmail.trim()) return
     setAddingMember(true)
     try {
-      await addPluginTeamMember(params.id, { email: addEmail.trim(), role: addRole })
+      await addPluginTeamMember(pluginId, { email: addEmail.trim(), role: addRole })
       setAddEmail('')
-      listPluginTeam(params.id).then(setMembers)
+      listPluginTeam(pluginId).then(setMembers)
     } catch {
       // ignore
     } finally {
@@ -112,9 +115,9 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const handleRemoveMember = async (userId: string) => {
-    if (!params.id) return
+    if (!pluginId) return
     try {
-      await removePluginTeamMember(params.id, userId)
+      await removePluginTeamMember(pluginId, userId)
       setMembers((m) => m.filter((x) => x.user_id !== userId))
     } catch {
       // ignore
@@ -122,10 +125,10 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const handleAddComment = async () => {
-    if (!params.id || !newComment.trim()) return
+    if (!pluginId || !newComment.trim()) return
     setSubmittingComment(true)
     try {
-      const c = await addPluginComment(params.id, { content: newComment.trim() })
+      const c = await addPluginComment(pluginId, { content: newComment.trim() })
       setComments((prev) => [...prev, c].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()))
       setNewComment('')
     } catch {
@@ -136,9 +139,9 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const handleResolve = async (commentId: string, resolved: boolean) => {
-    if (!params.id) return
+    if (!pluginId) return
     try {
-      await resolvePluginComment(params.id, commentId, resolved)
+      await resolvePluginComment(pluginId, commentId, resolved)
       setComments((prev) =>
         prev.map((c) => (c.id === commentId ? { ...c, resolved } : c))
       )
@@ -148,10 +151,10 @@ export default function PluginDetailPage({ params }: { params: { id: string } })
   }
 
   const handleExport = async () => {
-    if (!params.id) return
+    if (!pluginId) return
     setExporting(true)
     try {
-      await downloadPluginExport(params.id, 'html')
+      await downloadPluginExport(pluginId, 'html')
     } catch {
       // ignore
     } finally {

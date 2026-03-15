@@ -4,7 +4,7 @@ const SIGNED_MODE = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_MODE || 'partial').t
 const SIGNED_ENABLED = (process.env.NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED || '1').toLowerCase() !== '0'
 const SIGNED_PARTIAL_PATHS = (
   process.env.NEXT_PUBLIC_SIGNED_REQUEST_PARTIAL_PATHS ||
-  '/api/v1/auth/me/password,/api/v1/orders,/api/v1/bids,/api/v1/documents/upload'
+  '/api/v1/auth/me/password,/api/v1/orders,/api/v1/bids,/api/v1/documents/upload,/api/v1/company/register'
 )
   .split(',')
   .map((v) => v.trim())
@@ -58,7 +58,13 @@ function isNetworkError(e: unknown): boolean {
 }
 
 function isSensitivePath(path: string): boolean {
-  const fullSet = new Set(['/api/v1/auth/me/password', '/api/v1/orders', '/api/v1/bids', '/api/v1/documents/upload'])
+  const fullSet = new Set([
+    '/api/v1/auth/me/password',
+    '/api/v1/orders',
+    '/api/v1/bids',
+    '/api/v1/documents/upload',
+    '/api/v1/company/register',
+  ])
   if (SIGNED_MODE === 'full') return fullSet.has(path)
   if (SIGNED_MODE === 'partial') return SIGNED_PARTIAL_PATHS.includes(path)
   return fullSet.has(path)

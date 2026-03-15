@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { addCard } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
-import { detectCardBrand, digitsOnly, formatCardNumber, formatExpiry, isValidLuhn } from '@/lib/payment/cardUtils'
+import { detectCardBrand, digitsOnly, formatCardNumber, formatExpiry, isLikelyRealCardNumber } from '@/lib/payment/cardUtils'
 
 export default function AddCardPage() {
   const { user } = useAuth()
@@ -27,7 +27,7 @@ export default function AddCardPage() {
     e.preventDefault()
     setError('')
     const number = digitsOnly(cardNumber)
-    if (!isValidLuhn(number)) {
+    if (!isLikelyRealCardNumber(number)) {
       setError(t('profile_add_card.error_invalid_number'))
       return
     }

@@ -16,6 +16,7 @@ import { fetchCards, type PaymentCard } from '@/lib/api'
 import { BOLHNav } from '@/components/BOLHNav'
 import type { ProfileDetails } from './OnlineDetailsForm'
 import { AuthenticatedProfileContent } from './AuthenticatedProfileContent'
+import { getProfileAvatar } from '@/lib/profileAvatar'
 
 export default function ProfilePage() {
   const { user, loading, logout } = useAuth()
@@ -25,6 +26,7 @@ export default function ProfilePage() {
   const [cards, setCards] = useState<PaymentCard[]>([])
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const [onlineHint, setOnlineHint] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [details, setDetails] = useState<ProfileDetails>({
     online: false,
     displayName: '',
@@ -74,6 +76,14 @@ export default function ProfilePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultDisplayName, user?.id])
+
+  useEffect(() => {
+    if (!user?.id) {
+      setAvatarUrl(null)
+      return
+    }
+    setAvatarUrl(getProfileAvatar(user.id))
+  }, [user?.id])
 
   const toggleOnlineStatus = () => {
     if (!details.online) {
@@ -216,6 +226,7 @@ export default function ProfilePage() {
             displayName={displayName}
             roleLabel={roleLabel}
             completionPercent={completionPercent}
+            avatarUrl={avatarUrl}
             cards={cards}
             isAgency={isAgency}
             showLogoutConfirm={showLogoutConfirm}

@@ -18,6 +18,14 @@ const DOC_TYPES = [
   { value: 'daily_report', labelKey: 'documents_upload.type_daily_report' },
   { value: 'incident_report', labelKey: 'documents_upload.type_incident_report' },
 ]
+const MAX_DOC_SIZE_BYTES = 8 * 1024 * 1024
+const ALLOWED_DOC_EXTENSIONS = new Set(['pdf', 'jpg', 'jpeg', 'png', 'gif', 'doc', 'docx'])
+
+function getFileExtension(name: string): string {
+  const idx = name.lastIndexOf('.')
+  if (idx < 0) return ''
+  return name.slice(idx + 1).toLowerCase()
+}
 
 export default function DocumentUploadPage() {
   const { user } = useAuth()
@@ -33,6 +41,19 @@ export default function DocumentUploadPage() {
     setError('')
     if (!file) {
       setError(t('documents_upload.select_file_error'))
+      return
+    }
+    const ext = getFileExtension(file.name)
+    if (!ALLOWED_DOC_EXTENSIONS.has(ext)) {
+      setError('Unsupported file type. Allowed: PDF, JPG, PNG, GIF, DOC, DOCX.')
+      return
+    }
+    if (file.size <= 0 || file.size > MAX_DOC_SIZE_BYTES) {
+      setError('Invalid file size. Maximum allowed is 8MB.')
+      return
+    }
+    if (file.name.trim().length < 3) {
+      setError('Document file name looks invalid.')
       return
     }
     setLoading(true)

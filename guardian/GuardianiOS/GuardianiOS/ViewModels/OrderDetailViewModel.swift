@@ -4,6 +4,8 @@ import SwiftUI
 final class OrderDetailViewModel: ObservableObject {
     @Published var order: Order
     @Published var assignedGuard: Guard?
+    @Published var isLoading = false
+    @Published var errorMessage: String?
 
     init(orderId: UUID) {
         order = Order(
@@ -26,8 +28,21 @@ final class OrderDetailViewModel: ObservableObject {
         self.init(orderId: UUID())
     }
 
-    func load(orderId: UUID) {
-        // TODO: fetch order by id
+    func load(orderId: UUID) async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
+        guard let token = UserDefaults.standard.string(forKey: "guardian_ios_token"), !token.isEmpty else {
+            errorMessage = "Требуется авторизация."
+            return
+        }
+
+        do {
+            order = try await ApiClient.getOrderById(token: token, orderId: orderId)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     func editOrder() {}

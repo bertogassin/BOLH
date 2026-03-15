@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 
 interface User {
@@ -16,29 +17,40 @@ interface User {
 }
 
 async function fetchUser(id: string): Promise<User | null> {
-  const res = await fetch(`/api/users/${id}`).catch(() => ({ ok: false }))
-  if (!res || !('ok' in res) || !res.ok)
-    return {
-      id,
-      firstName: 'Alex',
-      lastName: 'Taylor',
-      email: 'alex.taylor@example.com',
-      userType: 'client',
-      verified: true,
-      createdAt: '2024-01-15',
-    }
-  return (res as Response).json()
+  const res = await fetch(`/api/users/${id}`)
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error((data as { error?: string }).error || 'Failed to load user')
+  }
+  return res.json()
 }
 
-export default function UserDetailPage({
-  params,
-}: {
-  params: { id: string }
-}) {
-  const { data: user } = useQuery({
-    queryKey: ['user', params.id],
-    queryFn: () => fetchUser(params.id),
+export default function UserDetailPage() {
+  const params = useParams<{ id: string }>()
+  const userId = typeof params?.id === 'string' ? params.id : ''
+  const { data: user, error, isFetching, refetch } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    enabled: Boolean(userId),
   })
+
+  if (error) {
+    return (
+      <div className="space-y-3 p-6">
+        <p className="text-sm text-red-600 dark:text-red-400">
+          {error instanceof Error ? error.message : 'Failed to load user'}
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs hover:bg-gray-100 disabled:opacity-60 dark:border-gray-600 dark:hover:bg-gray-700"
+        >
+          {isFetching ? 'Retrying...' : 'Retry'}
+        </button>
+      </div>
+    )
+  }
 
   if (!user) return <div className="p-6">Loading...</div>
 

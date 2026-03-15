@@ -2,12 +2,12 @@ export type MissionHints = { objectLabel: string; tasks: string[] }
 
 export function detectPlaceType(address: string): string {
   const v = address.toLowerCase()
-  if (/villa|maison|house/.test(v)) return 'villa_house'
-  if (/apartment|flat|residence/.test(v)) return 'residential'
-  if (/shop|store|market|boutique|supermarket/.test(v)) return 'store_commercial'
-  if (/office|business|company/.test(v)) return 'office_business'
-  if (/hotel|otel/.test(v)) return 'hotel'
-  if (/warehouse/.test(v)) return 'warehouse'
+  if (/villa|maison|house|дом|коттедж|вилл/.test(v)) return 'villa_house'
+  if (/apartment|flat|residence|квартир|жил|подъезд/.test(v)) return 'residential'
+  if (/shop|store|market|boutique|supermarket|магазин|супермаркет|рынок|торгов|тц/.test(v)) return 'store_commercial'
+  if (/office|business|company|офис|бизнес|компан|бц|центр/.test(v)) return 'office_business'
+  if (/hotel|otel|отел|гостиниц/.test(v)) return 'hotel'
+  if (/warehouse|склад|логист/.test(v)) return 'warehouse'
   return ''
 }
 
