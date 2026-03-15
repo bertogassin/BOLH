@@ -145,7 +145,10 @@
     "error_price_required": "価格は必須です。",
     "error_price_positive": "ゼロより大きい有効な価格を入力してください。",
     "error_start_future": "開始時刻は将来の時刻である必要があります。",
-    "error_generic": "エラー"
+    "error_generic": "エラー",
+    "escrow_hold_label": "Escrow hold (money is held until mission completion)",
+    "escrow_hold_hint": "Recommended intermediary: Stripe manual capture escrow. Funds stay on hold until mission is completed.",
+    "error_escrow_hold_failed": "Escrow hold failed. Order was cancelled, please retry payment."
   },
   "profile": {
     "title": "プロフィール",
@@ -712,7 +715,20 @@
     "document_selected": "選択されたドキュメント",
     "select_document": "ドキュメントを選択",
     "sending": "送信中...",
-    "send_for_review": "レビューのために送信する"
+    "send_for_review": "レビューのために送信する",
+    "guard_docs_title": "Guard documents",
+    "guard_docs_hint": "Add your professional guard documents and PRO card details. This data is saved in your profile on this device.",
+    "pro_card_number": "PRO card number",
+    "license_number": "Guard license number",
+    "id_document_number": "ID document number",
+    "pro_card_expiry": "PRO card expiry (MM/YYYY)",
+    "certifications": "Certificates / permits",
+    "notes": "Additional notes",
+    "pro_card_upload": "Upload PRO card or license",
+    "pro_card_selected": "PRO document selected",
+    "save_guard_docs": "Save guard documents",
+    "guard_docs_saved": "Guard documents saved.",
+    "pro_card_required": "Enter PRO card number."
   },
   "documents_detail": {
     "delete_confirm": "文書を削除しますか?",

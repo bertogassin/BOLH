@@ -145,7 +145,10 @@
     "error_price_required": "Preis ist erforderlich.",
     "error_price_positive": "Geben Sie einen gültigen Preis größer als Null ein.",
     "error_start_future": "Die Startzeit muss in der Zukunft liegen.",
-    "error_generic": "Fehler"
+    "error_generic": "Fehler",
+    "escrow_hold_label": "Escrow hold (money is held until mission completion)",
+    "escrow_hold_hint": "Recommended intermediary: Stripe manual capture escrow. Funds stay on hold until mission is completed.",
+    "error_escrow_hold_failed": "Escrow hold failed. Order was cancelled, please retry payment."
   },
   "profile": {
     "title": "Profil",
@@ -540,7 +543,20 @@
     "document_selected": "Dokument ausgewählt",
     "select_document": "Dokument auswählen",
     "sending": "Senden...",
-    "send_for_review": "Zur Prüfung senden"
+    "send_for_review": "Zur Prüfung senden",
+    "guard_docs_title": "Guard documents",
+    "guard_docs_hint": "Add your professional guard documents and PRO card details. This data is saved in your profile on this device.",
+    "pro_card_number": "PRO card number",
+    "license_number": "Guard license number",
+    "id_document_number": "ID document number",
+    "pro_card_expiry": "PRO card expiry (MM/YYYY)",
+    "certifications": "Certificates / permits",
+    "notes": "Additional notes",
+    "pro_card_upload": "Upload PRO card or license",
+    "pro_card_selected": "PRO document selected",
+    "save_guard_docs": "Save guard documents",
+    "guard_docs_saved": "Guard documents saved.",
+    "pro_card_required": "Enter PRO card number."
   },
   "company_register": {
     "title": "Firmenregistrierung",

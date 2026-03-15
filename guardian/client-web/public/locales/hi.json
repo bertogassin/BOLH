@@ -145,7 +145,10 @@
     "error_price_required": "कीमत आवश्यक है.",
     "error_price_positive": "शून्य से अधिक वैध मूल्य दर्ज करें.",
     "error_start_future": "प्रारंभ समय भविष्य में होना चाहिए.",
-    "error_generic": "त्रुटि"
+    "error_generic": "त्रुटि",
+    "escrow_hold_label": "Escrow hold (money is held until mission completion)",
+    "escrow_hold_hint": "Recommended intermediary: Stripe manual capture escrow. Funds stay on hold until mission is completed.",
+    "error_escrow_hold_failed": "Escrow hold failed. Order was cancelled, please retry payment."
   },
   "profile": {
     "title": "प्रोफाइल",
@@ -712,7 +715,20 @@
     "document_selected": "दस्तावेज़ चयनित",
     "select_document": "दस्तावेज़ चुनें",
     "sending": "भेजा जा रहा है...",
-    "send_for_review": "समीक्षा हेतु भेजें"
+    "send_for_review": "समीक्षा हेतु भेजें",
+    "guard_docs_title": "Guard documents",
+    "guard_docs_hint": "Add your professional guard documents and PRO card details. This data is saved in your profile on this device.",
+    "pro_card_number": "PRO card number",
+    "license_number": "Guard license number",
+    "id_document_number": "ID document number",
+    "pro_card_expiry": "PRO card expiry (MM/YYYY)",
+    "certifications": "Certificates / permits",
+    "notes": "Additional notes",
+    "pro_card_upload": "Upload PRO card or license",
+    "pro_card_selected": "PRO document selected",
+    "save_guard_docs": "Save guard documents",
+    "guard_docs_saved": "Guard documents saved.",
+    "pro_card_required": "Enter PRO card number."
   },
   "documents_detail": {
     "delete_confirm": "दस्तावेज़ हटाएँ?",
