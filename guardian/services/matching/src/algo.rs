@@ -6,10 +6,7 @@ use std::cmp::Ordering;
 use crate::models::Candidate;
 
 /// Select best candidate: free guards are prioritized, then lower price wins.
-pub fn select_best(
-    mut guards: Vec<Candidate>,
-    mut agencies: Vec<Candidate>,
-) -> Option<Candidate> {
+pub fn select_best(mut guards: Vec<Candidate>, mut agencies: Vec<Candidate>) -> Option<Candidate> {
     guards.sort_by(cmp_candidate_by_price);
     agencies.sort_by(cmp_candidate_by_price);
     guards

@@ -55,10 +55,7 @@ impl LicenseIndex {
         }
     }
     pub fn insert(&mut self, license: LicenseType, bid_id: BidId) {
-        self.by_license
-            .entry(license)
-            .or_default()
-            .insert(bid_id);
+        self.by_license.entry(license).or_default().insert(bid_id);
     }
     #[allow(dead_code)]
     pub fn remove(&mut self, license: &LicenseType, bid_id: &BidId) {
@@ -67,11 +64,7 @@ impl LicenseIndex {
         }
     }
     pub fn get(&self, license: &LicenseType) -> impl Iterator<Item = BidId> + '_ {
-        self.by_license
-            .get(license)
-            .into_iter()
-            .flatten()
-            .copied()
+        self.by_license.get(license).into_iter().flatten().copied()
     }
 }
 
@@ -93,10 +86,7 @@ impl PriceIndex {
         }
     }
     pub fn insert(&mut self, price: Decimal, bid_id: BidId) {
-        self.by_price
-            .entry(price)
-            .or_default()
-            .insert(bid_id);
+        self.by_price.entry(price).or_default().insert(bid_id);
     }
     #[allow(dead_code)]
     pub fn remove(&mut self, price: &Decimal, bid_id: &BidId) {

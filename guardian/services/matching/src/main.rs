@@ -82,8 +82,7 @@ impl MatchingEngine {
             }
             info!(
                 "Match created: order={}, guard={}",
-                order.id.0,
-                best.guard_id.0
+                order.id.0, best.guard_id.0
             );
         }
     }
@@ -102,10 +101,7 @@ impl MatchingEngine {
             }
         }
         {
-            let mut price = self
-                .price_index
-                .write()
-                .expect("price_index write lock");
+            let mut price = self.price_index.write().expect("price_index write lock");
             price.insert(bid.price.amount(), bid.id);
         }
     }
@@ -131,10 +127,7 @@ impl MatchingEngine {
         };
 
         let by_license: HashSet<BidId> = {
-            let lic = self
-                .license_index
-                .read()
-                .expect("license_index read lock");
+            let lic = self.license_index.read().expect("license_index read lock");
             order
                 .requirements
                 .required_licenses
@@ -150,10 +143,7 @@ impl MatchingEngine {
 
         let (min_p, max_p) = (order.budget_range.0.amount(), order.budget_range.1.amount());
         let by_price = {
-            let price = self
-                .price_index
-                .read()
-                .expect("price_index read lock");
+            let price = self.price_index.read().expect("price_index read lock");
             price.query_range(min_p, max_p)
         };
         let bid_ids: HashSet<BidId> = if by_price.is_empty() {
