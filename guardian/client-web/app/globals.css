@@ -64,6 +64,11 @@ html {
   user-select: text;
 }
 
+/* Keep sticky page headers below mobile status bar/notch on every screen. */
+header.sticky.top-0 {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 /* Allow selecting/copying visible UI text even inside clickable rows */
 button,
 a,

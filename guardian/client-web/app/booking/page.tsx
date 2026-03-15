@@ -635,7 +635,7 @@ export default function BookingPage() {
   return (
     <div className="theme-page min-h-dvh text-white flex flex-col">
       <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
-        <div className="flex min-h-[250px] items-end justify-between px-4 pb-4 pt-[calc(env(safe-area-inset-top,0px)+16px)]">
+        <div className="flex min-h-[200px] items-end justify-between px-4 pb-4 pt-4">
           <span className="text-lg font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
             <span className="text-white font-medium">SECURITY</span>
