@@ -5,10 +5,12 @@ use rust_decimal::Decimal;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
 /// Spatial index: radius query from a point (simplified hash map + filter).
+#[allow(dead_code)]
 pub struct SpatialIndex {
     by_id: HashMap<BidId, GeoPoint>,
 }
 
+#[allow(dead_code)]
 impl SpatialIndex {
     pub fn new() -> Self {
         Self {
@@ -53,22 +55,16 @@ impl LicenseIndex {
         }
     }
     pub fn insert(&mut self, license: LicenseType, bid_id: BidId) {
-        self.by_license
-            .entry(license)
-            .or_default()
-            .insert(bid_id);
+        self.by_license.entry(license).or_default().insert(bid_id);
     }
+    #[allow(dead_code)]
     pub fn remove(&mut self, license: &LicenseType, bid_id: &BidId) {
         if let Some(set) = self.by_license.get_mut(license) {
             set.remove(bid_id);
         }
     }
     pub fn get(&self, license: &LicenseType) -> impl Iterator<Item = BidId> + '_ {
-        self.by_license
-            .get(license)
-            .into_iter()
-            .flatten()
-            .copied()
+        self.by_license.get(license).into_iter().flatten().copied()
     }
 }
 
@@ -90,11 +86,9 @@ impl PriceIndex {
         }
     }
     pub fn insert(&mut self, price: Decimal, bid_id: BidId) {
-        self.by_price
-            .entry(price)
-            .or_default()
-            .insert(bid_id);
+        self.by_price.entry(price).or_default().insert(bid_id);
     }
+    #[allow(dead_code)]
     pub fn remove(&mut self, price: &Decimal, bid_id: &BidId) {
         if let Some(set) = self.by_price.get_mut(price) {
             set.remove(bid_id);

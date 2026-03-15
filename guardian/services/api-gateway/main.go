@@ -598,11 +598,6 @@ func hasBearerAuthHeader(c *gin.Context) bool {
 	return strings.HasPrefix(h, "Bearer ")
 }
 
-func signedCookieCompatEnabled() bool {
-	value := strings.ToLower(strings.TrimSpace(os.Getenv("SIGNED_REQUEST_COOKIE_COMPAT")))
-	return value == "true" || value == "1" || value == "yes"
-}
-
 func boolToFlag(v bool) string {
 	if v {
 		return "1"

@@ -144,11 +144,11 @@ func (h *PlanHandlers) AddTask(c *gin.Context) {
 		return
 	}
 	var req struct {
-		Title       string  `json:"title"`
-		Description string  `json:"description"`
-		DueAt       *string `json:"due_at"`
-		AssigneeID  string  `json:"assignee_id"`
-		AssigneeEmail string `json:"assignee_email"`
+		Title         string  `json:"title"`
+		Description   string  `json:"description"`
+		DueAt         *string `json:"due_at"`
+		AssigneeID    string  `json:"assignee_id"`
+		AssigneeEmail string  `json:"assignee_email"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

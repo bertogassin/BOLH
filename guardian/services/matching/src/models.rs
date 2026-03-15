@@ -1,6 +1,6 @@
 // Events and candidate models for Matching Engine.
 
-use domain::{Bid, BidId, BidderType, GuardId, Match, Order, OrderId};
+use domain::{Bid, BidId, BidderType, GuardId, Order};
 use std::sync::Arc;
 
 pub struct OrderEvent {

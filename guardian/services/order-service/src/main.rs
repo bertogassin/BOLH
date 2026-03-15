@@ -217,7 +217,7 @@ async fn list_orders(
                 .read()
                 .await
                 .values()
-                .filter(|o| q.client_id.map_or(true, |id| o.client_id == id))
+                .filter(|o| q.client_id.is_none_or(|id| o.client_id == id))
                 .cloned()
                 .collect();
             Json(orders).into_response()
