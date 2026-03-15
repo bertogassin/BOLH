@@ -579,7 +579,7 @@ export default function BookingPage() {
 
   if (!user) {
     return (
-      <div className="theme-page min-h-dvh p-4 flex flex-col items-center justify-center gap-4 pb-32">
+      <div className="theme-page min-h-screen p-4 flex flex-col items-center justify-center gap-4">
         <p className="text-white/75 text-center">{t('booking.login_required')}</p>
         <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
           {t('auth.login_btn')}
@@ -589,7 +589,7 @@ export default function BookingPage() {
     )
   }
   return (
-    <div className="theme-page min-h-dvh text-white flex flex-col">
+    <div className="theme-page min-h-screen text-white">
       <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="text-lg font-bold uppercase tracking-wide">
@@ -627,8 +627,8 @@ export default function BookingPage() {
         </div>
       </header>
 
-      <main className="w-full flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-[70px] text-[17px]">
-        <div className="relative mx-auto w-[94%] origin-top scale-[1.06]">
+      <main className="mx-auto max-w-lg px-4 pt-5 pb-24">
+        <div className="relative">
         {isAnyDrawerOpen && (
           <div
             className="absolute inset-0 z-40 bg-black/28 backdrop-blur-[2px] pointer-events-auto"

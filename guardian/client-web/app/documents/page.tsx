@@ -68,15 +68,15 @@ export default function DocumentsHubPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
+      <div className="theme-page min-h-screen text-white flex items-center justify-center">
         <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-20 border-b border-white/10 backdrop-blur">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-start gap-3">
             <Link

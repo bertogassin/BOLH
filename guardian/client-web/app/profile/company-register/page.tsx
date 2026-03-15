@@ -213,15 +213,15 @@ export default function CompanyRegisterPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] text-white flex items-center justify-center">
+      <div className="theme-page min-h-screen text-white flex items-center justify-center">
         <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-2 px-4 py-3">
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10">
             <ChevronLeft className="h-5 w-5" />

@@ -117,7 +117,7 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] p-4 flex items-center justify-center text-white">
+      <div className="theme-page min-h-screen p-4 flex items-center justify-center text-white">
         <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
@@ -125,14 +125,14 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#1a1b26]">
+      <div className="theme-page flex min-h-screen items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
       </div>
     )
   }
   if (!order) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] p-4 flex flex-col items-center justify-center text-white">
+      <div className="theme-page min-h-screen p-4 flex flex-col items-center justify-center text-white">
         <p>{t('order_detail.not_found')}</p>
         <Link href="/orders" className="mt-4 text-violet-400 hover:underline">← {t('order_detail.back_to_orders')}</Link>
       </div>
@@ -144,8 +144,8 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
   const currentStep = timelineIndex(order.status)
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link href="/orders" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ArrowLeft className="h-5 w-5" />

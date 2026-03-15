@@ -97,7 +97,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#1a1b26] flex items-center justify-center text-white">
+      <div className="theme-page min-h-screen flex items-center justify-center text-white">
         <Link href="/login" className="text-violet-400 hover:underline">{t('auth.login_btn')}</Link>
       </div>
     )
@@ -105,15 +105,15 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#1a1b26]">
+      <div className="theme-page flex min-h-screen items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white flex flex-col pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white flex flex-col pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-3 px-4 py-3">
           <Link href={`/orders/${params.id}`} className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />
@@ -148,7 +148,7 @@ export default function OrderChatPage({ params }: { params: { id: string } }) {
         <div ref={bottomRef} />
       </main>
 
-      <div className="fixed bottom-20 left-0 right-0 border-t border-white/10 bg-[#1a1b26]/95 p-4">
+      <div className="fixed bottom-20 left-0 right-0 border-t border-white/10 theme-header p-4">
         <div className="mx-auto flex max-w-lg gap-2">
           <input
             type="text"
