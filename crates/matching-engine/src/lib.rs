@@ -84,7 +84,9 @@ impl Default for MatchingEngine {
 }
 
 fn is_bid_price_compatible(order: &Order, bid: &Bid) -> bool {
-    if !order.budget.min.is_same_currency(&bid.price) || !order.budget.max.is_same_currency(&bid.price) {
+    if !order.budget.min.is_same_currency(&bid.price)
+        || !order.budget.max.is_same_currency(&bid.price)
+    {
         return false;
     }
     bid.price.amount >= order.budget.min.amount && bid.price.amount <= order.budget.max.amount
@@ -102,7 +104,9 @@ fn is_bid_time_compatible(order: &Order, bid: &Bid) -> bool {
 }
 
 fn score_match(order: &Order, bid: &Bid) -> f64 {
-    let budget_mid = decimal_to_f64((order.budget.min.amount + order.budget.max.amount) / bolh_domain::Decimal::from(2));
+    let budget_mid = decimal_to_f64(
+        (order.budget.min.amount + order.budget.max.amount) / bolh_domain::Decimal::from(2),
+    );
     let bid_price = decimal_to_f64(bid.price.amount);
     let budget_mid_safe = if budget_mid <= 0.0 { 1.0 } else { budget_mid };
     let price_delta = (budget_mid - bid_price).abs() / budget_mid_safe;
