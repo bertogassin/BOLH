@@ -9,6 +9,7 @@ import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
 import { ErrorBanner } from '@/components/ErrorBanner'
 import { FormField } from '@/components/FormField'
+import { SplashScreen, useSplash } from '@/components/SplashScreen'
 
 const REMEMBER_EMAIL_KEY = 'guardian_remember_email'
 const SAVED_EMAIL_KEY = 'guardian_saved_email'
@@ -30,6 +31,7 @@ export default function LoginPage() {
   const { login } = useAuth()
   const { t } = useLocale()
   const router = useRouter()
+  const { showSplash, markSplashDone } = useSplash()
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -115,6 +117,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-guardian-bg p-4">
+      {showSplash && <SplashScreen onDone={markSplashDone} />}
       <div className="w-full max-w-md rounded-2xl border border-gray-200/80 bg-white p-8 shadow-xl">
         <div className="mb-6 flex justify-center">
           <div className="flex items-center gap-3 rounded-2xl bg-guardian-blue px-5 py-3 text-white">
