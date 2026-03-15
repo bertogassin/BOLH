@@ -49,6 +49,7 @@ body {
   background-attachment: fixed;
   color: var(--bolh-text);
   min-height: 100vh;
+  min-height: 100dvh;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -62,6 +63,8 @@ html {
   text-size-adjust: 100%;
   -webkit-user-select: text;
   user-select: text;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Keep sticky page headers below mobile status bar/notch on every screen. */
@@ -297,6 +300,8 @@ input[type='radio'].border-violet-400\/50 {
 }
 
 .min-h-screen {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
   background-color: var(--bolh-bg) !important;
 }
 

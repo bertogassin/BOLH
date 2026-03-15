@@ -12,11 +12,29 @@ const HIDDEN_ROUTES = new Set([
   '/register',
 ])
 
+const HIDDEN_PREFIXES = [
+  '/orders',
+  '/create-order',
+  '/documents',
+  '/profile',
+  '/settings',
+  '/help',
+  '/notifications',
+  '/legal',
+]
+
+function shouldHideForPath(pathname: string): boolean {
+  if (HIDDEN_ROUTES.has(pathname)) {
+    return true
+  }
+  return HIDDEN_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+}
+
 export function GlobalBackButton() {
   const router = useRouter()
   const pathname = usePathname()
 
-  if (!pathname || HIDDEN_ROUTES.has(pathname)) {
+  if (!pathname || shouldHideForPath(pathname)) {
     return null
   }
 
@@ -33,7 +51,7 @@ export function GlobalBackButton() {
       type="button"
       onClick={handleBack}
       aria-label="Go back"
-      className="fixed left-3 z-40 h-11 w-11 rounded-full border border-white/20 bg-black/55 text-white shadow-lg backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+      className="fixed left-3 z-30 h-11 w-11 rounded-full border border-white/20 bg-black/55 text-white shadow-lg backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
       style={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
     >
       <ArrowLeft className="mx-auto h-5 w-5" />

@@ -35,6 +35,9 @@ type Server struct {
 	router              *gin.Engine
 	redis               *redis.Client
 	st                  store.Store
+	revokedTokenMu      sync.Mutex
+	revokedTokenHashes  map[string]time.Time
+	revokedUserBefore   map[string]time.Time
 	authHandler         *handlers.AuthHandlers
 	orderHandler        *handlers.OrderHandlers
 	bidHandler          *handlers.BidHandlers
@@ -95,6 +98,8 @@ func NewServer() *Server {
 		router:              gin.New(),
 		redis:               redis.NewClient(&redis.Options{Addr: addr}),
 		st:                  st,
+		revokedTokenHashes:  map[string]time.Time{},
+		revokedUserBefore:   map[string]time.Time{},
 		authHandler:         &handlers.AuthHandlers{Store: st, Secret: secret},
 		orderHandler:        &handlers.OrderHandlers{Store: st},
 		bidHandler:          &handlers.BidHandlers{Store: st},
@@ -106,6 +111,7 @@ func NewServer() *Server {
 		planHandler:         &handlers.PlanHandlers{Store: st},
 		companyHandler:      &handlers.CompanyHandlers{Store: st},
 	}
+	s.authHandler.Revoker = s
 	if err := s.router.SetTrustedProxies(trustedProxiesFromEnv()); err != nil {
 		log.Fatalf("trusted proxies: %v", err)
 	}
@@ -633,7 +639,78 @@ func (s *Server) validateToken(token string) (*Claims, error) {
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
 		jwt.WithLeeway(30*time.Second),
 	)
+	if err != nil {
+		return nil, err
+	}
+	if s.isTokenRevoked(token, &claims) {
+		return nil, jwt.ErrTokenInvalidClaims
+	}
 	return &claims, err
+}
+
+func (s *Server) RevokeToken(token string, expiresAt time.Time) {
+	token = strings.TrimSpace(token)
+	if token == "" {
+		return
+	}
+	now := time.Now()
+	if expiresAt.IsZero() || expiresAt.Before(now) {
+		expiresAt = now.Add(24 * time.Hour)
+	}
+	hash := sha256.Sum256([]byte(token))
+	encoded := hex.EncodeToString(hash[:])
+
+	s.revokedTokenMu.Lock()
+	s.revokedTokenHashes[encoded] = expiresAt
+	s.revokedTokenMu.Unlock()
+}
+
+func (s *Server) RevokeUserBefore(userID string, revokedAt time.Time) {
+	userID = strings.TrimSpace(userID)
+	if userID == "" {
+		return
+	}
+	if revokedAt.IsZero() {
+		revokedAt = time.Now()
+	}
+
+	s.revokedTokenMu.Lock()
+	if prev, ok := s.revokedUserBefore[userID]; !ok || revokedAt.After(prev) {
+		s.revokedUserBefore[userID] = revokedAt
+	}
+	s.revokedTokenMu.Unlock()
+}
+
+func (s *Server) isTokenRevoked(token string, claims *Claims) bool {
+	now := time.Now()
+	hash := sha256.Sum256([]byte(token))
+	encoded := hex.EncodeToString(hash[:])
+
+	s.revokedTokenMu.Lock()
+	defer s.revokedTokenMu.Unlock()
+
+	for key, exp := range s.revokedTokenHashes {
+		if exp.Before(now) {
+			delete(s.revokedTokenHashes, key)
+		}
+	}
+
+	if exp, ok := s.revokedTokenHashes[encoded]; ok && exp.After(now) {
+		return true
+	}
+
+	if claims == nil {
+		return false
+	}
+
+	revokedAt, ok := s.revokedUserBefore[claims.UserID]
+	if !ok {
+		return false
+	}
+	if claims.IssuedAt == nil {
+		return true
+	}
+	return !claims.IssuedAt.Time.After(revokedAt)
 }
 
 func allowedOriginsFromEnv() map[string]bool {

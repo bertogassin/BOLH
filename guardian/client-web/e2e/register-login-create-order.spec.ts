@@ -71,12 +71,26 @@ async function createOrderViaBooking(page: Page): Promise<{ id: string; title: s
     await firstSuggestion.click()
   }
   await page.locator('input[inputmode="decimal"]').first().fill('25')
-  await page.getByRole('button', { name: /Payment card/i }).click()
-  await page.locator('input[inputmode="numeric"][maxlength="19"]').fill('4242 4242 4242 4242')
-  await page.locator('input[inputmode="numeric"][maxlength="5"]').fill('12/30')
-  await page.locator('input[inputmode="numeric"][maxlength="4"]').fill('123')
-  await page.getByPlaceholder(/Cardholder name/i).fill('E2E User')
-  await page.getByRole('button', { name: /Use this card/i }).click()
+
+  const cardNumberInput = page.getByTestId('payment-card-number')
+  if (!(await cardNumberInput.isVisible())) {
+    const openPaymentSheetBtn = page.getByTestId('payment-sheet-toggle')
+    if (await openPaymentSheetBtn.isVisible()) {
+      await openPaymentSheetBtn.click()
+    }
+    const openOneTimeCardBtn = page.getByTestId('payment-one-time-toggle')
+    if (await openOneTimeCardBtn.isVisible()) {
+      await openOneTimeCardBtn.click()
+    }
+  }
+
+  await expect(cardNumberInput).toBeVisible({ timeout: 10000 })
+  await page.getByTestId('payment-card-number').fill('4532 0151 1283 0366')
+  await page.getByTestId('payment-card-expiry').fill('12/30')
+  await page.getByTestId('payment-card-cvc').fill('123')
+  await page.getByTestId('payment-card-holder').fill('E2E User')
+  await expect(page.getByTestId('payment-use-card')).toBeEnabled({ timeout: 10000 })
+  await page.getByTestId('payment-use-card').click()
   await page.locator('form input[type="checkbox"]').last().check()
   await page.locator('form').evaluate((form) => {
     ;(form as HTMLFormElement).requestSubmit()

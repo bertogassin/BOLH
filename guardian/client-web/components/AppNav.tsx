@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, ListOrdered, User } from 'lucide-react'
+import { Shield, ListOrdered, User } from 'lucide-react'
 import { useLocale } from '@/context/LocaleContext'
 
 const navItems = [
-  { href: '/', labelKey: 'navigation.home', icon: Home },
+  { href: '/booking', labelKey: 'navigation.home', icon: Shield },
   { href: '/orders', labelKey: 'navigation.orders', icon: ListOrdered },
   { href: '/profile', labelKey: 'navigation.profile', icon: User },
 ]
@@ -14,20 +14,27 @@ const navItems = [
 export function AppNav() {
   const pathname = usePathname()
   const { t } = useLocale()
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200/80 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="flex justify-around py-2 safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t theme-header backdrop-blur safe-area-pb">
+      <div className="flex justify-around py-3">
         {navItems.map(({ href, labelKey, icon: Icon }) => {
-          const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
+          const isActive = pathname === href || pathname.startsWith(`${href}/`)
+
           return (
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
-                isActive ? 'text-guardian-blue' : 'text-gray-500 hover:text-gray-900'
+              className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+                isActive
+                  ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
+                  : 'text-white/70 hover:text-white theme-hover border border-transparent'
               }`}
             >
-              <Icon className="h-6 w-6" strokeWidth={isActive ? 2.5 : 2} />
+              <Icon
+                className={`h-5 w-5 ${isActive ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`}
+                strokeWidth={isActive ? 2.4 : 2}
+              />
               <span className="text-xs font-medium">{t(labelKey)}</span>
             </Link>
           )

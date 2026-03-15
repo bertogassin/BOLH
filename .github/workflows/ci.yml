@@ -52,6 +52,26 @@ jobs:
           cd guardian/services/api-gateway
           go test -count=1 ./...
 
+      - name: P0 smoke (api-gateway)
+        env:
+          APP_ENV: test
+          JWT_SECRET: ci-jwt-secret
+          ADMIN_SECRET: ci-admin-secret
+        run: |
+          set -euo pipefail
+          cd guardian/services/api-gateway
+          go run . > /tmp/api-gateway.log 2>&1 &
+          API_PID=$!
+          trap "kill $API_PID" EXIT
+          for i in {1..60}; do
+            if curl -fsS http://localhost:8080/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://localhost:8080/health >/dev/null
+          python3 scripts/p0_smoke.py --api-base http://localhost:8080 --admin-key "$ADMIN_SECRET"
+
   guardian-web:
     runs-on: ubuntu-latest
     steps:

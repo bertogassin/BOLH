@@ -844,6 +844,7 @@ export default function BookingPage() {
               className={`w-full min-h-[44px] px-3 py-2 border-t ${paymentValidationError ? 'border-red-500/80' : 'border-violet-400'} flex items-center justify-between text-[12px] text-white/85 theme-hover`}
               aria-label={t('booking.select_saved_card_aria')}
               aria-expanded={showPaymentSheet}
+              data-testid="payment-sheet-toggle"
             >
               <span className="inline-flex items-center gap-1.5">
                 <CreditCard className="h-3 w-3" />
@@ -908,6 +909,7 @@ export default function BookingPage() {
                   type="button"
                   onClick={() => setShowOneTimeCardSheet((v) => !v)}
                   className="mt-2 inline-flex w-full min-h-[42px] items-center justify-center gap-1 rounded-lg border border-violet-400/70 px-2 py-1.5 text-[12px] text-white/85 theme-hover"
+                  data-testid="payment-one-time-toggle"
                 >
                   <CreditCard className="h-3.5 w-3.5" />
                   {t('booking.payment_one_time')}
@@ -934,6 +936,7 @@ export default function BookingPage() {
                             ? 'border-red-500/80 focus:border-red-500/80'
                             : 'border-violet-400 focus:border-violet-400'
                         }`}
+                        data-testid="payment-card-number"
                       />
                       <div className="grid grid-cols-2 gap-2">
                         <input
@@ -953,6 +956,7 @@ export default function BookingPage() {
                               ? 'border-red-500/80 focus:border-red-500/80'
                               : 'border-violet-400 focus:border-violet-400'
                           }`}
+                          data-testid="payment-card-expiry"
                         />
                         <input
                           type="text"
@@ -969,6 +973,7 @@ export default function BookingPage() {
                               ? 'border-red-500/80 focus:border-red-500/80'
                               : 'border-violet-400 focus:border-violet-400'
                           }`}
+                          data-testid="payment-card-cvc"
                         />
                       </div>
                       <input
@@ -984,6 +989,7 @@ export default function BookingPage() {
                             ? 'border-red-500/80 focus:border-red-500/80'
                             : 'border-violet-400 focus:border-violet-400'
                         }`}
+                        data-testid="payment-card-holder"
                       />
                       <button
                         type="button"
@@ -997,6 +1003,7 @@ export default function BookingPage() {
                         }}
                         disabled={!canUseOneTimeCard}
                         className="w-full rounded-lg bg-violet-600 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-50"
+                        data-testid="payment-use-card"
                       >
                         {t('booking.use_this_card')}
                       </button>

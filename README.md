@@ -31,6 +31,16 @@ chmod +x scripts/start-dev.sh
 - web: `http://localhost:3003`
 - api: `http://localhost:8080`
 
+Для запуска из корня репозитория:
+
+- Windows (PowerShell): `./start-project.ps1`
+- Linux/macOS (bash): `chmod +x ./start-project.sh && ./start-project.sh`
+
+## Полная проверка проекта
+
+- Windows (PowerShell): `./check-all.ps1`
+- Linux/macOS (bash): `chmod +x ./check-all.sh && ./check-all.sh`
+
 ## Переменные окружения
 
 - Шаблон: `.env.example` (в корне репозитория).

@@ -38,8 +38,14 @@ var (
 )
 
 type AuthHandlers struct {
-	Store  store.Store
-	Secret string
+	Store   store.Store
+	Secret  string
+	Revoker TokenRevoker
+}
+
+type TokenRevoker interface {
+	RevokeToken(token string, expiresAt time.Time)
+	RevokeUserBefore(userID string, revokedAt time.Time)
 }
 
 type Claims struct {
@@ -346,12 +352,19 @@ func (h *AuthHandlers) ChangePassword(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update password"})
 		return
 	}
+	if h.Revoker != nil {
+		h.Revoker.RevokeUserBefore(id, time.Now())
+	}
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }
 
 func (h *AuthHandlers) Logout(c *gin.Context) {
 	if userID := c.GetString("user_id"); userID != "" {
 		log.Printf("audit=logout user_id=%s ip=%s", userID, c.ClientIP())
+	}
+	token := tokenFromRequest(c)
+	if token != "" && h.Revoker != nil {
+		h.Revoker.RevokeToken(token, tokenExpiration(token, h.Secret))
 	}
 	clearAccessCookie(c)
 	c.JSON(http.StatusOK, gin.H{"ok": true})
@@ -445,6 +458,38 @@ func resetLoginFailures(email string) {
 	loginAttemptsMu.Lock()
 	delete(loginAttempts, email)
 	loginAttemptsMu.Unlock()
+}
+
+func tokenFromRequest(c *gin.Context) string {
+	authHeader := strings.TrimSpace(c.GetHeader("Authorization"))
+	if strings.HasPrefix(authHeader, "Bearer ") {
+		return strings.TrimSpace(strings.TrimPrefix(authHeader, "Bearer "))
+	}
+	if cookieToken, err := c.Cookie(accessCookieName); err == nil {
+		return strings.TrimSpace(cookieToken)
+	}
+	return ""
+}
+
+func tokenExpiration(token, secret string) time.Time {
+	token = strings.TrimSpace(token)
+	if token == "" || strings.TrimSpace(secret) == "" {
+		return time.Time{}
+	}
+	claims := &Claims{}
+	_, err := jwt.ParseWithClaims(
+		token,
+		claims,
+		func(t *jwt.Token) (interface{}, error) { return []byte(secret), nil },
+		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
+	)
+	if err != nil {
+		return time.Time{}
+	}
+	if claims.ExpiresAt == nil {
+		return time.Time{}
+	}
+	return claims.ExpiresAt.Time
 }
 
 func isHoneypotTriggered(v string) bool {
