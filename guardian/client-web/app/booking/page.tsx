@@ -635,10 +635,10 @@ export default function BookingPage() {
   return (
     <div className="theme-page min-h-dvh text-white flex flex-col">
       <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
-        <div className="flex min-h-[116px] items-end justify-between px-4 pb-3 pt-3">
-          <span className="text-base font-bold uppercase tracking-wide">
-            <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
-            <span className="text-white font-medium">SECURITY</span>
+        <div className="flex min-h-[86px] items-end justify-between px-4 pb-2 pt-2">
+          <span className="font-bold uppercase tracking-wide">
+            <span className="text-orange-300 text-[24px] leading-none font-extrabold">BOLH</span>{' '}
+            <span className="text-white text-[14px] font-medium">SECURITY</span>
           </span>
           <div className="flex items-center gap-2">
             <button
