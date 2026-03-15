@@ -84,12 +84,13 @@ jobs:
             [Text.UTF8Encoding]::new($false)
           )
 
-      - name: Build release bundle
+      - name: Build release bundle and APK
         working-directory: guardian/GuardianAndroid
         shell: pwsh
         run: |
           $args = @(
             ":app:bundleRelease",
+            ":app:assembleRelease",
             "--project-prop", "RELEASE_STORE_FILE=app/keystore/upload-keystore.jks",
             "--project-prop", "RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}",
             "--project-prop", "RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}",
@@ -104,6 +105,13 @@ jobs:
         with:
           name: bolh-release-aab
           path: guardian/GuardianAndroid/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bolh-release-apk
+          path: guardian/GuardianAndroid/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
       - name: Publish AAB to Google Play

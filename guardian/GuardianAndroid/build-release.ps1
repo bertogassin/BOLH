@@ -36,8 +36,8 @@ foreach ($name in $required) {
   }
 }
 
-Write-Host "Starting :app:bundleRelease ..."
-.\gradlew.bat :app:bundleRelease `
+Write-Host "Starting :app:bundleRelease :app:assembleRelease ..."
+.\gradlew.bat :app:bundleRelease :app:assembleRelease `
   "-PRELEASE_STORE_FILE=$($pairs["RELEASE_STORE_FILE"])" `
   "-PRELEASE_KEY_ALIAS=$($pairs["RELEASE_KEY_ALIAS"])" `
   "-PRELEASE_STORE_PASSWORD=$($pairs["RELEASE_STORE_PASSWORD"])" `
@@ -47,5 +47,6 @@ if ($LASTEXITCODE -ne 0) {
   exit $LASTEXITCODE
 }
 
-Write-Host "Release bundle completed."
-Write-Host "Output: app\build\outputs\bundle\release"
+Write-Host "Release build completed."
+Write-Host "AAB output: app\build\outputs\bundle\release"
+Write-Host "APK output: app\build\outputs\apk\release"

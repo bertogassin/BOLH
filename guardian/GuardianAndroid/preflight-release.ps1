@@ -154,6 +154,15 @@ if (Test-Path $AabPath) {
   Write-Warn "Run .\build-release.ps1 to generate release bundle."
 }
 
+$ApkPath = ".\app\build\outputs\apk\release\app-release.apk"
+if (Test-Path $ApkPath) {
+  $item = Get-Item $ApkPath
+  Write-Ok "APK exists: $ApkPath ($($item.Length) bytes)"
+} else {
+  Write-Warn "APK not found yet: $ApkPath"
+  Write-Warn "Run .\build-release.ps1 to generate release APK."
+}
+
 if ($hasError) {
   Write-Host ""
   Write-Fail "Preflight failed. Fix errors above before upload."
