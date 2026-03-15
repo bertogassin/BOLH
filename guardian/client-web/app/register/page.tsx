@@ -86,7 +86,13 @@ export default function RegisterPage() {
       router.push('/profile')
       router.refresh()
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('auth.register_error'))
+      const message = err instanceof Error ? err.message : t('auth.register_error')
+      const lowered = message.toLowerCase()
+      if (lowered.includes('conflict') || lowered.includes('already') || lowered.includes('exists')) {
+        setError('This email is already registered. Please use Login instead of Register.')
+      } else {
+        setError(message)
+      }
     } finally {
       setLoading(false)
     }
