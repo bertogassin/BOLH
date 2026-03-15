@@ -92,8 +92,8 @@ export default function VerificationPage() {
   })()
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white pb-24">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-[#1a1b26]/95 backdrop-blur">
+    <div className="theme-page min-h-screen text-white pb-24">
+      <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
         <div className="flex items-center gap-2 px-4 py-3">
           <Link href="/profile" className="p-2 rounded-lg hover:bg-white/10 min-h-[44px] min-w-[44px] flex items-center justify-center">
             <ChevronLeft className="h-5 w-5" />

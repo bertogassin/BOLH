@@ -172,7 +172,7 @@ export default function ProfilePage() {
   return (
     <div className="theme-page min-h-screen text-white pb-24">
       <header className="theme-header sticky top-0 z-10 border-b border-white/10 backdrop-blur">
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-between px-4 py-3">
           <span className="text-base font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
             <span className="text-white font-medium">SECURITY</span>
