@@ -13,13 +13,14 @@ const navItems = [
 
 export function AppNav() {
   const pathname = usePathname()
+  const currentPath = pathname ?? ''
   const { t } = useLocale()
 
   return (
     <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 border-t theme-header backdrop-blur safe-area-pb">
       <div className="flex justify-around py-3">
         {navItems.map(({ href, labelKey, icon: Icon }) => {
-          const isActive = pathname === href || pathname.startsWith(`${href}/`)
+          const isActive = currentPath === href || currentPath.startsWith(`${href}/`)
 
           return (
             <Link

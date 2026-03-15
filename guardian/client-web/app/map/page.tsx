@@ -3,20 +3,26 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { fetchOrders, fetchBids } from '@/lib/api'
+import { subscribeOrderSync } from '@/lib/order_sync'
 import { useAuth } from '@/context/AuthContext'
 import { BOLHNav } from '@/components/BOLHNav'
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => (
-    <div className="theme-page h-full min-h-[50vh] flex items-center justify-center">
-      <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-400 border-t-transparent" />
+    <div className="h-full min-h-[50vh] flex items-center justify-center bg-slate-100 text-slate-700">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-400 border-t-transparent" />
+        <span className="text-sm font-medium">Loading map…</span>
+      </div>
     </div>
   ),
 })
 
 const POLL_INTERVAL_MS = 25000
+const ACTIVE_ORDER_POLL_INTERVAL_MS = 7000
 const MAP_CACHE_TTL_MS = 15000
+const ACTIVE_ORDER_STATUSES = new Set(['published', 'open', 'searching', 'matched', 'in_progress'])
 
 type MapCacheSnapshot = {
   userId: string
@@ -33,6 +39,8 @@ export default function MapPage() {
   const [bids, setBids] = useState<Awaited<ReturnType<typeof fetchBids>>>([])
   const [viewportHeight, setViewportHeight] = useState<number | null>(null)
   const inFlightRef = useRef(false)
+  const hasActiveOrder = orders.some((order) => ACTIVE_ORDER_STATUSES.has(String(order.status || '').toLowerCase()))
+  const pollIntervalMs = hasActiveOrder ? ACTIVE_ORDER_POLL_INTERVAL_MS : POLL_INTERVAL_MS
 
   const load = useCallback((opts?: { force?: boolean }) => {
     if (!user) {
@@ -78,7 +86,7 @@ export default function MapPage() {
       if (intervalId) return
       intervalId = setInterval(() => {
         if (!document.hidden) load({ force: true })
-      }, POLL_INTERVAL_MS)
+      }, pollIntervalMs)
     }
 
     const stopPolling = () => {
@@ -99,15 +107,21 @@ export default function MapPage() {
     load()
     startPolling()
     document.addEventListener('visibilitychange', handleVisibility)
+    const unsubscribe = subscribeOrderSync(() => {
+      if (!document.hidden) load({ force: true })
+    })
+
     return () => {
       stopPolling()
       document.removeEventListener('visibilitychange', handleVisibility)
+      unsubscribe()
     }
-  }, [user, load])
+  }, [user, load, pollIntervalMs])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     let rafId: number | null = null
+    const visualViewport = window.visualViewport
     const updateViewport = () => {
       const next = window.innerHeight
       setViewportHeight((prev) => (prev === next ? prev : next))
@@ -122,14 +136,18 @@ export default function MapPage() {
     updateViewport()
     window.addEventListener('resize', scheduleViewportUpdate)
     window.addEventListener('orientationchange', scheduleViewportUpdate)
-    window.visualViewport?.addEventListener('resize', scheduleViewportUpdate)
+    if (visualViewport && typeof visualViewport.addEventListener === 'function') {
+      visualViewport.addEventListener('resize', scheduleViewportUpdate)
+    }
     return () => {
       if (rafId != null) {
         window.cancelAnimationFrame(rafId)
       }
       window.removeEventListener('resize', scheduleViewportUpdate)
       window.removeEventListener('orientationchange', scheduleViewportUpdate)
-      window.visualViewport?.removeEventListener('resize', scheduleViewportUpdate)
+      if (visualViewport && typeof visualViewport.removeEventListener === 'function') {
+        visualViewport.removeEventListener('resize', scheduleViewportUpdate)
+      }
     }
   }, [])
 
@@ -139,7 +157,7 @@ export default function MapPage() {
       style={{ height: viewportHeight ? `${Math.max(320, viewportHeight)}px` : '100vh' }}
     >
       <div className="absolute inset-0 z-0">
-        <MapView orders={orders} bids={bids} tileTheme="light" />
+        <MapView orders={orders} bids={bids} tileTheme="light" trackingMode={hasActiveOrder} />
       </div>
 
       <BOLHNav current="map" />

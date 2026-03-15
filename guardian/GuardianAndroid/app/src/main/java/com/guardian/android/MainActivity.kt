@@ -5,11 +5,15 @@ import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import android.webkit.SslErrorHandler
 import android.webkit.WebStorage
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -19,6 +23,7 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +39,7 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     companion object {
         private const val TAG = "GuardianWebView"
+        private const val STARTUP_TIMEOUT_MS = 15000L
     }
 
     private fun parseAppUri(): Uri {
@@ -209,11 +215,13 @@ class MainActivity : ComponentActivity() {
                             <p>The app opens in offline mode and keeps local access to basic screens.</p>
                             <div class="actions">
                               <a id="retryLink" class="retry-link" href="$appUrl">Retry now</a>
+                                                            <button id="browserBtn" type="button">Open in browser</button>
                             </div>
                           </main>
                           <script>
                             (function () {
                               var link = document.getElementById('retryLink');
+                                                            var browserBtn = document.getElementById('browserBtn');
                               if (!link) return;
                               link.addEventListener('click', function (e) {
                                 if (window.BOLH && window.BOLH.retryOnline) {
@@ -221,6 +229,13 @@ class MainActivity : ComponentActivity() {
                                   window.BOLH.retryOnline();
                                 }
                               });
+                                                            if (browserBtn) {
+                                                                browserBtn.addEventListener('click', function () {
+                                                                    if (window.BOLH && window.BOLH.openInBrowser) {
+                                                                        window.BOLH.openInBrowser();
+                                                                    }
+                                                                });
+                                                            }
                             })();
                           </script>
                         </body>
@@ -244,6 +259,22 @@ class MainActivity : ComponentActivity() {
                                             loadUrl(appUrl)
                                         }
                                     }
+
+                                    @JavascriptInterface
+                                    fun openInBrowser() {
+                                        post {
+                                            runCatching {
+                                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(appUrl))
+                                                startActivity(intent)
+                                            }.onFailure {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Cannot open browser",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                    }
                                 }
 
                                 settings.javaScriptEnabled = true
@@ -262,10 +293,29 @@ class MainActivity : ComponentActivity() {
                                 clearWebViewCacheOnAppUpdate(this)
                                 webViewClient = object : WebViewClient() {
                                     var mainFrameFailed = false
+                                    var appPageReady = false
+                                    private val mainHandler = Handler(Looper.getMainLooper())
+                                    private val startupTimeout = Runnable {
+                                        if (!appPageReady && !mainFrameFailed) {
+                                            Log.w(TAG, "Startup timeout after ${STARTUP_TIMEOUT_MS}ms; switching to offline page")
+                                            showOffline(this@apply)
+                                        }
+                                    }
+
+                                    fun startStartupWatchdog() {
+                                        mainHandler.removeCallbacks(startupTimeout)
+                                        mainHandler.postDelayed(startupTimeout, STARTUP_TIMEOUT_MS)
+                                    }
+
+                                    fun stopStartupWatchdog() {
+                                        mainHandler.removeCallbacks(startupTimeout)
+                                    }
 
                                     fun showOffline(view: WebView?) {
                                         Log.w(TAG, "showOffline: loading embedded offline page")
                                         mainFrameFailed = true
+                                        appPageReady = false
+                                        stopStartupWatchdog()
                                         view?.loadDataWithBaseURL(
                                             "https://offline.local/",
                                             offlineHtml,
@@ -312,6 +362,16 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
 
+                                    override fun onReceivedSslError(
+                                        view: WebView?,
+                                        handler: SslErrorHandler?,
+                                        error: SslError?
+                                    ) {
+                                        Log.w(TAG, "onReceivedSslError: ${error?.primaryError}; loading offline page")
+                                        handler?.cancel()
+                                        showOffline(view)
+                                    }
+
                                     override fun onReceivedHttpError(
                                         view: WebView?,
                                         request: WebResourceRequest?,
@@ -341,6 +401,8 @@ class MainActivity : ComponentActivity() {
                                         if (isOfflinePage) {
                                             Log.i(TAG, "onPageFinished: offline page active")
                                         } else if (isAppPage && !mainFrameFailed) {
+                                            appPageReady = true
+                                            stopStartupWatchdog()
                                             Log.i(TAG, "onPageFinished: app page active")
                                         }
                                     }
@@ -355,6 +417,8 @@ class MainActivity : ComponentActivity() {
                                                 startedUri.port == appPort
                                         if (isAppPage) {
                                             mainFrameFailed = false
+                                            appPageReady = false
+                                            startStartupWatchdog()
                                         }
                                     }
                                 }

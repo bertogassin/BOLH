@@ -44,6 +44,7 @@ Thumbs.db
 
 # Local Android artifacts
 *.apk
+**/local.properties
 
 # Build outputs
 **/build/
@@ -52,6 +53,8 @@ Thumbs.db
 
 # Python virtual envs
 **/.venv/
+**/__pycache__/
+**/*.pyc
 
 # Android signing artifacts
 **/keystore/*.jks

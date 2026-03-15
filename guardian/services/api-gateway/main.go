@@ -572,14 +572,14 @@ func shouldEnforceSigningForPath(mode signingMode, path string) bool {
 
 func partialSigningPaths() map[string]bool {
 	paths := map[string]bool{
-		"/api/v1/auth/me/password": true,
-		"/api/v1/orders":           true,
-		"/api/v1/bids":             true,
-		"/api/v1/documents/upload": true,
-		"/api/v1/company/register": true,
-		"/api/v1/payments/escrow/authorize": true,
+		"/api/v1/auth/me/password":            true,
+		"/api/v1/orders":                      true,
+		"/api/v1/bids":                        true,
+		"/api/v1/documents/upload":            true,
+		"/api/v1/company/register":            true,
+		"/api/v1/payments/escrow/authorize":   true,
 		"/api/v1/payments/escrow/:id/release": true,
-		"/api/v1/payments/escrow/:id/cancel": true,
+		"/api/v1/payments/escrow/:id/cancel":  true,
 	}
 	if raw := strings.TrimSpace(os.Getenv("SIGNED_REQUEST_PARTIAL_PATHS")); raw != "" {
 		custom := map[string]bool{}
