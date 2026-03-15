@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BOLH wordmark vector — white stroke letters on transparent background.
+     Viewport 288×288 matches the Android splash-screen icon spec.
+     All letter paths stay within the 192 dp safe-zone circle (radius 96 centred at 144,144). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+
+    <!-- Letter B -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M67,114 L67,174
+                          M67,114 L85,114 Q100,114 100,131 Q100,144 85,144 L67,144
+                          M85,144 Q100,144 100,157 Q100,174 85,174 L67,174" />
+
+    <!-- Letter O -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M103,144 A22,30 0 0 1 147,144 A22,30 0 0 1 103,144 Z" />
+
+    <!-- Letter L -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M159,114 L159,174 L186,174" />
+
+    <!-- Letter H -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M203,114 L203,174 M203,144 L226,144 M226,114 L226,174" />
+
+</vector>
