@@ -635,8 +635,8 @@ export default function BookingPage() {
   return (
     <div className="theme-page min-h-dvh text-white flex flex-col">
       <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
-        <div className="flex min-h-[200px] items-end justify-between px-4 pb-4 pt-4">
-          <span className="text-lg font-bold uppercase tracking-wide">
+        <div className="flex min-h-[116px] items-end justify-between px-4 pb-3 pt-3">
+          <span className="text-base font-bold uppercase tracking-wide">
             <span className="text-orange-300 font-extrabold">BOLH</span>{' '}
             <span className="text-white font-medium">SECURITY</span>
           </span>
@@ -672,7 +672,7 @@ export default function BookingPage() {
       </header>
 
       <main className="w-full flex-1 overflow-y-auto overflow-x-hidden px-4 pt-5 pb-[70px] text-[17px]">
-        <div className="relative mx-auto w-[94%] origin-top scale-[1.06]">
+        <div className="relative mx-auto w-full max-w-lg">
         {isAnyDrawerOpen && (
           <div
             className="absolute inset-0 z-40 bg-black/28 backdrop-blur-[2px] pointer-events-auto"

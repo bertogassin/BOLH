@@ -246,7 +246,7 @@ export default function DocumentsHubPage() {
         />
       </main>
       {selectedDocs.length > 0 && (
-        <div className="fixed bottom-20 left-4 right-4 z-30 rounded-2xl border border-violet-400/40 bg-[#211b3a]/95 backdrop-blur p-3 shadow-xl">
+        <div className="fixed bottom-20 left-1/2 z-30 w-[calc(100%-2rem)] max-w-[398px] -translate-x-1/2 rounded-2xl border border-violet-400/40 bg-[#211b3a]/95 backdrop-blur p-3 shadow-xl">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-violet-100">{selectedDocs.length} {t('documents_hub.selected')} · {formatSize(selectedSizeBytes)}</p>
             <div className="flex gap-2">

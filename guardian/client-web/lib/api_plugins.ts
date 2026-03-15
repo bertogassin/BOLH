@@ -1,4 +1,4 @@
-import { api, getToken } from './api_client'
+import { API_BASE, api, getToken } from './api_client'
 
 export type Plugin = {
   id: string
@@ -127,9 +127,8 @@ export async function resolvePluginComment(
 }
 
 export async function downloadPluginExport(id: string, format: string = 'html'): Promise<void> {
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
   const token = getToken()
-  const res = await fetch(`${base}/api/v1/plugins/${id}/export?format=${encodeURIComponent(format)}`, {
+  const res = await fetch(`${API_BASE}/api/v1/plugins/${id}/export?format=${encodeURIComponent(format)}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     credentials: 'include',
   })

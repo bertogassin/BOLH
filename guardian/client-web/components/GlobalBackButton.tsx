@@ -51,8 +51,11 @@ export function GlobalBackButton() {
       type="button"
       onClick={handleBack}
       aria-label="Go back"
-      className="fixed left-3 z-30 h-11 w-11 rounded-full border border-white/20 bg-black/55 text-white shadow-lg backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-      style={{ top: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}
+      className="fixed z-30 h-11 w-11 rounded-full border border-white/20 bg-black/55 text-white shadow-lg backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+      style={{
+        top: 'calc(env(safe-area-inset-top, 0px) + 8px)',
+        left: 'max(0.75rem, calc(50% - 215px + 0.75rem))',
+      }}
     >
       <ArrowLeft className="mx-auto h-5 w-5" />
     </button>

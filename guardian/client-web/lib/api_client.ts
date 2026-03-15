@@ -1,4 +1,4 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api-proxy'
 const BUILD_INTEGRITY_SEED = process.env.NEXT_PUBLIC_APP_BUILD_ID || 'dev-build'
 const SIGNED_MODE = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_MODE || 'partial').toLowerCase()
 const SIGNED_ENABLED = (process.env.NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED || '1').toLowerCase() !== '0'
@@ -205,7 +205,7 @@ export async function api<T>(path: string, options: ApiRequestOptions = {}): Pro
 }
 
 export async function apiHealth(): Promise<boolean> {
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const base = API_BASE
   try {
     const res = await fetch(`${base}/health`, { method: 'GET' })
     return res.ok

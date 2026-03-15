@@ -34,7 +34,7 @@ export function BOLHNav({ current }: { current: Tab }) {
   }, [router])
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t theme-header backdrop-blur safe-area-pb">
+    <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 border-t theme-header backdrop-blur safe-area-pb">
       <div className="flex justify-around py-3">
         <Link
           href="/booking"

@@ -151,7 +151,7 @@ export default function OrderChatPage() {
         <div ref={bottomRef} />
       </main>
 
-      <div className="fixed bottom-20 left-0 right-0 border-t border-white/10 bg-[#1a1b26]/95 p-4">
+      <div className="fixed bottom-20 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#1a1b26]/95 p-4">
         <div className="mx-auto flex max-w-lg gap-2">
           <input
             type="text"

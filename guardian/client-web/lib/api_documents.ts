@@ -110,7 +110,6 @@ export async function deleteDocument(id: string): Promise<void> {
 
 /** Returns the URL to download document file (use with fetch + Authorization for blob download). */
 export function getDocumentFileUrl(id: string): string {
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
-  return `${base}/api/v1/documents/${id}/file`
+  return `${API_BASE}/api/v1/documents/${id}/file`
 }
 

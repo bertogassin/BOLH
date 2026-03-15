@@ -21,6 +21,8 @@ const csp = [
   "form-action 'self'",
 ].join('; ')
 
+const apiProxyTarget = process.env.API_PROXY_TARGET || 'http://localhost:8080'
+
 const nextConfig = {
   reactStrictMode: false,
   devIndicators: false,
@@ -41,6 +43,10 @@ const nextConfig = {
   },
   async rewrites() {
     return [
+      {
+        source: '/api-proxy/:path*',
+        destination: `${apiProxyTarget}/:path*`,
+      },
       {
         source: '/next/:path*',
         destination: '/_next/:path*',
