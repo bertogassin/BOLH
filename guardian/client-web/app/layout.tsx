@@ -6,6 +6,7 @@ import { SoundProvider } from '@/context/SoundContext'
 import { ApiHealthProvider } from '@/context/ApiHealthContext'
 import { AIChatShell } from '@/components/AIChatShell'
 import { ApiHealthBanner } from '@/components/ApiHealthBanner'
+import { GlobalBackButton } from '@/components/GlobalBackButton'
 import { RootErrorBoundary } from '@/components/RootErrorBoundary'
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
               <AuthProvider>
                 <SoundProvider>
                   <AIChatShell>
+                    <GlobalBackButton />
                     <ApiHealthBanner />
                     {children}
                   </AIChatShell>

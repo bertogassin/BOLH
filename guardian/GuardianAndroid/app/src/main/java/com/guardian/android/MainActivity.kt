@@ -20,9 +20,12 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -58,14 +61,20 @@ class MainActivity : ComponentActivity() {
         Log.i(TAG, "MainActivity created")
         window.statusBarColor = Color.BLACK
         window.navigationBarColor = Color.BLACK
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        // Draw edge-to-edge and apply explicit safe-area padding in Compose.
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false
         }
         setContent {
             GuardianTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .padding(top = 6.dp)
+                ) {
                     val appUri = remember { parseAppUri() }
                     val appUrl = remember { appUri.toString() }
                     val appHost = remember { appUri.host }
