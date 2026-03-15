@@ -11,6 +11,11 @@ export type User = {
   created_at?: string
 }
 
+export type AuthResponse = {
+  token: string
+  user: User
+}
+
 const ME_CACHE_TTL_MS = 15000
 
 type MeCacheEntry = {
@@ -38,7 +43,7 @@ function clearMeCache(): void {
   meCache = null
 }
 
-export async function login(email: string, password: string): Promise<{ user: User }> {
+export async function login(email: string, password: string): Promise<AuthResponse> {
   return api('/api/v1/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -51,7 +56,7 @@ export async function register(params: {
   first_name: string
   last_name: string
   user_type?: string
-}): Promise<{ user: User }> {
+}): Promise<AuthResponse> {
   return api('/api/v1/auth/register', {
     method: 'POST',
     body: JSON.stringify(params),

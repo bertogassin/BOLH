@@ -45,17 +45,35 @@ export default function RegisterPage() {
     e.preventDefault()
     setSubmitAttempted(true)
     setError('')
-    if (!firstName.trim() || !lastName.trim() || !email.trim()) {
+    const form = e.currentTarget as HTMLFormElement
+    const formFirstName = form.querySelector<HTMLInputElement>('#reg-first')?.value || ''
+    const formLastName = form.querySelector<HTMLInputElement>('#reg-last')?.value || ''
+    const formEmail = form.querySelector<HTMLInputElement>('#reg-email')?.value || ''
+    const formPassword = form.querySelector<HTMLInputElement>('#reg-password')?.value || ''
+    const formConfirmPassword = form.querySelector<HTMLInputElement>('#reg-confirm')?.value || ''
+
+    const effectiveFirstName = (firstName || formFirstName).trim()
+    const effectiveLastName = (lastName || formLastName).trim()
+    const normalizedEmail = (email || formEmail).trim().toLowerCase()
+    const effectivePassword = password || formPassword
+    const effectiveConfirmPassword = confirmPassword || formConfirmPassword
+
+    if (effectiveFirstName !== firstName) setFirstName(effectiveFirstName)
+    if (effectiveLastName !== lastName) setLastName(effectiveLastName)
+    if (normalizedEmail !== email) setEmail(normalizedEmail)
+    if (effectivePassword !== password) setPassword(effectivePassword)
+    if (effectiveConfirmPassword !== confirmPassword) setConfirmPassword(effectiveConfirmPassword)
+
+    if (!effectiveFirstName || !effectiveLastName || !normalizedEmail) {
       setError('Please fill all required fields.')
       return
     }
-    const normalizedEmail = email.trim().toLowerCase()
     const strictEmailRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/i
     if (!strictEmailRegex.test(normalizedEmail)) {
       setError(t('auth.invalid_email'))
       return
     }
-    if (!passwordLongEnough) {
+    if (effectivePassword.length < 6) {
       setError(t('auth.password_min'))
       return
     }
@@ -63,7 +81,7 @@ export default function RegisterPage() {
       setError('Please accept the Terms and Privacy Policy to continue.')
       return
     }
-    if (password !== confirmPassword) {
+    if (effectivePassword !== effectiveConfirmPassword) {
       setError(t('auth.confirm_password_mismatch'))
       return
     }
@@ -82,7 +100,7 @@ export default function RegisterPage() {
       )
     }
     try {
-      await register({ email: normalizedEmail, password, first_name: firstName, last_name: lastName })
+      await register({ email: normalizedEmail, password: effectivePassword, first_name: effectiveFirstName, last_name: effectiveLastName })
       router.push('/profile')
       router.refresh()
     } catch (err) {

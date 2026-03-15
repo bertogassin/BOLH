@@ -20,6 +20,14 @@ const SESSION_HINT_KEY = 'guardian_session_hint'
 
 function readStoredToken(): string | null {
   if (typeof window === 'undefined') return null
+  const persistentToken = window.localStorage.getItem(TOKEN_KEY)
+  if (persistentToken) {
+    if (persistentToken === 'demo') {
+      window.localStorage.removeItem(TOKEN_KEY)
+      return null
+    }
+    return persistentToken
+  }
   const sessionToken = window.sessionStorage.getItem(TOKEN_KEY)
   if (sessionToken) {
     if (sessionToken === 'demo') {
@@ -39,6 +47,17 @@ function readStoredToken(): string | null {
     return legacyToken
   }
   return null
+}
+
+function writeStoredToken(token: string) {
+  if (typeof window === 'undefined') return
+  const value = token.trim()
+  if (!value || value === 'demo') {
+    clearStoredToken()
+    return
+  }
+  window.localStorage.setItem(TOKEN_KEY, value)
+  window.sessionStorage.removeItem(TOKEN_KEY)
 }
 
 function clearStoredToken() {
@@ -77,12 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     try {
       const u = await fetchMe()
-      if (t) {
-        clearStoredToken()
-        setToken(null)
-      } else {
-        setToken(t)
-      }
+      setToken(t)
       setUser(u)
     } catch {
       clearStoredToken()
@@ -99,19 +113,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshUser])
 
   const login = useCallback(async (email: string, password: string) => {
-    const { user: u } = await apiLogin(email, password)
-    clearStoredToken()
+    const { token: accessToken, user: u } = await apiLogin(email, password)
+    if (accessToken) {
+      writeStoredToken(accessToken)
+      setToken(accessToken)
+    } else {
+      clearStoredToken()
+      setToken(null)
+    }
     setSessionHint(true)
-    setToken(null)
     setUser(u)
   }, [])
 
   const register = useCallback(
     async (params: { email: string; password: string; first_name: string; last_name: string; user_type?: string }) => {
-      const { user: u } = await apiRegister(params)
-      clearStoredToken()
+      const { token: accessToken, user: u } = await apiRegister(params)
+      if (accessToken) {
+        writeStoredToken(accessToken)
+        setToken(accessToken)
+      } else {
+        clearStoredToken()
+        setToken(null)
+      }
       setSessionHint(true)
-      setToken(null)
       setUser(u)
     },
     []

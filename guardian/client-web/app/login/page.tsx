@@ -43,13 +43,26 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitAttempted(true)
-    const normalizedEmail = email.trim().toLowerCase()
+    const form = e.currentTarget as HTMLFormElement
+    const formEmail = form.querySelector<HTMLInputElement>('#login-email')?.value || ''
+    const formPassword = form.querySelector<HTMLInputElement>('#login-password')?.value || ''
+
+    const normalizedEmail = (email || formEmail).trim().toLowerCase()
+    const effectivePassword = password || formPassword
+
+    if (normalizedEmail !== email) {
+      setEmail(normalizedEmail)
+    }
+    if (effectivePassword !== password) {
+      setPassword(effectivePassword)
+    }
+
     if (!normalizedEmail || !/\S+@\S+\.\S+/.test(normalizedEmail)) {
       setError(t('auth.invalid_email'))
       emailInputRef.current?.focus()
       return
     }
-    if (!password) {
+    if (!effectivePassword) {
       setError(t('auth.password_required'))
       passwordInputRef.current?.focus()
       return
@@ -71,7 +84,7 @@ export default function LoginPage() {
       )
     }
     try {
-      await login(normalizedEmail, password)
+      await login(normalizedEmail, effectivePassword)
       if (typeof window !== 'undefined') {
         if (rememberMe) {
           localStorage.setItem(SAVED_EMAIL_KEY, normalizedEmail)
@@ -200,7 +213,7 @@ export default function LoginPage() {
             />
             <span className="text-sm text-gray-700">{t('auth.remember_me')}</span>
           </label>
-          <button type="submit" disabled={loading || !email.trim() || !password} className="btn-primary w-full py-3">
+          <button type="submit" disabled={loading} className="btn-primary w-full py-3">
             {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
         </form>

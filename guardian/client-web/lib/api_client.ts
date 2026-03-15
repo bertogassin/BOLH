@@ -27,19 +27,15 @@ const DEFAULT_RETRIES = 2
 
 export function getToken(): string | null {
   if (typeof window === 'undefined') return null
+  const persistentToken = localStorage.getItem('guardian_token')
+  if (persistentToken) {
+    if (persistentToken === 'demo') return persistentToken
+    return persistentToken
+  }
   const sessionToken = sessionStorage.getItem('guardian_token')
   if (sessionToken) {
     if (sessionToken === 'demo') return sessionToken
-    sessionStorage.removeItem('guardian_token')
-    return null
-  }
-  const legacyToken = localStorage.getItem('guardian_token')
-  if (legacyToken) {
-    localStorage.removeItem('guardian_token')
-    if (legacyToken === 'demo') {
-      sessionStorage.setItem('guardian_token', legacyToken)
-      return legacyToken
-    }
+    return sessionToken
   }
   return null
 }
