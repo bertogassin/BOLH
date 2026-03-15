@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Single source of brand colors shared by both XML themes and Compose (Theme.kt).
+    Every hex value here must match the corresponding constant in ui/theme/Theme.kt.
+-->
 <resources>
+    <!-- Brand primary -->
+    <color name="bolh_brand">#0055FF</color>
+
+    <!-- Dark background palette -->
+    <color name="bolh_splash_bg">#070910</color>
+    <color name="bolh_dark_bg">#0A0C10</color>
+    <color name="bolh_dark_surface">#1C1E24</color>
+    <color name="bolh_dark_text">#FFFFFF</color>
+    <color name="bolh_dark_text_secondary">#9A9DA5</color>
+
+    <!-- Semantic -->
+    <color name="bolh_success">#00C48C</color>
+    <color name="bolh_error">#FF3B30</color>
+    <color name="bolh_warning">#FF9500</color>
+
+    <!-- Legacy aliases — kept so any existing layout references still compile -->
     <color name="guardian_blue">#0055FF</color>
-    <color name="guardian_background">#F8F9FC</color>
+    <color name="guardian_background">#0A0C10</color>
 </resources>

@@ -1,5 +1,9 @@
 package com.guardian.android
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Color
 import android.net.ConnectivityManager
@@ -8,6 +12,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -24,6 +30,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.guardian.android.ui.theme.GuardianTheme
@@ -117,10 +125,32 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install the splash screen before super.onCreate so the system transition is smooth.
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         Log.i(TAG, "MainActivity created")
-        window.statusBarColor = Color.BLACK
-        window.navigationBarColor = Color.BLACK
+
+        // Fade + scale-down exit animation for the splash screen.
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            val scaleX = ObjectAnimator.ofFloat(splashScreenView.view, View.SCALE_X, 1f, 0.85f)
+            val scaleY = ObjectAnimator.ofFloat(splashScreenView.view, View.SCALE_Y, 1f, 0.85f)
+            val alpha = ObjectAnimator.ofFloat(splashScreenView.view, View.ALPHA, 1f, 0f)
+            AnimatorSet().apply {
+                playTogether(scaleX, scaleY, alpha)
+                duration = 350L
+                interpolator = AccelerateDecelerateInterpolator()
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        splashScreenView.remove()
+                    }
+                })
+                start()
+            }
+        }
+
+        val brandDark = ContextCompat.getColor(this, R.color.bolh_dark_bg)
+        window.statusBarColor = brandDark
+        window.navigationBarColor = brandDark
         // Keep default fit behavior so bottom system area remains stable.
         WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowInsetsControllerCompat(window, window.decorView).apply {

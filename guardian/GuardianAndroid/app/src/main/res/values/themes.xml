@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
+        Splash-screen theme (Android 12+ SplashScreen API via androidx.core:core-splashscreen).
+        MainActivity declares this theme so the system shows the brand splash on cold start.
+        After the splash finishes, postSplashScreenTheme transitions to Theme.GuardianAndroid.
+        On pre-12 devices the library uses android:windowBackground for the same visual result.
+    -->
+    <style name="Theme.BOLH.Splash" parent="Theme.SplashScreen">
+        <!-- Solid dark brand background -->
+        <item name="windowSplashScreenBackground">@color/bolh_splash_bg</item>
+        <!-- BOLH wordmark vector (white strokes on transparent) -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_bolh</item>
+        <!-- Match icon background to splash background so no circle ring is visible -->
+        <item name="windowSplashScreenIconBackgroundColor">@color/bolh_splash_bg</item>
+        <!-- Theme to apply once the splash exits -->
+        <item name="postSplashScreenTheme">@style/Theme.GuardianAndroid</item>
+    </style>
+
+    <!--
+        Main application theme.
+        Colors are unified with the Compose dark color scheme defined in ui/theme/Theme.kt.
+        Status and navigation bars use the brand dark background for a seamless look.
+    -->
     <style name="Theme.GuardianAndroid" parent="android:Theme.Material.NoActionBar">
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:navigationBarColor">@android:color/black</item>
-        <item name="android:windowBackground">@color/guardian_background</item>
-        <item name="android:colorPrimary">@color/guardian_blue</item>
+        <item name="android:statusBarColor">@color/bolh_dark_bg</item>
+        <item name="android:navigationBarColor">@color/bolh_dark_bg</item>
+        <item name="android:windowBackground">@color/bolh_dark_bg</item>
+        <item name="android:colorPrimary">@color/bolh_brand</item>
     </style>
 </resources>
