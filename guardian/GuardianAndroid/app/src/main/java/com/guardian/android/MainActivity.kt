@@ -20,16 +20,14 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.guardian.android.ui.theme.GuardianTheme
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -56,25 +54,82 @@ class MainActivity : ComponentActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    private fun parseCssColor(valueFromJs: String?): Int? {
+        if (valueFromJs.isNullOrBlank()) return null
+        val raw = valueFromJs.trim().trim('"').lowercase(Locale.US)
+        if (raw.isBlank() || raw == "null") return null
+        if (raw.startsWith("#")) {
+            return runCatching { Color.parseColor(raw) }.getOrNull()
+        }
+        if (raw.startsWith("rgb(") && raw.endsWith(")")) {
+            val parts = raw.removePrefix("rgb(").removeSuffix(")").split(",")
+            if (parts.size == 3) {
+                val r = parts[0].trim().toIntOrNull() ?: return null
+                val g = parts[1].trim().toIntOrNull() ?: return null
+                val b = parts[2].trim().toIntOrNull() ?: return null
+                return Color.rgb(r.coerceIn(0, 255), g.coerceIn(0, 255), b.coerceIn(0, 255))
+            }
+        }
+        if (raw.startsWith("rgba(") && raw.endsWith(")")) {
+            val parts = raw.removePrefix("rgba(").removeSuffix(")").split(",")
+            if (parts.size >= 3) {
+                val r = parts[0].trim().toIntOrNull() ?: return null
+                val g = parts[1].trim().toIntOrNull() ?: return null
+                val b = parts[2].trim().toIntOrNull() ?: return null
+                return Color.rgb(r.coerceIn(0, 255), g.coerceIn(0, 255), b.coerceIn(0, 255))
+            }
+        }
+        return null
+    }
+
+    private fun isLightColor(color: Int): Boolean {
+        val r = Color.red(color)
+        val g = Color.green(color)
+        val b = Color.blue(color)
+        // Relative luminance threshold tuned for status bar icon contrast.
+        val luminance = (0.299 * r + 0.587 * g + 0.114 * b)
+        return luminance > 170
+    }
+
+    private fun syncStatusBarWithPage(webView: WebView?) {
+        val view = webView ?: return
+        val script = """
+            (function () {
+              try {
+                var body = document.body;
+                var html = document.documentElement;
+                var c1 = body ? window.getComputedStyle(body).backgroundColor : '';
+                var c2 = html ? window.getComputedStyle(html).backgroundColor : '';
+                return c1 || c2 || '';
+              } catch (e) {
+                return '';
+              }
+            })();
+        """.trimIndent()
+        view.evaluateJavascript(script) { result ->
+            val color = parseCssColor(result) ?: Color.BLACK
+            window.statusBarColor = color
+            WindowInsetsControllerCompat(window, window.decorView).apply {
+                // true => dark icons (for light background), false => light icons (for dark background)
+                isAppearanceLightStatusBars = isLightColor(color)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "MainActivity created")
         window.statusBarColor = Color.BLACK
         window.navigationBarColor = Color.BLACK
-        // Draw edge-to-edge and apply explicit safe-area padding in Compose.
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // Keep default fit behavior so bottom system area remains stable.
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
             isAppearanceLightNavigationBars = false
         }
         setContent {
             GuardianTheme {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .padding(top = 6.dp)
-                ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     val appUri = remember { parseAppUri() }
                     val appUrl = remember { appUri.toString() }
                     val appHost = remember { appUri.host }
@@ -243,6 +298,7 @@ class MainActivity : ComponentActivity() {
                                         val loaded = url ?: return
                                         val loadedUri = Uri.parse(loaded)
                                         Log.i(TAG, "onPageFinished url=$loaded")
+                                        syncStatusBarWithPage(view)
                                         val isOfflinePage = loaded.startsWith("https://offline.local/")
                                         val isAppPage =
                                             loadedUri.scheme == appScheme &&
