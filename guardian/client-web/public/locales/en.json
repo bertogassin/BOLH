@@ -145,6 +145,9 @@
     "error_price_required": "Price is required.",
     "error_price_positive": "Enter a valid price greater than zero.",
     "error_start_future": "Start time must be in the future.",
+    "escrow_hold_label": "Escrow hold (money is held until mission completion)",
+    "escrow_hold_hint": "Recommended intermediary: Stripe manual capture escrow. Funds stay on hold until mission is completed.",
+    "error_escrow_hold_failed": "Escrow hold failed. Order was cancelled, please retry payment.",
     "error_generic": "Error"
   },
   "profile": {

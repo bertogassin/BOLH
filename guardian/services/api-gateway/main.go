@@ -48,6 +48,7 @@ type Server struct {
 	pluginHandler       *handlers.PluginHandlers
 	planHandler         *handlers.PlanHandlers
 	companyHandler      *handlers.CompanyHandlers
+	escrowHandler       *handlers.EscrowPaymentHandlers
 }
 
 type Claims struct {
@@ -110,6 +111,7 @@ func NewServer() *Server {
 		pluginHandler:       &handlers.PluginHandlers{Store: st},
 		planHandler:         &handlers.PlanHandlers{Store: st},
 		companyHandler:      &handlers.CompanyHandlers{Store: st},
+		escrowHandler:       handlers.NewEscrowPaymentHandlers(st),
 	}
 	s.authHandler.Revoker = s
 	if err := s.router.SetTrustedProxies(trustedProxiesFromEnv()); err != nil {
@@ -207,6 +209,10 @@ func (s *Server) setupRoutes() {
 			authorized.GET("/cards", s.cardHandler.List)
 			authorized.POST("/cards", s.cardHandler.Create)
 			authorized.DELETE("/cards/:id", s.cardHandler.Delete)
+			authorized.POST("/payments/escrow/authorize", s.requireUserTypes("client"), s.signedRequestRequired(), s.escrowHandler.Authorize)
+			authorized.GET("/payments/escrow/order/:order_id", s.escrowHandler.ListByOrder)
+			authorized.POST("/payments/escrow/:id/release", s.requireUserTypes("client", "admin"), s.signedRequestRequired(), s.escrowHandler.Release)
+			authorized.POST("/payments/escrow/:id/cancel", s.requireUserTypes("client", "admin"), s.signedRequestRequired(), s.escrowHandler.Cancel)
 
 			authorized.GET("/notifications", s.notifyHandler.List)
 			authorized.PATCH("/notifications/:id/read", s.notifyHandler.MarkRead)
@@ -571,6 +577,9 @@ func partialSigningPaths() map[string]bool {
 		"/api/v1/bids":             true,
 		"/api/v1/documents/upload": true,
 		"/api/v1/company/register": true,
+		"/api/v1/payments/escrow/authorize": true,
+		"/api/v1/payments/escrow/:id/release": true,
+		"/api/v1/payments/escrow/:id/cancel": true,
 	}
 	if raw := strings.TrimSpace(os.Getenv("SIGNED_REQUEST_PARTIAL_PATHS")); raw != "" {
 		custom := map[string]bool{}

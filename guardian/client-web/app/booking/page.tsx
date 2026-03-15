@@ -7,7 +7,7 @@ import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronDown, Chev
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { useAIChat } from '@/context/AIChatContext'
-import { createOrder, fetchCards, fetchOrders, type PaymentCard, type Order } from '@/lib/api'
+import { authorizeEscrowPayment, cancelOrder, createOrder, fetchCards, fetchOrders, type PaymentCard, type Order } from '@/lib/api'
 import { subscribeOrderSync } from '@/lib/order_sync'
 import { AddressAutocomplete } from '@/components/AddressAutocomplete'
 import { InputWithClear } from '@/components/InputWithClear'
@@ -71,6 +71,7 @@ export default function BookingPage() {
   const [oneTimeCard, setOneTimeCard] = useState<{ last_four: string; brand: string } | null>(null)
   const [showPaymentSheet, setShowPaymentSheet] = useState(false)
   const [showOneTimeCardSheet, setShowOneTimeCardSheet] = useState(false)
+  const [useEscrowHold, setUseEscrowHold] = useState(true)
   const [oneTimeCardNumber, setOneTimeCardNumber] = useState('')
   const [oneTimeCardExpiry, setOneTimeCardExpiry] = useState('')
   const [oneTimeCardCvc, setOneTimeCardCvc] = useState('')
@@ -540,7 +541,7 @@ export default function BookingPage() {
         setError(t('booking.error_start_future'))
         return
       }
-      await createOrder({
+      const createdOrder = await createOrder({
         title: `${t(`booking.service_${service}`)} · ${address.slice(0, 30)}`,
         description: missionDescription.trim() || autoMissionDescription,
         budget_min: p,
@@ -551,6 +552,31 @@ export default function BookingPage() {
         end_time: end.toISOString(),
         guard_count: 1,
       })
+
+      if (useEscrowHold) {
+        const paymentMethodHint = selectedSavedCard
+          ? `saved:${selectedSavedCard.brand}:${selectedSavedCard.last_four}`
+          : oneTimeCard
+            ? `one_time:${oneTimeCard.brand}:${oneTimeCard.last_four}`
+            : ''
+        try {
+          await authorizeEscrowPayment({
+            order_id: createdOrder.id,
+            amount: p,
+            currency: 'EUR',
+            payment_method_hint: paymentMethodHint,
+            description: `Order ${createdOrder.id} escrow hold`,
+          })
+        } catch (escrowErr) {
+          try {
+            await cancelOrder(createdOrder.id)
+          } catch {
+            // Ignore cancel failures; primary error is escrow authorization.
+          }
+          throw escrowErr instanceof Error ? escrowErr : new Error(t('booking.error_escrow_hold_failed'))
+        }
+      }
+
       try {
         window.localStorage.setItem(
           lastOrderTemplateKey,
@@ -860,6 +886,20 @@ export default function BookingPage() {
                 </span>
               </span>
             </button>
+            <label className="w-full border-t border-violet-400 px-3 py-2.5 flex items-center justify-between gap-2 text-[12px] text-white/85">
+              <span className="inline-flex items-center gap-2">
+                <span className={`h-2.5 w-2.5 rounded-full ${useEscrowHold ? 'bg-emerald-400' : 'bg-white/40'}`} />
+                {t('booking.escrow_hold_label')}
+              </span>
+              <input
+                type="checkbox"
+                checked={useEscrowHold}
+                onChange={(e) => setUseEscrowHold(e.target.checked)}
+                className="h-4 w-4 accent-violet-500"
+                aria-label={t('booking.escrow_hold_label')}
+              />
+            </label>
+            <p className="px-3 pb-2 text-[11px] text-white/60">{t('booking.escrow_hold_hint')}</p>
             {showPaymentSheet && (
               <div
                  className={`theme-surface fixed left-1/2 -translate-x-1/2 z-[70] w-[calc(min(100vw,430px)-1rem)] max-h-[78dvh] overflow-y-auto overscroll-contain rounded-xl border px-4 py-3 shadow-2xl ${

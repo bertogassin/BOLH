@@ -8,7 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.webkit.CookieManager
 import android.webkit.JavascriptInterface
+import android.webkit.WebStorage
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -52,6 +54,31 @@ class MainActivity : ComponentActivity() {
         val network = connectivityManager.activeNetwork ?: return false
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    private fun clearWebViewCacheOnAppUpdate(webView: WebView) {
+        val prefs = getSharedPreferences("guardian_webview", Context.MODE_PRIVATE)
+        val versionKey = "last_version_code"
+        val previousVersion = prefs.getInt(versionKey, -1)
+        if (previousVersion == BuildConfig.VERSION_CODE) {
+            return
+        }
+
+        Log.i(
+            TAG,
+            "App version changed ($previousVersion -> ${BuildConfig.VERSION_CODE}), clearing WebView cache"
+        )
+        webView.clearCache(true)
+        webView.clearHistory()
+        runCatching {
+            CookieManager.getInstance().removeAllCookies(null)
+            CookieManager.getInstance().flush()
+        }
+        runCatching {
+            WebStorage.getInstance().deleteAllData()
+        }
+
+        prefs.edit().putInt(versionKey, BuildConfig.VERSION_CODE).apply()
     }
 
     private fun parseCssColor(valueFromJs: String?): Int? {
@@ -131,7 +158,13 @@ class MainActivity : ComponentActivity() {
             GuardianTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val appUri = remember { parseAppUri() }
-                    val appUrl = remember { appUri.toString() }
+                    val appUrl = remember {
+                        appUri
+                            .buildUpon()
+                            .appendQueryParameter("appv", BuildConfig.VERSION_CODE.toString())
+                            .build()
+                            .toString()
+                    }
                     val appHost = remember { appUri.host }
                     val appPort = remember { appUri.port }
                     val appScheme = remember { appUri.scheme }
@@ -226,6 +259,7 @@ class MainActivity : ComponentActivity() {
                                 addJavascriptInterface(OfflineBridge(), "BOLH")
                                 // Keep cache enabled so previously loaded web assets can still render offline.
                                 settings.cacheMode = WebSettings.LOAD_DEFAULT
+                                clearWebViewCacheOnAppUpdate(this)
                                 webViewClient = object : WebViewClient() {
                                     var mainFrameFailed = false
 
