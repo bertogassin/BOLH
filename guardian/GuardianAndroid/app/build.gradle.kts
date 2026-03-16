@@ -14,8 +14,8 @@ android {
         applicationId = "com.omnixius.bolh487373a"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "1.0.1-beta14"
+        versionCode = 16
+        versionName = "1.0.1-beta15"
         buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
         buildConfigField("String", "WEB_APP_URL", "\"$releaseWebAppUrl\"")
     }
@@ -97,6 +97,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

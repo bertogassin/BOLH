@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BOLH Security splash icon — 288×288 dp, fits the Android 12 splash circle -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+
+    <!-- Outer glow halo — widest, most transparent -->
+    <path
+        android:fillColor="#110055FF"
+        android:pathData="M144,12 L18,66 V152 C18,224 74,272 144,272 C214,272 270,224 270,152 V66 Z" />
+
+    <!-- Mid glow halo -->
+    <path
+        android:fillColor="#220055FF"
+        android:pathData="M144,20 L26,70 V151 C26,219 78,265 144,265 C210,265 262,219 262,151 V70 Z" />
+
+    <!-- Subtle inner glow -->
+    <path
+        android:fillColor="#330055FF"
+        android:pathData="M144,28 L34,74 V150 C34,214 82,258 144,258 C206,258 254,214 254,150 V74 Z" />
+
+    <!-- Shield body — deep navy -->
+    <path
+        android:fillColor="#030C20"
+        android:pathData="M144,38 L44,80 V150 C44,206 88,246 144,248 C200,246 244,206 244,150 V80 Z" />
+
+    <!-- Shield border — vivid BOLH blue (evenOdd cuts out the interior) -->
+    <path
+        android:fillColor="#0055FF"
+        android:fillType="evenOdd"
+        android:pathData="M144,38 L44,80 V150 C44,206 88,246 144,248 C200,246 244,206 244,150 V80 Z
+                          M144,54 L60,90 V150 C60,196 96,230 144,232 C192,230 228,196 228,150 V90 Z" />
+
+    <!-- Inner shield accent stripe (top highlight) -->
+    <path
+        android:fillColor="#1A4DCC"
+        android:pathData="M144,54 L60,90 V110 L144,78 L228,110 V90 Z" />
+
+    <!-- Checkmark — white, thick, round ends -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="18"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M98,152 L130,184 L196,120" />
+
+    <!-- Subtle checkmark inner glow (slightly transparent copy) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#55FFFFFF"
+        android:strokeWidth="26"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M98,152 L130,184 L196,120" />
+
+</vector>

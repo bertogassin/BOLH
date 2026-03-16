@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- BOLH Security launcher icon — 108×108 dp -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Outer glow -->
+    <path
+        android:fillColor="#220055FF"
+        android:pathData="M54,5 L8,26 V57 C8,82 28,98 54,99 C80,98 100,82 100,57 V26 Z" />
+
+    <!-- Shield body -->
+    <path
+        android:fillColor="#030C20"
+        android:pathData="M54,14 L16,30 V57 C16,78 33,92 54,93 C75,92 92,78 92,57 V30 Z" />
+
+    <!-- Shield border (evenOdd cutout) -->
     <path
         android:fillColor="#0055FF"
-        android:pathData="M54,30 L78,42 L78,66 L54,78 L30,66 L30,42 Z M54,54 L54,54 L66,48 L66,60 L54,66 L42,60 L42,48 Z"/>
+        android:fillType="evenOdd"
+        android:pathData="M54,14 L16,30 V57 C16,78 33,92 54,93 C75,92 92,78 92,57 V30 Z
+                          M54,21 L23,35 V57 C23,73 38,85 54,86 C70,85 85,73 85,57 V35 Z" />
+
+    <!-- Checkmark -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M37,57 L49,70 L74,45" />
+
 </vector>

@@ -2,4 +2,7 @@
 <resources>
     <color name="guardian_blue">#0055FF</color>
     <color name="guardian_background">#F8F9FC</color>
+    <!-- Splash screen -->
+    <color name="splash_bg">#050D2A</color>
+    <color name="splash_icon_bg">#0A1840</color>
 </resources>
