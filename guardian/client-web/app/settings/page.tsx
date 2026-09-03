@@ -10,6 +10,7 @@ import { BOLHNav } from '@/components/BOLHNav'
 import { FormField } from '@/components/FormField'
 import { DARK_FIELD_LABEL_CLASS } from '@/components/formStyles'
 import { getBankDetailsMode } from '@/lib/bankDetails'
+import { useAppTheme } from '@/context/ThemeContext'
 
 type AppSettings = {
   vibrationEnabled: boolean
@@ -78,6 +79,7 @@ export default function SettingsPage() {
   const { user } = useAuth()
   const { t, locale, setLocale } = useLocale()
   const { soundEnabled, soundVolume, soundPreset, updateSoundSettings, playPreview } = useSound()
+  const { theme, ready: themeReady, setTheme } = useAppTheme()
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
   const [saved, setSaved] = useState(false)
   const ribFileInputRef = useRef<HTMLInputElement>(null)
@@ -100,6 +102,7 @@ export default function SettingsPage() {
       : t('settings.bank_placeholder_generic')
 
   useEffect(() => {
+    if (!themeReady) return
     try {
       const settingsRaw = localStorage.getItem(storageKey)
       const parsedSettings = settingsRaw ? (JSON.parse(settingsRaw) as Partial<AppSettings>) : {}
@@ -108,6 +111,7 @@ export default function SettingsPage() {
       const merged: AppSettings = {
         ...DEFAULT_SETTINGS,
         ...parsedSettings,
+        theme: parsedSettings.theme === 'light' || parsedSettings.theme === 'dark' ? parsedSettings.theme : theme,
         locale: locale || parsedSettings.locale || DEFAULT_SETTINGS.locale,
         soundEnabled: typeof parsedSettings.soundEnabled === 'boolean' ? parsedSettings.soundEnabled : soundEnabled,
         soundVolume: typeof parsedSettings.soundVolume === 'number' ? parsedSettings.soundVolume : soundVolume,
@@ -125,17 +129,17 @@ export default function SettingsPage() {
           DEFAULT_SETTINGS.ribAttachmentName,
       }
       setSettings(merged)
-      document.documentElement.setAttribute('data-theme', merged.theme)
+      setTheme(merged.theme)
     } catch {
       setSettings({ ...DEFAULT_SETTINGS, locale, soundEnabled, soundVolume, soundPreset })
     }
-  }, [detailsStorageKey, locale, soundEnabled, soundPreset, soundVolume])
+  }, [detailsStorageKey, locale, setTheme, soundEnabled, soundPreset, soundVolume, theme, themeReady])
 
   const persist = (next: AppSettings) => {
     setSettings(next)
-    localStorage.setItem(storageKey, JSON.stringify(next))
-    localStorage.setItem('bolh-theme', next.theme)
     try {
+      localStorage.setItem(storageKey, JSON.stringify(next))
+      localStorage.setItem('bolh-theme', next.theme)
       const raw = localStorage.getItem(detailsStorageKey)
       const base = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}
       localStorage.setItem(
@@ -157,7 +161,7 @@ export default function SettingsPage() {
     if (AVAILABLE_LOCALES.has(next.locale)) {
       setLocale(next.locale)
     }
-    document.documentElement.setAttribute('data-theme', next.theme)
+    setTheme(next.theme)
     setSaved(true)
     setTimeout(() => setSaved(false), 1200)
   }
@@ -311,7 +315,7 @@ export default function SettingsPage() {
           <h2 className="text-xs uppercase text-white/75 tracking-wide">{t('settings.appearance_language')}</h2>
           <div className="theme-surface rounded-xl border border-violet-400 px-4 py-3 space-y-3">
             <p className="text-sm text-white inline-flex items-center gap-2">
-              {settings.theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
+              {theme === 'dark' ? <Moon className="h-4 w-4 text-violet-300" /> : <Sun className="h-4 w-4 text-violet-300" />}
               {t('settings.theme')}
             </p>
             <div className="grid grid-cols-2 gap-2">

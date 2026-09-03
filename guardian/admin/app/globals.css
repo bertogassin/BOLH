@@ -13,7 +13,20 @@ body {
   color: #1A1E2B;
   min-height: 100vh;
 }
-body.dark {
+html.dark body {
   background-color: #0A0C10;
   color: #ffffff;
+}
+
+* {
+  scrollbar-color: color-mix(in srgb, var(--guardian-blue) 55%, transparent) transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--guardian-blue) 75%, white);
+  outline-offset: 2px;
 }

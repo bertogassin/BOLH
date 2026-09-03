@@ -8,6 +8,8 @@ import { AIChatShell } from '@/components/AIChatShell'
 import { ApiHealthBanner } from '@/components/ApiHealthBanner'
 import { GlobalBackButton } from '@/components/GlobalBackButton'
 import { RootErrorBoundary } from '@/components/RootErrorBoundary'
+import { ThemeBootstrap } from '@/components/ThemeBootstrap'
+import { ThemeProvider } from '@/context/ThemeContext'
 
 export const metadata: Metadata = {
   title: 'BOLH Security',
@@ -21,9 +23,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head><ThemeBootstrap /></head>
       <body className="min-h-screen antialiased text-white">
         <div className="bolh-app-frame relative mx-auto min-h-screen min-h-[100dvh] w-full max-w-[480px] overflow-x-hidden">
           <RootErrorBoundary>
+            <ThemeProvider>
             <LocaleProvider>
               <ApiHealthProvider>
                 <AuthProvider>
@@ -37,6 +41,7 @@ export default function RootLayout({
                 </AuthProvider>
               </ApiHealthProvider>
             </LocaleProvider>
+            </ThemeProvider>
           </RootErrorBoundary>
         </div>
       </body>

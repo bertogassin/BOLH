@@ -330,7 +330,7 @@
     "placeholder_title": "例:イベントのセキュリティ",
     "description": "説明",
     "placeholder_description": "追加の要件",
-    "budget": "予算 (â€)",
+    "budget": "予算 (€)",
     "budget_min": "分",
     "budget_max": "マックス",
     "location": "場所",

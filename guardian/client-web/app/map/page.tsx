@@ -8,11 +8,12 @@ import { useAuth } from '@/context/AuthContext'
 import { BOLHNav } from '@/components/BOLHNav'
 import { useLocale } from '@/context/LocaleContext'
 import { RefreshCw, Shield } from 'lucide-react'
+import { useAppTheme } from '@/context/ThemeContext'
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => (
-    <div className="h-full min-h-[50vh] flex items-center justify-center bg-slate-100 text-slate-700">
+    <div className="theme-page h-full min-h-[50vh] flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-400 border-t-transparent" />
         <span className="text-sm font-medium">Loading map…</span>
@@ -38,6 +39,7 @@ let mapCache: MapCacheSnapshot | null = null
 export default function MapPage() {
   const { user } = useAuth()
   const { t } = useLocale()
+  const { theme } = useAppTheme()
   const [orders, setOrders] = useState<Awaited<ReturnType<typeof fetchOrders>>>([])
   const [bids, setBids] = useState<Awaited<ReturnType<typeof fetchBids>>>([])
   const [viewportHeight, setViewportHeight] = useState<number | null>(null)
@@ -165,11 +167,11 @@ export default function MapPage() {
       style={{ height: viewportHeight ? `${Math.max(320, viewportHeight)}px` : '100vh' }}
     >
       <div className="absolute inset-0 z-0">
-        <MapView orders={orders} bids={bids} tileTheme="light" trackingMode={hasActiveOrder} />
+        <MapView orders={orders} bids={bids} tileTheme={theme} trackingMode={hasActiveOrder} />
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] px-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <div className="pointer-events-auto flex items-center justify-between rounded-2xl border border-white/12 bg-[#090d17]/88 px-3 py-3 text-white shadow-[0_18px_50px_rgba(0,0,0,.42)] backdrop-blur-2xl">
+        <div className="theme-header pointer-events-auto flex items-center justify-between rounded-2xl border px-3 py-3 shadow-[0_18px_50px_rgba(0,0,0,.24)] backdrop-blur-2xl">
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg"><Shield className="h-5 w-5" /></div>
             <div className="min-w-0">
@@ -180,7 +182,7 @@ export default function MapPage() {
               </div>
             </div>
           </div>
-          <button type="button" onClick={() => load({ force: true })} disabled={loading} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[.055] text-white/75 transition hover:bg-white/10 disabled:opacity-50" aria-label="Refresh map">
+          <button type="button" onClick={() => load({ force: true })} disabled={loading} className="theme-surface-soft theme-hover grid h-10 w-10 shrink-0 place-items-center rounded-xl border transition disabled:opacity-50" aria-label="Refresh map">
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>

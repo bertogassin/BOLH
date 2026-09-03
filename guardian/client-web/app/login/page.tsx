@@ -135,7 +135,7 @@ export default function LoginPage() {
     <div className="theme-page relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-4">
       <div aria-hidden className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-violet-600/20 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -right-28 bottom-10 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl" />
-      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1220]/90 p-7 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8">
+      <div className="bolh-auth-card relative w-full max-w-md overflow-hidden rounded-[2rem] border p-7 backdrop-blur-xl sm:p-8">
         <div aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/80 to-transparent" />
         <div className="mb-6 flex justify-center">
           <div className="flex items-center gap-3 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-500 to-indigo-700 px-5 py-3 text-white shadow-lg shadow-violet-950/50">
