@@ -14,6 +14,23 @@ const orders = [
   { id: 'demo-order-2', client_id: 'demo-user', title: 'Retail night watch — London', description: 'Overnight site patrol and incident reporting.', required_licenses: ['SIA'], budget_min: 280, budget_max: 390, latitude: 51.5074, longitude: -0.1278, start_time: '2026-09-06T21:00:00.000Z', end_time: '2026-09-07T06:00:00.000Z', status: 'matched', guard_count: 1, created_at: now(), updated_at: now() },
 ]
 
+const STORE_KEY = 'bolh_demo_state_v1'
+type DemoState = { orders: typeof orders; messages: Record<string, Array<Record<string, unknown>>> }
+
+function readState(): DemoState {
+  const fallback: DemoState = { orders: orders.map((order) => ({ ...order })), messages: { 'demo-order-2': [{ id: 'demo-msg-1', order_id: 'demo-order-2', sender_id: 'demo-guard', text: 'Confirmed. I will arrive 15 minutes early.', created_at: now() }] } }
+  try {
+    const raw = localStorage.getItem(STORE_KEY)
+    if (!raw) return fallback
+    const parsed = JSON.parse(raw) as Partial<DemoState>
+    return { orders: Array.isArray(parsed.orders) ? parsed.orders : fallback.orders, messages: parsed.messages && typeof parsed.messages === 'object' ? parsed.messages : fallback.messages }
+  } catch { return fallback }
+}
+
+function writeState(state: DemoState) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)) } catch {}
+}
+
 export const demoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE === '1'
 
 export function demoUser() { return { ...DEMO_USER } }
@@ -30,14 +47,34 @@ export async function demoApi<T>(path: string, options: RequestInit = {}): Promi
   if (path === '/api/v1/auth/me') return (method === 'PATCH' ? { ...DEMO_USER, ...body } : DEMO_USER) as T
   if (path === '/api/v1/auth/me/password') return {} as T
   if (path.startsWith('/api/v1/orders/') && path.endsWith('/messages')) {
-    if (method === 'POST') return { message: { id: `demo-msg-${Date.now()}`, order_id: path.split('/')[4], sender_id: 'demo-user', text: String(body.text || ''), created_at: now() } } as T
-    return { messages: [{ id: 'demo-msg-1', order_id: path.split('/')[4], sender_id: 'demo-guard', text: 'Confirmed. I will arrive 15 minutes early.', created_at: now() }] } as T
+    const state = readState()
+    const orderId = path.split('/')[4]
+    if (method === 'POST') {
+      const message = { id: `demo-msg-${Date.now()}`, order_id: orderId, sender_id: 'demo-user', text: String(body.text || ''), created_at: now() }
+      state.messages[orderId] = [...(state.messages[orderId] || []), message]
+      writeState(state)
+      return { message } as T
+    }
+    return { messages: state.messages[orderId] || [] } as T
   }
-  if (path.match(/^\/api\/v1\/orders\/[^/]+\/cancel$/)) return { order: { ...orders[0], id: path.split('/')[4], status: 'cancelled' } } as T
-  if (path.match(/^\/api\/v1\/orders\/[^/?]+$/)) return { order: orders.find((o) => o.id === path.split('/')[4]) || orders[0], match: { id: 'demo-match', order_id: path.split('/')[4], bid_id: 'demo-bid', guard_id: 'demo-guard', final_price: 480, created_at: now() } } as T
+  if (path.match(/^\/api\/v1\/orders\/[^/]+\/cancel$/)) {
+    const state = readState(); const id = path.split('/')[4]
+    const index = state.orders.findIndex((order) => order.id === id)
+    const order = { ...(index >= 0 ? state.orders[index] : state.orders[0]), id, status: 'cancelled', updated_at: now() }
+    if (index >= 0) state.orders[index] = order; else state.orders.unshift(order)
+    writeState(state); return { order } as T
+  }
+  if (path.match(/^\/api\/v1\/orders\/[^/?]+$/)) {
+    const state = readState(); const id = path.split('/')[4]
+    return { order: state.orders.find((order) => order.id === id) || state.orders[0], match: { id: 'demo-match', order_id: id, bid_id: 'demo-bid', guard_id: 'demo-guard', final_price: 480, created_at: now() } } as T
+  }
   if (path.startsWith('/api/v1/orders')) {
-    if (method === 'POST') return { order: { ...orders[0], ...body, id: `demo-order-${Date.now()}`, client_id: 'demo-user', status: 'active', created_at: now(), updated_at: now() } } as T
-    return { orders } as T
+    const state = readState()
+    if (method === 'POST') {
+      const order = { ...state.orders[0], ...body, id: `demo-order-${Date.now()}`, client_id: 'demo-user', status: 'active', created_at: now(), updated_at: now() }
+      state.orders.unshift(order); writeState(state); return { order } as T
+    }
+    return { orders: state.orders } as T
   }
   if (path === '/api/v1/bids') return (method === 'POST' ? { bid: { id: `demo-bid-${Date.now()}`, guard_id: 'demo-user', active: true, created_at: now(), updated_at: now(), ...body } } : { bids: [{ id: 'demo-bid', guard_id: 'demo-guard', title: 'Licensed close-protection specialist', licenses: ['Close protection', 'First aid'], price_per_hour: 55, latitude: 48.86, longitude: 2.35, radius_km: 30, active: true, created_at: now(), updated_at: now() }] }) as T
   if (path === '/api/v1/matches') return { matches: [{ id: 'demo-match', order_id: 'demo-order-2', bid_id: 'demo-bid', guard_id: 'demo-guard', final_price: 480, created_at: now() }] } as T

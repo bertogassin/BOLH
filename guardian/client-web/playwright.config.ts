@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: process.env.CI
     ? undefined
     : {
-        command: 'npm run dev',
+        command: 'NEXT_PUBLIC_DEMO_MODE=1 npm run dev:termux',
         url: 'http://localhost:3003',
         reuseExistingServer: !process.env.CI,
       },

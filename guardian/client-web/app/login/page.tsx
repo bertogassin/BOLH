@@ -127,17 +127,29 @@ export default function LoginPage() {
     setCapsLockOn(e.getModifierState('CapsLock'))
   }
 
+  const handleDemoEntry = () => {
+    enterDemo()
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-guardian-bg p-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200/80 bg-white p-8 shadow-xl">
+    <div className="theme-page relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-4">
+      <div aria-hidden className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-violet-600/20 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -right-28 bottom-10 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl" />
+      <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1220]/90 p-7 shadow-2xl shadow-black/40 backdrop-blur-xl sm:p-8">
+        <div aria-hidden className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-violet-300/80 to-transparent" />
         <div className="mb-6 flex justify-center">
-          <div className="flex items-center gap-3 rounded-2xl bg-guardian-blue px-5 py-3 text-white">
+          <div className="flex items-center gap-3 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-500 to-indigo-700 px-5 py-3 text-white shadow-lg shadow-violet-950/50">
             <Shield className="h-8 w-8 shrink-0" />
             <span className="text-2xl font-bold tracking-tight">BOLH</span>
           </div>
         </div>
-        <h1 className="mb-1 text-center text-2xl font-bold text-gray-900">{t('auth.login_title')}</h1>
-        <p className="mb-6 text-center text-sm text-gray-500">{t('auth.login_subtitle')}</p>
+        <h1 className="mb-1 text-center text-3xl font-bold tracking-tight text-white">{t('auth.login_title')}</h1>
+        <p className="mb-4 text-center text-sm text-white/55">{t('auth.login_subtitle')}</p>
+        <div className="mb-6 flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-200/80">
+          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-2.5 py-1">Verified</span>
+          <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2.5 py-1 text-cyan-200/80">Protected</span>
+          <span className="rounded-full border border-violet-400/20 bg-violet-400/10 px-2.5 py-1 text-violet-200/80">Global</span>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <ErrorBanner message={error} onDismiss={() => setError('')} />
@@ -146,6 +158,7 @@ export default function LoginPage() {
             label={t('auth.email')}
             htmlFor="login-email"
             error={emailInvalid ? t('auth.invalid_email') : ''}
+            labelClassName="mb-1.5 block text-sm font-medium text-white/75"
           >
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10" />
@@ -167,6 +180,7 @@ export default function LoginPage() {
             label={t('auth.password')}
             htmlFor="login-password"
             error={passwordMissing ? t('auth.password_required') : ''}
+            labelClassName="mb-1.5 block text-sm font-medium text-white/75"
           >
             <div className="relative overflow-visible">
               <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 z-10 pointer-events-none" />
@@ -197,6 +211,7 @@ export default function LoginPage() {
                 title={t('auth.show_password')}
                 aria-label={t('auth.show_password')}
                 aria-pressed={showPassword}
+                data-testid="password-visibility-toggle"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" aria-hidden /> : <Eye className="h-5 w-5" aria-hidden />}
               </button>
@@ -212,25 +227,25 @@ export default function LoginPage() {
               onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded border-gray-300 text-guardian-blue focus:ring-guardian-blue"
             />
-            <span className="text-sm text-gray-700">{t('auth.remember_me')}</span>
+            <span className="text-sm text-white/70">{t('auth.remember_me')}</span>
           </label>
           <button type="submit" disabled={loading} className="btn-primary w-full py-3">
             {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
           {demoModeEnabled && (
-            <button type="button" onClick={() => { enterDemo(); router.push('/map'); router.refresh() }} className="flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300 bg-violet-50 px-4 py-3 font-semibold text-violet-800 transition hover:bg-violet-100">
+            <a href="/map" onClick={handleDemoEntry} data-testid="demo-entry" className="flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300/30 bg-violet-400/10 px-4 py-3 font-semibold text-violet-100 transition hover:border-violet-300/60 hover:bg-violet-400/20">
               <Sparkles className="h-4 w-4" /> Explore demo without server
-            </button>
+            </a>
           )}
         </form>
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-white/55">
           {t('auth.no_account')}{' '}
           <Link href="/register" className="font-medium text-guardian-blue hover:underline">
             {t('auth.register_link')}
           </Link>
         </p>
         <p className="mt-2 text-center text-sm">
-          <Link href="/profile" className="text-gray-500 hover:underline">{t('back_home')}</Link>
+          <Link href="/profile" className="text-white/50 hover:text-white hover:underline">{t('back_home')}</Link>
         </p>
       </div>
     </div>

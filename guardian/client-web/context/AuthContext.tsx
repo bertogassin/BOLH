@@ -22,12 +22,18 @@ const SESSION_HINT_KEY = 'guardian_session_hint'
 
 function readStoredToken(): string | null {
   if (typeof window === 'undefined') return null
-  const persistentToken = window.localStorage.getItem(TOKEN_KEY)
+  let persistentToken: string | null = null
+  let sessionToken: string | null = null
+  try {
+    persistentToken = window.localStorage.getItem(TOKEN_KEY)
+    sessionToken = window.sessionStorage.getItem(TOKEN_KEY)
+  } catch {
+    return null
+  }
   if (persistentToken) {
     if (persistentToken === 'demo') return demoModeEnabled ? persistentToken : null
     return persistentToken
   }
-  const sessionToken = window.sessionStorage.getItem(TOKEN_KEY)
   if (sessionToken) {
     if (sessionToken === 'demo') return demoModeEnabled ? sessionToken : null
     return sessionToken
@@ -52,27 +58,31 @@ function writeStoredToken(token: string) {
     clearStoredToken()
     return
   }
-  window.localStorage.setItem(TOKEN_KEY, value)
-  window.sessionStorage.removeItem(TOKEN_KEY)
+  try {
+    window.localStorage.setItem(TOKEN_KEY, value)
+    window.sessionStorage.removeItem(TOKEN_KEY)
+  } catch {
+    window.sessionStorage.setItem(TOKEN_KEY, value)
+  }
 }
 
 function clearStoredToken() {
   if (typeof window === 'undefined') return
-  window.sessionStorage.removeItem(TOKEN_KEY)
-  window.localStorage.removeItem(TOKEN_KEY)
+  try { window.sessionStorage.removeItem(TOKEN_KEY) } catch {}
+  try { window.localStorage.removeItem(TOKEN_KEY) } catch {}
 }
 
 function hasSessionHint(): boolean {
   if (typeof window === 'undefined') return false
-  return window.localStorage.getItem(SESSION_HINT_KEY) === '1'
+  try { return window.localStorage.getItem(SESSION_HINT_KEY) === '1' } catch { return false }
 }
 
 function setSessionHint(enabled: boolean) {
   if (typeof window === 'undefined') return
   if (enabled) {
-    window.localStorage.setItem(SESSION_HINT_KEY, '1')
+    try { window.localStorage.setItem(SESSION_HINT_KEY, '1') } catch {}
   } else {
-    window.localStorage.removeItem(SESSION_HINT_KEY)
+    try { window.localStorage.removeItem(SESSION_HINT_KEY) } catch {}
   }
 }
 
