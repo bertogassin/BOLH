@@ -55,9 +55,36 @@ jobs:
           npm ci
           npm run lint
           npm run build
+          npm audit --audit-level=high
+
+  test-admin-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: guardian/admin/package-lock.json
+      - name: Install, lint, build, and audit
+        run: |
+          cd guardian/admin
+          npm ci
+          npm run lint
+          npm run build
+          npm audit --audit-level=high
+
+  validate-compose:
+    runs-on: ubuntu-latest
+    env:
+      INTERNAL_SERVICE_TOKEN: ci-internal-token-not-for-production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Docker Compose
+        run: docker compose -f guardian/docker-compose.yml config --quiet
 
   build-api-gateway:
-    needs: [test-rust, test-go, test-client-web]
+    needs: [test-rust, test-go, test-client-web, test-admin-web, validate-compose]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

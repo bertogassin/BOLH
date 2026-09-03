@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const apiBase = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
   try {
     const res = await fetch(`${apiBase}/api/v1/admin/orders`, {
       method: 'GET',

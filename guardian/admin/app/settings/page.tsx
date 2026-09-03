@@ -49,8 +49,8 @@ export default function SettingsPage() {
     return entries.sort((a, b) => b[1] - a[1])
   }, [summary?.signed_stats])
 
-  const handleSignOut = () => {
-    clearAdminToken()
+  const handleSignOut = async () => {
+    await clearAdminToken()
     router.push('/login')
     router.refresh()
   }

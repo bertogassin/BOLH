@@ -23,6 +23,9 @@ type NotificationService struct {
 
 func (s *NotificationService) sendEmail(to, subject, body string) error {
 	if s.smtpHost == "" {
+		if strings.EqualFold(strings.TrimSpace(os.Getenv("APP_ENV")), "production") {
+			return fmt.Errorf("SMTP is not configured")
+		}
 		log.Printf("[email] (no SMTP) to=%s subject=%s", to, subject)
 		return nil
 	}

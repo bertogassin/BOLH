@@ -3,7 +3,7 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { login, setAdminToken } from '@/lib/api'
+import { login } from '@/lib/api'
 
 function LoginForm() {
   const [email, setEmail] = useState('')
@@ -18,14 +18,10 @@ function LoginForm() {
     setError('')
     setLoading(true)
     try {
-      const { token, user } = await login(email, password)
-      if (!token) {
-        throw new Error('Token is missing in login response')
-      }
+      const { user } = await login(email, password)
       if (user.user_type !== 'admin') {
         throw new Error('Access denied: admin role required')
       }
-      setAdminToken(token)
       const nextPath = searchParams.get('next')
       router.push(nextPath || '/dashboard')
       router.refresh()

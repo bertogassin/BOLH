@@ -280,6 +280,9 @@ impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for BidRow {
 
 #[tokio::main]
 async fn main() {
+    let production = std::env::var("APP_ENV")
+        .map(|value| value.eq_ignore_ascii_case("production"))
+        .unwrap_or(false);
     let state = match std::env::var("DATABASE_URL") {
         Ok(url) => {
             let pool = sqlx::postgres::PgPoolOptions::new()
@@ -288,6 +291,9 @@ async fn main() {
                 .expect("connect to postgres");
             println!("bid-service: using PostgreSQL");
             AppState::Pool(pool)
+        }
+        Err(_) if production => {
+            panic!("DATABASE_URL is required in production");
         }
         Err(_) => {
             println!("bid-service: using in-memory store (set DATABASE_URL for persistence)");

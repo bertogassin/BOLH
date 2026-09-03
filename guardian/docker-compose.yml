@@ -7,12 +7,28 @@ services:
     environment:
       POSTGRES_DB: guardian
       POSTGRES_USER: guardian
-      POSTGRES_PASSWORD: guardian123
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-guardian123}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./migrations/002_full_schema_guardian.sql:/docker-entrypoint-initdb.d/01_schema.sql
+
+  migrate:
+    image: postgis/postgis:15-3.0
+    depends_on:
+      postgres:
+        condition: service_started
+    environment:
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: guardian
+      PGUSER: guardian
+      PGPASSWORD: ${POSTGRES_PASSWORD:-guardian123}
+    volumes:
+      - ./migrations:/migrations:ro
+      - ./scripts/migrate-postgres.sh:/usr/local/bin/migrate-postgres:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/migrate-postgres"]
+    restart: "no"
 
   redis:
     image: redis:7-alpine
@@ -38,7 +54,10 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   minio:
@@ -48,7 +67,7 @@ services:
       - "9001:9001"
     environment:
       MINIO_ROOT_USER: guardian
-      MINIO_ROOT_PASSWORD: guardian123
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-guardian123}
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001"
@@ -60,15 +79,32 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
-      - redis
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+      order-service:
+        condition: service_started
+      bid-service:
+        condition: service_started
     environment:
-      DATABASE_URL: postgres://guardian:guardian123@postgres:5432/guardian
+      APP_ENV: ${APP_ENV:-development}
+      DATABASE_URL: postgres://guardian:${POSTGRES_PASSWORD:-guardian123}@postgres:5432/guardian
       REDIS_ADDR: redis:6379
-      KAFKA_BROKERS: kafka:9092
+      KAFKA_BROKERS: kafka:29092
+      ORDER_SERVICE_URL: http://order-service:8082
+      BID_SERVICE_URL: http://bid-service:8083
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?set INTERNAL_SERVICE_TOKEN}
+      ESCROW_STRICT: ${ESCROW_STRICT:-false}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       PORT: "8080"
 
   matching-engine:
+    # Event transport is still under compatibility work; the deterministic
+    # Rust domain algorithm remains tested but this worker is opt-in until its
+    # durable Kafka consumer lands.
+    profiles: ["experimental"]
     build:
       context: .
       dockerfile: services/matching/Dockerfile
@@ -78,8 +114,45 @@ services:
       - kafka
       - redis
     environment:
-      KAFKA_BROKERS: kafka:9092
+      KAFKA_BROKERS: kafka:29092
       REDIS_ADDR: redis:6379
+      APP_ENV: ${APP_ENV:-development}
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/Dockerfile.rust-service
+      args:
+        PACKAGE: order-service
+        BINARY: order-service
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgres://guardian:${POSTGRES_PASSWORD:-guardian123}@postgres:5432/guardian
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?set INTERNAL_SERVICE_TOKEN}
+      PORT: "8082"
+    ports:
+      - "8082:8082"
+
+  bid-service:
+    build:
+      context: .
+      dockerfile: services/Dockerfile.rust-service
+      args:
+        PACKAGE: bid-service
+        BINARY: bid-service
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgres://guardian:${POSTGRES_PASSWORD:-guardian123}@postgres:5432/guardian
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?set INTERNAL_SERVICE_TOKEN}
+      PORT: "8083"
+    ports:
+      - "8083:8083"
 
   prometheus:
     image: prom/prometheus:latest
@@ -97,6 +170,32 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
     volumes:
       - grafana_data:/var/lib/grafana
+
+  client-web:
+    build:
+      context: ./client-web
+      dockerfile: Dockerfile
+    depends_on:
+      - api-gateway
+    environment:
+      API_PROXY_TARGET: http://api-gateway:8080
+      NEXT_PUBLIC_API_URL: /api-proxy
+      PORT: "3003"
+      HOSTNAME: 0.0.0.0
+    ports:
+      - "3003:3003"
+
+  admin-web:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    depends_on:
+      - api-gateway
+    environment:
+      ADMIN_API_URL: http://api-gateway:8080
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
 
 volumes:
   postgres_data:

@@ -313,6 +313,9 @@ impl sqlx::FromRow<'_, sqlx::postgres::PgRow> for OrderRow {
 
 #[tokio::main]
 async fn main() {
+    let production = std::env::var("APP_ENV")
+        .map(|value| value.eq_ignore_ascii_case("production"))
+        .unwrap_or(false);
     let state = match std::env::var("DATABASE_URL") {
         Ok(url) => {
             let pool = sqlx::postgres::PgPoolOptions::new()
@@ -321,6 +324,9 @@ async fn main() {
                 .expect("connect to postgres");
             println!("order-service: using PostgreSQL");
             AppState::Pool(pool)
+        }
+        Err(_) if production => {
+            panic!("DATABASE_URL is required in production");
         }
         Err(_) => {
             println!("order-service: using in-memory store (set DATABASE_URL for persistence)");
@@ -332,7 +338,11 @@ async fn main() {
         .route("/orders", post(create_order_auth).get(list_orders_auth))
         .route("/orders/:id", get(get_order_auth))
         .with_state(state);
-    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], 8082));
+    let port: u16 = std::env::var("PORT")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(8082);
+    let addr = std::net::SocketAddr::from(([0, 0, 0, 0], port));
     axum::serve(tokio::net::TcpListener::bind(addr).await.unwrap(), app)
         .await
         .unwrap();

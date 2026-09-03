@@ -49,7 +49,8 @@ type EscrowPaymentHandlers struct {
 }
 
 func NewEscrowPaymentHandlers(st store.Store) *EscrowPaymentHandlers {
-	strict := strings.EqualFold(strings.TrimSpace(os.Getenv("ESCROW_STRICT")), "true") || strings.TrimSpace(os.Getenv("ESCROW_STRICT")) == "1"
+	production := strings.EqualFold(strings.TrimSpace(os.Getenv("APP_ENV")), "production")
+	strict := production || strings.EqualFold(strings.TrimSpace(os.Getenv("ESCROW_STRICT")), "true") || strings.TrimSpace(os.Getenv("ESCROW_STRICT")) == "1"
 	return &EscrowPaymentHandlers{
 		Store:      st,
 		httpClient: &http.Client{Timeout: 12 * time.Second},
@@ -207,6 +208,10 @@ func (h *EscrowPaymentHandlers) Authorize(c *gin.Context) {
 	}
 	if req.Amount <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "amount must be greater than zero"})
+		return
+	}
+	if h.strictMode && h.stripeKey == "" {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "payment provider is not configured"})
 		return
 	}
 	order := h.Store.OrderByID(req.OrderID)

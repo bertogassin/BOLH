@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 
 const COPY = {
   en: {
@@ -53,13 +54,12 @@ export class RootErrorBoundary extends React.Component<
           >
             {copy.retry}
           </button>
-          <button
-            type="button"
-            onClick={() => window.location.href = '/'}
+          <Link
+            href="/"
             className="theme-surface-soft mt-3 rounded-xl px-4 py-2 text-sm font-medium theme-hover"
           >
             {copy.home}
-          </button>
+          </Link>
         </div>
       )
     }

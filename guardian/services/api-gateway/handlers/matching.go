@@ -42,7 +42,16 @@ func notifyOnMatch(st store.Store, o *store.Order, finalPrice float64) {
 	})
 	req, _ := http.NewRequest(http.MethodPost, url+"/notify/match", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
-	go func() { http.DefaultClient.Do(req) }()
+	if token := os.Getenv("INTERNAL_SERVICE_TOKEN"); token != "" {
+		req.Header.Set("X-Internal-Token", token)
+	}
+	go func() {
+		client := &http.Client{Timeout: 10 * time.Second}
+		resp, err := client.Do(req)
+		if err == nil && resp != nil {
+			_ = resp.Body.Close()
+		}
+	}()
 }
 
 // TryMatchAfterOrder finds the best active bid for the order (license, budget, distance), creates a match, updates order status.

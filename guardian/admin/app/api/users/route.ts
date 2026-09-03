@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const apiBase = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
   const target = new URL(`${apiBase}/api/v1/admin/users`)
   if (search) target.searchParams.set('search', search)
   if (filter && filter !== 'all') target.searchParams.set('filter', filter)

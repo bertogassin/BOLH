@@ -24,6 +24,8 @@ const csp = [
 const apiProxyTarget = process.env.API_PROXY_TARGET || 'http://localhost:8080'
 
 const nextConfig = {
+  output: 'standalone',
+  turbopack: {},
   reactStrictMode: false,
   devIndicators: false,
   async headers() {
@@ -52,16 +54,6 @@ const nextConfig = {
         destination: '/_next/:path*',
       },
     ]
-  },
-  webpack: (config, { dev }) => {
-    if (dev && process.env.NEXT_FORCE_POLLING === '1') {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: /node_modules/,
-      }
-    }
-    return config
   },
 }
 module.exports = nextConfig

@@ -27,6 +27,21 @@ jobs:
           cargo install cargo-audit
           cargo audit
 
+  web-audit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [client-web, admin]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: guardian/${{ matrix.app }}/package-lock.json
+      - name: Audit dependencies
+        run: npm --prefix guardian/${{ matrix.app }} ci && npm --prefix guardian/${{ matrix.app }} audit --audit-level=high
+
   go-vuln:
     runs-on: ubuntu-latest
     steps:

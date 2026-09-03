@@ -1,5 +1,5 @@
 # Matching Engine (Rust). Build from guardian repo root: docker build -f services/matching/Dockerfile .
-FROM rust:1.70-slim AS builder
+FROM rust:1.85-slim AS builder
 
 WORKDIR /app
 COPY Cargo.toml Cargo.lock* ./

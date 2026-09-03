@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 async function getDashboardStats() {
   const cookieStore = await cookies()
   const token = cookieStore.get('guardian_admin_token')?.value?.trim()
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const apiBase = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
 
   const emptyStats = {
     totalUsers: 0,

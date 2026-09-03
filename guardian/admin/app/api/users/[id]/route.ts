@@ -10,7 +10,7 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
+  const apiBase = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'
   const target = `${apiBase}/api/v1/admin/users/${encodeURIComponent(id)}`
 
   try {

@@ -2,13 +2,13 @@
 
 Платформа закрытых тендеров охранных услуг. **Главный принцип: никто не видит цены друг друга — только алгоритм.**
 
-Монорепозиторий: Cargo workspaces + Go modules.
+Монорепозиторий: Rust workspace + временный Go compatibility gateway + Next.js 16.
 
 ## Структура
 
 - **core/domain** (Rust) — модели, инварианты, auth (Argon2id), шифрование цен (AES-256-GCM)
-- **services/matching** (Rust) — Matching Engine, индексы, config, события (Kafka stub)
-- **services/api-gateway** (Go) — Gin, JWT, rate limit, CORS, security headers, /health
+- **services/matching** (Rust) — Matching Engine, индексы и доменный алгоритм
+- **services/api-gateway** (Go) — временный совместимый `/api/v1` контур на время Rust-миграции
 - **services/user-service** (Go) — Register, GetProfile, кэш Redis (gRPC stub)
 - **services/order-service** (Rust) — POST /orders, валидация (Axum)
 - **services/bid-service** (Rust) — POST /bids (Axum)
@@ -55,7 +55,7 @@ cd client-web && npm install && npm run dev   # :3003
 
 ## Окружение
 
-- Rust 1.70+, Go 1.21+, Swift 5.9+ (Xcode)
+- Rust 1.85+, Go 1.25+, Node.js 22+, Swift 5.9+ (Xcode)
 - Redis (REDIS_ADDR), PostgreSQL (DATABASE_URL), JWT_SECRET, PORT
 - См. docs/ARCHITECTURE_SECURITY_BACKEND.md (безопасность, OWASP, шифрование, Redis ключи)
 
