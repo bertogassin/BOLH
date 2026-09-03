@@ -3,12 +3,14 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import type { User } from '@/lib/api'
 import { fetchMe, login as apiLogin, logoutSession, register as apiRegister } from '@/lib/api'
+import { demoModeEnabled, demoUser } from '@/lib/demo_api'
 
 type AuthContextType = {
   user: User | null
   token: string | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
+  enterDemo: () => void
   register: (params: { email: string; password: string; first_name: string; last_name: string; user_type?: string }) => Promise<void>
   logout: () => void
   refreshUser: () => Promise<void>
@@ -22,18 +24,12 @@ function readStoredToken(): string | null {
   if (typeof window === 'undefined') return null
   const persistentToken = window.localStorage.getItem(TOKEN_KEY)
   if (persistentToken) {
-    if (persistentToken === 'demo') {
-      window.localStorage.removeItem(TOKEN_KEY)
-      return null
-    }
+    if (persistentToken === 'demo') return demoModeEnabled ? persistentToken : null
     return persistentToken
   }
   const sessionToken = window.sessionStorage.getItem(TOKEN_KEY)
   if (sessionToken) {
-    if (sessionToken === 'demo') {
-      window.sessionStorage.removeItem(TOKEN_KEY)
-      return null
-    }
+    if (sessionToken === 'demo') return demoModeEnabled ? sessionToken : null
     return sessionToken
   }
   const legacyToken = window.localStorage.getItem(TOKEN_KEY)
@@ -52,7 +48,7 @@ function readStoredToken(): string | null {
 function writeStoredToken(token: string) {
   if (typeof window === 'undefined') return
   const value = token.trim()
-  if (!value || value === 'demo') {
+  if (!value || (value === 'demo' && !demoModeEnabled)) {
     clearStoredToken()
     return
   }
@@ -151,8 +147,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }, [])
 
+  const enterDemo = useCallback(() => {
+    if (!demoModeEnabled) return
+    writeStoredToken('demo')
+    setSessionHint(true)
+    setToken('demo')
+    setUser(demoUser())
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, logout, refreshUser, enterDemo }}>
       {children}
     </AuthContext.Provider>
   )

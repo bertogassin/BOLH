@@ -1,4 +1,5 @@
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api-proxy'
+import { demoApi, demoModeEnabled } from './demo_api'
 const BUILD_INTEGRITY_SEED = process.env.NEXT_PUBLIC_APP_BUILD_ID || 'dev-build'
 const SIGNED_MODE = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_MODE || 'partial').toLowerCase()
 const SIGNED_ENABLED = (process.env.NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED || '1').toLowerCase() !== '0'
@@ -108,6 +109,8 @@ function readBehaviorSignals(path: string): BehaviorSignals | null {
 }
 
 export async function api<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const demoResponse = await demoApi<T>(path, options)
+  if (demoResponse !== undefined) return demoResponse
   const requestOptions = options
   const token = getToken()
   const headers: Record<string, string> = {
@@ -211,6 +214,7 @@ export async function api<T>(path: string, options: ApiRequestOptions = {}): Pro
 }
 
 export async function apiHealth(): Promise<boolean> {
+  if (demoModeEnabled && getToken() === 'demo') return true
   const base = API_BASE
   try {
     const res = await fetch(`${base}/health`, { method: 'GET' })
@@ -219,4 +223,3 @@ export async function apiHealth(): Promise<boolean> {
     return false
   }
 }
-

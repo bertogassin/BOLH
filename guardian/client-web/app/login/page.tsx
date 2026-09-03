@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Shield, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Shield, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
+import { demoModeEnabled } from '@/lib/demo_api'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { InputWithClear } from '@/components/InputWithClear'
@@ -27,7 +28,7 @@ export default function LoginPage() {
   const emailInputRef = useRef<HTMLInputElement>(null)
   const passwordInputRef = useRef<HTMLInputElement>(null)
   const startedAtRef = useRef<number>(Date.now())
-  const { login } = useAuth()
+  const { login, enterDemo } = useAuth()
   const { t } = useLocale()
   const router = useRouter()
 
@@ -216,6 +217,11 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className="btn-primary w-full py-3">
             {loading ? t('auth.logging_in') : t('auth.login_btn')}
           </button>
+          {demoModeEnabled && (
+            <button type="button" onClick={() => { enterDemo(); router.push('/map'); router.refresh() }} className="flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300 bg-violet-50 px-4 py-3 font-semibold text-violet-800 transition hover:bg-violet-100">
+              <Sparkles className="h-4 w-4" /> Explore demo without server
+            </button>
+          )}
         </form>
         <p className="mt-6 text-center text-sm text-gray-500">
           {t('auth.no_account')}{' '}

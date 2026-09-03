@@ -1,4 +1,5 @@
 import { API_BASE, api, getToken } from './api_client'
+import { demoModeEnabled } from './demo_api'
 
 export type Document = {
   id: string
@@ -77,6 +78,12 @@ export async function fetchDocument(id: string): Promise<Document> {
 
 export async function uploadDocument(file: File, docType?: string): Promise<{ id: string; document: Document }> {
   const token = getToken()
+  if (demoModeEnabled && token === 'demo') {
+    const createdAt = new Date().toISOString()
+    const document: Document = { id: `demo-document-${Date.now()}`, user_id: 'demo-user', user_type: 'client', doc_type: docType || 'document', title: file.name, file_name: file.name, file_size: file.size, mime_type: file.type || 'application/octet-stream', created_at: createdAt, updated_at: createdAt, status: 'uploaded', tags: [], version: 1, is_favorite: false }
+    clearDocumentsCache()
+    return { id: document.id, document }
+  }
   const form = new FormData()
   form.append('file', file)
   form.append('doc_type', docType || 'document')
@@ -112,4 +119,3 @@ export async function deleteDocument(id: string): Promise<void> {
 export function getDocumentFileUrl(id: string): string {
   return `${API_BASE}/api/v1/documents/${id}/file`
 }
-
