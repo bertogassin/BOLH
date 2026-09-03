@@ -11,16 +11,16 @@
   --guardian-shadow-hover: 0 4px 12px rgba(0, 85, 255, 0.1);
   --radius-card: 1rem;
   --radius-btn: 0.75rem;
-  --bolh-bg: #111827;
-  --bolh-surface: #111827;
-  --bolh-surface-soft: #1f2937;
+  --bolh-bg: #080b13;
+  --bolh-surface: rgba(18, 23, 37, 0.9);
+  --bolh-surface-soft: rgba(29, 35, 53, 0.86);
   --bolh-text: #f9fafb;
   --bolh-text-muted: #d1d5db;
-  --bolh-accent: #6b21a8;
-  --bolh-accent-hover: #7c3aed;
-  --bolh-panel-border: var(--bolh-accent);
-  --bolh-panel-glow: rgba(107, 33, 168, 0.24);
-  --bolh-header-bg: rgb(17 24 39 / 0.94);
+  --bolh-accent: #7c3aed;
+  --bolh-accent-hover: #8b5cf6;
+  --bolh-panel-border: rgba(139, 92, 246, 0.42);
+  --bolh-panel-glow: rgba(124, 58, 237, 0.16);
+  --bolh-header-bg: rgb(8 11 19 / 0.86);
   --bolh-input-bg: rgb(255 255 255 / 0.08);
   --bolh-input-border: rgb(167 139 250 / 0.75);
   --bolh-hover-bg: rgb(255 255 255 / 0.12);
@@ -45,7 +45,9 @@
 }
 
 body {
-  background-color: var(--bolh-bg);
+  background:
+    radial-gradient(circle at 50% -10%, rgba(124, 58, 237, 0.22), transparent 36rem),
+    #03050a;
   background-attachment: fixed;
   color: var(--bolh-text);
   min-height: 100vh;
@@ -56,6 +58,136 @@ body {
   -webkit-user-select: text;
   user-select: text;
   -webkit-touch-callout: default;
+}
+
+.bolh-app-frame {
+  background:
+    radial-gradient(circle at 15% 5%, rgba(124, 58, 237, 0.13), transparent 26rem),
+    radial-gradient(circle at 100% 35%, rgba(14, 165, 233, 0.08), transparent 22rem),
+    var(--bolh-bg);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 30px 100px rgba(0,0,0,.72);
+}
+
+.bolh-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .45rem;
+  font-weight: 900;
+  letter-spacing: -.045em;
+}
+.bolh-wordmark > span {
+  font-size: 1.55rem;
+  line-height: 1;
+  background: linear-gradient(135deg, #fdba74 0%, #f97316 48%, #fb7185 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bolh-wordmark small {
+  color: var(--bolh-text);
+  font-size: .72rem;
+  letter-spacing: .19em;
+}
+
+.bolh-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  border: 1px solid rgba(52,211,153,.28);
+  border-radius: 999px;
+  background: rgba(16,185,129,.08);
+  padding: .45rem .7rem;
+  color: #a7f3d0;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.bolh-status-pill > span {
+  width: .42rem;
+  height: .42rem;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 0 4px rgba(52,211,153,.1), 0 0 16px #34d399;
+}
+
+.bolh-shield-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 9.5rem;
+  height: 9.5rem;
+}
+.bolh-shield-core {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 6.25rem;
+  height: 6.25rem;
+  border: 1px solid rgba(167,139,250,.55);
+  border-radius: 2rem;
+  transform: rotate(45deg);
+  color: #ddd6fe;
+  background: linear-gradient(145deg, rgba(124,58,237,.34), rgba(15,23,42,.72));
+  box-shadow: inset 0 1px rgba(255,255,255,.16), 0 18px 55px rgba(76,29,149,.42);
+}
+.bolh-shield-core svg { transform: rotate(-45deg); filter: drop-shadow(0 0 16px rgba(196,181,253,.65)); }
+.bolh-radar-ring { position: absolute; border: 1px solid rgba(139,92,246,.2); border-radius: 50%; }
+.bolh-radar-ring-one { inset: .7rem; animation: bolh-pulse 3.5s ease-out infinite; }
+.bolh-radar-ring-two { inset: 0; animation: bolh-pulse 3.5s 1.3s ease-out infinite; }
+.bolh-gradient-text {
+  background: linear-gradient(100deg,#c4b5fd 0%,#818cf8 42%,#38bdf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bolh-feature-chip {
+  display: flex;
+  min-height: 4.8rem;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1.1rem;
+  padding: .8rem;
+  color: rgba(255,255,255,.68);
+  background: linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.018));
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+  font-size: .72rem;
+  font-weight: 650;
+}
+.bolh-feature-chip svg { width: 1.15rem; height: 1.15rem; color: #a78bfa; }
+.bolh-primary-action,.bolh-secondary-action {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: .65rem;
+  border-radius: 1rem;
+  padding: .85rem 1.15rem;
+  font-size: .95rem;
+  font-weight: 750;
+  transition: transform .18s ease, filter .18s ease, background .18s ease;
+}
+.bolh-primary-action {
+  justify-content: space-between;
+  color: white;
+  background: linear-gradient(110deg,#6d28d9,#7c3aed 52%,#2563eb);
+  box-shadow: 0 16px 42px rgba(91,33,182,.38), inset 0 1px rgba(255,255,255,.2);
+}
+.bolh-secondary-action { border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.82); background: rgba(255,255,255,.035); }
+.bolh-primary-action:active,.bolh-secondary-action:active { transform: scale(.985); }
+.bolh-orb { position: absolute; border-radius: 50%; filter: blur(2px); pointer-events: none; }
+.bolh-orb-one { width: 18rem; height: 18rem; right: -10rem; top: 8rem; background: rgba(109,40,217,.16); }
+.bolh-orb-two { width: 14rem; height: 14rem; left: -9rem; bottom: 5rem; background: rgba(14,165,233,.1); }
+
+@keyframes bolh-pulse {
+  0% { transform: scale(.72); opacity: 0; }
+  35% { opacity: .8; }
+  100% { transform: scale(1.08); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
 html {
@@ -173,6 +305,37 @@ textarea {
 .leaflet-container a {
   color: #3b82f6;
 }
+.bolh-map-marker-shell { position: relative; border: 0 !important; background: transparent !important; }
+.bolh-map-marker {
+  position: absolute;
+  left: 6px;
+  top: 5px;
+  width: 22px;
+  height: 22px;
+  border: 4px solid white;
+  border-radius: 50% 50% 50% 8px;
+  background: var(--marker-color);
+  box-shadow: 0 6px 18px rgba(0,0,0,.42), 0 0 0 2px rgba(15,23,42,.32);
+  transform: rotate(-45deg);
+}
+.bolh-map-marker-pulse {
+  position: absolute;
+  left: 4px;
+  top: 27px;
+  width: 26px;
+  height: 9px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--marker-color) 35%, transparent);
+  animation: bolh-marker-pulse 2s ease-out infinite;
+}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip {
+  background: rgba(9,13,23,.94);
+  color: #f8fafc;
+  box-shadow: 0 16px 50px rgba(0,0,0,.38);
+}
+.leaflet-popup-content-wrapper { border: 1px solid rgba(255,255,255,.1); border-radius: 14px; backdrop-filter: blur(18px); }
+.leaflet-control-zoom { overflow: hidden; border: 1px solid rgba(255,255,255,.16) !important; border-radius: 12px !important; box-shadow: 0 12px 30px rgba(0,0,0,.25) !important; }
+@keyframes bolh-marker-pulse { 0% { transform: scale(.55); opacity: .85; } 100% { transform: scale(1.35); opacity: 0; } }
 
 /* Map controls: adapt for light theme readability */
 [data-theme='light'] .leaflet-control-zoom a,

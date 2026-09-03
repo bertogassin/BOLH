@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { MapPin, Shield, User } from 'lucide-react'
 import { useLocale } from '@/context/LocaleContext'
+import { MobileNav } from '@/components/MobileNav'
 
 type Tab = 'booking' | 'map' | 'profile'
 
@@ -33,43 +33,9 @@ export function BOLHNav({ current }: { current: Tab }) {
     return () => window.clearTimeout(t)
   }, [router])
 
-  return (
-    <nav className="fixed bottom-0 left-1/2 z-20 w-full max-w-[430px] -translate-x-1/2 border-t theme-header backdrop-blur safe-area-pb">
-      <div className="flex justify-around py-3">
-        <Link
-          href="/booking"
-          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
-            current === 'booking'
-              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white theme-hover border border-transparent'
-          }`}
-        >
-          <Shield className={`h-5 w-5 ${current === 'booking' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">{t('navigation.home')}</span>
-        </Link>
-        <Link
-          href="/map"
-          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
-            current === 'map'
-              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white theme-hover border border-transparent'
-          }`}
-        >
-          <MapPin className={`h-5 w-5 ${current === 'map' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">{t('navigation.map')}</span>
-        </Link>
-        <Link
-          href="/profile"
-          className={`group flex flex-col items-center gap-1 min-w-[44px] min-h-[44px] justify-center rounded-xl px-3 py-1.5 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
-            current === 'profile'
-              ? 'text-violet-200 bg-violet-500/25 border border-violet-400/70'
-              : 'text-white/70 hover:text-white theme-hover border border-transparent'
-          }`}
-        >
-          <User className={`h-5 w-5 ${current === 'profile' ? 'text-violet-300' : 'text-white/80 group-hover:text-white'}`} />
-          <span className="text-xs font-medium">{t('navigation.profile')}</span>
-        </Link>
-      </div>
-    </nav>
-  )
+  return <MobileNav items={[
+    { href: '/booking', label: t('navigation.home'), icon: Shield, active: current === 'booking' },
+    { href: '/map', label: t('navigation.map'), icon: MapPin, active: current === 'map' },
+    { href: '/profile', label: t('navigation.profile'), icon: User, active: current === 'profile' },
+  ]} />
 }

@@ -30,6 +30,9 @@ export default function OrdersPage() {
   const [searchQ, setSearchQ] = useState('')
   const [searchInput, setSearchInput] = useState('')
   const [showCreatedBanner, setShowCreatedBanner] = useState(false)
+  const money = (value: number) => new Intl.NumberFormat(locale || 'en', {
+    style: 'currency', currency: 'EUR', maximumFractionDigits: 0,
+  }).format(value)
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.sessionStorage.getItem('order_created') === '1') {
@@ -101,17 +104,20 @@ export default function OrdersPage() {
   }, [user, statusFilter, searchQ])
 
   return (
-    <div className="min-h-screen bg-guardian-bg pb-24">
-      <header className="sticky top-0 z-10 border-b border-gray-200/80 bg-white/95 backdrop-blur text-gray-900">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <Link href="/booking" className="rounded-full p-2 hover:bg-gray-100">
-            <ArrowLeft className="h-5 w-5 text-gray-700" />
+    <div className="theme-page min-h-screen pb-28">
+      <header className="theme-header sticky top-0 z-10 border-b backdrop-blur-xl">
+        <div className="flex min-h-[76px] items-end gap-3 px-4 pb-3 pt-2">
+          <Link href="/booking" className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[.04] theme-hover" aria-label="Back">
+            <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-lg font-semibold text-gray-900">{t('orders.my_orders')}</h1>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[.2em] text-violet-300">BOLH Security</p>
+            <h1 className="text-xl font-bold tracking-tight">{t('orders.my_orders')}</h1>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-lg space-y-4 px-4 py-6">
+      <main className="mx-auto max-w-lg space-y-4 px-4 py-5">
         {showCreatedBanner && (
           <div role="status" className="flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/20 px-4 py-3 text-emerald-200">
             <Check className="h-5 w-5 shrink-0" />
@@ -119,11 +125,11 @@ export default function OrdersPage() {
           </div>
         )}
         {user && orders.length > 0 && (
-          <div className="flex flex-col gap-2 sm:flex-row">
+          <div className="theme-surface grid grid-cols-[auto_1fr] gap-2 rounded-2xl border p-2 shadow-xl">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="theme-input min-h-11 rounded-xl border px-3 py-2 text-sm"
             >
               {STATUS_OPTIONS.map((o) => (
                 <option key={o.value || 'all'} value={o.value}>{o.label}</option>
@@ -135,42 +141,42 @@ export default function OrdersPage() {
               onChange={setSearchInput}
               placeholder={t('orders.search_placeholder')}
               wrapperClassName="flex-1 min-w-0"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500"
+              className="theme-input min-h-11 w-full rounded-xl border px-3 py-2 text-sm"
             />
           </div>
         )}
         {!user ? (
-          <div className="card p-6 text-center text-gray-500">
+          <div className="theme-surface rounded-2xl border p-6 text-center theme-text-muted">
             {t('orders.guest_msg')} <Link href="/login" className="text-guardian-blue hover:underline">{t('auth.login_btn')}</Link>
           </div>
         ) : loading ? (
-          <div className="card p-8 text-center">
+          <div className="theme-surface rounded-2xl border p-8 text-center">
             <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-2 border-guardian-blue border-t-transparent" />
-            <p className="text-gray-500">{t('auth.logging_in')}</p>
+            <p className="theme-text-muted">{t('auth.logging_in')}</p>
           </div>
         ) : orders.length === 0 ? (
-          <div className="card p-8 text-center text-gray-500">
-            <Wallet className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-            <p className="font-medium">{t('orders.no_orders')}</p>
-            <Link href="/create-order" className="mt-4 inline-flex items-center gap-2 rounded-lg bg-guardian-blue px-4 py-2 text-sm font-medium text-white hover:bg-blue-600">
+          <div className="theme-surface rounded-3xl border p-8 text-center theme-text-muted shadow-2xl">
+            <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl border border-violet-400/30 bg-violet-500/10"><Wallet className="h-7 w-7 text-violet-300" /></div>
+            <p className="font-semibold text-white">{t('orders.no_orders')}</p>
+            <Link href="/create-order" className="bolh-primary-action mx-auto mt-5 max-w-xs text-sm">
               <Plus className="h-4 w-4" /> {t('orders.create_order')}
             </Link>
           </div>
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-3">
             {orders.map((order) => (
               <li key={order.id}>
-                <Link href={`/orders/${order.id}`} className="card block">
+                <Link href={`/orders/${order.id}`} className="theme-surface group block rounded-2xl border p-4 shadow-[0_12px_40px_rgba(0,0,0,.18)] transition hover:-translate-y-0.5 hover:border-violet-400/70">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium text-gray-900 truncate">{order.title}</p>
+                      <p className="truncate font-semibold tracking-tight">{order.title}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
                         <StatusBadge status={order.status} />
                       </div>
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                      <div className="theme-text-muted mt-3 flex flex-wrap items-center gap-3 text-xs">
                         <span className="inline-flex items-center gap-1">
                           <Wallet className="h-3.5 w-3.5" />
-                          {order.budget_min}–{order.budget_max} ₽
+                          {money(order.budget_min)}–{money(order.budget_max)}
                         </span>
                         <span className="inline-flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" />
@@ -178,19 +184,16 @@ export default function OrdersPage() {
                         </span>
                       </div>
                       {order.guard_count > 0 && (
-                        <p className="mt-1 text-xs text-gray-500">Guards: {order.guard_count}</p>
+                        <p className="theme-text-muted mt-2 text-xs">Guards: {order.guard_count}</p>
                       )}
                     </div>
-                    <MapPin className="h-5 w-5 shrink-0 text-gray-400" />
+                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-500/10 text-violet-300 transition group-hover:bg-violet-500/20"><MapPin className="h-5 w-5" /></div>
                   </div>
                 </Link>
               </li>
             ))}
           </ul>
         )}
-        <p className="pt-1">
-          <Link href="/booking" className="text-guardian-blue hover:underline">← Back to home</Link>
-        </p>
       </main>
 
       <AppNav />

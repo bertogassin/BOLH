@@ -14,21 +14,21 @@ const STATUS_FALLBACK_LABELS: Record<string, string> = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  published: 'bg-amber-100 text-amber-800',
-  open: 'bg-sky-100 text-sky-800',
-  searching: 'bg-amber-100 text-amber-800',
-  matched: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-gray-100 text-gray-500',
+  draft: 'border border-slate-400/20 bg-slate-400/10 text-slate-300',
+  published: 'border border-amber-400/25 bg-amber-400/10 text-amber-300',
+  open: 'border border-sky-400/25 bg-sky-400/10 text-sky-300',
+  searching: 'border border-amber-400/25 bg-amber-400/10 text-amber-300',
+  matched: 'border border-emerald-400/25 bg-emerald-400/10 text-emerald-300',
+  in_progress: 'border border-blue-400/25 bg-blue-400/10 text-blue-300',
+  completed: 'border border-green-400/25 bg-green-400/10 text-green-300',
+  cancelled: 'border border-slate-400/20 bg-slate-400/10 text-slate-400',
 }
 
 export function StatusBadge({ status }: { status: string }) {
   const { t } = useLocale()
   const translated = t(`status.${status}`)
   const label = translated === `status.${status}` ? STATUS_FALLBACK_LABELS[status] || status : translated
-  const style = STATUS_STYLES[status] || 'bg-gray-100 text-gray-700'
+  const style = STATUS_STYLES[status] || 'border border-slate-400/20 bg-slate-400/10 text-slate-300'
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${style}`}>
       {label}

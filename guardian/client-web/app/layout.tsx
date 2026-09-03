@@ -21,8 +21,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen antialiased bg-[#0b0f19] text-white">
-        <div className="relative mx-auto w-full max-w-[430px] min-h-screen min-h-[100dvh] overflow-x-hidden bg-[#1a1b26] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_20px_60px_rgba(0,0,0,0.45)]">
+      <body className="min-h-screen antialiased text-white">
+        <div className="bolh-app-frame relative mx-auto min-h-screen min-h-[100dvh] w-full max-w-[480px] overflow-x-hidden">
           <RootErrorBoundary>
             <LocaleProvider>
               <ApiHealthProvider>

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronDown, ChevronUp, Wifi, WifiOff } from 'lucide-react'
+import { MapPin, Map, Shield, UserCheck, CreditCard, Sparkles, ChevronDown, ChevronUp, Wifi, WifiOff, LockKeyhole, Radar, BadgeCheck } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/context/LocaleContext'
 import { useAIChat } from '@/context/AIChatContext'
@@ -179,7 +179,8 @@ export default function BookingPage() {
     fromParts.length === 2 ? Number.parseInt(fromParts[0], 10) * 60 + Number.parseInt(fromParts[1], 10) : null
   const toMinutes =
     toParts.length === 2 ? Number.parseInt(toParts[0], 10) * 60 + Number.parseInt(toParts[1], 10) : null
-  const timeRangeInvalid = fromMinutes !== null && toMinutes !== null && toMinutes <= fromMinutes
+  // A lower end time means the mission crosses midnight (22:00 → 00:00).
+  const timeRangeInvalid = fromMinutes !== null && toMinutes !== null && toMinutes === fromMinutes
   const parsedPrice = Number.parseFloat(price)
   const priceNotPositive = price.trim() !== '' && (!Number.isFinite(parsedPrice) || parsedPrice <= 0)
   const addressError = submitAttempted && !address.trim()
@@ -536,7 +537,8 @@ export default function BookingPage() {
       const m = month
       const d = safeDay
       const start = new Date(y, m, d, parseInt(fromTime.slice(0, 2), 10), parseInt(fromTime.slice(3), 10))
-      let end = new Date(y, m, d, parseInt(toTime.slice(0, 2), 10), parseInt(toTime.slice(3), 10))
+      const end = new Date(y, m, d, parseInt(toTime.slice(0, 2), 10), parseInt(toTime.slice(3), 10))
+      if (end <= start) end.setDate(end.getDate() + 1)
       if (start <= new Date()) {
         setError(t('booking.error_start_future'))
         return
@@ -649,23 +651,46 @@ export default function BookingPage() {
 
   if (!user) {
     return (
-      <div className="theme-page min-h-dvh p-4 flex flex-col items-center justify-center gap-4 pb-32">
-        <p className="text-white/75 text-center">{t('booking.login_required')}</p>
-        <Link href="/login" className="rounded-xl bg-violet-600 hover:bg-violet-500 px-6 py-3.5 font-medium text-white min-h-[44px] flex items-center justify-center">
-          {t('auth.login_btn')}
-        </Link>
-        <Link href="/register" className="text-sm text-white/70 hover:text-white">{t('auth.register_link')}</Link>
+      <div className="theme-page relative min-h-dvh overflow-hidden px-5 pb-28 pt-[max(2rem,env(safe-area-inset-top))]">
+        <div className="bolh-orb bolh-orb-one" aria-hidden="true" />
+        <div className="bolh-orb bolh-orb-two" aria-hidden="true" />
+        <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-8rem)] max-w-md flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <div className="bolh-wordmark"><span>BOLH</span><small>SECURITY</small></div>
+            <span className="bolh-status-pill"><span /> Protected network</span>
+          </div>
+
+          <section className="py-10">
+            <div className="bolh-shield-stage" aria-hidden="true">
+              <div className="bolh-radar-ring bolh-radar-ring-one" />
+              <div className="bolh-radar-ring bolh-radar-ring-two" />
+              <div className="bolh-shield-core"><Shield className="h-12 w-12" strokeWidth={1.5} /></div>
+            </div>
+            <p className="mt-8 text-xs font-semibold uppercase tracking-[0.28em] text-violet-300">Private security platform</p>
+            <h1 className="mt-3 max-w-sm text-[clamp(2.2rem,11vw,3.7rem)] font-black leading-[0.94] tracking-[-0.055em] text-white">
+              Protection,<br /><span className="bolh-gradient-text">on demand.</span>
+            </h1>
+            <p className="mt-5 max-w-sm text-base leading-7 text-white/65">{t('booking.login_required')}</p>
+            <div className="mt-6 grid grid-cols-3 gap-2">
+              <div className="bolh-feature-chip"><Radar /><span>Live map</span></div>
+              <div className="bolh-feature-chip"><BadgeCheck /><span>Verified</span></div>
+              <div className="bolh-feature-chip"><LockKeyhole /><span>Escrow</span></div>
+            </div>
+          </section>
+
+          <div className="space-y-3">
+            <Link href="/login" className="bolh-primary-action w-full">{t('auth.login_btn')}<span aria-hidden="true">→</span></Link>
+            <Link href="/register" className="bolh-secondary-action w-full">{t('auth.register_link')}</Link>
+          </div>
+        </div>
       </div>
     )
   }
   return (
     <div className="theme-page min-h-dvh text-white flex flex-col">
-      <header className="theme-header sticky top-0 z-20 border-b border-violet-400 backdrop-blur">
-        <div className="flex min-h-[86px] items-end justify-between px-4 pb-2 pt-2">
-          <span className="font-bold uppercase tracking-wide">
-            <span className="text-orange-300 text-[24px] leading-none font-extrabold">BOLH</span>{' '}
-            <span className="text-white text-[14px] font-medium">SECURITY</span>
-          </span>
+      <header className="theme-header sticky top-0 z-20 border-b backdrop-blur-xl">
+        <div className="flex min-h-[82px] items-end justify-between px-5 pb-3 pt-2">
+          <span className="bolh-wordmark"><span>BOLH</span><small>SECURITY</small></span>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -1093,5 +1118,4 @@ export default function BookingPage() {
     </div>
   )
 }
-
 

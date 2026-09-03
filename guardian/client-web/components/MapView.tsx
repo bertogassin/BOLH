@@ -19,10 +19,11 @@ const defaultZoom = 12
 
 const createIcon = (color: string) =>
   L.divIcon({
-    className: 'border-0 bg-transparent',
-    html: `<div style="background:${color};width:26px;height:26px;border-radius:50%;border:3px solid #1a1b26;box-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>`,
-    iconSize: [26, 26],
-    iconAnchor: [13, 13],
+    className: 'bolh-map-marker-shell',
+    html: `<span class="bolh-map-marker-pulse" style="--marker-color:${color}"></span><span class="bolh-map-marker" style="--marker-color:${color}"></span>`,
+    iconSize: [34, 42],
+    iconAnchor: [17, 38],
+    popupAnchor: [0, -35],
   })
 
 const guardIcon = createIcon('#8b5cf6')

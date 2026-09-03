@@ -6,6 +6,8 @@ import { fetchOrders, fetchBids } from '@/lib/api'
 import { subscribeOrderSync } from '@/lib/order_sync'
 import { useAuth } from '@/context/AuthContext'
 import { BOLHNav } from '@/components/BOLHNav'
+import { useLocale } from '@/context/LocaleContext'
+import { RefreshCw, Shield } from 'lucide-react'
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -35,9 +37,12 @@ let mapCache: MapCacheSnapshot | null = null
 
 export default function MapPage() {
   const { user } = useAuth()
+  const { t } = useLocale()
   const [orders, setOrders] = useState<Awaited<ReturnType<typeof fetchOrders>>>([])
   const [bids, setBids] = useState<Awaited<ReturnType<typeof fetchBids>>>([])
   const [viewportHeight, setViewportHeight] = useState<number | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [loadError, setLoadError] = useState(false)
   const inFlightRef = useRef(false)
   const hasActiveOrder = orders.some((order) => ACTIVE_ORDER_STATUSES.has(String(order.status || '').toLowerCase()))
   const pollIntervalMs = hasActiveOrder ? ACTIVE_ORDER_POLL_INTERVAL_MS : POLL_INTERVAL_MS
@@ -63,6 +68,7 @@ export default function MapPage() {
     }
     if (inFlightRef.current) return
     inFlightRef.current = true
+    if (!mapCache) setLoading(true)
 
     Promise.all([fetchOrders(), fetchBids()])
       .then(([o, b]) => {
@@ -70,11 +76,13 @@ export default function MapPage() {
         const safeBids = Array.isArray(b) ? b : []
         setOrders(safeOrders)
         setBids(safeBids)
+        setLoadError(false)
         mapCache = { userId, at: Date.now(), orders: safeOrders, bids: safeBids }
       })
-      .catch(() => {})
+      .catch(() => setLoadError(true))
       .finally(() => {
         inFlightRef.current = false
+        setLoading(false)
       })
   }, [user])
 
@@ -158,6 +166,25 @@ export default function MapPage() {
     >
       <div className="absolute inset-0 z-0">
         <MapView orders={orders} bids={bids} tileTheme="light" trackingMode={hasActiveOrder} />
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[500] px-4 pt-[max(1rem,env(safe-area-inset-top))]">
+        <div className="pointer-events-auto flex items-center justify-between rounded-2xl border border-white/12 bg-[#090d17]/88 px-3 py-3 text-white shadow-[0_18px_50px_rgba(0,0,0,.42)] backdrop-blur-2xl">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg"><Shield className="h-5 w-5" /></div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold">BOLH Live</p>
+              <div className="mt-0.5 flex items-center gap-3 text-[11px] text-white/60">
+                <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full bg-violet-400" />{bids.length} {t('map.guard')}</span>
+                <span className="inline-flex items-center gap-1"><i className="h-1.5 w-1.5 rounded-full bg-amber-400" />{orders.length} {t('map.order')}</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" onClick={() => load({ force: true })} disabled={loading} className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[.055] text-white/75 transition hover:bg-white/10 disabled:opacity-50" aria-label="Refresh map">
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+        {loadError && <button type="button" onClick={() => load({ force: true })} className="pointer-events-auto mt-2 w-full rounded-xl border border-red-400/25 bg-red-950/80 px-3 py-2 text-xs text-red-200 backdrop-blur">Connection lost · tap to retry</button>}
       </div>
 
       <BOLHNav current="map" />
