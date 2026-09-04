@@ -21,6 +21,25 @@ Kotlin + Jetpack Compose. Тема и экраны по [docs/DESIGN_SYSTEM_UX.m
 ./gradlew assembleDebug
 ```
 
+## Релизная сборка (AAB + APK)
+
+Подготовьте `release-signing.local.env` по примеру `release-signing.local.env.example`, затем:
+
+```powershell
+.\build-release.ps1
+```
+
+Скрипт запускает `assembleRelease` и `bundleRelease` одновременно.
+
+- AAB: `app\build\outputs\bundle\release\`
+- APK: `app\build\outputs\apk\release\`
+
+Либо запустите полный цикл (preflight → сборка → открытие папок):
+
+```powershell
+.\release-all.ps1
+```
+
 ## Публикация в Google Play (Internal/Closed)
 
 1. Положите сервисный ключ в `keys/play-service-account.json` (локально, не коммитить).
