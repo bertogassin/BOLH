@@ -15,6 +15,9 @@ struct HomeView: View {
         NavigationView {
             ScrollView {
                 VStack(spacing: 20) {
+                    Text("да я могу тут написать")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     GreetingHeader(user: viewModel.currentUser)
                     QuickActionsGrid()
                     if viewModel.userType == .client {

@@ -71,6 +71,12 @@ fun HomeScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             item {
+                Text(
+                    text = "да я могу тут написать",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+            item {
                 GreetingHeader(user = viewModel.currentUser)
             }
             item {
