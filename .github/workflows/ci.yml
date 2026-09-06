@@ -57,6 +57,7 @@ jobs:
           APP_ENV: test
           JWT_SECRET: ci-jwt-secret
           ADMIN_SECRET: ci-admin-secret
+          ALLOW_ADMIN_SECRET: "true"
         run: |
           set -euo pipefail
           cd guardian/services/api-gateway
@@ -89,7 +90,7 @@ jobs:
       - name: Build client-web
         run: |
           cd guardian/client-web
-          npm run build
+          npm run build:termux
 
   guardian-admin-e2e:
     runs-on: ubuntu-latest
@@ -124,6 +125,8 @@ jobs:
           E2E_ADMIN_EMAIL: admin.e2e@guardian.local
           E2E_ADMIN_PASSWORD: AdminE2E!123
           ADMIN_SECRET: admin-e2e-secret
+          ALLOW_ADMIN_SECRET: "true"
+          APP_ENV: test
           JWT_SECRET: ci-jwt-secret
           PLAYWRIGHT_BASE_URL: http://localhost:3001
         run: |
