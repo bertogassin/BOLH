@@ -72,7 +72,7 @@ func (h *PluginHandlers) ResolveComment(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id and comment_id required"})
 		return
 	}
-	if _, ok := h.requireReadablePlugin(c, id, userID); !ok {
+	if _, ok := h.requirePluginReviewer(c, id, userID); !ok {
 		return
 	}
 	var req struct {

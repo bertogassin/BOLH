@@ -6,6 +6,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
@@ -35,9 +36,6 @@ type Server struct {
 	router              *gin.Engine
 	redis               *redis.Client
 	st                  store.Store
-	revokedTokenMu      sync.Mutex
-	revokedTokenHashes  map[string]time.Time
-	revokedUserBefore   map[string]time.Time
 	authHandler         *handlers.AuthHandlers
 	orderHandler        *handlers.OrderHandlers
 	bidHandler          *handlers.BidHandlers
@@ -57,13 +55,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-type usedNonce struct {
-	createdAt time.Time
-}
-
 var (
-	signedNonceMu sync.Mutex
-	signedNonces  = map[string]usedNonce{}
 	signedStatsMu sync.Mutex
 	signedStats   = map[string]int{}
 )
@@ -83,7 +75,8 @@ func NewServer() *Server {
 	}
 	secret := getSecret("JWT_SECRET", "dev-secret-change-in-production")
 	var st store.Store
-	if connStr := os.Getenv("DATABASE_URL"); connStr != "" {
+	connStr := strings.TrimSpace(os.Getenv("DATABASE_URL"))
+	if connStr != "" {
 		var err error
 		st, err = store.NewPostgresStore(context.Background(), connStr)
 		if err != nil {
@@ -91,16 +84,17 @@ func NewServer() *Server {
 		}
 		log.Println("using PostgreSQL store")
 	} else {
+		if isProductionEnv() {
+			log.Fatal("DATABASE_URL must be set in production; in-memory persistence is forbidden")
+		}
 		st = store.NewStore()
-		log.Println("using in-memory store (set DATABASE_URL for persistence)")
+		log.Println("using in-memory store (development only; set DATABASE_URL for persistence)")
 	}
 	seedE2EAdminUser(st)
 	s := &Server{
 		router:              gin.New(),
 		redis:               redis.NewClient(&redis.Options{Addr: addr}),
 		st:                  st,
-		revokedTokenHashes:  map[string]time.Time{},
-		revokedUserBefore:   map[string]time.Time{},
 		authHandler:         &handlers.AuthHandlers{Store: st, Secret: secret},
 		orderHandler:        &handlers.OrderHandlers{Store: st},
 		bidHandler:          &handlers.BidHandlers{Store: st},
@@ -180,6 +174,7 @@ func (s *Server) setupRoutes() {
 	mountV1Routes := func(base string) {
 		s.router.POST(base+"/auth/register", authAdaptiveLimiter, authBurstLimiter, s.authHandler.Register)
 		s.router.POST(base+"/auth/login", authAdaptiveLimiter, authLoginLimiter, authAccountLimiter, s.authHandler.Login)
+		s.router.POST(base+"/webhooks/stripe", s.escrowHandler.StripeWebhook)
 
 		authorized := s.router.Group(base)
 		authorized.Use(s.authRequired())
@@ -204,7 +199,8 @@ func (s *Server) setupRoutes() {
 			authorized.PATCH("/bids/:id", s.requireUserTypes("guard"), s.bidHandler.Update)
 
 			authorized.GET("/matches", s.handleMatches)
-			authorized.POST("/matches/:id/accept", s.handleAcceptMatch)
+			authorized.POST("/matches/:id/accept", s.requireUserTypes("guard"), s.signedRequestRequired(), s.handleAcceptMatch)
+			authorized.POST("/matches/:id/reject", s.requireUserTypes("guard"), s.signedRequestRequired(), s.handleRejectMatch)
 
 			authorized.GET("/cards", s.cardHandler.List)
 			authorized.POST("/cards", s.cardHandler.Create)
@@ -256,7 +252,14 @@ func (s *Server) setupRoutes() {
 		{
 			admin.GET("/users", s.handleAdminListUsers)
 			admin.GET("/users/:id", s.handleAdminGetUser)
+			admin.PUT("/users/:id/verified-licenses", s.verificationHandler.AdminSetGuardLicenses)
 			admin.GET("/orders", s.handleAdminListOrders)
+			admin.GET("/verifications", s.verificationHandler.AdminList)
+			admin.GET("/verifications/:id/artifact", s.verificationHandler.AdminArtifact)
+			admin.POST("/verifications/:id/approve", s.verificationHandler.AdminApprove)
+			admin.POST("/verifications/:id/reject", s.verificationHandler.AdminReject)
+			admin.GET("/company-applications", s.companyHandler.AdminList)
+			admin.POST("/company-applications/:id/review", s.companyHandler.AdminReview)
 			admin.GET("/security/summary", s.handleAdminSecuritySummary)
 		}
 	}
@@ -278,8 +281,13 @@ func (s *Server) authMiddleware() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		c.Set("user_id", claims.UserID)
-		c.Set("user_type", claims.UserType)
+		user := s.st.UserByID(claims.UserID)
+		if user == nil {
+			c.Next()
+			return
+		}
+		c.Set("user_id", user.ID)
+		c.Set("user_type", user.UserType)
 		c.Next()
 	}
 }
@@ -421,29 +429,6 @@ func (s *Server) signedRequestRequired() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		if isNonceUsed(nonce) {
-			if enforce {
-				incSignedStat("rejected_replay")
-				middleware.LogIncident("signed_request_rejected", map[string]string{
-					"path":    c.FullPath(),
-					"mode":    string(mode),
-					"reason":  "replay_detected",
-					"enforce": "1",
-				})
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "replay detected"})
-				return
-			}
-			incSignedStat("replay_observe")
-			middleware.AddRiskScore(c.ClientIP(), 1, "signed_request_replay_observe")
-			middleware.LogIncident("signed_request_replay_detected", map[string]string{
-				"path":    c.FullPath(),
-				"mode":    string(mode),
-				"enforce": "0",
-			})
-			c.Next()
-			return
-		}
-
 		token := tokenFromRequest(c)
 		if token == "" {
 			if enforce {
@@ -467,7 +452,13 @@ func (s *Server) signedRequestRequired() gin.HandlerFunc {
 			return
 		}
 
-		expected := signedRequestHash(c.Request.Method, c.FullPath(), tsRaw, nonce, token, integrity)
+		bodyHash, err := requestBodySHA256(c.Request)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
+			return
+		}
+		target := canonicalSignedTarget(c.Request.URL.Path, c.Request.URL.Query().Encode())
+		expected := signedRequestMAC(c.Request.Method, target, tsRaw, nonce, token, integrity, bodyHash)
 		if subtle.ConstantTimeCompare([]byte(expected), []byte(strings.ToLower(sig))) != 1 {
 			if enforce {
 				incSignedStat("rejected_invalid_signature")
@@ -491,7 +482,16 @@ func (s *Server) signedRequestRequired() gin.HandlerFunc {
 			return
 		}
 
-		markNonceUsed(nonce)
+		if !s.st.UseSignedNonce(nonce, time.Now().Add(10*time.Minute)) {
+			if enforce {
+				incSignedStat("rejected_replay")
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "replay detected"})
+				return
+			}
+			incSignedStat("replay_observe")
+			c.Next()
+			return
+		}
 		incSignedStat("valid")
 		middleware.LogIncident("signed_request_valid", map[string]string{
 			"path":    c.FullPath(),
@@ -502,47 +502,38 @@ func (s *Server) signedRequestRequired() gin.HandlerFunc {
 	}
 }
 
-func signedRequestHash(method, path, ts, nonce, token, integrity string) string {
-	payload := strings.ToUpper(strings.TrimSpace(method)) + "|" + strings.TrimSpace(path) + "|" + ts + "|" + nonce + "|" + token + "|" + integrity
-	sum := sha256.Sum256([]byte(payload))
-	return hex.EncodeToString(sum[:])
+func canonicalSignedTarget(path, query string) string {
+	path = strings.TrimSpace(path)
+	if strings.HasPrefix(path, "/v1/") {
+		path = "/api" + path
+	} else if path == "/v1" {
+		path = "/api/v1"
+	}
+	if strings.TrimSpace(query) != "" {
+		return path + "?" + query
+	}
+	return path
 }
 
-func isNonceUsed(nonce string) bool {
-	signedNonceMu.Lock()
-	defer signedNonceMu.Unlock()
-	cleanupNoncesLocked()
-	_, ok := signedNonces[nonce]
-	return ok
+func requestBodySHA256(req *http.Request) (string, error) {
+	if req == nil || req.Body == nil {
+		sum := sha256.Sum256(nil)
+		return hex.EncodeToString(sum[:]), nil
+	}
+	body, err := io.ReadAll(io.LimitReader(req.Body, 12<<20))
+	if err != nil {
+		return "", err
+	}
+	req.Body = io.NopCloser(bytes.NewReader(body))
+	sum := sha256.Sum256(body)
+	return hex.EncodeToString(sum[:]), nil
 }
 
-func markNonceUsed(nonce string) {
-	signedNonceMu.Lock()
-	signedNonces[nonce] = usedNonce{createdAt: time.Now()}
-	cleanupNoncesLocked()
-	signedNonceMu.Unlock()
-}
-
-func cleanupNoncesLocked() {
-	cutoff := time.Now().Add(-10 * time.Minute)
-	for n, v := range signedNonces {
-		if v.createdAt.Before(cutoff) {
-			delete(signedNonces, n)
-		}
-	}
-	maxSize := signedNonceCacheMax()
-	if len(signedNonces) <= maxSize {
-		return
-	}
-	// Drop arbitrary entries to keep memory bounded in observe mode under floods.
-	extra := len(signedNonces) - maxSize
-	for n := range signedNonces {
-		delete(signedNonces, n)
-		extra--
-		if extra <= 0 {
-			break
-		}
-	}
+func signedRequestMAC(method, target, ts, nonce, token, integrity, bodyHash string) string {
+	payload := strings.ToUpper(strings.TrimSpace(method)) + "|" + strings.TrimSpace(target) + "|" + ts + "|" + nonce + "|" + integrity + "|" + bodyHash
+	mac := hmac.New(sha256.New, []byte(token))
+	_, _ = mac.Write([]byte(payload))
+	return hex.EncodeToString(mac.Sum(nil))
 }
 
 func requestSigningMode() signingMode {
@@ -560,6 +551,7 @@ func requestSigningMode() signingMode {
 }
 
 func shouldEnforceSigningForPath(mode signingMode, path string) bool {
+	path = canonicalSignedTarget(path, "")
 	switch mode {
 	case signingModeFull:
 		return true
@@ -575,11 +567,12 @@ func partialSigningPaths() map[string]bool {
 		"/api/v1/auth/me/password":            true,
 		"/api/v1/orders":                      true,
 		"/api/v1/bids":                        true,
-		"/api/v1/documents/upload":            true,
 		"/api/v1/company/register":            true,
 		"/api/v1/payments/escrow/authorize":   true,
 		"/api/v1/payments/escrow/:id/release": true,
 		"/api/v1/payments/escrow/:id/cancel":  true,
+		"/api/v1/matches/:id/accept":          true,
+		"/api/v1/matches/:id/reject":          true,
 	}
 	if raw := strings.TrimSpace(os.Getenv("SIGNED_REQUEST_PARTIAL_PATHS")); raw != "" {
 		custom := map[string]bool{}
@@ -667,11 +660,7 @@ func (s *Server) RevokeToken(token string, expiresAt time.Time) {
 		expiresAt = now.Add(24 * time.Hour)
 	}
 	hash := sha256.Sum256([]byte(token))
-	encoded := hex.EncodeToString(hash[:])
-
-	s.revokedTokenMu.Lock()
-	s.revokedTokenHashes[encoded] = expiresAt
-	s.revokedTokenMu.Unlock()
+	s.st.RevokeTokenHash(hex.EncodeToString(hash[:]), expiresAt)
 }
 
 func (s *Server) RevokeUserBefore(userID string, revokedAt time.Time) {
@@ -682,44 +671,26 @@ func (s *Server) RevokeUserBefore(userID string, revokedAt time.Time) {
 	if revokedAt.IsZero() {
 		revokedAt = time.Now()
 	}
-
-	s.revokedTokenMu.Lock()
-	if prev, ok := s.revokedUserBefore[userID]; !ok || revokedAt.After(prev) {
-		s.revokedUserBefore[userID] = revokedAt
-	}
-	s.revokedTokenMu.Unlock()
+	s.st.RevokeUserBefore(userID, revokedAt)
 }
 
 func (s *Server) isTokenRevoked(token string, claims *Claims) bool {
 	now := time.Now()
 	hash := sha256.Sum256([]byte(token))
-	encoded := hex.EncodeToString(hash[:])
-
-	s.revokedTokenMu.Lock()
-	defer s.revokedTokenMu.Unlock()
-
-	for key, exp := range s.revokedTokenHashes {
-		if exp.Before(now) {
-			delete(s.revokedTokenHashes, key)
-		}
-	}
-
-	if exp, ok := s.revokedTokenHashes[encoded]; ok && exp.After(now) {
+	if s.st.IsTokenHashRevoked(hex.EncodeToString(hash[:]), now) {
 		return true
 	}
-
 	if claims == nil {
 		return false
 	}
-
-	revokedAt, ok := s.revokedUserBefore[claims.UserID]
-	if !ok {
+	revokedAt := s.st.UserRevokedBefore(claims.UserID)
+	if revokedAt == nil {
 		return false
 	}
 	if claims.IssuedAt == nil {
 		return true
 	}
-	return !claims.IssuedAt.Time.After(revokedAt)
+	return !claims.IssuedAt.Time.After(*revokedAt)
 }
 
 func allowedOriginsFromEnv() map[string]bool {
@@ -746,15 +717,27 @@ func allowedOriginsFromEnv() map[string]bool {
 
 func (s *Server) adminRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		key := c.GetHeader("X-Admin-Key")
-		secret := getSecret("ADMIN_SECRET", "admin-dev-secret")
-		if subtle.ConstantTimeCompare([]byte(key), []byte(secret)) != 1 && c.GetString("user_type") != "admin" {
-			log.Printf("audit=admin_access_denied ip=%s path=%s", c.ClientIP(), c.FullPath())
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin required"})
+		if c.GetString("user_type") == "admin" {
+			log.Printf("audit=admin_access_granted auth=jwt ip=%s path=%s", c.ClientIP(), c.FullPath())
+			c.Next()
 			return
 		}
-		log.Printf("audit=admin_access_granted ip=%s path=%s", c.ClientIP(), c.FullPath())
-		c.Next()
+
+		// X-Admin-Key is an explicit development/CI escape hatch only.
+		// Production requires an authenticated user whose current DB role is admin.
+		allowAdminKey := !isProductionEnv() && envBool("ALLOW_ADMIN_SECRET", false)
+		if allowAdminKey {
+			key := strings.TrimSpace(c.GetHeader("X-Admin-Key"))
+			secret := strings.TrimSpace(os.Getenv("ADMIN_SECRET"))
+			if key != "" && secret != "" && subtle.ConstantTimeCompare([]byte(key), []byte(secret)) == 1 {
+				log.Printf("audit=admin_access_granted auth=admin_key ip=%s path=%s", c.ClientIP(), c.FullPath())
+				c.Next()
+				return
+			}
+		}
+
+		log.Printf("audit=admin_access_denied ip=%s path=%s", c.ClientIP(), c.FullPath())
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "admin required"})
 	}
 }
 
@@ -780,6 +763,21 @@ func getSecret(name, devFallback string) string {
 
 func isProductionEnv() bool {
 	return strings.EqualFold(strings.TrimSpace(os.Getenv("APP_ENV")), "production")
+}
+
+func envBool(name string, fallback bool) bool {
+	raw := strings.ToLower(strings.TrimSpace(os.Getenv(name)))
+	if raw == "" {
+		return fallback
+	}
+	switch raw {
+	case "1", "true", "yes", "on":
+		return true
+	case "0", "false", "no", "off":
+		return false
+	default:
+		return fallback
+	}
 }
 
 func trustedProxiesFromEnv() []string {
@@ -879,13 +877,10 @@ func (s *Server) handleAdminGetUser(c *gin.Context) {
 }
 
 func (s *Server) handleAdminSecuritySummary(c *gin.Context) {
-	signedNonceMu.Lock()
-	nonceSize := len(signedNonces)
-	signedNonceMu.Unlock()
 	c.JSON(http.StatusOK, gin.H{
 		"signed_request_mode": requestSigningMode(),
 		"signed_stats":        signedStatsSnapshot(),
-		"nonce_cache_size":    nonceSize,
+		"nonce_store":         "store-backed",
 	})
 }
 
@@ -906,7 +901,41 @@ func (s *Server) handleMatches(c *gin.Context) {
 }
 
 func (s *Server) handleAcceptMatch(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"ok": true})
+	guardID := c.GetString("user_id")
+	matchID := strings.TrimSpace(c.Param("id"))
+	if guardID == "" || matchID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "match id and authentication required"})
+		return
+	}
+	m, o, err := s.st.AcceptMatch(matchID, guardID)
+	if err != nil {
+		if strings.Contains(err.Error(), "forbidden") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		} else {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ok": true, "match": m, "order": o})
+}
+
+func (s *Server) handleRejectMatch(c *gin.Context) {
+	guardID := c.GetString("user_id")
+	matchID := strings.TrimSpace(c.Param("id"))
+	if guardID == "" || matchID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "match id and authentication required"})
+		return
+	}
+	m, o, err := s.st.RejectMatch(matchID, guardID)
+	if err != nil {
+		if strings.Contains(err.Error(), "forbidden") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+		} else {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"ok": true, "match": m, "order": o})
 }
 
 func (s *Server) handleHoneypot(c *gin.Context) {

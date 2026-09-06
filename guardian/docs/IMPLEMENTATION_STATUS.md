@@ -1,67 +1,33 @@
-# Статус реализации функционала
+# Guardian / BOLH — Current Implementation Status
 
-Краткий отчёт о том, что **реально запрограммировано** (не только сохранено в спецификации).
+This file reflects the post P0–P20 stabilization source tree. It supersedes the older session note that described the API gateway as in-memory-only and allowed client-controlled order status changes.
 
-## Сделано в этой сессии
+## API gateway (`guardian/services/api-gateway`)
 
-### 1. API Gateway (Go) — `services/api-gateway/`
+- PostgreSQL is required in production through `DATABASE_URL`; in-memory Store is for non-production/testing only.
+- JWT authentication supports `client`, `guard`, `agency`, and `admin`. Production admin authorization is JWT/role based; the `X-Admin-Key` escape hatch is disabled in production and is available only in non-production when `ALLOW_ADMIN_SECRET=true`.
+- Access tokens expire after 24 hours. Token revocation, per-user revocation and signed-request nonces are Store-backed and persisted by PostgreSQL.
+- Orders can be created/read/updated by their owning client. `PATCH /api/v1/orders/:id` does not accept arbitrary status transitions; cancellation uses a dedicated state transition.
+- Bids are owner-scoped and validated on create and update.
+- Matching requires verified guards and all required verified licenses, supports multi-guard orders, and persists offer/accept/reject state.
+- Escrow records are persisted; payment amount/currency are server-authoritative, and Stripe idempotency/webhook reconciliation is implemented.
+- Verification evidence, company applications, documents, plugins, plans, notifications and messages are persisted through the Store abstraction.
+- Plugin team management and publication use explicit RBAC capabilities rather than treating every team member as an owner.
 
-- **Store** (`store/store.go`): in-memory хранилище пользователей, заказов, заданий (Bid). Потокобезопасно.
-- **Auth** (`handlers/auth.go`):
-  - Регистрация: email, пароль (bcrypt), имя, фамилия, тип (client/guard). Возврат JWT и профиля.
-  - Вход: email + пароль, возврат JWT и профиля.
-  - GET `/api/v1/auth/me` — профиль текущего пользователя по JWT.
-- **Orders** (`handlers/orders.go`):
-  - POST `/api/v1/orders` — создание заказа (title, description, budget_min/max, lat/lon, start_time, end_time, guard_count).
-  - GET `/api/v1/orders` — список заказов текущего клиента.
-  - GET `/api/v1/orders/:id` — детали заказа.
-  - PATCH `/api/v1/orders/:id` — обновление (title, description, budget, status).
-  - POST `/api/v1/orders/:id/cancel` — отмена заказа.
-- **Bids** (`handlers/bids.go`):
-  - POST `/api/v1/bids` — создание задания охранника.
-  - GET `/api/v1/my/bids` — мои задания.
-  - GET `/api/v1/bids/:id`, PATCH `/api/v1/bids/:id`.
-- **Admin**: GET `/api/v1/admin/orders` — все заказы (заголовок `X-Admin-Key`, переменная `ADMIN_SECRET`).
-- CORS: добавлены localhost:3000, 3001, 3003. Поддержка заголовка `Authorization: Bearer <token>`.
+## Web applications
 
-### 2. Клиентская веб-версия (Next.js) — `client-web/`
+- `guardian/client-web` is the client-facing Next.js application.
+- `guardian/admin` is the administrative Next.js application.
+- The client App Router includes an explicit `app/not-found.tsx`; the legacy Pages `_document.tsx` remains available for the pages that require it.
 
-- **API-клиент** (`lib/api.ts`): `login`, `register`, `fetchMe`, `fetchOrders`, `fetchOrder`, `createOrder`, `cancelOrder`. Base URL из `NEXT_PUBLIC_API_URL` (по умолчанию http://localhost:8080).
-- **Авторизация** (`context/AuthContext.tsx`): контекст с user, token, loading, login, register, logout, refreshUser. Токен в localStorage.
-- **Страницы**:
-  - `/login` — форма входа, после успеха редирект на главную.
-  - `/register` — форма регистрации (имя, фамилия, email, пароль).
-  - Главная `/`: при отсутствии входа — кнопки «Войти» и «Регистрация»; при входе — приветствие по имени, список активных заказов из API, кнопка «Выйти», FAB «Новый заказ».
-  - `/create-order` — форма создания заказа (название, описание, бюджет мин/макс, координаты, дата/время начала и конца, кол-во охранников). POST в API, редирект на `/orders`.
-  - `/orders` — список заказов из API.
-  - `/orders/[id]` — детали заказа, кнопка «Отменить заказ».
-  - `/profile` — данные пользователя (имя, email, тип), кнопка «Выйти».
-- Корневой `layout` обёрнут в `AuthProvider`.
+## Database migrations
 
-### 3. Документация
+Apply `guardian/migrations/*.sql` in numeric order. Migration `009_p0_integrity_hardening.sql` adds the role/status constraints, foreign keys, matching state, persistent security state, escrow, verification/company storage and verified licenses used by the stabilized API gateway.
 
-- `FULL_FUNCTIONALITY_SPEC.yaml` — перечень блоков и функций (сохранён как эталон).
-- `FUNCTIONALITY_IMPLEMENTATION_INDEX.md` — привязка блоков к коду и обновлённое описание «что уже есть».
-- `IMPLEMENTATION_STATUS.md` — этот файл.
+Before applying migration 009 to an existing database, run its orphan preflight queries and take a database backup.
 
-## Как запустить и проверить
+## Verification status
 
-1. **API**:  
-   `cd guardian/services/api-gateway && go run .`  
-   Порт 8080. Redis опционально (для кэша); без Redis сервер стартует.
+Static source validation has been performed, including Go parsing with `gofmt`, JSON parsing, shell syntax checks and targeted security review. Full release readiness still requires the repository CI / `scripts/p0-final-check.sh` with Go 1.26.8, Rust/cargo and npm dependencies available.
 
-2. **Клиентская веб-версия**:  
-   `cd guardian/client-web && npm run dev`  
-   Открыть http://localhost:3003. Зарегистрироваться, войти, создать заказ, посмотреть список заказов и детали.
-
-3. **Переменные окружения**:
-   - API: `JWT_SECRET`, `ADMIN_SECRET`, `PORT`, `REDIS_ADDR`.
-   - client-web: `NEXT_PUBLIC_API_URL=http://localhost:8080` (если API на другом хосте).
-
-## Что делать дальше (по спецификации)
-
-- Подключить админку к `GET /api/v1/admin/orders` (X-Admin-Key) для списка заказов.
-- Реализовать интеграцию matching-сервиса с API (создание заказа → событие в matching).
-- Добавить чат, платежи, push, карты, отзывы — по блокам из `FULL_FUNCTIONALITY_SPEC.yaml`.
-
-Все перечисленные выше пункты — это уже **рабочий код**, а не только хранение требований.
+See `P0-P20-FIX-REPORT.md` and `guardian/GO_LIVE_CHECKLIST.md` for the detailed remediation and remaining runtime release gates.

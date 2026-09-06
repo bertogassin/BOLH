@@ -3,6 +3,7 @@
 import argparse
 import base64
 import hashlib
+import hmac
 import json
 import sys
 import time
@@ -24,9 +25,10 @@ def decode_jwt_payload(token: str) -> dict:
         return {}
 
 
-def signed_hash(method: str, path: str, ts: str, nonce: str, token: str, integrity: str = "") -> str:
-    payload = f"{method.upper()}|{path}|{ts}|{nonce}|{token}|{integrity}"
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+def signed_hash(method: str, path: str, ts: str, nonce: str, token: str, integrity: str = "", body: bytes = b"") -> str:
+    body_hash = hashlib.sha256(body).hexdigest()
+    payload = f"{method.upper()}|{path}|{ts}|{nonce}|{integrity}|{body_hash}"
+    return hmac.new(token.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
 def options(api_base: str, path: str, origin: str):
@@ -57,7 +59,7 @@ def request(api_base: str, method: str, path: str, data=None, token: str = "", s
     if sign and token:
         ts = str(int(time.time()))
         nonce = str(uuid.uuid4())
-        signature = signed_hash(method, f"/api/v1{path}", ts, nonce, token)
+        signature = signed_hash(method, f"/api/v1{path}", ts, nonce, token, body=body or b"")
         headers["X-Request-Timestamp"] = ts
         headers["X-Request-Nonce"] = nonce
         headers["X-Request-Signature"] = signature

@@ -73,6 +73,17 @@ func (s *MemoryStore) UpdateUser(u *User) {
 	existing.Phone = u.Phone
 }
 
+func (s *MemoryStore) SetUserVerified(userID string, verified bool) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	u, ok := s.users[userID]
+	if !ok {
+		return false
+	}
+	u.Verified = verified
+	return true
+}
+
 func (s *MemoryStore) SetUserPasswordHash(userID, hash string) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()

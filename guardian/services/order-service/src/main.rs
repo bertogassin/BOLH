@@ -64,22 +64,64 @@ async fn create_order(
         )
             .into_response();
     }
-    if req.budget_min < 0.0 {
+    let title = req.title.trim();
+    let description = req.description.as_deref().unwrap_or("").trim();
+    if title.len() < 3 || title.len() > 200 {
         return (
             StatusCode::BAD_REQUEST,
-            "budget_min must be >= 0".to_string(),
+            "title must be 3..200 chars".to_string(),
+        )
+            .into_response();
+    }
+    if description.len() > 5_000 {
+        return (
+            StatusCode::BAD_REQUEST,
+            "description is too long".to_string(),
+        )
+            .into_response();
+    }
+    if !req.budget_min.is_finite()
+        || !req.budget_max.is_finite()
+        || req.budget_min < 0.0
+        || req.budget_max < req.budget_min
+    {
+        return (StatusCode::BAD_REQUEST, "invalid budget range".to_string()).into_response();
+    }
+    if !req.latitude.is_finite()
+        || !req.longitude.is_finite()
+        || !(-90.0..=90.0).contains(&req.latitude)
+        || !(-180.0..=180.0).contains(&req.longitude)
+    {
+        return (StatusCode::BAD_REQUEST, "invalid coordinates".to_string()).into_response();
+    }
+    let guard_count = req.guard_count.unwrap_or(1);
+    if !(1..=100).contains(&guard_count) {
+        return (
+            StatusCode::BAD_REQUEST,
+            "guard_count must be between 1 and 100".to_string(),
+        )
+            .into_response();
+    }
+    let required_licenses = req.required_licenses.unwrap_or_default();
+    if required_licenses.len() > 50
+        || required_licenses
+            .iter()
+            .any(|v| v.trim().is_empty() || v.len() > 100)
+    {
+        return (
+            StatusCode::BAD_REQUEST,
+            "invalid required licenses".to_string(),
         )
             .into_response();
     }
     let order_id = Uuid::new_v4();
-    let guard_count = req.guard_count.unwrap_or(1).max(1);
     let now = Utc::now();
     let row = OrderRow {
         id: order_id,
         client_id: req.client_id,
-        title: req.title.clone(),
-        description: req.description.unwrap_or_default(),
-        required_licenses: req.required_licenses.unwrap_or_default(),
+        title: title.to_string(),
+        description: description.to_string(),
+        required_licenses,
         guard_count,
         budget_min: req.budget_min,
         budget_max: req.budget_max,

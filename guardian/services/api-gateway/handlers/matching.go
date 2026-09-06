@@ -7,6 +7,8 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -62,13 +64,13 @@ func TryMatchAfterOrder(st store.Store, o *store.Order) {
 // TryMatchAfterOrderWithBids finds the best active bid from the given list for the order, creates a match, updates order status.
 // Caller may persist the order to store after (e.g. when order came from order-service proxy) so handleMatches can resolve it.
 func TryMatchAfterOrderWithBids(st store.Store, o *store.Order, bids []store.Bid) {
-	if len(bids) == 0 {
+	if len(bids) == 0 || o == nil {
 		return
 	}
-	var best *store.Bid
+	candidates := make([]store.Bid, 0, len(bids))
 	for i := range bids {
-		b := &bids[i]
-		if !b.Active {
+		b := bids[i]
+		if !b.Active || !isEligibleVerifiedGuard(st, b.GuardID) {
 			continue
 		}
 		if o.BudgetMin > 0 && b.PricePerHour < o.BudgetMin {
@@ -77,46 +79,42 @@ func TryMatchAfterOrderWithBids(st store.Store, o *store.Order, bids []store.Bid
 		if o.BudgetMax > 0 && b.PricePerHour > o.BudgetMax {
 			continue
 		}
-		if len(o.RequiredLicenses) > 0 {
-			has := false
-			for _, l := range o.RequiredLicenses {
-				for _, bl := range b.Licenses {
-					if l == bl {
-						has = true
-						break
-					}
-				}
-			}
-			if !has {
-				continue
-			}
+		if !hasAllRequiredLicenses(o.RequiredLicenses, st.VerifiedLicensesByGuardID(b.GuardID)) {
+			continue
 		}
 		dist := distanceKm(o.Latitude, o.Longitude, b.Latitude, b.Longitude)
 		if b.RadiusKm > 0 && dist > b.RadiusKm {
 			continue
 		}
-		if best == nil || b.PricePerHour < best.PricePerHour {
-			best = b
+		candidates = append(candidates, b)
+	}
+	sort.SliceStable(candidates, func(i, j int) bool {
+		if candidates[i].PricePerHour == candidates[j].PricePerHour {
+			di := distanceKm(o.Latitude, o.Longitude, candidates[i].Latitude, candidates[i].Longitude)
+			dj := distanceKm(o.Latitude, o.Longitude, candidates[j].Latitude, candidates[j].Longitude)
+			return di < dj
 		}
+		return candidates[i].PricePerHour < candidates[j].PricePerHour
+	})
+
+	required := o.GuardCount
+	if required < 1 {
+		required = 1
 	}
-	if best == nil {
-		return
-	}
-	m := &store.Match{
-		ID:         uuid.New().String(),
-		OrderID:    o.ID,
-		BidID:      best.ID,
-		GuardID:    best.GuardID,
-		FinalPrice: best.PricePerHour,
-		CreatedAt:  time.Now(),
-	}
-	st.CreateMatch(m)
-	notifyOnMatch(st, o, best.PricePerHour)
-	addMatchNotification(st, o, best.PricePerHour)
-	o.Status = "matched"
-	o.UpdatedAt = time.Now()
-	if st.OrderByID(o.ID) != nil {
-		st.UpdateOrder(o)
+	offered := 0
+	for i := range candidates {
+		if offered >= required {
+			break
+		}
+		b := &candidates[i]
+		m := &store.Match{ID: uuid.New().String(), OrderID: o.ID, BidID: b.ID, GuardID: b.GuardID, FinalPrice: b.PricePerHour, CreatedAt: time.Now()}
+		updatedOrder, err := st.OfferMatch(m)
+		if err != nil {
+			continue
+		}
+		offered++
+		notifyOnMatch(st, updatedOrder, b.PricePerHour)
+		addMatchNotification(st, updatedOrder, b.PricePerHour)
 	}
 }
 
@@ -129,12 +127,12 @@ func TryMatchAfterBid(st store.Store, b *store.Bid) {
 // TryMatchAfterBidWithOrders finds the first open order that matches the bid, creates a match, updates that order in store.
 // Returns the matched order if a match was created (caller may persist it when order came from order-service).
 func TryMatchAfterBidWithOrders(st store.Store, b *store.Bid, orders []store.Order) *store.Order {
-	if !b.Active {
+	if !b.Active || !isEligibleVerifiedGuard(st, b.GuardID) {
 		return nil
 	}
 	for i := range orders {
 		o := &orders[i]
-		if o.Status != "published" && o.Status != "open" {
+		if o.Status != "published" && o.Status != "open" && o.Status != "matching" {
 			continue
 		}
 		if o.BudgetMin > 0 && b.PricePerHour < o.BudgetMin {
@@ -143,23 +141,15 @@ func TryMatchAfterBidWithOrders(st store.Store, b *store.Bid, orders []store.Ord
 		if o.BudgetMax > 0 && b.PricePerHour > o.BudgetMax {
 			continue
 		}
-		if len(o.RequiredLicenses) > 0 {
-			has := false
-			for _, l := range o.RequiredLicenses {
-				for _, bl := range b.Licenses {
-					if l == bl {
-						has = true
-						break
-					}
-				}
-			}
-			if !has {
-				continue
-			}
+		if !hasAllRequiredLicenses(o.RequiredLicenses, st.VerifiedLicensesByGuardID(b.GuardID)) {
+			continue
 		}
 		dist := distanceKm(o.Latitude, o.Longitude, b.Latitude, b.Longitude)
 		if b.RadiusKm > 0 && dist > b.RadiusKm {
 			continue
+		}
+		if st.OrderByID(o.ID) == nil {
+			st.CreateOrder(o)
 		}
 		m := &store.Match{
 			ID:         uuid.New().String(),
@@ -169,17 +159,43 @@ func TryMatchAfterBidWithOrders(st store.Store, b *store.Bid, orders []store.Ord
 			FinalPrice: b.PricePerHour,
 			CreatedAt:  time.Now(),
 		}
-		st.CreateMatch(m)
-		notifyOnMatch(st, o, b.PricePerHour)
-		addMatchNotification(st, o, b.PricePerHour)
-		o.Status = "matched"
-		o.UpdatedAt = time.Now()
-		if st.OrderByID(o.ID) != nil {
-			st.UpdateOrder(o)
+		updatedOrder, err := st.OfferMatch(m)
+		if err != nil {
+			continue
 		}
-		return o
+		notifyOnMatch(st, updatedOrder, b.PricePerHour)
+		addMatchNotification(st, updatedOrder, b.PricePerHour)
+		return updatedOrder
 	}
 	return nil
+}
+
+func isEligibleVerifiedGuard(st store.Store, guardID string) bool {
+	u := st.UserByID(guardID)
+	return u != nil && u.UserType == "guard" && u.Verified
+}
+
+func hasAllRequiredLicenses(required, actual []string) bool {
+	if len(required) == 0 {
+		return true
+	}
+	set := make(map[string]struct{}, len(actual))
+	for _, license := range actual {
+		key := strings.ToLower(strings.TrimSpace(license))
+		if key != "" {
+			set[key] = struct{}{}
+		}
+	}
+	for _, license := range required {
+		key := strings.ToLower(strings.TrimSpace(license))
+		if key == "" {
+			continue
+		}
+		if _, ok := set[key]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 func distanceKm(lat1, lon1, lat2, lon2 float64) float64 {

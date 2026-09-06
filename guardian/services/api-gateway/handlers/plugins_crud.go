@@ -133,7 +133,7 @@ func (h *PluginHandlers) Publish(c *gin.Context) {
 		IsPublic bool `json:"is_public"`
 	}
 	_ = c.ShouldBindJSON(&req)
-	p, ok := h.requireOwnedPlugin(c, id, userID)
+	p, ok := h.requirePluginPublisher(c, id, userID)
 	if !ok {
 		return
 	}
@@ -177,7 +177,7 @@ func (h *PluginHandlers) Export(c *gin.Context) {
 	}
 	primary := "#0055FF"
 	if p.ColorScheme != nil {
-		if v, hasPrimary := p.ColorScheme["primary"]; hasPrimary {
+		if v, hasPrimary := p.ColorScheme["primary"]; hasPrimary && isSafeCSSColor(v) {
 			primary = v
 		}
 	}
@@ -197,6 +197,22 @@ p{color:rgba(255,255,255,0.7);margin:0;}
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	c.Header("Content-Disposition", "attachment; filename=\""+fileName+".html\"")
 	c.String(http.StatusOK, html)
+}
+
+func isSafeCSSColor(v string) bool {
+	v = strings.TrimSpace(v)
+	if len(v) != 4 && len(v) != 7 {
+		return false
+	}
+	if v[0] != '#' {
+		return false
+	}
+	for _, r := range v[1:] {
+		if !((r >= '0' && r <= '9') || (r >= 'a' && r <= 'f') || (r >= 'A' && r <= 'F')) {
+			return false
+		}
+	}
+	return true
 }
 
 func safeExportFileName(name string) string {

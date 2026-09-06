@@ -1,6 +1,6 @@
 module guardian/tests
 
-go 1.21
+go 1.26.8
 
 require github.com/stretchr/testify v1.8.4
 

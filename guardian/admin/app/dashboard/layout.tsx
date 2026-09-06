@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { LayoutDashboard, Users, BarChart3, Settings } from 'lucide-react'
+import { LayoutDashboard, Users, BarChart3, Settings, ShieldCheck } from 'lucide-react'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/users', label: 'Users', icon: Users },
+  { href: '/dashboard/verifications', label: 'Verifications', icon: ShieldCheck },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]

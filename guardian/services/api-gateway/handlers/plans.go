@@ -154,8 +154,12 @@ func (h *PlanHandlers) AddTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if req.Title == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "title required"})
+	if len(req.Title) == 0 || len(req.Title) > 200 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title must be between 1 and 200 characters"})
+		return
+	}
+	if len(req.Description) > 5000 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "description too long"})
 		return
 	}
 	assigneeID := req.AssigneeID
@@ -170,12 +174,18 @@ func (h *PlanHandlers) AddTask(c *gin.Context) {
 	if assigneeID == "" {
 		assigneeID = userID
 	}
+	if h.Store.UserByID(assigneeID) == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "assignee user not found"})
+		return
+	}
 	var dueAt *time.Time
 	if req.DueAt != nil && *req.DueAt != "" {
 		t, err := time.Parse(time.RFC3339, *req.DueAt)
-		if err == nil {
-			dueAt = &t
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "due_at must be RFC3339"})
+			return
 		}
+		dueAt = &t
 	}
 	tasks := h.Store.PlanTasks(planID)
 	sortOrder := len(tasks)
@@ -238,9 +248,17 @@ func (h *PlanHandlers) UpdateTask(c *gin.Context) {
 		return
 	}
 	if req.Title != nil {
+		if len(*req.Title) == 0 || len(*req.Title) > 200 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "title must be between 1 and 200 characters"})
+			return
+		}
 		task.Title = *req.Title
 	}
 	if req.Description != nil {
+		if len(*req.Description) > 5000 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "description too long"})
+			return
+		}
 		task.Description = *req.Description
 	}
 	if req.DueAt != nil {
@@ -248,21 +266,37 @@ func (h *PlanHandlers) UpdateTask(c *gin.Context) {
 			task.DueAt = nil
 		} else {
 			t, err := time.Parse(time.RFC3339, *req.DueAt)
-			if err == nil {
-				task.DueAt = &t
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "due_at must be RFC3339"})
+				return
 			}
+			task.DueAt = &t
 		}
 	}
 	if req.AssigneeID != nil {
-		task.AssigneeID = *req.AssigneeID
+		assigneeID := *req.AssigneeID
+		if assigneeID == "" {
+			assigneeID = userID
+		}
+		if h.Store.UserByID(assigneeID) == nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "assignee user not found"})
+			return
+		}
+		task.AssigneeID = assigneeID
 	}
 	if req.Status != nil {
 		s := *req.Status
-		if s == "todo" || s == "in_progress" || s == "done" {
-			task.Status = s
+		if s != "todo" && s != "in_progress" && s != "done" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid task status"})
+			return
 		}
+		task.Status = s
 	}
 	if req.SortOrder != nil {
+		if *req.SortOrder < 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "sort_order must be non-negative"})
+			return
+		}
 		task.SortOrder = *req.SortOrder
 	}
 	task.UpdatedAt = time.Now()

@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 )
@@ -78,6 +79,14 @@ func (s *PostgresStore) UpdateUser(u *User) {
 		u.ID, u.FirstName, u.LastName, u.Phone)
 }
 
+func (s *PostgresStore) SetUserVerified(userID string, verified bool) bool {
+	res, err := s.pool.Exec(context.Background(), `UPDATE gateway_users SET verified = $2 WHERE id = $1`, userID, verified)
+	if err != nil {
+		return false
+	}
+	return res.RowsAffected() > 0
+}
+
 func (s *PostgresStore) SetUserPasswordHash(userID, hash string) bool {
 	res, err := s.pool.Exec(context.Background(), `UPDATE gateway_users SET password_hash = $2 WHERE id = $1`, userID, hash)
 	if err != nil {
@@ -138,6 +147,40 @@ func (s *PostgresStore) UpdateOrder(o *Order) {
 		log.Printf("[postgres] UpdateOrder: %v", err)
 		return
 	}
+}
+
+func (s *PostgresStore) CancelOrder(orderID, clientID string) (*Order, error) {
+	ctx := context.Background()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+	var owner, status string
+	if err := tx.QueryRow(ctx, `SELECT client_id,status FROM gateway_orders WHERE id=$1 FOR UPDATE`, orderID).Scan(&owner, &status); err != nil {
+		return nil, err
+	}
+	if owner != clientID {
+		return nil, errors.New("forbidden")
+	}
+	if status == "cancelled" {
+		_ = tx.Commit(ctx)
+		return s.OrderByID(orderID), nil
+	}
+	if status != "draft" && status != "published" && status != "open" && status != "matching" {
+		return nil, errors.New("order cannot be cancelled in current state")
+	}
+	now := time.Now()
+	if _, err := tx.Exec(ctx, `UPDATE gateway_matches SET status='rejected',updated_at=$2 WHERE order_id=$1 AND status='offered'`, orderID, now); err != nil {
+		return nil, err
+	}
+	if _, err := tx.Exec(ctx, `UPDATE gateway_orders SET status='cancelled',updated_at=$2 WHERE id=$1`, orderID, now); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+	return s.OrderByID(orderID), nil
 }
 
 func (s *PostgresStore) BidsByGuardID(guardID string) []Bid {
@@ -216,7 +259,7 @@ func (s *PostgresStore) AllOrders() []Order {
 
 func (s *PostgresStore) AllMatches() []Match {
 	rows, err := s.pool.Query(context.Background(),
-		`SELECT id, order_id, bid_id, guard_id, final_price, created_at FROM gateway_matches ORDER BY created_at DESC`)
+		`SELECT id, order_id, bid_id, guard_id, final_price, status, created_at, updated_at FROM gateway_matches ORDER BY created_at DESC`)
 	if err != nil {
 		return nil
 	}
@@ -224,7 +267,7 @@ func (s *PostgresStore) AllMatches() []Match {
 	var out []Match
 	for rows.Next() {
 		var m Match
-		if err := rows.Scan(&m.ID, &m.OrderID, &m.BidID, &m.GuardID, &m.FinalPrice, &m.CreatedAt); err != nil {
+		if err := rows.Scan(&m.ID, &m.OrderID, &m.BidID, &m.GuardID, &m.FinalPrice, &m.Status, &m.CreatedAt, &m.UpdatedAt); err != nil {
 			continue
 		}
 		out = append(out, m)
@@ -253,19 +296,37 @@ func (s *PostgresStore) AllBids() []Bid {
 }
 
 func (s *PostgresStore) CreateMatch(m *Match) {
+	if m.Status == "" {
+		m.Status = "offered"
+	}
+	if m.CreatedAt.IsZero() {
+		m.CreatedAt = time.Now()
+	}
+	if m.UpdatedAt.IsZero() {
+		m.UpdatedAt = m.CreatedAt
+	}
 	_, err := s.pool.Exec(context.Background(),
-		`INSERT INTO gateway_matches (id, order_id, bid_id, guard_id, final_price, created_at)
-		 VALUES ($1, $2, $3, $4, $5, $6)`,
-		m.ID, m.OrderID, m.BidID, m.GuardID, m.FinalPrice, m.CreatedAt)
+		`INSERT INTO gateway_matches (id, order_id, bid_id, guard_id, final_price, status, created_at, updated_at)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		m.ID, m.OrderID, m.BidID, m.GuardID, m.FinalPrice, m.Status, m.CreatedAt, m.UpdatedAt)
 	if err != nil {
 		log.Printf("[postgres] CreateMatch: %v", err)
-		return
 	}
+}
+
+func (s *PostgresStore) MatchByID(id string) *Match {
+	row := s.pool.QueryRow(context.Background(),
+		`SELECT id, order_id, bid_id, guard_id, final_price, status, created_at, updated_at FROM gateway_matches WHERE id=$1`, id)
+	var m Match
+	if err := row.Scan(&m.ID, &m.OrderID, &m.BidID, &m.GuardID, &m.FinalPrice, &m.Status, &m.CreatedAt, &m.UpdatedAt); err != nil {
+		return nil
+	}
+	return &m
 }
 
 func (s *PostgresStore) MatchesByOrderID(orderID string) []Match {
 	rows, err := s.pool.Query(context.Background(),
-		`SELECT id, order_id, bid_id, guard_id, final_price, created_at
+		`SELECT id, order_id, bid_id, guard_id, final_price, status, created_at, updated_at
 		 FROM gateway_matches WHERE order_id = $1 ORDER BY created_at DESC`, orderID)
 	if err != nil {
 		return nil
@@ -274,11 +335,159 @@ func (s *PostgresStore) MatchesByOrderID(orderID string) []Match {
 	var out []Match
 	for rows.Next() {
 		var m Match
-		err := rows.Scan(&m.ID, &m.OrderID, &m.BidID, &m.GuardID, &m.FinalPrice, &m.CreatedAt)
-		if err != nil {
+		if err := rows.Scan(&m.ID, &m.OrderID, &m.BidID, &m.GuardID, &m.FinalPrice, &m.Status, &m.CreatedAt, &m.UpdatedAt); err != nil {
 			continue
 		}
 		out = append(out, m)
 	}
 	return out
+}
+
+func (s *PostgresStore) OfferMatch(m *Match) (*Order, error) {
+	ctx := context.Background()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	var status string
+	var guardCount int
+	if err := tx.QueryRow(ctx, `SELECT status, guard_count FROM gateway_orders WHERE id=$1 FOR UPDATE`, m.OrderID).Scan(&status, &guardCount); err != nil {
+		return nil, err
+	}
+	if status != "published" && status != "open" && status != "matching" {
+		return nil, errors.New("order is not matchable")
+	}
+	if guardCount < 1 {
+		guardCount = 1
+	}
+	var active int
+	if err := tx.QueryRow(ctx, `SELECT COUNT(*) FROM gateway_matches WHERE order_id=$1 AND status IN ('offered','accepted')`, m.OrderID).Scan(&active); err != nil {
+		return nil, err
+	}
+	if active >= guardCount {
+		return nil, errors.New("order has no available guard slots")
+	}
+	var duplicate bool
+	if err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM gateway_matches WHERE order_id=$1 AND status IN ('offered','accepted') AND (guard_id=$2 OR bid_id=$3))`, m.OrderID, m.GuardID, m.BidID).Scan(&duplicate); err != nil {
+		return nil, err
+	}
+	if duplicate {
+		return nil, errors.New("duplicate match offer")
+	}
+	now := time.Now()
+	m.Status = "offered"
+	if m.CreatedAt.IsZero() {
+		m.CreatedAt = now
+	}
+	m.UpdatedAt = now
+	if _, err := tx.Exec(ctx, `INSERT INTO gateway_matches(id,order_id,bid_id,guard_id,final_price,status,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`, m.ID, m.OrderID, m.BidID, m.GuardID, m.FinalPrice, m.Status, m.CreatedAt, m.UpdatedAt); err != nil {
+		return nil, err
+	}
+	if _, err := tx.Exec(ctx, `UPDATE gateway_orders SET status='matching', updated_at=$2 WHERE id=$1`, m.OrderID, now); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+	return s.OrderByID(m.OrderID), nil
+}
+
+func (s *PostgresStore) AcceptMatch(matchID, guardID string) (*Match, *Order, error) {
+	ctx := context.Background()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	var orderID, ownerGuardID, status string
+	if err := tx.QueryRow(ctx, `SELECT order_id, guard_id, status FROM gateway_matches WHERE id=$1 FOR UPDATE`, matchID).Scan(&orderID, &ownerGuardID, &status); err != nil {
+		return nil, nil, err
+	}
+	if ownerGuardID != guardID {
+		return nil, nil, errors.New("forbidden")
+	}
+	if status == "rejected" {
+		return nil, nil, errors.New("rejected match cannot be accepted")
+	}
+	var guardCount int
+	if err := tx.QueryRow(ctx, `SELECT guard_count FROM gateway_orders WHERE id=$1 FOR UPDATE`, orderID).Scan(&guardCount); err != nil {
+		return nil, nil, err
+	}
+	if guardCount < 1 {
+		guardCount = 1
+	}
+	now := time.Now()
+	if status != "accepted" {
+		if _, err := tx.Exec(ctx, `UPDATE gateway_matches SET status='accepted', updated_at=$2 WHERE id=$1`, matchID, now); err != nil {
+			return nil, nil, err
+		}
+	}
+	var accepted int
+	if err := tx.QueryRow(ctx, `SELECT COUNT(*) FROM gateway_matches WHERE order_id=$1 AND status='accepted'`, orderID).Scan(&accepted); err != nil {
+		return nil, nil, err
+	}
+	orderStatus := "matching"
+	if accepted >= guardCount {
+		orderStatus = "matched"
+	}
+	if _, err := tx.Exec(ctx, `UPDATE gateway_orders SET status=$2, updated_at=$3 WHERE id=$1`, orderID, orderStatus, now); err != nil {
+		return nil, nil, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return nil, nil, err
+	}
+	return s.MatchByID(matchID), s.OrderByID(orderID), nil
+}
+
+func (s *PostgresStore) RejectMatch(matchID, guardID string) (*Match, *Order, error) {
+	ctx := context.Background()
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	var orderID, ownerGuardID, status string
+	if err := tx.QueryRow(ctx, `SELECT order_id, guard_id, status FROM gateway_matches WHERE id=$1 FOR UPDATE`, matchID).Scan(&orderID, &ownerGuardID, &status); err != nil {
+		return nil, nil, err
+	}
+	if ownerGuardID != guardID {
+		return nil, nil, errors.New("forbidden")
+	}
+	if status == "accepted" {
+		return nil, nil, errors.New("accepted match cannot be rejected")
+	}
+	var guardCount int
+	if err := tx.QueryRow(ctx, `SELECT guard_count FROM gateway_orders WHERE id=$1 FOR UPDATE`, orderID).Scan(&guardCount); err != nil {
+		return nil, nil, err
+	}
+	if guardCount < 1 {
+		guardCount = 1
+	}
+	now := time.Now()
+	if status != "rejected" {
+		if _, err := tx.Exec(ctx, `UPDATE gateway_matches SET status='rejected', updated_at=$2 WHERE id=$1`, matchID, now); err != nil {
+			return nil, nil, err
+		}
+	}
+	var accepted, active int
+	if err := tx.QueryRow(ctx, `SELECT COUNT(*) FILTER (WHERE status='accepted'), COUNT(*) FILTER (WHERE status IN ('offered','accepted')) FROM gateway_matches WHERE order_id=$1`, orderID).Scan(&accepted, &active); err != nil {
+		return nil, nil, err
+	}
+	orderStatus := "published"
+	if accepted >= guardCount {
+		orderStatus = "matched"
+	} else if active > 0 {
+		orderStatus = "matching"
+	}
+	if _, err := tx.Exec(ctx, `UPDATE gateway_orders SET status=$2, updated_at=$3 WHERE id=$1`, orderID, orderStatus, now); err != nil {
+		return nil, nil, err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return nil, nil, err
+	}
+	return s.MatchByID(matchID), s.OrderByID(orderID), nil
 }
