@@ -93,6 +93,23 @@ export async function fetchMatches(): Promise<Match[]> {
   return data.matches
 }
 
+
+export async function acceptMatch(id: string): Promise<Match> {
+  const data = await api<{ match: Match }>(`/api/v1/matches/${id}/accept`, {
+    method: 'POST',
+    idempotencyKey: newIdempotencyKey('match_accept'),
+  })
+  return data.match
+}
+
+export async function rejectMatch(id: string): Promise<Match> {
+  const data = await api<{ match: Match }>(`/api/v1/matches/${id}/reject`, {
+    method: 'POST',
+    idempotencyKey: newIdempotencyKey('match_reject'),
+  })
+  return data.match
+}
+
 export async function fetchCards(): Promise<PaymentCard[]> {
   const cached = readCardsCache()
   if (cached) return cached

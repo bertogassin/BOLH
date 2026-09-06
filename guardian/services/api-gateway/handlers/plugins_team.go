@@ -35,7 +35,7 @@ func (h *PluginHandlers) AddTeamMember(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id required"})
 		return
 	}
-	if _, ok := h.requireOwnedPlugin(c, id, userID); !ok {
+	if _, ok := h.requirePluginTeamAdmin(c, id, userID); !ok {
 		return
 	}
 	var req struct {
@@ -49,6 +49,10 @@ func (h *PluginHandlers) AddTeamMember(c *gin.Context) {
 	}
 	if req.Role == "" {
 		req.Role = "viewer"
+	}
+	if !validPluginRole(req.Role) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid plugin role"})
+		return
 	}
 	targetID := req.UserID
 	if targetID == "" && req.Email != "" {
@@ -85,7 +89,7 @@ func (h *PluginHandlers) RemoveTeamMember(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id and user_id required"})
 		return
 	}
-	if _, ok := h.requireOwnedPlugin(c, id, userID); !ok {
+	if _, ok := h.requirePluginTeamAdmin(c, id, userID); !ok {
 		return
 	}
 	if !h.Store.RemovePluginTeamMember(id, memberID) {

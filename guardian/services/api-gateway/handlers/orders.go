@@ -61,11 +61,14 @@ func tryMatchAfterOrderFromProxy(st store.Store, orderServiceBase string, orderJ
 	if !isOrderInvariantValid(o) {
 		return
 	}
-	bids := getBidsForMatching(st)
-	TryMatchAfterOrderWithBids(st, o, bids)
+	// OfferMatch is intentionally atomic in the gateway Store, so the order must
+	// be visible there before matching. With a shared PostgreSQL database it is
+	// already present; memory/separate-service deployments mirror it first.
 	if st.OrderByID(o.ID) == nil {
 		st.CreateOrder(o)
 	}
+	bids := getBidsForMatching(st)
+	TryMatchAfterOrderWithBids(st, o, bids)
 }
 
 func getBidsForMatching(st store.Store) []store.Bid {
@@ -349,7 +352,6 @@ func (h *OrderHandlers) Update(c *gin.Context) {
 		Description *string  `json:"description"`
 		BudgetMin   *float64 `json:"budget_min"`
 		BudgetMax   *float64 `json:"budget_max"`
-		Status      *string  `json:"status"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -367,8 +369,14 @@ func (h *OrderHandlers) Update(c *gin.Context) {
 	if req.BudgetMax != nil {
 		o.BudgetMax = *req.BudgetMax
 	}
-	if req.Status != nil {
-		o.Status = *req.Status
+	if o.BudgetMin < 0 || o.BudgetMax < o.BudgetMin {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid budget range"})
+		return
+	}
+	o.Title = strings.TrimSpace(o.Title)
+	if len(o.Title) < 2 || len(o.Title) > 160 || len(o.Description) > 5000 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid order text fields"})
+		return
 	}
 	o.UpdatedAt = time.Now()
 	h.Store.UpdateOrder(o)
@@ -423,18 +431,19 @@ func isOrderInvariantValid(o *store.Order) bool {
 
 func (h *OrderHandlers) Cancel(c *gin.Context) {
 	userID := c.GetString("user_id")
-	id := c.Param("id")
-	o := h.Store.OrderByID(id)
-	if o == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "order not found"})
+	id := strings.TrimSpace(c.Param("id"))
+	o, err := h.Store.CancelOrder(id, userID)
+	if err != nil {
+		if strings.Contains(err.Error(), "forbidden") {
+			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
+			return
+		}
+		if strings.Contains(err.Error(), "not found") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "order not found"})
+			return
+		}
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-	if o.ClientID != userID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
-		return
-	}
-	o.Status = "cancelled"
-	o.UpdatedAt = time.Now()
-	h.Store.UpdateOrder(o)
 	c.JSON(http.StatusOK, gin.H{"order": o})
 }

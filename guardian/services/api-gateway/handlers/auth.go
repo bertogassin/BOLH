@@ -22,7 +22,7 @@ import (
 const bcryptCost = 10
 const notifyHTTPTimeout = 5 * time.Second
 const accessCookieName = "guardian_access_token"
-const accessTokenTTL = 30 * 24 * time.Hour
+const accessTokenTTL = 24 * time.Hour
 const loginMaxFailures = 5
 const loginLockoutDuration = 15 * time.Minute
 

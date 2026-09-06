@@ -5,7 +5,7 @@ const SIGNED_MODE = (process.env.NEXT_PUBLIC_SIGNED_REQUEST_MODE || 'partial').t
 const SIGNED_ENABLED = (process.env.NEXT_PUBLIC_SIGNED_REQUESTS_ENABLED || '1').toLowerCase() !== '0'
 const SIGNED_PARTIAL_PATHS = (
   process.env.NEXT_PUBLIC_SIGNED_REQUEST_PARTIAL_PATHS ||
-  '/api/v1/auth/me/password,/api/v1/orders,/api/v1/bids,/api/v1/documents/upload,/api/v1/company/register,/api/v1/payments/escrow/authorize,/api/v1/payments/escrow/:id/release,/api/v1/payments/escrow/:id/cancel'
+  '/api/v1/auth/me/password,/api/v1/orders,/api/v1/bids,/api/v1/company/register,/api/v1/payments/escrow/authorize,/api/v1/payments/escrow/:id/release,/api/v1/payments/escrow/:id/cancel,/api/v1/matches/:id/accept,/api/v1/matches/:id/reject'
 )
   .split(',')
   .map((v) => v.trim())
@@ -59,13 +59,17 @@ function isSensitivePath(path: string): boolean {
     '/api/v1/auth/me/password',
     '/api/v1/orders',
     '/api/v1/bids',
-    '/api/v1/documents/upload',
     '/api/v1/company/register',
     '/api/v1/payments/escrow/authorize',
     '/api/v1/payments/escrow/:id/release',
     '/api/v1/payments/escrow/:id/cancel',
+    '/api/v1/matches/:id/accept',
+    '/api/v1/matches/:id/reject',
   ])
   if (path.startsWith('/api/v1/payments/escrow/') && (path.endsWith('/release') || path.endsWith('/cancel'))) {
+    return true
+  }
+  if (path.startsWith('/api/v1/matches/') && (path.endsWith('/accept') || path.endsWith('/reject'))) {
     return true
   }
   if (SIGNED_MODE === 'full') return fullSet.has(path)
@@ -91,6 +95,23 @@ async function sha256Hex(value: string): Promise<string | null> {
       .join('')
   }
   return null
+}
+
+async function hmacSha256Hex(keyValue: string, message: string): Promise<string | null> {
+  if (!hasWebCrypto()) return null
+  const enc = new TextEncoder()
+  const key = await crypto.subtle.importKey('raw', enc.encode(keyValue), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const signature = await crypto.subtle.sign('HMAC', key, enc.encode(message))
+  return Array.from(new Uint8Array(signature)).map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+function canonicalSignedTarget(path: string): string {
+  const url = new URL(path, 'https://bolh.local')
+  const pairs = Array.from(url.searchParams.entries()).sort(([ak, av], [bk, bv]) => ak.localeCompare(bk) || av.localeCompare(bv))
+  const sorted = new URLSearchParams()
+  for (const [key, value] of pairs) sorted.append(key, value)
+  const query = sorted.toString()
+  return query ? `${url.pathname}?${query}` : url.pathname
 }
 
 function readBehaviorSignals(path: string): BehaviorSignals | null {
@@ -134,7 +155,13 @@ export async function api<T>(path: string, options: ApiRequestOptions = {}): Pro
   if (SIGNED_ENABLED && token && isSensitivePath(path) && integrity && hasWebCrypto()) {
     const ts = String(Math.floor(Date.now() / 1000))
     const nonce = randomNonce()
-    const signature = await sha256Hex(`${(options.method || 'GET').toUpperCase()}|${path}|${ts}|${nonce}|${token}|${integrity}`)
+    const methodForSignature = (options.method || 'GET').toUpperCase()
+    const bodyForSignature = typeof requestOptions.body === 'string' ? requestOptions.body : ''
+    const bodyHash = await sha256Hex(bodyForSignature)
+    const target = canonicalSignedTarget(path)
+    const signature = bodyHash
+      ? await hmacSha256Hex(token, `${methodForSignature}|${target}|${ts}|${nonce}|${integrity}|${bodyHash}`)
+      : null
     if (signature) {
       headers['X-Request-Timestamp'] = ts
       headers['X-Request-Nonce'] = nonce

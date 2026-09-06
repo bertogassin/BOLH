@@ -25,7 +25,9 @@ export type Match = {
   bid_id: string
   guard_id: string
   final_price: number
+  status: 'offered' | 'accepted' | 'rejected'
   created_at: string
+  updated_at: string
 }
 
 export type ChatMessage = {

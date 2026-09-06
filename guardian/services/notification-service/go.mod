@@ -1,6 +1,6 @@
 module guardian/notification-service
 
-go 1.25.0
+go 1.26.8
 
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect

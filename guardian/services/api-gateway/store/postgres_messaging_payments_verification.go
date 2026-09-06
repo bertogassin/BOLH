@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"log"
 )
 
@@ -106,21 +107,57 @@ func (s *PostgresStore) CreateMessage(m *Message) {
 
 func (s *PostgresStore) GetVerificationRequest(userID string) *VerificationRequest {
 	row := s.pool.QueryRow(context.Background(),
-		`SELECT id, user_id, status, created_at FROM gateway_verification_requests WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`, userID)
+		`SELECT id, user_id, status, COALESCE(rejection_reason,''), created_at, updated_at FROM gateway_verification_requests WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`, userID)
 	var v VerificationRequest
-	err := row.Scan(&v.ID, &v.UserID, &v.Status, &v.CreatedAt)
-	if err != nil {
+	if err := row.Scan(&v.ID, &v.UserID, &v.Status, &v.RejectionReason, &v.CreatedAt, &v.UpdatedAt); err != nil {
 		return nil
 	}
 	return &v
 }
 
-func (s *PostgresStore) CreateVerificationRequest(v *VerificationRequest) {
-	_, err := s.pool.Exec(context.Background(),
-		`INSERT INTO gateway_verification_requests (id, user_id, status, created_at) VALUES ($1, $2, $3, $4)`,
-		v.ID, v.UserID, v.Status, v.CreatedAt)
-	if err != nil {
-		log.Printf("[postgres] CreateVerificationRequest: %v", err)
-		return
+func (s *PostgresStore) VerificationRequestByID(id string) *VerificationRequest {
+	row := s.pool.QueryRow(context.Background(),
+		`SELECT id, user_id, status, COALESCE(rejection_reason,''), created_at, updated_at FROM gateway_verification_requests WHERE id = $1`, id)
+	var v VerificationRequest
+	if err := row.Scan(&v.ID, &v.UserID, &v.Status, &v.RejectionReason, &v.CreatedAt, &v.UpdatedAt); err != nil {
+		return nil
 	}
+	return &v
+}
+
+func (s *PostgresStore) VerificationRequests() []VerificationRequest {
+	rows, err := s.pool.Query(context.Background(),
+		`SELECT id, user_id, status, COALESCE(rejection_reason,''), created_at, updated_at FROM gateway_verification_requests ORDER BY created_at DESC`)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+	out := make([]VerificationRequest, 0)
+	for rows.Next() {
+		var v VerificationRequest
+		if err := rows.Scan(&v.ID, &v.UserID, &v.Status, &v.RejectionReason, &v.CreatedAt, &v.UpdatedAt); err == nil {
+			out = append(out, v)
+		}
+	}
+	return out
+}
+
+func (s *PostgresStore) CreateVerificationRequest(v *VerificationRequest) error {
+	_, err := s.pool.Exec(context.Background(),
+		`INSERT INTO gateway_verification_requests (id, user_id, status, rejection_reason, created_at, updated_at) VALUES ($1, $2, $3, NULLIF($4,''), $5, $6)`,
+		v.ID, v.UserID, v.Status, v.RejectionReason, v.CreatedAt, v.UpdatedAt)
+	return err
+}
+
+func (s *PostgresStore) UpdateVerificationRequest(v *VerificationRequest) error {
+	cmd, err := s.pool.Exec(context.Background(),
+		`UPDATE gateway_verification_requests SET status=$2,rejection_reason=NULLIF($3,''),updated_at=$4 WHERE id=$1`,
+		v.ID, v.Status, v.RejectionReason, v.UpdatedAt)
+	if err != nil {
+		return err
+	}
+	if cmd.RowsAffected() != 1 {
+		return fmt.Errorf("verification request not found")
+	}
+	return nil
 }

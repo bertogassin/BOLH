@@ -5,7 +5,7 @@ edition = "2021"
 description = "Core domain entities and value objects for BOLH tenders platform"
 
 [dependencies]
-rust_decimal = { version = "1.33", features = ["serde"] }
+rust_decimal = { version = "1.43", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.6", features = ["v4", "serde"] }
 thiserror = "1.0"

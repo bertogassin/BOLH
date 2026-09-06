@@ -55,9 +55,7 @@ func tryMatchAfterBidFromProxy(st store.Store, bidJSON []byte) {
 		UpdatedAt:    raw.UpdatedAt,
 	}
 	orders := getOrdersForMatching(st)
-	if matched := TryMatchAfterBidWithOrders(st, b, orders); matched != nil && st.OrderByID(matched.ID) == nil {
-		st.CreateOrder(matched)
-	}
+	_ = TryMatchAfterBidWithOrders(st, b, orders)
 }
 
 func (h *BidHandlers) Create(c *gin.Context) {
@@ -235,6 +233,10 @@ func (h *BidHandlers) Update(c *gin.Context) {
 	}
 	if req.Active != nil {
 		b.Active = *req.Active
+	}
+	if !isBidInvariantValid(b) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid bid values"})
+		return
 	}
 	b.UpdatedAt = time.Now()
 	h.Store.UpdateBid(b)

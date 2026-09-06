@@ -95,8 +95,10 @@ func (s *MemoryStore) GetVerificationRequest(userID string) *VerificationRequest
 	return &v2
 }
 
-func (s *MemoryStore) CreateVerificationRequest(v *VerificationRequest) {
+func (s *MemoryStore) CreateVerificationRequest(v *VerificationRequest) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.verificationRequests[v.ID] = v
+	cp := *v
+	s.verificationRequests[v.ID] = &cp
+	return nil
 }

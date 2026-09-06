@@ -48,7 +48,9 @@ func jsonPayload(value any) []byte {
 
 func (s *PostgresStore) DocumentsByUserID(userID string) []Document {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_documents WHERE user_id=$1 ORDER BY created_at DESC`, userID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[Document](rows)
 }
 
@@ -59,15 +61,25 @@ func (s *PostgresStore) DocumentByID(id, userID string) *Document {
 }
 
 func (s *PostgresStore) CreateDocument(d *Document) {
-	payload := jsonPayload(d); if payload == nil { return }
+	payload := jsonPayload(d)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_documents(id,user_id,payload,created_at,updated_at) VALUES($1,$2,$3,$4,$5)`, d.ID, d.UserID, payload, d.CreatedAt, d.UpdatedAt)
-	if err != nil { log.Printf("[postgres] CreateDocument: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] CreateDocument: %v", err)
+	}
 }
 
 func (s *PostgresStore) UpdateDocument(d *Document) {
-	payload := jsonPayload(d); if payload == nil { return }
+	payload := jsonPayload(d)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `UPDATE gateway_documents SET payload=$3,updated_at=$4 WHERE id=$1 AND user_id=$2`, d.ID, d.UserID, payload, d.UpdatedAt)
-	if err != nil { log.Printf("[postgres] UpdateDocument: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] UpdateDocument: %v", err)
+	}
 }
 
 func (s *PostgresStore) DeleteDocument(id, userID string) bool {
@@ -77,7 +89,9 @@ func (s *PostgresStore) DeleteDocument(id, userID string) bool {
 
 func (s *PostgresStore) PluginsByUserID(userID string) []Plugin {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_plugins WHERE user_id=$1 ORDER BY created_at DESC`, userID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[Plugin](rows)
 }
 
@@ -96,27 +110,44 @@ func (s *PostgresStore) PluginByIDOnly(id string) *Plugin {
 }
 
 func (s *PostgresStore) CreatePlugin(p *Plugin) {
-	payload := jsonPayload(p); if payload == nil { return }
+	payload := jsonPayload(p)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_plugins(id,user_id,payload,created_at,updated_at) VALUES($1,$2,$3,$4,$5)`, p.ID, p.UserID, payload, p.CreatedAt, p.UpdatedAt)
-	if err != nil { log.Printf("[postgres] CreatePlugin: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] CreatePlugin: %v", err)
+	}
 }
 
 func (s *PostgresStore) UpdatePlugin(p *Plugin) {
-	payload := jsonPayload(p); if payload == nil { return }
+	payload := jsonPayload(p)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `UPDATE gateway_plugins SET payload=$3,updated_at=$4 WHERE id=$1 AND user_id=$2`, p.ID, p.UserID, payload, p.UpdatedAt)
-	if err != nil { log.Printf("[postgres] UpdatePlugin: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] UpdatePlugin: %v", err)
+	}
 }
 
 func (s *PostgresStore) PluginTeamMembers(pluginID string) []PluginTeamMember {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_plugin_team_members WHERE plugin_id=$1 ORDER BY added_at`, pluginID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[PluginTeamMember](rows)
 }
 
 func (s *PostgresStore) AddPluginTeamMember(m *PluginTeamMember) {
-	payload := jsonPayload(m); if payload == nil { return }
+	payload := jsonPayload(m)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_plugin_team_members(plugin_id,user_id,payload,added_at) VALUES($1,$2,$3,$4) ON CONFLICT(plugin_id,user_id) DO UPDATE SET payload=EXCLUDED.payload,added_at=EXCLUDED.added_at`, m.PluginID, m.UserID, payload, m.AddedAt)
-	if err != nil { log.Printf("[postgres] AddPluginTeamMember: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] AddPluginTeamMember: %v", err)
+	}
 }
 
 func (s *PostgresStore) RemovePluginTeamMember(pluginID, userID string) bool {
@@ -126,14 +157,21 @@ func (s *PostgresStore) RemovePluginTeamMember(pluginID, userID string) bool {
 
 func (s *PostgresStore) PluginComments(pluginID string) []PluginComment {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_plugin_comments WHERE plugin_id=$1 ORDER BY created_at`, pluginID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[PluginComment](rows)
 }
 
 func (s *PostgresStore) AddPluginComment(c *PluginComment) {
-	payload := jsonPayload(c); if payload == nil { return }
+	payload := jsonPayload(c)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_plugin_comments(id,plugin_id,payload,created_at) VALUES($1,$2,$3,$4)`, c.ID, c.PluginID, payload, c.CreatedAt)
-	if err != nil { log.Printf("[postgres] AddPluginComment: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] AddPluginComment: %v", err)
+	}
 }
 
 func (s *PostgresStore) SetCommentResolved(commentID, pluginID string, resolved bool) bool {
@@ -143,7 +181,9 @@ func (s *PostgresStore) SetCommentResolved(commentID, pluginID string, resolved 
 
 func (s *PostgresStore) PlansByUserID(userID string) []Plan {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_plans WHERE owner_id=$1 ORDER BY updated_at DESC`, userID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[Plan](rows)
 }
 
@@ -154,15 +194,25 @@ func (s *PostgresStore) PlanByID(id, userID string) *Plan {
 }
 
 func (s *PostgresStore) CreatePlan(p *Plan) {
-	payload := jsonPayload(p); if payload == nil { return }
+	payload := jsonPayload(p)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_plans(id,owner_id,payload,created_at,updated_at) VALUES($1,$2,$3,$4,$5)`, p.ID, p.OwnerID, payload, p.CreatedAt, p.UpdatedAt)
-	if err != nil { log.Printf("[postgres] CreatePlan: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] CreatePlan: %v", err)
+	}
 }
 
 func (s *PostgresStore) UpdatePlan(p *Plan) {
-	payload := jsonPayload(p); if payload == nil { return }
+	payload := jsonPayload(p)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `UPDATE gateway_plans SET payload=$3,updated_at=$4 WHERE id=$1 AND owner_id=$2`, p.ID, p.OwnerID, payload, p.UpdatedAt)
-	if err != nil { log.Printf("[postgres] UpdatePlan: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] UpdatePlan: %v", err)
+	}
 }
 
 func (s *PostgresStore) DeletePlan(id, userID string) bool {
@@ -172,20 +222,32 @@ func (s *PostgresStore) DeletePlan(id, userID string) bool {
 
 func (s *PostgresStore) PlanTasks(planID string) []PlanTask {
 	rows, err := s.pool.Query(context.Background(), `SELECT payload FROM gateway_plan_tasks WHERE plan_id=$1 ORDER BY sort_order,created_at`, planID)
-	if err != nil { return nil }
+	if err != nil {
+		return nil
+	}
 	return decodeRows[PlanTask](rows)
 }
 
 func (s *PostgresStore) AddPlanTask(t *PlanTask) {
-	payload := jsonPayload(t); if payload == nil { return }
+	payload := jsonPayload(t)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `INSERT INTO gateway_plan_tasks(id,plan_id,payload,sort_order,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6)`, t.ID, t.PlanID, payload, t.SortOrder, t.CreatedAt, t.UpdatedAt)
-	if err != nil { log.Printf("[postgres] AddPlanTask: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] AddPlanTask: %v", err)
+	}
 }
 
 func (s *PostgresStore) UpdatePlanTask(t *PlanTask) {
-	payload := jsonPayload(t); if payload == nil { return }
+	payload := jsonPayload(t)
+	if payload == nil {
+		return
+	}
 	_, err := s.pool.Exec(context.Background(), `UPDATE gateway_plan_tasks SET payload=$3,sort_order=$4,updated_at=$5 WHERE id=$1 AND plan_id=$2`, t.ID, t.PlanID, payload, t.SortOrder, t.UpdatedAt)
-	if err != nil { log.Printf("[postgres] UpdatePlanTask: %v", err) }
+	if err != nil {
+		log.Printf("[postgres] UpdatePlanTask: %v", err)
+	}
 }
 
 func (s *PostgresStore) DeletePlanTask(taskID, planID, userID string) bool {

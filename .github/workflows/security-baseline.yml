@@ -35,7 +35,7 @@ jobs:
           node-version: '20'
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.25.8'
+          go-version: '1.26.8'
 
       - name: Setup Rust
         run: rustup default stable
@@ -94,5 +94,5 @@ jobs:
             else
               (cd "$dir" && npm install)
             fi
-            (cd "$dir" && npm audit --audit-level=high || true)
+            (cd "$dir" && npm audit --audit-level=high)
           done

@@ -159,6 +159,7 @@ export default function ProfilePage() {
     details.hourlyRate,
     details.availability,
     details.bio,
+    user?.verified ? 'verified' : '',
   ]
   const completionPercent = Math.round((completionFields.filter((v) => String(v || '').trim().length > 0).length / completionFields.length) * 100)
 

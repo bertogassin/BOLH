@@ -63,3 +63,28 @@ Thumbs.db
 # Local release notes/secrets (never commit)
 **/RELEASE_IMPORTANT.local.md
 **/release-signing.local.env
+
+# Local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies / builds
+node_modules/
+.next/
+target/
+dist/
+coverage/
+
+# Local databases / logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

@@ -564,8 +564,6 @@ export default function BookingPage() {
         try {
           await authorizeEscrowPayment({
             order_id: createdOrder.id,
-            amount: p,
-            currency: 'EUR',
             payment_method_hint: paymentMethodHint,
             description: `Order ${createdOrder.id} escrow hold`,
           })

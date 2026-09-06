@@ -19,8 +19,6 @@ export type EscrowPayment = {
 
 export async function authorizeEscrowPayment(body: {
   order_id: string
-  amount: number
-  currency?: string
   payment_method_id?: string
   payment_method_hint?: string
   description?: string
